@@ -533,7 +533,7 @@ public class FGPlayerListener implements Listener {
                 }
 
                 // 20以上にならないように体力とお腹ゲージを+2(ハート、おにく1つ分)回復させる
-                int nowHP = player.getHealth();
+                double nowHP = player.getHealth();
                 nowHP = nowHP + 2;
                 if (nowHP > 20) nowHP = 20;
 
