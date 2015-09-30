@@ -385,7 +385,7 @@ public class SetCommand extends BaseCommand {
      * 設定可能な設定とヘルプをsenderに送信する
      */
     private void sendAvailableConf() {
-        List<String> col = new ArrayList<String>();
+        List<String> col = new ArrayList<>();
         for (Configables conf : Configables.values()) {
             col.add(conf.name());
         }

@@ -21,11 +21,12 @@ import syam.flaggame.manager.GameManager;
 
 /**
  * FGInventoryListener (FGInventoryListener.java)
- * 
+ *
  * @author syam(syamn)
  */
 public class FGInventoryListener implements Listener {
-    public static final Logger log = FlagGame.log;
+
+    public static final Logger log = FlagGame.logger;
     private static final String logPrefix = FlagGame.logPrefix;
     private static final String msgPrefix = FlagGame.msgPrefix;
 
@@ -40,21 +41,24 @@ public class FGInventoryListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onInventoryClick(final InventoryClickEvent event) {
         // getSlot() == 39: 装備(頭)インベントリ
-        if (event.getSlotType() != SlotType.ARMOR || event.getSlot() != 39) { return; }
+        if (event.getSlotType() != SlotType.ARMOR || event.getSlot() != 39) {
+            return;
+        }
 
         // プレイヤーインスタンスを持たなければ返す
-        if (!(event.getWhoClicked() instanceof Player)) { return; }
+        if (!(event.getWhoClicked() instanceof Player)) {
+            return;
+        }
         Player player = (Player) event.getWhoClicked();
 
-        for (Game game : GameManager.getGames().values()) {
-            GameTeam team = game.getPlayerTeam(player);
-            if (team != null) {
-                // ゲーム参加中のプレイヤーはイベントキャンセル
-                event.setCurrentItem(new ItemStack(team.getBlockID(), 1, (short) 0, team.getBlockData()));
-
-                event.setCancelled(true);
-                event.setResult(Result.DENY);
-            }
-        }
+        GameManager.getGames().values().stream()
+                .map(game -> game.getPlayerTeam(player))
+                .filter(team -> team != null)
+                .forEach(team -> {
+                    // ゲーム参加中のプレイヤーはイベントキャンセル
+                    event.setCurrentItem(new ItemStack(team.getBlockID(), 1, (short) 0, team.getBlockData()));
+                    event.setCancelled(true);
+                    event.setResult(Result.DENY);
+                });
     }
 }

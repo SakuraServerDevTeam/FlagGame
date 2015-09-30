@@ -4,14 +4,14 @@
 package syam.flaggame.command;
 
 import syam.flaggame.exception.CommandException;
-import syam.flaggame.util.Actions;
 
 /**
  * ConfirmCommand (ConfirmCommand.java)
- * 
+ *
  * @author syam(syamn)
  */
 public class ConfirmCommand extends BaseCommand {
+
     public ConfirmCommand() {
         bePlayer = false;
         name = "confirm";
@@ -22,7 +22,9 @@ public class ConfirmCommand extends BaseCommand {
     @Override
     public void execute() throws CommandException {
         boolean ran = this.plugin.getQueue().confirmQueue(sender);
-        if (!ran) { throw new CommandException("&cあなたの実行待ちコマンドはありません！"); }
+        if (!ran) {
+            throw new CommandException("&cあなたの実行待ちコマンドはありません！");
+        }
     }
 
     @Override

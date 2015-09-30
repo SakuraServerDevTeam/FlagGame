@@ -7,7 +7,6 @@ import syam.flaggame.game.Stage;
 import syam.flaggame.manager.GameManager;
 import syam.flaggame.manager.StageManager;
 import syam.flaggame.permission.Perms;
-import syam.flaggame.util.Actions;
 
 public class ReadyCommand extends BaseCommand {
     public ReadyCommand() {
@@ -20,9 +19,9 @@ public class ReadyCommand extends BaseCommand {
     @Override
     public void execute() throws CommandException {
         // flag ready - ゲームを開始準備中にする
-        if (args.size() == 0) { throw new CommandException("&cステージ名を入力してください！"); }
+        if (args.isEmpty()) { throw new CommandException("&cステージ名を入力してください！"); }
 
-        Stage stage = null;
+        Stage stage;
         boolean random = false;
 
         // ランダムゲーム

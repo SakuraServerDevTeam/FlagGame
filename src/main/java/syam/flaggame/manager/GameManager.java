@@ -9,7 +9,7 @@ import syam.flaggame.game.Game;
 
 public class GameManager {
     // Logger
-    public static final Logger log = FlagGame.log;
+    public static final Logger log = FlagGame.logger;
     private static final String logPrefix = FlagGame.logPrefix;
     private static final String msgPrefix = FlagGame.msgPrefix;
 
@@ -19,7 +19,7 @@ public class GameManager {
         this.plugin = plugin;
     }
 
-    private static HashMap<String, Game> games = new HashMap<String, Game>();
+    private static HashMap<String, Game> games = new HashMap<>();
     private static Game waitingRandomGame = null;
 
     /**
@@ -66,16 +66,14 @@ public class GameManager {
     /**
      * 受付中のゲームリストを返す
      * 
-     * @return List<Stage>
+     * @return {@code List<Stage>}
      */
     public static ArrayList<Game> getReadyingGames() {
-        ArrayList<Game> ret = new ArrayList<Game>();
+        ArrayList<Game> ret = new ArrayList<>();
 
-        for (Game game : games.values()) {
-            if (game.isReady()) {
-                ret.add(game);
-            }
-        }
+        games.values().stream()
+                .filter(Game::isReady)
+                .forEach(ret::add);
 
         return ret;
     }
@@ -83,16 +81,14 @@ public class GameManager {
     /**
      * 受付中のゲームリストを返す
      * 
-     * @return List<Stage>
+     * @return {@code List<Stage>}
      */
     public static ArrayList<Game> getStartingGames() {
-        ArrayList<Game> ret = new ArrayList<Game>();
+        ArrayList<Game> ret = new ArrayList<>();
 
-        for (Game game : games.values()) {
-            if (game.isStarting()) {
-                ret.add(game);
-            }
-        }
+        games.values().stream()
+                .filter(Game::isStarting)
+                .forEach(ret::add);
 
         return ret;
     }

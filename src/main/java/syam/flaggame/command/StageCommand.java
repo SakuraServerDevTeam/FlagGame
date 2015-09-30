@@ -6,6 +6,7 @@ package syam.flaggame.command;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 import syam.flaggame.command.queue.Queueable;
 import syam.flaggame.event.StageCreateEvent;
@@ -19,10 +20,11 @@ import syam.flaggame.util.Util;
 
 /**
  * StageCommand (StageCommand.java)
- * 
+ *
  * @author syam(syamn)
  */
 public class StageCommand extends BaseCommand implements Queueable {
+
     public StageCommand() {
         bePlayer = true;
         name = "stage";
@@ -69,29 +71,36 @@ public class StageCommand extends BaseCommand implements Queueable {
                 }
                 return;
 
-                // 定義漏れ
+            // 定義漏れ
             default:
                 Actions.message(sender, "&アクションが不正です 開発者にご連絡ください");
-                log.warning(logPrefix + "Undefined action: " + action.name() + "! Please report this!");
+                log.log(Level.WARNING, logPrefix + "Undefined action: {0}! Please report this!", action.name());
                 break;
         }
     }
 
     /* ***** ここから各アクション関数 ****************************** */
-
     private void create() throws CommandException {
-        if (args.size() <= 1) { throw new CommandException("&cステージ名を指定してください！"); }
+        if (args.size() <= 1) {
+            throw new CommandException("&cステージ名を指定してください！");
+        }
 
         // random拒否
-        if (args.get(1).equalsIgnoreCase("random") || args.get(1).startsWith("-")) { throw new CommandException("&cこのステージ名は使用できません！"); }
+        if (args.get(1).equalsIgnoreCase("random") || args.get(1).startsWith("-")) {
+            throw new CommandException("&cこのステージ名は使用できません！");
+        }
 
         Stage stage = StageManager.getStage(args.get(1));
-        if (stage != null) { throw new CommandException("&cそのステージ名は既に存在します！"); }
+        if (stage != null) {
+            throw new CommandException("&cそのステージ名は既に存在します！");
+        }
 
         // Call event
         StageCreateEvent stageCreateEvent = new StageCreateEvent(sender, stage);
         plugin.getServer().getPluginManager().callEvent(stageCreateEvent);
-        if (stageCreateEvent.isCancelled()) { return; }
+        if (stageCreateEvent.isCancelled()) {
+            return;
+        }
 
         // 新規ゲーム登録
         stage = new Stage(plugin, args.get(1));
@@ -106,11 +115,17 @@ public class StageCommand extends BaseCommand implements Queueable {
     }
 
     private void delete() throws CommandException {
-        if (args.size() <= 1) { throw new CommandException("&cステージ名を入力してください！"); }
+        if (args.size() <= 1) {
+            throw new CommandException("&cステージ名を入力してください！");
+        }
         Stage stage = StageManager.getStage(args.get(1));
-        if (stage == null) { throw new CommandException("&cその名前のステージは存在しません！"); }
+        if (stage == null) {
+            throw new CommandException("&cその名前のステージは存在しません！");
+        }
 
-        if (stage.isUsing()) { throw new CommandException("&cそのステージは現在受付中または開始中のため削除できません"); }
+        if (stage.isUsing()) {
+            throw new CommandException("&cそのステージは現在受付中または開始中のため削除できません");
+        }
 
         // confirmキュー追加
         plugin.getQueue().addQueue(sender, this, args, 10);
@@ -120,7 +135,9 @@ public class StageCommand extends BaseCommand implements Queueable {
     }
 
     private void rollback() throws CommandException {
-        if (args.size() <= 1) { throw new CommandException("&cステージ名または -all を指定してください！"); }
+        if (args.size() <= 1) {
+            throw new CommandException("&cステージ名または -all を指定してください！");
+        }
         boolean all = false;
         if (args.get(1).equalsIgnoreCase("-all")) {
             all = true;
@@ -128,9 +145,13 @@ public class StageCommand extends BaseCommand implements Queueable {
 
         if (!all) {
             Stage stage = StageManager.getStage(args.get(1));
-            if (stage == null) { throw new CommandException("&cその名前のステージは存在しません！"); }
+            if (stage == null) {
+                throw new CommandException("&cその名前のステージは存在しません！");
+            }
 
-            if (stage.isUsing()) { throw new CommandException("&cそのステージは現在使用中のためロールバックできません！"); }
+            if (stage.isUsing()) {
+                throw new CommandException("&cそのステージは現在使用中のためロールバックできません！");
+            }
 
             // ステージロールバック
             stage.rollbackFlags();
@@ -139,23 +160,21 @@ public class StageCommand extends BaseCommand implements Queueable {
             Actions.message(sender, "&aステージ'" + stage.getName() + "'をロールバックしました！");
 
         } else {
-            int i = 0;
-
-            for (Stage stage : StageManager.getStages().values()) {
-                if (stage.isUsing()) continue;
-
-                // ステージロールバック
-                stage.rollbackFlags();
-                stage.rollbackChests(sender);
-                i++;
-            }
-
-            Actions.message(sender, "&a全" + i + "ステージをロールバックしました！");
+            long rollbackedCount = StageManager.getStages().values().stream().filter(s -> !s.isUsing()).count();
+            StageManager.getStages().values().stream()
+                    .filter(s -> !s.isUsing())
+                    .peek(stage -> {
+                        // ステージロールバック
+                        stage.rollbackFlags();
+                        stage.rollbackChests(sender);
+                    });
+            
+            Actions.message(sender, "&a全" + rollbackedCount + "ステージをロールバックしました！");
         }
     }
 
     /* ***** ここまで ********************************************** */
-    /**
+    /*
      * キュー実行処理
      */
     @Override
@@ -204,15 +223,14 @@ public class StageCommand extends BaseCommand implements Queueable {
             }
         } else {
             Actions.message(sender, "&c内部エラーが発生しました。開発者までご連絡ください。");
-            log.warning(logPrefix + sender.getName() + " send invalid queue! (StageCommand.class)");
+            log.log(Level.WARNING,logPrefix + "{0} send invalid queue! (StageCommand.class)", sender.getName());
         }
     }
 
     /**
      * アクションごとの権限をチェックする
-     * 
-     * @param perm
-     *            Perms
+     *
+     * @param perm Perms
      * @return bool
      */
     private boolean checkPerm(Perms perm) {
@@ -226,18 +244,19 @@ public class StageCommand extends BaseCommand implements Queueable {
 
     /**
      * 指定可能なステージアクション stageAction (StageCommand.java)
-     * 
+     *
      * @author syam(syamn)
      */
     enum stageAction {
-        CREATE, DELETE, ROLLBACK, ;
+
+        CREATE, DELETE, ROLLBACK,;
     }
 
     /**
      * 指定可能なアクションをsenderに送信する
      */
     private void sendAvailableAction() {
-        List<String> col = new ArrayList<String>();
+        List<String> col = new ArrayList<>();
         for (stageAction action : stageAction.values()) {
             col.add(action.name());
         }

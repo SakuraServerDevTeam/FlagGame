@@ -2,6 +2,7 @@ package syam.flaggame.player;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
@@ -13,11 +14,11 @@ import syam.flaggame.database.Database;
 
 public class PlayerProfile {
     // Logger
-    public static final Logger log = FlagGame.log;
+    public static final Logger log = FlagGame.logger;
     private static final String logPrefix = FlagGame.logPrefix;
     private static final String msgPrefix = FlagGame.msgPrefix;
 
-    private String playerName;
+    private final String playerName;
     private boolean loaded = false;
 
     /* mySQL Stuff */
@@ -96,7 +97,7 @@ public class PlayerProfile {
         if (dataValues == null) {
             // 新規レコード追加
             db.write("INSERT INTO " + db.getTablePrefix() + "records (`player_id`) VALUES (?)", playerID);
-            log.warning(playerName + " does not exist in the records table. Their records will be reset.");
+            log.log(Level.WARNING, "{0} does not exist in the records table. Their records will be reset.", playerName);
         } else {
             // データ読み出し
             this.played = Integer.valueOf(dataValues.get(0));
@@ -122,11 +123,11 @@ public class PlayerProfile {
             // データ読み出し
             World world = Bukkit.getWorld(dataValues.get(0));
             if (world == null) {
-                log.warning(logPrefix + "World " + dataValues.get(0) + " is Not Found! Removing this location.");
+                log.log(Level.WARNING,logPrefix + "World {0} is Not Found! Removing this location.", dataValues.get(0));
                 backLocation = null;
             } else {
                 double x, y, z;
-                Float pitch = null, yaw = null;
+                Float pitch, yaw;
 
                 x = Double.valueOf(dataValues.get(1));
                 y = Double.valueOf(dataValues.get(2));

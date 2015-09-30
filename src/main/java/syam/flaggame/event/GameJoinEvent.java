@@ -19,7 +19,7 @@ public class GameJoinEvent extends Event implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
     private boolean isCancelled = false;
 
-    private Player player;
+    private final Player player;
     private double entryFee;
 
     private GameTeam team = null;

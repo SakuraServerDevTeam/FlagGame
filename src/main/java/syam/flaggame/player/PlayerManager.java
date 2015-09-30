@@ -11,11 +11,11 @@ import syam.flaggame.FlagGame;
 
 public class PlayerManager {
     // Logger
-    public static final Logger log = FlagGame.log;
+    public static final Logger log = FlagGame.logger;
     private static final String logPrefix = FlagGame.logPrefix;
     private static final String msgPrefix = FlagGame.msgPrefix;
 
-    private static Map<String, FGPlayer> players = new HashMap<String, FGPlayer>();
+    private static Map<String, FGPlayer> players = new HashMap<>();
 
     /**
      * プレイヤーを追加します
@@ -60,9 +60,9 @@ public class PlayerManager {
      * 全プレイヤーデータを保存する
      */
     public static void saveAll() {
-        for (FGPlayer fgPlayer : players.values()) {
-            fgPlayer.getProfile().save();
-        }
+        players.values().stream()
+                .map(FGPlayer::getProfile)
+                .forEach(PlayerProfile::save);
     }
 
     /**
@@ -87,7 +87,7 @@ public class PlayerManager {
         return getPlayer(player.getName());
     }
 
-    /**
+    /*
      * プレイヤーのプロフィールを取得する
      * 
      * @param player

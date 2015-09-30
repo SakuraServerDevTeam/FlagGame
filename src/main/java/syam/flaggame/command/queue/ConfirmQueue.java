@@ -16,8 +16,8 @@ import syam.flaggame.FlagGame;
  * @author syam(syamn)
  */
 public class ConfirmQueue {
-    private FlagGame plugin;
-    private List<QueuedCommand> queue;
+    private final FlagGame plugin;
+    private final List<QueuedCommand> queue;
 
     /**
      * コンストラクタ
@@ -27,31 +27,21 @@ public class ConfirmQueue {
     public ConfirmQueue(final FlagGame plugin) {
         this.plugin = plugin;
 
-        queue = new ArrayList<QueuedCommand>();
+        queue = new ArrayList<>();
     }
 
-    /**
+    /*
      * キューにコマンドを追加する
-     * 
-     * @param sender
-     *            CommandSender
-     * @param queueable
-     *            Queueable
-     * @param args
-     *            List<String>
-     * @param seconds
-     *            int
      */
     public void addQueue(CommandSender sender, Queueable queueable, List<String> args, int seconds) {
         cancelQueue(sender);
         this.queue.add(new QueuedCommand(sender, queueable, args, seconds));
     }
 
-    /**
+    /*
      * キューのコマンドを実行する
      * 
-     * @param sender
-     *            コマンド送信者
+     * @param sender コマンド送信者
      */
     public boolean confirmQueue(CommandSender sender) {
         for (QueuedCommand cmd : this.queue) {
@@ -64,7 +54,7 @@ public class ConfirmQueue {
         return false;
     }
 
-    /**
+    /*
      * キューから指定したコマンド送信者のコマンドを削除する
      * 
      * @param sender

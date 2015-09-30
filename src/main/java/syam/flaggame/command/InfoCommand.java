@@ -11,6 +11,7 @@ import syam.flaggame.permission.Perms;
 import syam.flaggame.util.Actions;
 
 public class InfoCommand extends BaseCommand {
+
     public InfoCommand() {
         bePlayer = false;
         name = "info";
@@ -21,7 +22,7 @@ public class InfoCommand extends BaseCommand {
     @Override
     public void execute() throws CommandException {
         // 引数が無ければすべてのステージデータを表示する
-        if (args.size() == 0) {
+        if (args.isEmpty()) {
             int stagecount = StageManager.getStages().size();
 
             Actions.message(sender, "&a ===============&b StageList(" + stagecount + ") &a===============");
@@ -48,12 +49,12 @@ public class InfoCommand extends BaseCommand {
                 }
             }
             Actions.message(sender, "&a ============================================");
-        }
-
-        // 引数があれば指定したゲームについての詳細情報を表示する
+        } // 引数があれば指定したゲームについての詳細情報を表示する
         else {
             Stage stage = StageManager.getStage(args.get(0));
-            if (stage == null) { throw new CommandException("&cそのステージは存在しません！"); }
+            if (stage == null) {
+                throw new CommandException("&cそのステージは存在しません！");
+            }
 
             Actions.message(sender, "&a ==================&b GameDetail &a==================");
 
@@ -71,8 +72,12 @@ public class InfoCommand extends BaseCommand {
 
             String chksp_red = "&c未設定";
             String chksp_blue = "&c未設定";
-            if (stage.getSpawn(GameTeam.RED) != null) chksp_red = "&6設定済";
-            if (stage.getSpawn(GameTeam.BLUE) != null) chksp_blue = "&6設定済";
+            if (stage.getSpawn(GameTeam.RED) != null) {
+                chksp_red = "&6設定済";
+            }
+            if (stage.getSpawn(GameTeam.BLUE) != null) {
+                chksp_blue = "&6設定済";
+            }
 
             // プレイヤーリスト構築
             String players = "";
@@ -80,16 +85,17 @@ public class InfoCommand extends BaseCommand {
             if (stage.isUsing() && stage.getGame() != null) {
                 for (Map.Entry<GameTeam, Set<String>> entry : stage.getGame().getPlayersMap().entrySet()) {
                     String color = entry.getKey().getColor();
-                    for (String name : entry.getValue()) {
-                        players = players + color + name + "&f, ";
+                    for (String n : entry.getValue()) {
+                        players = players + color + n + "&f, ";
                         cnt_players++;
                     }
                 }
             }
-            if (players != "")
+            if (!"".equals(players)) {
                 players = players.substring(0, players.length() - 2);
-            else
+            } else {
                 players = "&7参加プレイヤーなし";
+            }
 
             String s1 = "&6 " + stage.getName() + "&7(" + stage.getFileName() + ")" + "&b: 状態=&f" + status + "&b 制限時間=&6" + Actions.getTimeString(stage.getGameTime()) + "&b フラッグ数=&6" + stage.getFlags().size();
             String s2 = "&b 参加料=&6" + stage.getEntryFee() + "&b 賞金=&6" + stage.getAward() + "&b チェスト数=&6" + stage.getChests().size();

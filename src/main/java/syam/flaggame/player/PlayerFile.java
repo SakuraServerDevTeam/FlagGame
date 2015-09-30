@@ -1,7 +1,9 @@
 package syam.flaggame.player;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.logging.Logger;
+import org.bukkit.configuration.InvalidConfigurationException;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -11,13 +13,13 @@ import syam.flaggame.FlagGame;
 @Deprecated
 public class PlayerFile {
     // Logger
-    public static final Logger log = FlagGame.log;
+    public static final Logger log = FlagGame.logger;
     private static final String logPrefix = FlagGame.logPrefix;
     private static final String msgPrefix = FlagGame.msgPrefix;
 
     private boolean saved = true;
-    private FileConfiguration conf = new YamlConfiguration();
-    private File file;
+    private final FileConfiguration conf = new YamlConfiguration();
+    private final File file;
 
     private String playerName = null;
 
@@ -74,7 +76,7 @@ public class PlayerFile {
             lose = conf.getInt("lose", 0);
             draw = conf.getInt("draw", 0);
 
-        } catch (Exception ex) {
+        } catch (IOException | InvalidConfigurationException ex) {
             ex.printStackTrace();
             return false;
         }

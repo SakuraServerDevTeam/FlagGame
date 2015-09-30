@@ -23,23 +23,23 @@ import syam.flaggame.util.Actions;
  */
 public class SetupManager {
     // Logger
-    public static final Logger log = FlagGame.log;
+    public static final Logger log = FlagGame.logger;
     private static final String logPrefix = FlagGame.logPrefix;
     private static final String msgPrefix = FlagGame.msgPrefix;
 
     // 選択中のステージ
-    private static Map<String, Stage> selectedStage = new HashMap<String, Stage>();
+    private static final Map<String, Stage> selectedStage = new HashMap<>();
     // 選択中のブロック
-    private static Map<String, Location> selectedBlock = new HashMap<String, Location>();
+    private static final Map<String, Location> selectedBlock = new HashMap<>();
     // 選択中のフラッグ種類
-    private static Map<String, FlagType> selectedFlagType = new HashMap<String, FlagType>();
+    private static final Map<String, FlagType> selectedFlagType = new HashMap<>();
 
     // ゲームマネージャモードのリスト
     // private static List<String> fgFlagManager = new ArrayList<String>();
     // private static List<String> fgChestManager = new ArrayList<String>();
-    private static Map<String, Configables> managersMap = new HashMap<String, Configables>();
+    private static final Map<String, Configables> managersMap = new HashMap<>();
 
-    /**
+    /*
      * 指定したステージを選択中にする
      * 
      * @param player
@@ -93,7 +93,7 @@ public class SetupManager {
         }
     }
 
-    /**
+    /*
      * 指定したフラッグタイプを選択中にする
      * 
      * @param player
@@ -124,7 +124,7 @@ public class SetupManager {
         }
     }
 
-    /**
+    /*
      * プレイヤーをマネージモードにする/しない
      * 
      * @param player

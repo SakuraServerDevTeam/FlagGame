@@ -93,7 +93,7 @@ public class LeaveCommand extends BaseCommand implements Queueable {
         }
     }
 
-    /**
+    /*
      * ゲーム中に離脱する際確認する
      */
     @Override

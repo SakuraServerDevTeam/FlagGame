@@ -38,9 +38,9 @@ public class Cuboid {
         this.world = point1.getWorld();
     }
 
-    private Location pos1, pos2;
-    private int xMin, xMax, yMin, yMax, zMin, zMax;
-    private World world;
+    private final Location pos1, pos2;
+    private final int xMin, xMax, yMin, yMax, zMin, zMax;
+    private final World world;
 
     /**
      * 指定した座標が立体領域内かチェック

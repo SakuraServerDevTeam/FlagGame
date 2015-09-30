@@ -16,12 +16,12 @@ import syam.flaggame.util.Actions;
  * @author syam(syamn)
  */
 public class QueuedCommand {
-    private CommandSender sender;
-    private Queueable queueable;
-    private List<String> args;
-    private int timeoutSec;
-    private Calendar requestDate;
-    private boolean already = false;
+    private final CommandSender sender;
+    private final Queueable queueable;
+    private final List<String> args;
+    private final int timeoutSec;
+    private final Calendar requestDate;
+    private boolean done = false;
 
     public QueuedCommand(CommandSender sender, Queueable queueable, List<String> args, int timeoutSec) {
         this.sender = sender;
@@ -41,11 +41,11 @@ public class QueuedCommand {
         }
 
         // 多重進入防止
-        if (already) {
+        if (done) {
             Actions.message(sender, "&cこのコマンドは既に実行されています！再度実行するには元のコマンドから入力し直してください！");
             return;
         }
-        already = true;
+        done = true;
         this.queueable.executeQueue(this.args); // 実行
     }
 

@@ -1,7 +1,5 @@
 package syam.flaggame.database;
 
-import org.bukkit.entity.Player;
-
 import syam.flaggame.FlagGame;
 import syam.flaggame.manager.StageManager;
 import syam.flaggame.player.PlayerManager;
@@ -22,9 +20,7 @@ public class MySQLReconnect implements Runnable {
                 PlayerManager.saveAll();
                 PlayerManager.clearAll();
 
-                for (Player player : plugin.getServer().getOnlinePlayers()) {
-                    PlayerManager.addPlayer(player);
-                }
+                plugin.getServer().getOnlinePlayers().stream().forEach(PlayerManager::addPlayer);
 
                 // ゲームステージプロファイルを保存
                 StageManager.saveAll();

@@ -20,7 +20,7 @@ public class GameReadyEvent extends Event implements Cancellable {
     private boolean isCancelled = false;
 
     private Stage stage;
-    private CommandSender sender;
+    private final CommandSender sender;
     boolean random;
 
     /**
@@ -56,10 +56,12 @@ public class GameReadyEvent extends Event implements Cancellable {
         this.random = random;
     }
 
+    @Override
     public boolean isCancelled() {
         return this.isCancelled;
     }
 
+    @Override
     public void setCancelled(boolean cancelled) {
         this.isCancelled = cancelled;
     }

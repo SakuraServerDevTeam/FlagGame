@@ -19,8 +19,8 @@ public class StageCreateEvent extends Event implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
     private boolean isCancelled = false;
 
-    private CommandSender creator;
-    private Stage stage;
+    private final CommandSender creator;
+    private final Stage stage;
 
     public StageCreateEvent(CommandSender creator, Stage stage) {
         this.creator = creator;
@@ -40,10 +40,12 @@ public class StageCreateEvent extends Event implements Cancellable {
         return this.stage.getName();
     }
 
+    @Override
     public boolean isCancelled() {
         return this.isCancelled;
     }
 
+    @Override
     public void setCancelled(boolean cancelled) {
         this.isCancelled = cancelled;
     }

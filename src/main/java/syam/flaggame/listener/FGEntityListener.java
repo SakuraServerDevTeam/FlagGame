@@ -20,7 +20,7 @@ import syam.flaggame.manager.GameManager;
 import syam.flaggame.util.Actions;
 
 public class FGEntityListener implements Listener {
-    public static final Logger log = FlagGame.log;
+    public static final Logger log = FlagGame.logger;
     private static final String logPrefix = FlagGame.logPrefix;
     private static final String msgPrefix = FlagGame.msgPrefix;
 

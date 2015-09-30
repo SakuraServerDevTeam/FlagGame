@@ -15,7 +15,7 @@ import syam.flaggame.game.Stage;
  * @author syam(syamn)
  */
 public class StageManager {
-    private static HashMap<String, Stage> stages = new HashMap<String, Stage>();
+    private static HashMap<String, Stage> stages = new HashMap<>();
 
     /**
      * 全ステージプロファイルを保存する
@@ -67,10 +67,10 @@ public class StageManager {
     /**
      * 実行可能なステージリストを返す
      * 
-     * @return List<Stage>
+     * @return {@code List<Stage>}
      */
     public static ArrayList<Stage> getAvailableStages() {
-        ArrayList<Stage> ret = new ArrayList<Stage>();
+        ArrayList<Stage> ret = new ArrayList<>();
 
         for (Stage stage : stages.values()) {
             if (stage.isAvailable() && !stage.isUsing()) {

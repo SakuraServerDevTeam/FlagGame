@@ -3,8 +3,6 @@
  */
 package syam.flaggame.game;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
@@ -27,14 +25,12 @@ import syam.flaggame.util.Cuboid;
  */
 public class GameTimerTask implements Runnable {
     // Logger
-    public static final Logger log = FlagGame.log;
-    private static final String logPrefix = FlagGame.logPrefix;
+    public static final Logger log = FlagGame.logger;
     private static final String msgPrefix = FlagGame.msgPrefix;
 
-    private final FlagGame plugin;
-    private Game game;
+    private final Game game;
     private Cuboid cuboid = null;
-    private int godModeTime;
+    private final int godModeTime;
 
     /**
      * コンストラクタ
@@ -45,8 +41,6 @@ public class GameTimerTask implements Runnable {
      *            Game
      */
     public GameTimerTask(final FlagGame plugin, final Game game) {
-        this.plugin = plugin;
-
         this.game = game;
         this.cuboid = game.getStage().getStage();
         this.godModeTime = plugin.getConfigs().getGodModeTime();

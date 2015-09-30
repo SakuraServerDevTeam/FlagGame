@@ -1,6 +1,7 @@
 package syam.flaggame.listener;
 
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
@@ -19,12 +20,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 
 import syam.flaggame.FlagGame;
@@ -44,7 +40,8 @@ import syam.flaggame.util.Actions;
 import syam.flaggame.util.Cuboid;
 
 public class FGPlayerListener implements Listener {
-    public static final Logger log = FlagGame.log;
+
+    public static final Logger log = FlagGame.logger;
     private static final String logPrefix = FlagGame.logPrefix;
     private static final String msgPrefix = FlagGame.msgPrefix;
 
@@ -55,14 +52,15 @@ public class FGPlayerListener implements Listener {
     }
 
     /* 登録するイベントはここから下に */
-
     // プレイヤーがブロックをクリックした
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerInteract(final PlayerInteractEvent event) {
         Player player = event.getPlayer();
         Block block = event.getClickedBlock();
 
-        if (block == null) { return; }
+        if (block == null) {
+            return;
+        }
 
         // 管理モードで権限を持ち、かつ設定したツールでブロックを右クリックした
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK && SetupManager.getManager(player) != null && player.getItemInHand().getTypeId() == plugin.getConfigs().getToolID() && Perms.SET.has(player)) {
@@ -82,7 +80,7 @@ public class FGPlayerListener implements Listener {
             }
 
             switch (conf) {
-            // フラッグモード
+                // フラッグモード
                 case FLAG:
                     // 既にフラッグブロックなら解除する
                     if (stage.isFlag(loc)) {
@@ -149,22 +147,22 @@ public class FGPlayerListener implements Listener {
         Block block = event.getClickedBlock();
 
         // ゲーム用ワールドでなければ返す
-        if (block.getWorld() != Bukkit.getWorld(plugin.getConfigs().getGameWorld())) return;
+        if (block.getWorld() != Bukkit.getWorld(plugin.getConfigs().getGameWorld())) {
+            return;
+        }
 
-        if (block != null) {
-            Material type = block.getType();
-            // ブロックを左または右クリックした
-            if (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) {
-                // クリックしたブロックがドア関係
-                if (type == Material.WOODEN_DOOR || type == Material.IRON_DOOR || type == Material.FENCE_GATE) {
-                    // 使用可能かチェック
-                    if (!canUseBlock(player, block, true, true)) {
-                        event.setUseInteractedBlock(Result.DENY);
-                        event.setUseItemInHand(Result.DENY);
-                        event.setCancelled(true);
-                    }
-                    return;
+        Material type = block.getType();
+        // ブロックを左または右クリックした
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) {
+            // クリックしたブロックがドア関係
+            if (type == Material.WOODEN_DOOR || type == Material.IRON_DOOR || type == Material.FENCE_GATE) {
+                // 使用可能かチェック
+                if (!canUseBlock(player, block, true, true)) {
+                    event.setUseInteractedBlock(Result.DENY);
+                    event.setUseItemInHand(Result.DENY);
+                    event.setCancelled(true);
                 }
+                return;
             }
 
             // ブロックを右クリックした
@@ -177,7 +175,6 @@ public class FGPlayerListener implements Listener {
                         event.setUseItemInHand(Result.DENY);
                         event.setCancelled(true);
                     }
-                    return;
                 }
             }
         }
@@ -189,12 +186,16 @@ public class FGPlayerListener implements Listener {
         Player player = event.getPlayer();
 
         // プレイヤーがフラッグワールド以外なら何もしない
-        if (player.getWorld() != Bukkit.getWorld(plugin.getConfigs().getGameWorld())) { return; }
+        if (player.getWorld() != Bukkit.getWorld(plugin.getConfigs().getGameWorld())) {
+            return;
+        }
 
         // ゲーム参加チェック
         for (Game game : GameManager.getGames().values()) {
             // 開始されていないゲームはチェックしない
-            if (!game.isStarting()) continue;
+            if (!game.isStarting()) {
+                continue;
+            }
 
             GameTeam team = game.getPlayerTeam(player);
             if (team != null) {
@@ -202,7 +203,8 @@ public class FGPlayerListener implements Listener {
                 if (loc == null) {
                     // 所属チームのスポーン地点設定なし
                     Actions.message(player, msgPrefix + "&cあなたのチームのスポーン地点が設定されていません");
-                    log.warning(logPrefix + "Player " + player.getName() + " died, But undefined spawn-location. Game: " + game.getStage().getName() + " Team: " + team.name());
+                    log.log(Level.WARNING,logPrefix + "Player {0} died, But undefined spawn-location. Game: {1} Team: {2}",
+                            new Object[]{player.getName(), game.getStage().getName(), team.name()});
 
                     event.setRespawnLocation(Bukkit.getWorld(plugin.getConfigs().getGameWorld()).getSpawnLocation());
                 } else {
@@ -214,7 +216,7 @@ public class FGPlayerListener implements Listener {
                 }
                 // リスポン後無敵時間設定
                 game.getGodModeMap().put(player.getName(), System.currentTimeMillis() / 1000);
-                
+
                 return; // 複数ゲーム所属はあり得ないのでここで返す
             }
         }
@@ -228,11 +230,13 @@ public class FGPlayerListener implements Listener {
     public void onPlayerCommandPreprocess(final PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
         // ワールドチェック
-        if (player.getWorld() != Bukkit.getWorld(plugin.getConfigs().getGameWorld())) return;
+        if (player.getWorld() != Bukkit.getWorld(plugin.getConfigs().getGameWorld())) {
+            return;
+        }
 
         String cmdMsg = event.getMessage().trim();
         String cmds[] = cmdMsg.split(" ");
-        String cmd = null;
+        String cmd;
 
         if (cmds.length > 1) {
             cmd = cmds[0].trim();
@@ -262,17 +266,21 @@ public class FGPlayerListener implements Listener {
     public void onPlayerDeath(final PlayerDeathEvent event) {
         Player deader = event.getEntity();
 
-        if (deader.getWorld() != Bukkit.getWorld(plugin.getConfigs().getGameWorld())) { return; }
+        if (deader.getWorld() != Bukkit.getWorld(plugin.getConfigs().getGameWorld())) {
+            return;
+        }
 
         // ゲームワールドでは通常の死亡メッセージ非表示
         event.setDeathMessage(null);
-        String deathMsg = "";
+        String deathMsg;
 
         EntityDamageEvent cause = event.getEntity().getLastDamageCause();
         Player killer = null;
 
         // 死亡理由不明は何もしない
-        if (cause == null) return;
+        if (cause == null) {
+            return;
+        }
 
         // エンティティによって殺された
         if (cause instanceof EntityDamageByEntityEvent) {
@@ -281,8 +289,7 @@ public class FGPlayerListener implements Listener {
             // プレイヤーによって直接殺された
             if (killerEntity instanceof Player) {
                 killer = (Player) killerEntity;
-            }
-            // プレイヤーによって発射された物(矢など)によって殺された
+            } // プレイヤーによって発射された物(矢など)によって殺された
             else if (killerEntity instanceof Projectile && ((Projectile) killerEntity).getShooter() instanceof Player) {
                 killer = (Player) ((Projectile) killerEntity).getShooter();
             }
@@ -290,7 +297,9 @@ public class FGPlayerListener implements Listener {
 
         // 存在するゲームを回す
         for (Game game : GameManager.getGames().values()) {
-            if (!game.isStarting()) continue;
+            if (!game.isStarting()) {
+                continue;
+            }
 
             // ダメージを受けたプレイヤーがゲームに参加しているプレイヤーか
             if (game.isJoined(deader)) {
@@ -307,7 +316,9 @@ public class FGPlayerListener implements Listener {
             }
 
             // プレイヤーによって殺され、そのプレイヤーが同じゲームに参加しているか
-            if (killer == null) return;
+            if (killer == null) {
+                return;
+            }
 
             if (game.isJoined(killer)) {
                 GameTeam aTeam = game.getPlayerTeam(killer);
@@ -335,9 +346,10 @@ public class FGPlayerListener implements Listener {
         Player player = event.getPlayer();
 
         /* TODO: GC here */
-
         for (Game game : GameManager.getGames().values()) {
-            if (!game.isStarting()) continue;
+            if (!game.isStarting()) {
+                continue;
+            }
 
             // チームに所属していてこの設定が有効なら、アナウンスしてHPをゼロにする
             if (game.isJoined(player) && plugin.getConfigs().getDeathWhenLogout()) {
@@ -359,47 +371,49 @@ public class FGPlayerListener implements Listener {
         final Player player = event.getPlayer();
 
         // ログイン時のMOTDなどの最後に表示別スレッドで実行する
-        plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
-            @Override
-            public void run() {
-                for (Game game : GameManager.getGames().values()) {
-                    // ゲーム参加ユーザは何もしない
-                    if (game.isJoined(player)) { return; }
+        plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, () -> {
+            for (Game game : GameManager.getGames().values()) {
+                // ゲーム参加ユーザは何もしない
+                if (game.isJoined(player)) {
+                    return;
                 }
-
-                for (Game game : GameManager.getGames().values()) {
-                    // 待機中ゲーム
-                    if (game.isReady()) {
-                        // 賞金系メッセージ
-                        String entryFeeMsg = String.valueOf(game.getStage().getEntryFee()) + "Coin";
-                        String awardMsg = String.valueOf(game.getStage().getAward()) + "Coin";
-                        if (game.getStage().getEntryFee() <= 0) entryFeeMsg = "&7FREE!";
-                        if (game.getStage().getAward() <= 0) awardMsg = "&7なし";
-
-                        // アナウンス
-                        if (!game.isRandom()) {
-                            Actions.message(player, "&b* ===================================");
-                            Actions.message(player, msgPrefix + "&2フラッグゲーム'&6" + game.getName() + "&2'の参加受付が行われています！");
-                            Actions.message(player, msgPrefix + "&2 参加料:&6 " + entryFeeMsg + "&2   賞金:&6 " + awardMsg);
-                            Actions.message(player, msgPrefix + "&2 '&6/flag join " + game.getName() + "&2' コマンドで参加してください！");
-                            Actions.message(player, "&b* ===================================");
-                        } else {
-                            Actions.message(player, "&b* ===================================");
-                            Actions.message(player, msgPrefix + "&2フラッグゲーム'&6ランダムステージ&2'の参加受付が行われています！");
-                            Actions.message(player, msgPrefix + "&2 参加料:&6 " + entryFeeMsg + "&2   賞金:&6 " + awardMsg);
-                            Actions.message(player, msgPrefix + "&2 '&6/flag join random&2' コマンドで参加してください！");
-                            Actions.message(player, "&b* ===================================");
-                        }
-
+            }
+            
+            for (Game game : GameManager.getGames().values()) {
+                // 待機中ゲーム
+                if (game.isReady()) {
+                    // 賞金系メッセージ
+                    String entryFeeMsg = String.valueOf(game.getStage().getEntryFee()) + "Coin";
+                    String awardMsg = String.valueOf(game.getStage().getAward()) + "Coin";
+                    if (game.getStage().getEntryFee() <= 0) {
+                        entryFeeMsg = "&7FREE!";
                     }
-                    // 開始中ゲーム
-                    else if (game.isStarting()) {
-                        // 観戦アナウンス
+                    if (game.getStage().getAward() <= 0) {
+                        awardMsg = "&7なし";
+                    }
+                    
+                    // アナウンス
+                    if (!game.isRandom()) {
                         Actions.message(player, "&b* ===================================");
-                        Actions.message(player, msgPrefix + "&2フラッグゲーム'&6" + game.getName() + "&2'が始まっています！");
-                        Actions.message(player, msgPrefix + "&2 '&6/flag watch " + game.getName() + "&2' コマンドで観戦することができます！");
+                        Actions.message(player, msgPrefix + "&2フラッグゲーム'&6" + game.getName() + "&2'の参加受付が行われています！");
+                        Actions.message(player, msgPrefix + "&2 参加料:&6 " + entryFeeMsg + "&2   賞金:&6 " + awardMsg);
+                        Actions.message(player, msgPrefix + "&2 '&6/flag join " + game.getName() + "&2' コマンドで参加してください！");
+                        Actions.message(player, "&b* ===================================");
+                    } else {
+                        Actions.message(player, "&b* ===================================");
+                        Actions.message(player, msgPrefix + "&2フラッグゲーム'&6ランダムステージ&2'の参加受付が行われています！");
+                        Actions.message(player, msgPrefix + "&2 参加料:&6 " + entryFeeMsg + "&2   賞金:&6 " + awardMsg);
+                        Actions.message(player, msgPrefix + "&2 '&6/flag join random&2' コマンドで参加してください！");
                         Actions.message(player, "&b* ===================================");
                     }
+                    
+                } // 開始中ゲーム
+                else if (game.isStarting()) {
+                    // 観戦アナウンス
+                    Actions.message(player, "&b* ===================================");
+                    Actions.message(player, msgPrefix + "&2フラッグゲーム'&6" + game.getName() + "&2'が始まっています！");
+                    Actions.message(player, msgPrefix + "&2 '&6/flag watch " + game.getName() + "&2' コマンドで観戦することができます！");
+                    Actions.message(player, "&b* ===================================");
                 }
             }
         }, 20L);
@@ -413,12 +427,13 @@ public class FGPlayerListener implements Listener {
     }
 
     /* methods */
-
     private boolean canUseBlock(Player player, Block block, Boolean sendFalseMessage, Boolean door) {
         // ワールドがゲーム用ワールドでなければ常にtrueを返す
-        if (block.getWorld() != Bukkit.getWorld(plugin.getConfigs().getGameWorld())) return true;
+        if (block.getWorld() != Bukkit.getWorld(plugin.getConfigs().getGameWorld())) {
+            return true;
+        }
 
-        GameTeam playerTeam = null;
+        GameTeam playerTeam;
         Location loc = block.getLocation();
 
         // 開始中のゲームを回す
@@ -437,11 +452,15 @@ public class FGPlayerListener implements Listener {
 
             // プレイヤーのチーム取得
             playerTeam = game.getPlayerTeam(player);
-            if (playerTeam == null) continue;
+            if (playerTeam == null) {
+                continue;
+            }
 
             // プレイヤーとブロックのチームが違えばイベントをキャンセルする
             if (playerTeam != blockTeam) {
-                if (sendFalseMessage) Actions.message(player, msgPrefix + "&cここは相手の拠点です！");
+                if (sendFalseMessage) {
+                    Actions.message(player, msgPrefix + "&cここは相手の拠点です！");
+                }
                 return false; // 開けない
             } else {
                 return true; // 自分の拠点のブロックは使用可能
@@ -450,7 +469,9 @@ public class FGPlayerListener implements Listener {
 
         // そのブロックがどのゲームのチーム拠点にも所属していない
         // ドアなら自由に開閉可能にする
-        if (door) return true;
+        if (door) {
+            return true;
+        }
 
         for (Stage stage : StageManager.getStages().values()) {
             Cuboid stageArea = stage.getStage();
@@ -463,14 +484,17 @@ public class FGPlayerListener implements Listener {
                         // チェスト登録されているものか取得
                         if (stage.isChest(loc)) {
                             return true;
-                        }
-                        // 未登録チェストはダミー扱いで開閉禁止
+                        } // 未登録チェストはダミー扱いで開閉禁止
                         else {
-                            if (sendFalseMessage) Actions.message(player, msgPrefix + "&cこれはダミーブロックです！");
+                            if (sendFalseMessage) {
+                                Actions.message(player, msgPrefix + "&cこれはダミーブロックです！");
+                            }
                             return false;
                         }
                     } else {
-                        if (sendFalseMessage) Actions.message(player, msgPrefix + "&cあなたはこのゲームに参加していません！");
+                        if (sendFalseMessage) {
+                            Actions.message(player, msgPrefix + "&cあなたはこのゲームに参加していません！");
+                        }
                         return false;
                     }
                 } else {
@@ -485,7 +509,9 @@ public class FGPlayerListener implements Listener {
     }
 
     private void clickFlagSign(Player player, Block block) {
-        if (!(block.getState() instanceof Sign)) return;
+        if (!(block.getState() instanceof Sign)) {
+            return;
+        }
 
         Sign sign = (Sign) block.getState();
         String line2 = sign.getLine(1); // 2行目
@@ -493,7 +519,9 @@ public class FGPlayerListener implements Listener {
 
         SignAction action = null;
         for (SignAction sa : SignAction.values()) {
-            if (sa.name().toLowerCase().equalsIgnoreCase(line2.trim())) action = sa;
+            if (sa.name().toLowerCase().equalsIgnoreCase(line2.trim())) {
+                action = sa;
+            }
         }
         if (action == null) {
             Actions.message(player, "&cThis sign is broken! Please contact server staff!");
@@ -502,20 +530,24 @@ public class FGPlayerListener implements Listener {
 
         // 処理を分ける
         switch (action) {
-        // 回復
+            // 回復
             case HEAL:
-                if (line3 != "" && !line3.isEmpty()) {
+                if (!"".equals(line3) && !line3.isEmpty()) {
                     GameTeam signTeam = null;
                     GameTeam playerTeam = null;
                     for (GameTeam gt : GameTeam.values()) {
-                        if (gt.name().toLowerCase().equalsIgnoreCase(line3)) signTeam = gt;
+                        if (gt.name().toLowerCase().equalsIgnoreCase(line3)) {
+                            signTeam = gt;
+                        }
                     }
                     if (signTeam == null) {
                         Actions.message(player, "&cThis sign is broken! Please contact server staff!");
                         return;
                     }
                     for (Game game : GameManager.getGames().values()) {
-                        if (!game.isStarting()) continue;
+                        if (!game.isStarting()) {
+                            continue;
+                        }
                         if (game.getPlayerTeam(player) != null) {
                             playerTeam = game.getPlayerTeam(player);
                             break;
@@ -535,11 +567,15 @@ public class FGPlayerListener implements Listener {
                 // 20以上にならないように体力とお腹ゲージを+2(ハート、おにく1つ分)回復させる
                 double nowHP = player.getHealth();
                 nowHP = nowHP + 2;
-                if (nowHP > 20) nowHP = 20;
+                if (nowHP > 20) {
+                    nowHP = 20;
+                }
 
                 int nowFL = player.getFoodLevel();
                 nowFL = nowFL + 2;
-                if (nowFL > 20) nowFL = 20;
+                if (nowFL > 20) {
+                    nowFL = 20;
+                }
 
                 // プレイヤーにセット
                 player.setHealth(nowHP);
@@ -553,7 +589,9 @@ public class FGPlayerListener implements Listener {
             // 自殺
             case KILL:
                 for (Game game : GameManager.getGames().values()) {
-                    if (!game.isStarting()) continue;
+                    if (!game.isStarting()) {
+                        continue;
+                    }
                     if (game.getPlayerTeam(player) != null) {
                         GameTeam team = game.getPlayerTeam(player);
                         game.message(msgPrefix + "&6[" + game.getName() + "]&6 '" + team.getColor() + player.getName() + "&6'が自殺しました。");
@@ -566,7 +604,7 @@ public class FGPlayerListener implements Listener {
 
             default:
                 Actions.message(player, msgPrefix + "&cSorry I forgot this sign-action. Please contact server staff!");
-                log.warning(logPrefix + player.getName() + ": Sorry I forgot this sign-action. Please contact server staff!");
+                log.log(Level.WARNING,logPrefix + "{0}: Sorry I forgot this sign-action. Please contact server staff!", player.getName());
         }
 
     }

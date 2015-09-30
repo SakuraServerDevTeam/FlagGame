@@ -24,7 +24,7 @@ import syam.flaggame.manager.StageManager;
 
 public class DynmapHandler {
     // Logger
-    public static final Logger log = FlagGame.log;
+    public static final Logger log = FlagGame.logger;
     private static final String logPrefix = FlagGame.logPrefix;
     private static final String msgPrefix = FlagGame.msgPrefix;
 
@@ -37,7 +37,7 @@ public class DynmapHandler {
 
     // Markers
     private MarkerSet set;
-    private Map<String, AreaMarker> markers = new HashMap<String, AreaMarker>();
+    private Map<String, AreaMarker> markers = new HashMap<>();
     private String infowindow;
     private boolean use3D;
 
@@ -122,16 +122,12 @@ public class DynmapHandler {
     public void updateRegions() {
         if (!activated) return;
 
-        Map<String, AreaMarker> newmap = new HashMap<String, AreaMarker>();
+        Map<String, AreaMarker> newmap = new HashMap<>();
 
-        for (Stage stage : StageManager.getStages().values()) {
-            handleStage(stage, newmap);
-        }
+        StageManager.getStages().values().stream().forEach(stage -> handleStage(stage, newmap));
 
         // 古いマーカーを削除
-        for (AreaMarker oldm : markers.values()) {
-            oldm.deleteMarker();
-        }
+        markers.values().stream().forEach(oldm -> oldm.deleteMarker());
 
         // 新マーカーセット
         markers.clear();
@@ -141,7 +137,7 @@ public class DynmapHandler {
     public void updateRegion(Stage stage) {
         if (!activated) return;
 
-        Map<String, AreaMarker> newmap = new HashMap<String, AreaMarker>();
+        Map<String, AreaMarker> newmap = new HashMap<>();
         handleStage(stage, newmap);
 
         // 更新するゲームの古いマーカーを削除
@@ -158,8 +154,8 @@ public class DynmapHandler {
 
     private void handleStage(Stage stage, Map<String, AreaMarker> newmap) {
         String gameName = stage.getName();
-        double[] x = null;
-        double[] z = null;
+        double[] x;
+        double[] z;
 
         // ステージエリア未設定ならスキップ
         Cuboid region = stage.getStage();

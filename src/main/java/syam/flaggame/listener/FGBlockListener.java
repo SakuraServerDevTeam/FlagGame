@@ -32,7 +32,7 @@ import syam.flaggame.util.Actions;
 import syam.flaggame.util.Cuboid;
 
 public class FGBlockListener implements Listener {
-    public static final Logger log = FlagGame.log;
+    public static final Logger log = FlagGame.logger;
     private static final String logPrefix = FlagGame.logPrefix;
     private static final String msgPrefix = FlagGame.msgPrefix;
 
@@ -86,7 +86,7 @@ public class FGBlockListener implements Listener {
 
         // フラッグブロックかチェックする
         for (Stage stage : StageManager.getStages().values()) {
-            Flag flag = null;
+            Flag flag;
 
             if (stage.isFlag(loc)) {
                 flag = stage.getFlag(loc);
@@ -195,7 +195,7 @@ public class FGBlockListener implements Listener {
             Sign sign = (Sign) state;
 
             /* 特殊看板設置 */
-            if (event.getLine(0).toLowerCase().indexOf("[flaggame]") != -1) {
+            if (event.getLine(0).toLowerCase().contains("[flaggame]")) {
                 // 権限チェック
                 if (!Perms.SIGN.has(player)) {
                     event.setLine(0, "Denied!");

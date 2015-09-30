@@ -9,13 +9,13 @@ import syam.flaggame.game.Game;
 
 public class FGPlayer {
     // Logger
-    public static final Logger log = FlagGame.log;
+    public static final Logger log = FlagGame.logger;
     private static final String logPrefix = FlagGame.logPrefix;
     private static final String msgPrefix = FlagGame.msgPrefix;
 
     // プレイヤーデータ
     private Player player;
-    private PlayerProfile profile;
+    private final PlayerProfile profile;
 
     // 参加中のゲーム
     private Game game = null;

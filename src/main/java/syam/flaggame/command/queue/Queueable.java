@@ -7,9 +7,10 @@ import java.util.List;
 
 /**
  * Queueable (Queueable.java)
- * 
+ *
  * @author syam(syamn)
  */
 public interface Queueable {
+
     void executeQueue(List<String> args);
 }

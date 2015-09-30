@@ -27,13 +27,13 @@ public class TextFileHandler {
     /**
      * ファイルを行ごとに全取得
      * 
-     * @return 行ごとのList<String>
+     * @return 行ごとの{@code List<String>}
      * @throws FileNotFoundException
      * @throws IOException
      */
     public List<String> readLines() throws FileNotFoundException, IOException {
         BufferedReader inputStream = null;
-        List<String> data = new ArrayList<String>();
+        List<String> data = new ArrayList<>();
         try {
             inputStream = new BufferedReader(new FileReader(p));
             String l;
@@ -57,16 +57,9 @@ public class TextFileHandler {
      * @throws IOException
      */
     public void writeLines(List<String> data) throws IOException {
-        PrintWriter outputStream = null;
-        try {
-            outputStream = new PrintWriter(new FileWriter(p));
+        try (PrintWriter outputStream = new PrintWriter(new FileWriter(p))) {
             while (!data.isEmpty()) {
                 outputStream.println(data.remove(0));
-            }
-            /* 最終処理 */
-        } finally {
-            if (outputStream != null) {
-                outputStream.close();
             }
         }
     }
@@ -78,15 +71,8 @@ public class TextFileHandler {
      * @throws IOException
      */
     public void appendLine(String line) throws IOException {
-        PrintWriter outputStream = null;
-        try {
-            outputStream = new PrintWriter(new FileWriter(p, true));
+        try (PrintWriter outputStream = new PrintWriter(new FileWriter(p, true))) {
             outputStream.println(line);
-            /* 最終処理 */
-        } finally {
-            if (outputStream != null) {
-                outputStream.close();
-            }
         }
     }
 

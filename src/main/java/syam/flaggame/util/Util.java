@@ -46,7 +46,7 @@ public class Util {
      * @return 結合後の文字列
      */
     public static String join(Collection<?> s, String delimiter) {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         Iterator<?> iter = s.iterator();
 
         // 要素が無くなるまでループ

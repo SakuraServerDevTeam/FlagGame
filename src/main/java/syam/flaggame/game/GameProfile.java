@@ -5,6 +5,7 @@ package syam.flaggame.game;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import syam.flaggame.FlagGame;
@@ -17,11 +18,11 @@ import syam.flaggame.database.Database;
  */
 public class GameProfile {
     // Logger
-    public static final Logger log = FlagGame.log;
+    public static final Logger log = FlagGame.logger;
     private static final String logPrefix = FlagGame.logPrefix;
     private static final String msgPrefix = FlagGame.msgPrefix;
 
-    private String stageName;
+    private final String stageName;
     private boolean loaded = false;
 
     /* mySQL stuff */
@@ -39,7 +40,7 @@ public class GameProfile {
     private int flag_place = 0; // Place数
     private int flag_break = 0; // Break数
 
-    /**
+    /*
      * コンストラクタ
      * 
      * @return
@@ -72,7 +73,7 @@ public class GameProfile {
         ArrayList<String> dataValues = stagesDatas.get(1);
 
         if (dataValues == null) {
-            log.severe(stageName + " stage does not exist in the stages table!");
+            log.log(Level.SEVERE, "{0} stage does not exist in the stages table!", stageName);
             loaded = false;
             return false;
         } else {

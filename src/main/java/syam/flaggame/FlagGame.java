@@ -3,6 +3,7 @@ package syam.flaggame;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.milkbowl.vault.Vault;
@@ -17,33 +18,12 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import syam.flaggame.command.BaseCommand;
-import syam.flaggame.command.CheckCommand;
-import syam.flaggame.command.ConfirmCommand;
-import syam.flaggame.command.HelpCommand;
-import syam.flaggame.command.InfoCommand;
-import syam.flaggame.command.JoinCommand;
-import syam.flaggame.command.LeaveCommand;
-import syam.flaggame.command.ReadyCommand;
-import syam.flaggame.command.ReloadCommand;
-import syam.flaggame.command.SaveCommand;
-import syam.flaggame.command.SelectCommand;
-import syam.flaggame.command.SetCommand;
-import syam.flaggame.command.StageCommand;
-import syam.flaggame.command.StartCommand;
-import syam.flaggame.command.StatsCommand;
-import syam.flaggame.command.TopCommand;
-import syam.flaggame.command.TpCommand;
-import syam.flaggame.command.WatchCommand;
+import syam.flaggame.command.*;
 import syam.flaggame.command.queue.ConfirmQueue;
 import syam.flaggame.database.Database;
 import syam.flaggame.enums.GameResult;
 import syam.flaggame.game.Game;
-import syam.flaggame.listener.DeathNotifierListener;
-import syam.flaggame.listener.FGBlockListener;
-import syam.flaggame.listener.FGEntityListener;
-import syam.flaggame.listener.FGInventoryListener;
-import syam.flaggame.listener.FGPlayerListener;
+import syam.flaggame.listener.*;
 import syam.flaggame.manager.GameManager;
 import syam.flaggame.manager.StageFileManager;
 import syam.flaggame.manager.StageManager;
@@ -67,9 +47,8 @@ public class FlagGame extends JavaPlugin {
      * 
      * 参加チームの選択
      */
-
     // ** Logger **
-    public final static Logger log = Logger.getLogger("FlagGame");
+    public final static Logger logger = Logger.getLogger("FlagGame");
     public final static String logPrefix = "[FlagGame] ";
     public final static String msgPrefix = "&6[FlagGame] &f";
 
@@ -81,7 +60,7 @@ public class FlagGame extends JavaPlugin {
     private final DeathNotifierListener dnListener = new DeathNotifierListener(this);
 
     // ** Commands **
-    private static List<BaseCommand> commands = new ArrayList<BaseCommand>();
+    private static final List<BaseCommand> commands = new ArrayList<>();
 
     // ** Private classes **
     private ConfigurationManager config;
@@ -106,30 +85,31 @@ public class FlagGame extends JavaPlugin {
     /**
      * プラグイン起動処理
      */
+    @Override
     public void onEnable() {
         Debug.setStartupBeginTime();
 
         instance = this;
-        
+
         PluginManager pm = getServer().getPluginManager();
-        if (!initInternalAccessor()){
-            log.severe("Your version of craftbukkit is not supported");
+        if (!initInternalAccessor()) {
+            logger.severe("Your version of craftbukkit is not supported");
             pm.disablePlugin(this);
             return;
         }
-        
+
         config = new ConfigurationManager(this);
 
         // loadconfig
         try {
             config.loadConfig(true);
         } catch (Exception ex) {
-            log.warning(logPrefix + "an error occured while trying to load the config file.");
+            logger.warning(logPrefix + "an error occured while trying to load the config file.");
             ex.printStackTrace();
         }
 
         // setup Debugger
-        Debug.getInstance().init(log, logPrefix, "plugins/FlagGame/debug.log", getConfigs().isDebug());
+        Debug.getInstance().init(logger, logPrefix, "plugins/FlagGame/debug.log", getConfigs().isDebug());
         debug = Debug.getInstance();
 
         // Vault
@@ -138,7 +118,9 @@ public class FlagGame extends JavaPlugin {
         debug.endTimer("vault");
 
         // プラグインを無効にした場合進まないようにする
-        if (!pm.isPluginEnabled(this)) { return; }
+        if (!pm.isPluginEnabled(this)) {
+            return;
+        }
 
         // 権限ハンドラセットアップ
         debug.startTimer("permission");
@@ -151,7 +133,7 @@ public class FlagGame extends JavaPlugin {
         if (p != null) {
             pm.registerEvents(dnListener, this); // Regist Listener
             // usingDeathNotifier = true; //フラグ
-            log.info(logPrefix + "Hooked to DeathNotifier!");
+            logger.info(logPrefix + "Hooked to DeathNotifier!");
         }
         pm.registerEvents(playerListener, this);
         pm.registerEvents(blockListener, this);
@@ -183,9 +165,7 @@ public class FlagGame extends JavaPlugin {
         debug.endTimer("load games");
 
         // プレイヤー追加
-        for (Player player : getServer().getOnlinePlayers()) {
-            PlayerManager.addPlayer(player);
-        }
+        getServer().getOnlinePlayers().stream().forEach(PlayerManager::addPlayer);
 
         // dynmapフック
         debug.startTimer("dynmap");
@@ -199,7 +179,7 @@ public class FlagGame extends JavaPlugin {
 
         // メッセージ表示
         PluginDescriptionFile pdfFile = this.getDescription();
-        log.info("[" + pdfFile.getName() + "] version " + pdfFile.getVersion() + " is enabled!");
+        logger.log(Level.INFO, "[{0}] version {1} is enabled!", new Object[]{pdfFile.getName(), pdfFile.getVersion()});
 
         debug.finishStartup();
     }
@@ -207,6 +187,7 @@ public class FlagGame extends JavaPlugin {
     /**
      * プラグイン停止処理
      */
+    @Override
     public void onDisable() {
         commands.clear();
 
@@ -247,14 +228,14 @@ public class FlagGame extends JavaPlugin {
 
         // メッセージ表示
         PluginDescriptionFile pdfFile = this.getDescription();
-        log.info("[" + pdfFile.getName() + "] version " + pdfFile.getVersion() + " is disabled!");
+        logger.log(Level.INFO, "[{0}] version {1} is disabled!", new Object[]{pdfFile.getName(), pdfFile.getVersion()});
     }
-    
-    private boolean initInternalAccessor(){
+
+    private boolean initInternalAccessor() {
         String version = this.getServer().getClass().getPackage().getName();
         version = version.substring(version.lastIndexOf('.') + 1);
-        
-        return (version.trim() == "v1_5_R2");        
+
+        return "v1_5_R2".equals(version.trim());
     }
 
     /**
@@ -266,7 +247,7 @@ public class FlagGame extends JavaPlugin {
             RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
             // 経済概念のプラグインがロードされているかチェック
             if (economyProvider == null) {
-                log.warning(logPrefix + "Economy plugin not Fount. Disabling plugin.");
+                logger.warning(logPrefix + "Economy plugin not Fount. Disabling plugin.");
                 getPluginLoader().disablePlugin(this);
                 return;
             }
@@ -276,16 +257,15 @@ public class FlagGame extends JavaPlugin {
                 economy = economyProvider.getProvider();
             } // 例外チェック
             catch (Exception e) {
-                log.warning(logPrefix + "Could NOT be hook to Vault. Disabling plugin.");
+                logger.warning(logPrefix + "Could NOT be hook to Vault. Disabling plugin.");
                 getPluginLoader().disablePlugin(this);
                 return;
             }
-            log.info(logPrefix + "Hooked to Vault!");
+            logger.info(logPrefix + "Hooked to Vault!");
         } else {
             // Vaultが見つからなかった
-            log.warning(logPrefix + "Vault was NOT found! Disabling plugin.");
+            logger.warning(logPrefix + "Vault was NOT found! Disabling plugin.");
             getPluginLoader().disablePlugin(this);
-            return;
         }
     }
 
@@ -293,14 +273,12 @@ public class FlagGame extends JavaPlugin {
      * Dynmapプラグインにフック
      */
     private void setupDynmap() {
-        getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
-            public void run() {
-                dynmap = new DynmapHandler(FlagGame.getInstance());
-                if (FlagGame.getInstance().getConfigs().getUseDynmap()) {
-                    dynmap.init();
-                }
+        getServer().getScheduler().scheduleSyncDelayedTask(this, () -> {
+            dynmap = new DynmapHandler(FlagGame.getInstance());
+            if (FlagGame.getInstance().getConfigs().getUseDynmap()) {
+                dynmap.init();
             }
-        }, 20L * 1);
+        }, 20L);
     }
 
     /**
@@ -311,7 +289,7 @@ public class FlagGame extends JavaPlugin {
             Metrics metrics = new Metrics(this);
             metrics.start();
         } catch (IOException ex) {
-            log.warning(logPrefix + "Could not send metrics data!");
+            logger.warning(logPrefix + "Could not send metrics data!");
             ex.printStackTrace();
         }
     }
@@ -344,7 +322,7 @@ public class FlagGame extends JavaPlugin {
         commands.add(new ReloadCommand());
     }
 
-    /**
+    /*
      * コマンドが呼ばれた
      */
     @Override
@@ -352,10 +330,11 @@ public class FlagGame extends JavaPlugin {
         if (cmd.getName().equalsIgnoreCase("flag")) {
             if (args.length == 0) {
                 // 引数ゼロはヘルプ表示
-                args = new String[] { "help" };
+                args = new String[]{"help"};
             }
 
-            outer: for (BaseCommand command : commands.toArray(new BaseCommand[0])) {
+            outer:
+            for (BaseCommand command : commands.toArray(new BaseCommand[0])) {
                 String[] cmds = command.getName().split(" ");
                 for (int i = 0; i < cmds.length; i++) {
                     if (i >= args.length || !cmds[i].equalsIgnoreCase(args[i])) {
@@ -373,10 +352,9 @@ public class FlagGame extends JavaPlugin {
     }
 
     /* getter */
-
     /**
      * ゲームマネージャを返す
-     * 
+     *
      * @return GameManager
      */
     public GameManager getManager() {
@@ -385,7 +363,7 @@ public class FlagGame extends JavaPlugin {
 
     /**
      * ゲームファイルマネージャを返す
-     * 
+     *
      * @return GameManager
      */
     public StageFileManager getFileManager() {
@@ -394,7 +372,7 @@ public class FlagGame extends JavaPlugin {
 
     /**
      * 設定マネージャを返す
-     * 
+     *
      * @return ConfigurationManager
      */
     public ConfigurationManager getConfigs() {
@@ -403,7 +381,7 @@ public class FlagGame extends JavaPlugin {
 
     /**
      * dynmapハンドラを返す
-     * 
+     *
      * @return DynmapHandler
      */
     public DynmapHandler getDynmap() {
@@ -412,7 +390,7 @@ public class FlagGame extends JavaPlugin {
 
     /**
      * データベースを返す
-     * 
+     *
      * @return Database
      */
     public static Database getDatabases() {
@@ -421,8 +399,8 @@ public class FlagGame extends JavaPlugin {
 
     /**
      * コマンドリストを返す
-     * 
-     * @return List<BaseCommand>
+     *
+     * @return {@code List<BaseCommand>}
      */
     public static List<BaseCommand> getCommands() {
         return commands;
@@ -430,7 +408,7 @@ public class FlagGame extends JavaPlugin {
 
     /**
      * Confirmコマンドキューを返す
-     * 
+     *
      * @return ConfirmQueue
      */
     public ConfirmQueue getQueue() {
@@ -439,25 +417,25 @@ public class FlagGame extends JavaPlugin {
 
     /**
      * Vaultを返す
-     * 
+     *
      * @return Vault
      */
     public Vault getVault() {
-        return this.vault;
+        return vault;
     }
 
     /**
      * Economyを返す
-     * 
+     *
      * @return Economy
      */
     public Economy getEconomy() {
-        return this.economy;
+        return economy;
     }
 
     /**
      * インスタンスを返す
-     * 
+     *
      * @return FlagGameインスタンス
      */
     public static FlagGame getInstance() {

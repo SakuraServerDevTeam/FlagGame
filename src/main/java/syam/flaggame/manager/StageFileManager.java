@@ -3,11 +3,13 @@ package syam.flaggame.manager;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
@@ -25,7 +27,7 @@ import syam.flaggame.util.Cuboid;
 
 public class StageFileManager {
     // Logger
-    public static final Logger log = FlagGame.log;
+    public static final Logger log = FlagGame.logger;
     private static final String logPrefix = FlagGame.logPrefix;
     private static final String msgPrefix = FlagGame.msgPrefix;
 
@@ -40,7 +42,7 @@ public class StageFileManager {
         String fileDir = plugin.getDataFolder() + System.getProperty("file.separator") +
 
         "stageData" + System.getProperty("file.separator");
-        FileConfiguration confFile = null;
+        FileConfiguration confFile;
         for (Stage stage : StageManager.getStages().values()) {
             confFile = new YamlConfiguration();
 
@@ -126,7 +128,7 @@ public class StageFileManager {
                 // 有効かどうか
                 stage.setAvailable(confFile.getBoolean("Available", true));
 
-                log.info(logPrefix + "Loaded Game: " + file.getName() + " (" + name + ")");
+                log.log(Level.INFO,logPrefix + "Loaded Game: {0} ({1})", new Object[]{file.getName(), name});
 
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -136,7 +138,7 @@ public class StageFileManager {
 
     /* ステージ領域を変換 */
     private String convertStageCuboidToString(Cuboid stage) {
-        String ret = "";
+        String ret;
 
         // x,y,z@x,y,z
         Location pos1 = stage.getPos1();
@@ -189,7 +191,7 @@ public class StageFileManager {
      * @return フラッグ情報文字列のリスト
      */
     private List<String> convertFlagMapToList(Map<Location, Flag> flags) {
-        List<String> ret = new ArrayList<String>();
+        List<String> ret = new ArrayList<>();
         ret.clear();
 
         for (Flag flag : flags.values()) {
@@ -216,7 +218,7 @@ public class StageFileManager {
      * @return
      */
     private Map<Location, Flag> convertFlagListToMap(List<String> flags, Stage stage) {
-        Map<Location, Flag> ret = new HashMap<Location, Flag>();
+        Map<Location, Flag> ret = new HashMap<>();
         ret.clear();
 
         String[] data;
@@ -231,7 +233,7 @@ public class StageFileManager {
             // デリミタで分ける
             data = s.split("@");
             if (data.length != 3) {
-                log.warning(logPrefix + "Skipping FlagLine " + line + ": incorrect format (@)");
+                log.log(Level.WARNING,logPrefix + "Skipping FlagLine {0}: incorrect format (@)", line);
                 continue;
             }
 
@@ -243,21 +245,21 @@ public class StageFileManager {
                 }
             }
             if (type == null) {
-                log.warning(logPrefix + "Skipping FlagLine " + line + ": undefined FlagType");
+                log.log(Level.WARNING,logPrefix + "Skipping FlagLine {0}: undefined FlagType", line);
                 continue;
             }
 
             // data[1] : ブロックID・データ値チェック
             block = data[1].split(":");
             if (block.length != 2) {
-                log.warning(logPrefix + "Skipping FlagLine " + line + ": incorrect block format (:)");
+                log.log(Level.WARNING,logPrefix + "Skipping FlagLine {0}: incorrect block format (:)", line);
                 continue;
             }
 
             // data[2] : 座標形式チェック
             coord = data[2].split(",");
             if (coord.length != 3) {
-                log.warning(logPrefix + "Skipping FlagLine " + line + ": incorrect coord format (,)");
+                log.log(Level.WARNING,logPrefix + "Skipping FlagLine {0}: incorrect coord format (,)", line);
                 continue;
             }
 
@@ -270,7 +272,7 @@ public class StageFileManager {
 
     /* スポーン地点データを変換 */
     private List<String> convertSpawnMapToList(Map<GameTeam, Location> spawns) {
-        List<String> ret = new ArrayList<String>();
+        List<String> ret = new ArrayList<>();
         ret.clear();
 
         for (Map.Entry<GameTeam, Location> entry : spawns.entrySet()) {
@@ -287,7 +289,7 @@ public class StageFileManager {
     }
 
     private Map<GameTeam, Location> convertSpawnListToMap(List<String> spawns) {
-        Map<GameTeam, Location> ret = new HashMap<GameTeam, Location>();
+        Map<GameTeam, Location> ret = new EnumMap<>(GameTeam.class);
         ret.clear();
 
         String[] data;
@@ -301,7 +303,7 @@ public class StageFileManager {
             // デリミタ分割
             data = s.split("@");
             if (data.length != 2) {
-                log.warning(logPrefix + "Skipping SpawnLine " + line + ": incorrect format (@)");
+                log.log(Level.WARNING,logPrefix + "Skipping SpawnLine {0}: incorrect format (@)", line);
                 continue;
             }
 
@@ -313,14 +315,14 @@ public class StageFileManager {
                 }
             }
             if (team == null) {
-                log.warning(logPrefix + "Skipping SpawnLine " + line + ": undefined TeamName");
+                log.log(Level.WARNING,logPrefix + "Skipping SpawnLine {0}: undefined TeamName", line);
                 continue;
             }
 
             // data[1] : 座標形式チェック
             coord = data[1].split(",");
             if (coord.length != 5) {
-                log.warning(logPrefix + "Skipping SpawnLine " + line + ": incorrect coord format (,)");
+                log.log(Level.WARNING,logPrefix + "Skipping SpawnLine {0}: incorrect coord format (,)", line);
                 continue;
             }
 
@@ -333,7 +335,7 @@ public class StageFileManager {
 
     /* 拠点データを変換 */
     private List<String> convertBaseMapToList(Map<GameTeam, Cuboid> bases) {
-        List<String> ret = new ArrayList<String>();
+        List<String> ret = new ArrayList<>();
         ret.clear();
 
         for (Map.Entry<GameTeam, Cuboid> entry : bases.entrySet()) {
@@ -355,7 +357,7 @@ public class StageFileManager {
     }
 
     private Map<GameTeam, Cuboid> convertBaseListToMap(List<String> bases) {
-        Map<GameTeam, Cuboid> ret = new HashMap<GameTeam, Cuboid>();
+        Map<GameTeam, Cuboid> ret = new EnumMap<>(GameTeam.class);
         ret.clear();
 
         String[] data;
@@ -370,7 +372,7 @@ public class StageFileManager {
             // デリミタ分割
             data = s.split("@");
             if (data.length != 3) {
-                log.warning(logPrefix + "Skipping BaseLine " + line + ": incorrect format (@)");
+                log.log(Level.WARNING,logPrefix + "Skipping BaseLine {0}: incorrect format (@)", line);
                 continue;
             }
 
@@ -382,21 +384,21 @@ public class StageFileManager {
                 }
             }
             if (team == null) {
-                log.warning(logPrefix + "Skipping BaseLine " + line + ": undefined TeamName");
+                log.log(Level.WARNING,logPrefix + "Skipping BaseLine {0}: undefined TeamName", line);
                 continue;
             }
 
             // data[1] : 座標形式チェック
             pos1 = data[1].split(",");
             if (pos1.length != 3) {
-                log.warning(logPrefix + "Skipping BaseLine " + line + ": incorrect 1st coord format (,)");
+                log.log(Level.WARNING,logPrefix + "Skipping BaseLine {0}: incorrect 1st coord format (,)", line);
                 continue;
             }
 
             // data[2] : 座標形式チェック
             pos2 = data[2].split(",");
             if (pos2.length != 3) {
-                log.warning(logPrefix + "Skipping BaseLine " + line + ": incorrect 2nd coord format (,)");
+                log.log(Level.WARNING,logPrefix + "Skipping BaseLine {0}: incorrect 2nd coord format (,)", line);
                 continue;
             }
 
@@ -408,7 +410,7 @@ public class StageFileManager {
 
     /* チェストデータを変換 */
     private List<String> convertChestMapToList(Set<Location> chests) {
-        List<String> ret = new ArrayList<String>();
+        List<String> ret = new ArrayList<>();
         ret.clear();
 
         for (Location loc : chests) {
@@ -423,7 +425,7 @@ public class StageFileManager {
     }
 
     private Set<Location> convertChestListToMap(List<String> chests) {
-        Set<Location> ret = new HashSet<Location>();
+        Set<Location> ret = new HashSet<>();
         ret.clear();
 
         String[] coord;
@@ -436,7 +438,7 @@ public class StageFileManager {
             // 座標形式チェック
             coord = s.split(",");
             if (coord.length != 3) {
-                log.warning(logPrefix + "Skipping ChestLine " + line + ": incorrect coord format (,)");
+                log.log(Level.WARNING,logPrefix + "Skipping ChestLine {0}: incorrect coord format (,)", line);
                 continue;
             }
 

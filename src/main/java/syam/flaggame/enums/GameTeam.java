@@ -12,11 +12,11 @@ public enum GameTeam {
     BLUE("青", 35, 11, FlagState.BLUE, "&b"), // 青チーム
     ;
 
-    private String teamName;
-    private int blockID;
-    private byte blockData;
-    private FlagState flagState;
-    private String colorTag;
+    private final String teamName;
+    private final int blockID;
+    private final byte blockData;
+    private final FlagState flagState;
+    private final String colorTag;
 
     GameTeam(String teamName, int blockID, int blockData, FlagState flagState, String colorTag) {
         this.teamName = teamName;
@@ -86,7 +86,7 @@ public enum GameTeam {
         return getAgainstTeam(this);
     }
 
-    /**
+    /*
      * 相手のGameTeamを返す
      * 
      * @return GameTeam

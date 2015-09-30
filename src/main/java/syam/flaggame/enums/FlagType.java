@@ -7,9 +7,9 @@ public enum FlagType {
     DIAMOND(3, "ダイヤモンド", "&b"), // ダイヤフラッグ
     ;
 
-    private int point;
-    private String typeName;
-    private String colorTag;
+    private final int point;
+    private final String typeName;
+    private final String colorTag;
 
     FlagType(int point, String typeName, String colorTag) {
         /*

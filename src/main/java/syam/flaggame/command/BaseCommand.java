@@ -1,6 +1,7 @@
 package syam.flaggame.command;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -13,7 +14,7 @@ import syam.flaggame.util.Actions;
 
 public abstract class BaseCommand {
     // Logger
-    protected static final Logger log = FlagGame.log;
+    protected static final Logger log = FlagGame.logger;
     protected static final String logPrefix = FlagGame.logPrefix;
     protected static final String msgPrefix = FlagGame.msgPrefix;
 
@@ -25,7 +26,7 @@ public abstract class BaseCommand {
 
     // 初期化必要
     protected Player player;
-    protected List<String> args = new ArrayList<String>();
+    protected List<String> args = new ArrayList<>();
 
     // プロパティ
     protected boolean bePlayer = true;
@@ -43,8 +44,7 @@ public abstract class BaseCommand {
 
         // 引数をソート
         args.clear();
-        for (String arg : preArgs)
-            args.add(arg);
+        args.addAll(Arrays.asList(preArgs));
 
         // 引数からコマンドの部分を取り除く
         // (コマンド名に含まれる半角スペースをカウント、リストの先頭から順にループで取り除く)
@@ -94,7 +94,6 @@ public abstract class BaseCommand {
     /**
      * コマンドを実際に実行する
      * 
-     * @return 成功すればtrue それ以外はfalse
      * @throws CommandException
      */
     public abstract void execute() throws CommandException;

@@ -1,6 +1,5 @@
 package syam.flaggame;
 
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -13,59 +12,42 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class ConfigurationManager {
+
     // Logger
-    public static final Logger log = FlagGame.log;
-    private static final String logPrefix = FlagGame.logPrefix;
-    private static final String msgPrefix = FlagGame.msgPrefix;
+    private static final Logger logger = FlagGame.logger;
+    private static final String LOG_PREFIX = FlagGame.logPrefix;
+    private static final String DEFAULT_DETAIL_DIRECTORY = "plugins/FlagGame/detail/";
+    // Defaults
+    private static final String DEFAULT_WORLD_NAME = "flag";
+    private static final List<String> DEFAULT_DISABLED_COMMANDS = Arrays.asList("/spawn", "/home", "/setspawn");
+    private static final List<String> DEFAULT_PERMISSIONS = Arrays.asList("vault","pex","superperms","ops");
 
-    private JavaPlugin plugin;
-    private FileConfiguration conf;
-
-    private static File pluginDir = new File("plugins", "FlagGame");
-
-    // デフォルトの設定定数
-    private final String defaultLogPath = "plugins/FlagGame/game.log";
-    private final String defaultWorldName = "flag";
-    private final List<String> defaultDisableCommands = new ArrayList<String>() {
-        {
-            add("/spawn");
-            add("/home");
-            add("/setspawn");
-        }
-    };
-    private final String defaultDetailDirectory = "plugins/FlagGame/detail/";
-    private final List<String> defaultPermissions = new ArrayList<String>() {
-        {
-            add("vault");
-            add("pex");
-            add("superperms");
-            add("ops");
-        }
-    };
-
+    private final JavaPlugin plugin;
+    private final File pluginDir;
     // 設定項目
     /* Basic Configs */
-    private int toolID = new Integer(269);
-    private String gameWorld = defaultWorldName;
-    private boolean isProtected = new Boolean(true);
-    private boolean isDebug = new Boolean(false);
-    private boolean useDynmap = new Boolean(false);
+    private int toolID = 269;
+    private String gameWorld = DEFAULT_WORLD_NAME;
+    private boolean isProtected = true;
+    private boolean isDebug = false;
+    private boolean useDynmap = false;
     /* Games Configs */
-    private int startCountdownInSec = new Integer(10);
-    private boolean useFlagEffects = new Boolean(true);
-    private boolean deathWhenLogout = new Boolean(true);
-    private boolean disableRegainHP = new Boolean(true);
-    private boolean disableTeamPVP = new Boolean(true);
-    private int godModeTime = new Integer(4);
-    private List<String> disableCommands = defaultDisableCommands;
+    private int startCountdownInSec = 10;
+    private boolean useFlagEffects = true;
+    private boolean deathWhenLogout = true;
+    private boolean disableRegainHP = true;
+    private boolean disableTeamPVP = true;
+    private int godModeTime = 4;
+    private List<String> disableCommands = new ArrayList<>(DEFAULT_DISABLED_COMMANDS);
     /* MySQL Configs */
     private String mysqlAddress = "localhost";
     private int mysqlPort = 3306;
@@ -74,27 +56,26 @@ public class ConfigurationManager {
     private String mysqlUserPass = "UserPassword";
     private String mysqlTablePrefix = "flaggame_";
     /* Logging Configs */
-    private String detailDirectory = defaultDetailDirectory;
+    private String detailDirectory = DEFAULT_DETAIL_DIRECTORY;
     /* Permissions Configs */
-    private List<String> permissions = defaultPermissions;
+    private List<String> permissions = new ArrayList<>(DEFAULT_PERMISSIONS);
 
     /**
      * コンストラクタ
-     * 
+     *
      * @param plugin
      */
     public ConfigurationManager(final JavaPlugin plugin) {
         this.plugin = plugin;
-        pluginDir = this.plugin.getDataFolder();
+        this.pluginDir = this.plugin.getDataFolder();
     }
 
     /**
      * 設定をファイルから読み込む
-     * 
-     * @param initialLoad
-     *            初回ロードかどうか
+     *
+     * @param initialLoad 初回ロードかどうか
      */
-    public void loadConfig(boolean initialLoad) throws Exception {
+    public void loadConfig(boolean initialLoad) {
         // ディレクトリ作成
         createDirs();
 
@@ -103,7 +84,7 @@ public class ConfigurationManager {
         // 無ければデフォルトコピー
         if (!file.exists()) {
             extractResource("/config.yml", pluginDir, false, true);
-            log.info(logPrefix + "config.yml is not found! Created default config.yml!");
+            logger.info(LOG_PREFIX + "config.yml is not found! Created default config.yml!");
         }
 
         plugin.reloadConfig();
@@ -113,7 +94,7 @@ public class ConfigurationManager {
 
         /* Basic Configs */
         toolID = plugin.getConfig().getInt("ToolID", 269);
-        gameWorld = plugin.getConfig().getString("WorldName", defaultWorldName);
+        gameWorld = plugin.getConfig().getString("WorldName", DEFAULT_WORLD_NAME);
         isProtected = plugin.getConfig().getBoolean("WorldProtect", true);
         isDebug = plugin.getConfig().getBoolean("Debug", false);
         useDynmap = plugin.getConfig().getBoolean("UseDynmap", false);
@@ -133,17 +114,17 @@ public class ConfigurationManager {
         mysqlUserPass = plugin.getConfig().getString("MySQL.Database.User_Password", "UserPassword");
         mysqlTablePrefix = plugin.getConfig().getString("MySQL.Database.TablePrefix", "flaggame_");
         /* Logging Configs */
-        detailDirectory = plugin.getConfig().getString("DetailDirectory", defaultDetailDirectory);
+        detailDirectory = plugin.getConfig().getString("DetailDirectory", DEFAULT_DETAIL_DIRECTORY);
         /* Permissions Configs */
         if (plugin.getConfig().get("Permissions") != null) {
             permissions = plugin.getConfig().getStringList("Permissions");
         } else {
-            permissions = defaultPermissions;
+            permissions = DEFAULT_PERMISSIONS;
         }
 
         // ワールドチェック 見つからなければプラグイン無効化
         if (Bukkit.getWorld(gameWorld) == null) {
-            log.warning(logPrefix + "World " + gameWorld + " is Not Found! Disabling plugin..");
+            logger.log(Level.WARNING,LOG_PREFIX + "World {0} is Not Found! Disabling plugin..", gameWorld);
             plugin.getPluginLoader().disablePlugin(plugin);
             return;
         }
@@ -195,8 +176,8 @@ public class ConfigurationManager {
     public boolean getDisableTeamPVP() {
         return this.disableTeamPVP;
     }
-    
-    public int getGodModeTime(){
+
+    public int getGodModeTime() {
         return this.godModeTime;
     }
 
@@ -240,10 +221,9 @@ public class ConfigurationManager {
     }
 
     // 設定 getter ここまで
-
     /**
      * 設定ファイルに設定を書き込む (コメントが消えるため使わない)
-     * 
+     *
      * @throws Exception
      */
     @Deprecated
@@ -260,21 +240,22 @@ public class ConfigurationManager {
 
     /**
      * 存在しないディレクトリを作成する
-     * 
-     * @param dir
-     *            File 作成するディレクトリ
+     *
+     * @param dir File 作成するディレクトリ
      */
     private static void createDir(File dir) {
         // 既に存在すれば作らない
-        if (dir.isDirectory()) { return; }
+        if (dir.isDirectory()) {
+            return;
+        }
         if (!dir.mkdir()) {
-            log.warning(logPrefix + "Can't create directory: " + dir.getName());
+            logger.log(Level.WARNING,LOG_PREFIX + "Can''t create directory: {0}", dir.getName());
         }
     }
 
     /**
      * 設定ファイルのバージョンをチェックする
-     * 
+     *
      * @param ver
      */
     private void checkver(final double ver) {
@@ -290,7 +271,7 @@ public class ConfigurationManager {
             }
             nowVersion = Double.parseDouble(versionString);
         } catch (NumberFormatException ex) {
-            log.warning(logPrefix + "Cannot parse version string!");
+            logger.warning(LOG_PREFIX + "Cannot parse version string!");
         }
 
         // 比較 設定ファイルのバージョンが古ければ config.yml を上書きする
@@ -301,29 +282,25 @@ public class ConfigurationManager {
             String destPath = new File(plugin.getDataFolder(), destName).getPath();
             try {
                 copyTransfer(srcPath, destPath);
-                log.info(logPrefix + "Copied old config.yml to " + destName + "!");
+                logger.log(Level.INFO,LOG_PREFIX + "Copied old config.yml to {0}!", destName);
             } catch (Exception ex) {
-                log.warning(logPrefix + "Cannot copy old config.yml!");
+                logger.warning(LOG_PREFIX + "Cannot copy old config.yml!");
             }
 
             // config.ymlと言語ファイルを強制コピー
             extractResource("/config.yml", plugin.getDataFolder(), true, false);
 
-            log.info(logPrefix + "Deleted existing configuration file and generate a new one!");
+            logger.info(LOG_PREFIX + "Deleted existing configuration file and generate a new one!");
         }
     }
 
     /**
      * リソースファイルをファイルに出力する
-     * 
-     * @param from
-     *            出力元のファイルパス
-     * @param to
-     *            出力先のファイルパス
-     * @param force
-     *            jarファイルの更新日時より新しいファイルが既にあっても強制的に上書きするか
-     * @param checkenc
-     *            出力元のファイルを環境によって適したエンコードにするかどうか
+     *
+     * @param from 出力元のファイルパス
+     * @param to 出力先のファイルパス
+     * @param force jarファイルの更新日時より新しいファイルが既にあっても強制的に上書きするか
+     * @param checkenc 出力元のファイルを環境によって適したエンコードにするかどうか
      * @author syam
      */
     static void extractResource(String from, File to, boolean force, boolean checkenc) {
@@ -334,23 +311,24 @@ public class ConfigurationManager {
             String filename = new File(from).getName();
             of = new File(to, filename);
         } else if (!of.isFile()) {
-            log.warning(logPrefix + "not a file:" + of);
+            logger.log(Level.WARNING,LOG_PREFIX + "not a file:{0}", of);
             return;
         }
 
         // ファイルが既に存在する場合は、forceフラグがtrueでない限り展開しない
-        if (of.exists() && !force) { return; }
+        if (of.exists() && !force) {
+            return;
+        }
 
         OutputStream out = null;
         InputStream in = null;
         InputStreamReader reader = null;
         OutputStreamWriter writer = null;
-        DataInputStream dis = null;
         try {
             // jar内部のリソースファイルを取得
             URL res = FlagGame.class.getResource(from);
             if (res == null) {
-                log.warning(logPrefix + "Can't find " + from + " in plugin Jar file");
+                logger.log(Level.WARNING,"Can''t find " + LOG_PREFIX + "{0} in plugin Jar file", from);
                 return;
             }
             URLConnection resConn = res.openConnection();
@@ -358,7 +336,7 @@ public class ConfigurationManager {
             in = resConn.getInputStream();
 
             if (in == null) {
-                log.warning(logPrefix + "Can't get input stream from " + res);
+                logger.log(Level.WARNING,LOG_PREFIX + "Can''t get input stream from {0}", res);
             } else {
                 // 出力処理 ファイルによって出力方法を変える
                 if (checkenc) {
@@ -366,8 +344,8 @@ public class ConfigurationManager {
 
                     reader = new InputStreamReader(in, "UTF-8");
                     writer = new OutputStreamWriter(new FileOutputStream(of)); // 出力ファイルのエンコードは未指定
-                                                                               // =
-                                                                               // 自動で変わるようにする
+                    // =
+                    // 自動で変わるようにする
 
                     int text;
                     while ((text = reader.read()) != -1) {
@@ -378,7 +356,7 @@ public class ConfigurationManager {
 
                     out = new FileOutputStream(of);
                     byte[] buf = new byte[1024]; // バッファサイズ
-                    int len = 0;
+                    int len;
                     while ((len = in.read(buf)) >= 0) {
                         out.write(buf, 0, len);
                     }
@@ -389,10 +367,18 @@ public class ConfigurationManager {
         } finally {
             // 後処理
             try {
-                if (out != null) out.close();
-                if (in != null) in.close();
-                if (reader != null) reader.close();
-                if (writer != null) writer.close();
+                if (out != null) {
+                    out.close();
+                }
+                if (in != null) {
+                    in.close();
+                }
+                if (reader != null) {
+                    reader.close();
+                }
+                if (writer != null) {
+                    writer.close();
+                }
             } catch (Exception ex) {
             }
         }
@@ -401,13 +387,10 @@ public class ConfigurationManager {
     /**
      * コピー元のパス[srcPath]から、コピー先のパス[destPath]へファイルのコピーを行います。
      * コピー処理にはFileChannel#transferToメソッドを利用します。 コピー処理終了後、入力・出力のチャネルをクローズします。
-     * 
-     * @param srcPath
-     *            コピー元のパス
-     * @param destPath
-     *            コピー先のパス
-     * @throws IOException
-     *             何らかの入出力処理例外が発生した場合
+     *
+     * @param srcPath コピー元のパス
+     * @param destPath コピー先のパス
+     * @throws IOException 何らかの入出力処理例外が発生した場合
      */
     public static void copyTransfer(String srcPath, String destPath) throws IOException {
         FileChannel srcChannel = new FileInputStream(srcPath).getChannel();

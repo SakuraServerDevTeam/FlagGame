@@ -88,7 +88,7 @@ public class Debug {
                 try {
                     logFile.appendLine(logHeader + sb.toString());
                 } catch (IOException ex) {
-                    log.warning(logPrefix + "Could not write debug log file!");
+                    log.log(Level.WARNING, "{0}Could not write debug log file!", logPrefix);
                     ex.printStackTrace();
                 }
             }
@@ -151,13 +151,13 @@ public class Debug {
             log.setLevel(Level.FINE);
             setConsoleLevel(Level.FINE);
 
-            log.info(logPrefix + "DEBUG MODE ENABLED!");
+            log.log(Level.INFO, "{0}DEBUG MODE ENABLED!", logPrefix);
         } else {
             if (oldLogLevel != null) {
                 log.setLevel(oldLogLevel);
                 setConsoleLevel(oldLogLevel);
             }
-            log.info(logPrefix + "DEBUG MODE DISABLED!");
+            log.log(Level.INFO, "{0}DEBUG MODE DISABLED!", logPrefix);
         }
     }
 
@@ -186,7 +186,7 @@ public class Debug {
      * @return boolean
      */
     public boolean isDebugToFile() {
-        return (logFile == null) ? false : true;
+        return logFile != null;
     }
 
     /**
@@ -226,7 +226,7 @@ public class Debug {
         debug("[Timer] Total initialization time: " + (System.currentTimeMillis() - startup) + "ms");
     }
 
-    /**
+    /*
      * デバッグ時刻計測開始
      * 
      * @param actionName

@@ -37,7 +37,7 @@ public class CheckCommand extends BaseCommand {
         // flags
         String help = null;
         Boolean error = false;
-        List<String> errorLoc = new ArrayList<String>();
+        List<String> errorLoc = new ArrayList<>();
 
         // ステージエリア
         if (stage.getStage() == null) {
@@ -85,10 +85,9 @@ public class CheckCommand extends BaseCommand {
                 // 2ブロック下とブロックIDが違う
                 if (toBlock.getTypeId() != fromBlock.getTypeId()) {
                     errorLoc.add("&d 2つ下と同じブロックではありません: " + Actions.getBlockLocationString(toBlock.getLocation()));
-                    continue;
                 }
             }
-            if (errorLoc.size() > 0)
+            if (!errorLoc.isEmpty())
                 Actions.message(sender, msgPrefix + "&6   &bチェスト: &c" + stage.getChests().size() + "個中 エラー " + errorLoc.size() + "個");
             else
                 Actions.message(sender, msgPrefix + "&6   &bチェスト: &6" + stage.getChests().size() + "個 OK");
@@ -113,10 +112,9 @@ public class CheckCommand extends BaseCommand {
                 Actions.message(sender, m);
         }
 
-        if (errorLoc.size() > 0) {
+        if (!errorLoc.isEmpty()) {
             Actions.message(sender, "&6 チェストに以下のエラーがあります:");
-            for (String m : errorLoc)
-                Actions.message(sender, m);
+            errorLoc.forEach(m ->Actions.message(sender, m));
         }
 
         Actions.message(sender, "&a ===========================================");

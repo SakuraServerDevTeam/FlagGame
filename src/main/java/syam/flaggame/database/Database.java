@@ -8,13 +8,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import syam.flaggame.FlagGame;
 
 public class Database {
     // Logger
-    public static final Logger log = FlagGame.log;
+    public static final Logger log = FlagGame.logger;
     private static final String logPrefix = FlagGame.logPrefix;
     private static final String msgPrefix = FlagGame.msgPrefix;
 
@@ -176,7 +177,7 @@ public class Database {
 
     public HashMap<Integer, ArrayList<String>> read(String sql, Object... obj) {
         ResultSet resultSet = null;
-        HashMap<Integer, ArrayList<String>> rows = new HashMap<Integer, ArrayList<String>>();
+        HashMap<Integer, ArrayList<String>> rows = new HashMap<>();
 
         // 接続確認
         if (isConnected()) {
@@ -193,7 +194,7 @@ public class Database {
 
                 // 結果のレコード数だけ繰り返す
                 while (resultSet.next()) {
-                    ArrayList<String> column = new ArrayList<String>();
+                    ArrayList<String> column = new ArrayList<>();
 
                     // カラム内のデータを順にリストに追加
                     for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
@@ -331,8 +332,8 @@ public class Database {
      * @param ex
      */
     private static void printErrors(SQLException ex) {
-        log.warning("SQLException:" + ex.getMessage());
-        log.warning("SQLState:" + ex.getSQLState());
-        log.warning("ErrorCode:" + ex.getErrorCode());
+        log.log(Level.WARNING, "SQLException:{0}", ex.getMessage());
+        log.log(Level.WARNING, "SQLState:{0}", ex.getSQLState());
+        log.log(Level.WARNING, "ErrorCode:{0}", ex.getErrorCode());
     }
 }

@@ -10,11 +10,7 @@ import syam.flaggame.enums.FlagType;
 
 public class Flag {
     // Logger
-    public static final Logger log = FlagGame.log;
-    private static final String logPrefix = FlagGame.logPrefix;
-    private static final String msgPrefix = FlagGame.msgPrefix;
-
-    private final FlagGame plugin;
+    public static final Logger log = FlagGame.logger;
 
     /* フラッグデータ */
     private Stage stage = null; // フラッグが所属するステージ
@@ -27,13 +23,12 @@ public class Flag {
     private int blockID = 0;
     private byte blockData = 0;
 
-    /**
+    /*
      * コンストラクタ
      * 
      * @param plugin
      */
     public Flag(final FlagGame plugin, final Stage stage, final Location loc, final FlagType type, final int blockID, final byte blockData) {
-        this.plugin = plugin;
 
         // フラッグデータ登録
         this.stage = stage;

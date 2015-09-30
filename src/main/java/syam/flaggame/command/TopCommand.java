@@ -36,10 +36,7 @@ public class TopCommand extends BaseCommand {
         // 引数なし デフォルト表示
         if (args.size() <= 0) {
             sendRanking(sender, stat, 1);
-            return;
-        }
-        // 引数1 ページ番号 or ランキング種類指定表示
-        else if (args.size() == 1) {
+        } else if (args.size() == 1) {// 引数1 ページ番号 or ランキング種類指定表示
             if (Util.isInteger(args.get(0))) {
                 sendRanking(sender, stat, Integer.valueOf(args.get(0)));
                 return;
@@ -52,11 +49,7 @@ public class TopCommand extends BaseCommand {
                 Actions.message(sender, "&c表示するランキングの種類が不正です！");
                 sendAvailableStat();
             }
-
-            return;
-        }
-        // 引数2+ ページ番号 and ランキング種類指定表示
-        else {
+        } else {// 引数2+ ページ番号 and ランキング種類指定表示
             stat = PlayerStat.getStat(args.get(0));
             if (stat == null) {
                 Actions.message(sender, "&c表示するランキングの種類が不正です！");
@@ -119,7 +112,7 @@ public class TopCommand extends BaseCommand {
      * 指定可能なランキング種類をsenderに送信する
      */
     private void sendAvailableStat() {
-        List<String> col = new ArrayList<String>();
+        List<String> col = new ArrayList<>();
         for (PlayerStat ps : PlayerStat.values()) {
             col.add(ps.name());
         }

@@ -13,7 +13,7 @@ import syam.flaggame.FlagGame;
 import com.titankingdoms.nodinchan.deathnotifier.events.DeathEvent;
 
 public class DeathNotifierListener implements Listener {
-    public static final Logger log = FlagGame.log;
+    public static final Logger log = FlagGame.logger;
     @SuppressWarnings("unused")
     private static final String logPrefix = FlagGame.logPrefix, msgPrefix = FlagGame.msgPrefix;
 

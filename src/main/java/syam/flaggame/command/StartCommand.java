@@ -8,7 +8,6 @@ import syam.flaggame.game.Game;
 import syam.flaggame.manager.GameManager;
 import syam.flaggame.manager.StageManager;
 import syam.flaggame.permission.Perms;
-import syam.flaggame.util.Actions;
 
 public class StartCommand extends BaseCommand {
     public StartCommand() {

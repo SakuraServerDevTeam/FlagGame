@@ -23,7 +23,7 @@ public class WatchCommand extends BaseCommand {
 
     @Override
     public void execute() {
-        Stage stage = null;
+        Stage stage;
 
         if (args.size() >= 1) {
             stage = StageManager.getStage(args.get(0));

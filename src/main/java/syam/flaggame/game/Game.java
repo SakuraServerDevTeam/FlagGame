@@ -7,12 +7,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
@@ -29,10 +31,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import syam.flaggame.FlagGame;
 import syam.flaggame.api.IGame;
-import syam.flaggame.enums.FlagState;
-import syam.flaggame.enums.FlagType;
-import syam.flaggame.enums.GameResult;
-import syam.flaggame.enums.GameTeam;
+import syam.flaggame.enums.*;
 import syam.flaggame.event.GameFinishedEvent;
 import syam.flaggame.event.GameStartEvent;
 import syam.flaggame.exception.GameStateException;
@@ -48,7 +47,7 @@ import syam.flaggame.util.Actions;
  */
 public class Game implements IGame {
     // Logger
-    public static final Logger log = FlagGame.log;
+    public static final Logger log = FlagGame.logger;
     private static final String logPrefix = FlagGame.logPrefix;
     private static final String msgPrefix = FlagGame.msgPrefix;
 
@@ -67,19 +66,19 @@ public class Game implements IGame {
     private boolean started = false; // 開始状態フラグ
 
     // 参加プレイヤー
-    private Map<GameTeam, Set<String>> playersMap = new ConcurrentHashMap<GameTeam, Set<String>>();
+    private Map<GameTeam, Set<String>> playersMap = new EnumMap<>(GameTeam.class);
     private Set<String> redPlayers = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
     private Set<String> bluePlayers = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
 
     // Tabリスト表示名変更
-    private Map<String, String> tabListMap = new ConcurrentHashMap<String, String>();
+    private Map<String, String> tabListMap = new ConcurrentHashMap<>();
     // リスポン後の無敵プレイヤーリスト
-    private ConcurrentHashMap<String, Long> godModeMap = new ConcurrentHashMap<String, Long>();
+    private ConcurrentHashMap<String, Long> godModeMap = new ConcurrentHashMap<>();
 
     // Kill/Death記録
-    private Map<GameTeam, Integer> teamKilledCount = new ConcurrentHashMap<GameTeam, Integer>();
+    private Map<GameTeam, Integer> teamKilledCount = new EnumMap<>(GameTeam.class);
 
-    /**
+    /*
      * コンストラクタ
      * 
      * @param plugin
@@ -93,7 +92,7 @@ public class Game implements IGame {
         // 例外チェック
         if (!stage.isAvailable()) { throw new GameStateException("This stage is not available!"); }
         if (GameManager.getGames().containsKey(stage)) {
-            log.severe(logPrefix + "Stage " + stage.getName() + " is duplicate!");
+            log.log(Level.SEVERE,logPrefix + "Stage {0} is duplicate!", stage.getName());
             return;
         }
 
@@ -103,9 +102,10 @@ public class Game implements IGame {
         GameManager.addGame(stage.getName(), this);
     }
 
-    /**
+    /*
      * このゲームを開始待機中にする
      */
+    @Override
     public void ready(CommandSender sender) {
         if (started || ready) { throw new GameStateException("This game is already using!"); }
 
@@ -163,9 +163,10 @@ public class Game implements IGame {
         log("========================================");
     }
 
-    /**
+    /*
      * ゲームを開始する
      */
+    @Override
     public void start(CommandSender sender) {
         // Call event
         GameStartEvent startEvent = new GameStartEvent(this.stage, this.random, sender, redPlayers, bluePlayers);
@@ -295,8 +296,8 @@ public class Game implements IGame {
         for (String name : redPlayers) {
             red = red + name + ", ";
         }
-        if (blue != "") blue = blue.substring(0, blue.length() - 2);
-        if (red != "") red = red.substring(0, red.length() - 2);
+        if (!"".equals(blue)) blue = blue.substring(0, blue.length() - 2);
+        if (!"".equals(red)) red = red.substring(0, red.length() - 2);
 
         log("========================================");
         log("Sender " + sender.getName() + " Start Game");
@@ -308,14 +309,15 @@ public class Game implements IGame {
     /**
      * タイマー終了によって呼ばれるゲーム終了処理
      */
+    @Override
     public void finish() {
         // ポイントチェック
         int redP = 0, blueP = 0, noneP = 0;
         String redS = "", blueS = "", noneS = "";
-        Map<FlagState, HashMap<FlagType, Integer>> pointsMap = stage.checkFlag();
+        Map<FlagState, Map<FlagType, Integer>> pointsMap = stage.checkFlag();
         // 赤チームチェック
         if (pointsMap.containsKey(FlagState.RED)) {
-            HashMap<FlagType, Integer> points = pointsMap.get(FlagState.RED);
+            Map<FlagType, Integer> points = pointsMap.get(FlagState.RED);
             for (Map.Entry<FlagType, Integer> entry : points.entrySet()) {
                 FlagType ft = entry.getKey();
                 // 総得点に加算
@@ -327,7 +329,7 @@ public class Game implements IGame {
         }
         // 青チームチェック
         if (pointsMap.containsKey(FlagState.BLUE)) {
-            HashMap<FlagType, Integer> points = pointsMap.get(FlagState.BLUE);
+            Map<FlagType, Integer> points = pointsMap.get(FlagState.BLUE);
             for (Map.Entry<FlagType, Integer> entry : points.entrySet()) {
                 FlagType ft = entry.getKey();
                 // 総得点に加算
@@ -339,7 +341,7 @@ public class Game implements IGame {
         }
         // NONEチームチェック
         if (pointsMap.containsKey(FlagState.NONE)) {
-            HashMap<FlagType, Integer> points = pointsMap.get(FlagState.NONE);
+            Map<FlagType, Integer> points = pointsMap.get(FlagState.NONE);
             for (Map.Entry<FlagType, Integer> entry : points.entrySet()) {
                 FlagType ft = entry.getKey();
                 // 総得点に加算
@@ -370,9 +372,9 @@ public class Game implements IGame {
 
         // アナウンス
         Actions.broadcastMessage(msgPrefix + "&2フラッグゲーム'&6" + stage.getName() + "&2'が終わりました！");
-        if (redS != "") Actions.broadcastMessage("&c赤チーム: &6" + redP + "&c点&f (" + redS + "&f)");
-        if (blueS != "") Actions.broadcastMessage("&b青チーム得点: &6" + blueP + "&b点&f (" + blueS + "&f)");
-        if (noneS != "") Actions.broadcastMessage("&7無効フラッグ: &6" + noneP + "&7点&f (" + noneS + "&f)");
+        if (!"".equals(redS)) Actions.broadcastMessage("&c赤チーム: &6" + redP + "&c点&f (" + redS + "&f)");
+        if (!"".equals(blueS)) Actions.broadcastMessage("&b青チーム得点: &6" + blueP + "&b点&f (" + blueS + "&f)");
+        if (!"".equals(noneS)) Actions.broadcastMessage("&7無効フラッグ: &6" + noneP + "&7点&f (" + noneS + "&f)");
         if (winTeam != null) {
             Actions.broadcastMessage(msgPrefix + winTeam.getColor() + winTeam.getTeamName() + "チーム の勝利です！ &7(&c" + redP + "&7 - &b" + blueP + "&7)");
         } else {
@@ -465,7 +467,7 @@ public class Game implements IGame {
         // init();
     }
 
-    /**
+    /*
      * 結果を指定してゲームを終了する
      * 
      * @param result
@@ -473,6 +475,7 @@ public class Game implements IGame {
      * @param winTeam
      *            GameResult.TEAM_WIN の場合の勝利チーム
      */
+    @Override
     public void finish(GameResult result, GameTeam winTeam, String reason) {
         if (result == null || (result == GameResult.TEAM_WIN && winTeam == null)) {
             log.warning(logPrefix + "Error on method finish(GameResult, GameTeam)! Please report this!");
@@ -500,7 +503,7 @@ public class Game implements IGame {
                 return;
         }
 
-        if (reason != null && reason != "") {
+        if (reason != null && !"".equals(reason)) {
             Actions.broadcastMessage(msgPrefix + "&2理由: " + reason);
         }
 
@@ -593,7 +596,7 @@ public class Game implements IGame {
      */
     private void addPlayerResultCounts(GameResult result, GameTeam winTeam) {
         // オフラインプレイヤーリスト
-        List<String> offlines = new ArrayList<String>();
+        List<String> offlines = new ArrayList<>();
         offlines.clear();
 
         if (result == GameResult.STOP) {
@@ -647,9 +650,7 @@ public class Game implements IGame {
         }
 
         // オフラインユーザーは途中退場カウント追加
-        for (String name : offlines) {
-            PlayerManager.getProfile(name).addExit(); // exit++
-        }
+        offlines.stream().forEach(name -> PlayerManager.getProfile(name).addExit());
     }
 
     /**
@@ -672,6 +673,7 @@ public class Game implements IGame {
      *            参加させるプレイヤー
      * @return
      */
+    @Override
     public boolean addPlayer(Player player) {
         // 赤チームのが少ないか、または同じなら赤チームに追加 それ以外は青チームに追加
         if (redPlayers.size() <= bluePlayers.size()) {
@@ -690,6 +692,7 @@ public class Game implements IGame {
      *            追加するチーム
      * @return 成功すればtrue, 失敗すればfalse
      */
+    @Override
     public boolean addPlayer(Player player, GameTeam team) {
         // チームの存在確認
         if (player == null || team == null || !playersMap.containsKey(team)) { return false; }
@@ -718,13 +721,12 @@ public class Game implements IGame {
             playersMap.get(team).remove(player.getName());
         } else {
             // チームがnullなら全チームから削除
-            for (Set<String> set : playersMap.values()) {
-                set.remove(player.getName());
-            }
+            playersMap.values().stream().forEach(set -> set.remove(player.getName()));
         }
         return true;
     }
 
+    @Override
     public boolean remPlayer(String playerName) {
         // 削除
         for (Set<String> set : playersMap.values()) {
@@ -733,6 +735,7 @@ public class Game implements IGame {
         return true;
     }
 
+    @Override
     public boolean remPlayer(Player player) {
         if (player == null) return false;
         return this.remPlayer(player.getName());
@@ -745,6 +748,7 @@ public class Game implements IGame {
      *            対象のプレイヤー
      * @return GameTeam または所属なしの場合 null
      */
+    @Override
     public GameTeam getPlayerTeam(Player player) {
         String name = player.getName();
         for (Map.Entry<GameTeam, Set<String>> ent : playersMap.entrySet()) {
@@ -760,22 +764,26 @@ public class Game implements IGame {
      * 
      * @return
      */
+    @Override
     public Map<GameTeam, Set<String>> getPlayersMap() {
         return playersMap;
     }
 
+    @Override
     public Set<String> getPlayersSet() {
-        Set<String> ret = new HashSet<String>();
+        Set<String> ret = new HashSet<>();
         for (Set<String> teamSet : playersMap.values()) {
             ret.addAll(teamSet);
         }
         return ret;
     }
 
+    @Override
     public boolean isJoined(String playerName) {
         return getPlayersSet().contains(playerName);
     }
 
+    @Override
     public boolean isJoined(Player player) {
         if (player == null) return false;
         return this.isJoined(player.getName());
@@ -787,12 +795,13 @@ public class Game implements IGame {
     
     /* ***** 参加しているプレイヤーへのアクション関係 ***** */
 
-    /**
+    /*
      * ゲーム参加者全員にメッセージを送る
      * 
      * @param msg
      *            メッセージ
      */
+    @Override
     public void message(String message) {
         // イベントワールド全員に送る？ 全チームメンバーに送る？
         // とりあえずワールドキャストする → ワールドキャストの場合同時進行が行えない
@@ -809,7 +818,7 @@ public class Game implements IGame {
         }
     }
 
-    /**
+    /*
      * 特定チームにのみメッセージを送る
      * 
      * @param msg
@@ -817,20 +826,23 @@ public class Game implements IGame {
      * @param team
      *            対象のチーム
      */
+    @Override
     public void message(GameTeam team, String message) {
         if (team == null || !playersMap.containsKey(team)) return;
 
         // チームメンバーでループさせてメッセージを送る
-        for (String name : playersMap.get(team)) {
-            if (name == null) continue;
-            Player player = Bukkit.getServer().getPlayer(name);
-            if (player != null && player.isOnline()) Actions.message(player, message);
-        }
+        playersMap.get(team).stream()
+                .filter(name -> name != null)
+                .map(Bukkit.getServer()::getPlayer)
+                .filter(player -> player != null)
+                .filter(Player::isOnline)
+                .forEach(player -> Actions.message(player, message));
     }
 
     /**
      * 参加プレイヤーをスポーン地点へ移動させる
      */
+    @Override
     public void tpSpawnLocation() {
         // 参加プレイヤーマップを回す
         for (Map.Entry<GameTeam, Set<String>> entry : playersMap.entrySet()) {
@@ -875,6 +887,7 @@ public class Game implements IGame {
      *            取得するチーム
      * @return プレイヤーセット またはnull
      */
+    @Override
     public Set<String> getPlayersSet(GameTeam team) {
         if (team == null || !playersMap.containsKey(team)) return null;
 
@@ -882,6 +895,7 @@ public class Game implements IGame {
     }
 
     /* ***** Kill/Death関係 ***** */
+    @Override
     public void addKillCount(GameTeam team) {
         if (!teamKilledCount.containsKey(team)) {
             teamKilledCount.put(team, 1);
@@ -890,6 +904,7 @@ public class Game implements IGame {
         }
     }
 
+    @Override
     public int getKillCount(GameTeam team) {
         if (!teamKilledCount.containsKey(team)) {
             return 0;
@@ -900,9 +915,10 @@ public class Game implements IGame {
 
     /* ***** タイマー関係 ***** */
 
-    /**
+    /*
      * 開始時のカウントダウンタイマータスクを開始する
      */
+    @Override
     public void start_timer(final CommandSender sender) {
         // カウントダウン秒をリセット
         starttimerInSec = plugin.getConfigs().getStartCountdownInSec();
@@ -922,6 +938,7 @@ public class Game implements IGame {
         // plugin.getServer().getScheduler().scheduleAsyncRepeatingTask(plugin,
         // new Runnable() {
         starttimerThreadID = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
+            @Override
             public void run() {
                 /* 1秒ごとに呼ばれる */
 
@@ -941,6 +958,7 @@ public class Game implements IGame {
     /**
      * メインのタイマータスクを開始する
      */
+    @Override
     public void timer() {
         // タイマータスク
         // timerThreadID =
@@ -969,6 +987,7 @@ public class Game implements IGame {
     /**
      * タイマータスクが稼働中の場合停止する
      */
+    @Override
     public void cancelTimerTask() {
         if (ready && starttimerThreadID != -1) {
             plugin.getServer().getScheduler().cancelTask(starttimerThreadID);
@@ -984,6 +1003,7 @@ public class Game implements IGame {
      * 
      * @return 残り時間(秒)
      */
+    @Override
     public int getRemainTime() {
         return remainSec;
     }
@@ -1026,6 +1046,7 @@ public class Game implements IGame {
      * @param line
      *            ログ
      */
+    @Override
     public void log(String line) {
         if (gameID != null) {
             String filepath = plugin.getConfigs().getDetailDirectory() + gameID + ".log";

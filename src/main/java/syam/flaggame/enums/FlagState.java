@@ -12,7 +12,7 @@ public enum FlagState {
     BLUE(GameTeam.BLUE), // 青チーム所有
     ;
 
-    private GameTeam team;
+    private final GameTeam team;
 
     FlagState(GameTeam team) {
         this.team = team;

@@ -19,8 +19,8 @@ public enum Configables {
     // オプション
     GAMETIME("ゲームの制限時間(秒)", ConfigType.SIMPLE), TEAMLIMIT("チーム毎の人数制限", ConfigType.SIMPLE), AWARD("勝利チームへの賞金", ConfigType.SIMPLE), ENTRYFEE("参加料", ConfigType.SIMPLE), PROTECT("ステージ保護", ConfigType.SIMPLE), AVAILABLE("ステージ有効", ConfigType.SIMPLE), ;
 
-    private String configName;
-    private ConfigType configType;
+    private final String configName;
+    private final ConfigType configType;
 
     Configables(String configName, ConfigType configType) {
         this.configName = configName;

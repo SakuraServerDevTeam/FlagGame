@@ -12,13 +12,12 @@ import syam.flaggame.FlagGame;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.bukkit.BukkitPlayer;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.CuboidRegionSelector;
-import com.sk89q.worldedit.regions.RegionSelector;
+import java.util.logging.Level;
 
 /**
  * WorldEditの選択領域を取得するためのWorldEditハンドラ
@@ -28,7 +27,7 @@ import com.sk89q.worldedit.regions.RegionSelector;
  */
 public class WorldEditHandler {
     // Logger
-    public static final Logger log = FlagGame.log;
+    public static final Logger log = FlagGame.logger;
     private static final String logPrefix = FlagGame.logPrefix;
     private static final String msgPrefix = FlagGame.msgPrefix;
 
@@ -108,7 +107,7 @@ public class WorldEditHandler {
             Actions.message(bPlayer, msgPrefix + "&cWorldEdit region is not fully selected!");
         } catch (Exception ex) {
             // その他一般例外
-            log.warning(logPrefix + "Error while retreiving WorldEdit region: " + ex.getMessage());
+            log.log(Level.WARNING,logPrefix + "Error while retreiving WorldEdit region: {0}", ex.getMessage());
             ex.printStackTrace();
         }
         return null;
@@ -146,7 +145,7 @@ public class WorldEditHandler {
             session.dispatchCUISelection(player);
         } catch (Exception ex) {
             // 一般例外
-            log.warning(logPrefix + "Error while selecting WorldEdit region: " + ex.getMessage());
+            log.log(Level.WARNING,logPrefix + "Error while selecting WorldEdit region: {0}", ex.getMessage());
             ex.printStackTrace();
             return false;
         }

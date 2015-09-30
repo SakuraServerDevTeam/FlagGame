@@ -33,7 +33,7 @@ public enum Perms {
 
     // ノードヘッダー
     final String HEADER = "flag.";
-    private String node;
+    private final String node;
 
     /**
      * コンストラクタ
@@ -45,7 +45,7 @@ public enum Perms {
         this.node = HEADER + node;
     }
 
-    /**
+    /*
      * 指定したプレイヤーが権限を持っているか
      * 
      * @param player
@@ -57,7 +57,7 @@ public enum Perms {
         return handler.has(perm, this.node);
     }
 
-    /**
+    /*
      * 指定したプレイヤーが権限を持っているか(String)
      * 
      * @param player

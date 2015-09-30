@@ -40,7 +40,7 @@ public interface IStage {
 
     Map<Location, Flag> getFlags();
 
-    public Map<FlagState, HashMap<FlagType, Integer>> checkFlag();
+    public Map<FlagState, Map<FlagType, Integer>> checkFlag();
 
     // チェスト関係
     void setChest(Location loc);

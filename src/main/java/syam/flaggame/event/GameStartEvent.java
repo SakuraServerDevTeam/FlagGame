@@ -21,11 +21,11 @@ public class GameStartEvent extends Event implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
     private boolean isCancelled = false;
 
-    private Stage stage;
-    private boolean random;
-    private CommandSender sender;
-    private Set<String> redTeam;
-    private Set<String> blueTeam;
+    private final Stage stage;
+    private final boolean random;
+    private final CommandSender sender;
+    private final Set<String> redTeam;
+    private final Set<String> blueTeam;
 
     /**
      * コンストラクタ
@@ -65,10 +65,12 @@ public class GameStartEvent extends Event implements Cancellable {
         return this.blueTeam;
     }
 
+    @Override
     public boolean isCancelled() {
         return this.isCancelled;
     }
 
+    @Override
     public void setCancelled(boolean cancelled) {
         this.isCancelled = cancelled;
     }

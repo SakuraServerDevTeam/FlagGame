@@ -4,6 +4,7 @@
 package syam.flaggame.permission;
 
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.milkbowl.vault.permission.Permission;
@@ -35,7 +36,7 @@ public class PermissionHandler {
     }
 
     // Logger
-    private static final Logger log = FlagGame.log;
+    private static final Logger log = FlagGame.logger;
     private static final String logPrefix = FlagGame.logPrefix;
     private static final String msgPrefix = FlagGame.msgPrefix;
 
@@ -60,7 +61,7 @@ public class PermissionHandler {
         instance = this;
     }
 
-    /**
+    /*
      * 権限管理プラグインをセットアップする
      * 
      * @param debug
@@ -100,7 +101,7 @@ public class PermissionHandler {
 
         // メッセージ送信
         if (message) {
-            log.info(logPrefix + "Using " + getUsePermTypeString() + " for permissions");
+            log.log(Level.INFO,logPrefix + "Using {0} for permissions", getUsePermTypeString());
         }
     }
 
@@ -117,7 +118,7 @@ public class PermissionHandler {
         // コンソールは常にすべての権限を保有する
         if (permissible instanceof ConsoleCommandSender) { return true; }
         // プレイヤーでもなければfalseを返す
-        Player player = null;
+        Player player;
         if (permissible instanceof Player) {
             player = (Player) permissible;
         } else {
