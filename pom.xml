@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>syam.flaggame</groupId>
     <artifactId>flaggame</artifactId>
-    <version>0.2-SNAPSHOT</version>
+    <version>0.3-SNAPSHOT</version>
     <name>FlagGame</name>
     <description>CraftBukkit FlagGame Plugin</description>
 
@@ -20,7 +20,19 @@
             <id>syamn</id>
             <name>syam</name>
             <email>admin@sakura-server.net</email>
-            <url>http://twitter.com/starlightp</url>
+            <url>http://twitter.com/syamncat</url>
+            <organization>Sakura Server</organization>
+            <organizationUrl>http://sakura-server.net/</organizationUrl>
+        </developer>
+        <developer>
+            <id>ja731j</id>
+            <organization>Sakura Server</organization>
+            <organizationUrl>http://sakura-server.net/</organizationUrl>
+        </developer>
+        <developer>
+            <id>toyblocks</id>
+            <name>toy</name>
+            <email>spica.toyblocks@gmail.com</email>
             <organization>Sakura Server</organization>
             <organizationUrl>http://sakura-server.net/</organizationUrl>
         </developer>

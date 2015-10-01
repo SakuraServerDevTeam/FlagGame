@@ -6,8 +6,10 @@ description: FlagMatch Gaming Plugin
 website: http://sakura-server.net/
 depend: [Vault, WorldEdit]
 softdepend: [dynmap]
-##  Original Author     ##
-author: syam
+##  Original Author: syam
+##  Contributor: ja731j
+##  Present developer: toyblocks
+authors: [syam, ja731j, toyblocks]
 commands:
     flag:
       usage: /flag - to see the help

@@ -14,7 +14,7 @@ public class HelpCommand extends BaseCommand {
     @Override
     public void execute() {
         Actions.message(sender, "&c===================================");
-        Actions.message(sender, "&bFlagGame Plugin version &3" + plugin.getDescription().getVersion() + " &bby syamn");
+        Actions.message(sender, "&bFlagGame Plugin version &3" + plugin.getDescription().getVersion() + " &bby "+String.join(", ", plugin.getDescription().getAuthors()));
         Actions.message(sender, " &b<>&f = required, &b[]&f = optional");
         // 全コマンドをループで表示
         for (BaseCommand cmd : FlagGame.getCommands().toArray(new BaseCommand[0])) {
