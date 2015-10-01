@@ -1,6 +1,6 @@
 ##  Plugin Information  ##
-name: FlagGame
-version: version-number-unknown
+name: ${pom.name}
+version: ${pom.version}
 main: syam.flaggame.FlagGame
 description: FlagMatch Gaming Plugin
 website: http://sakura-server.net/
