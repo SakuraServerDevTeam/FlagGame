@@ -3,8 +3,6 @@
  */
 package syam.flaggame.game;
 
-import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
@@ -20,11 +18,13 @@ import syam.flaggame.util.Cuboid;
 
 /**
  * GameTimerTask (GameTimerTask.java)
- * 
+ *
  * @author syam(syamn)
  */
 public class GameTimerTask implements Runnable {
+
     // Logger
+
     public static final Logger log = FlagGame.logger;
     private static final String msgPrefix = FlagGame.msgPrefix;
 
@@ -34,11 +34,9 @@ public class GameTimerTask implements Runnable {
 
     /**
      * コンストラクタ
-     * 
-     * @param plugin
-     *            FlagGame
-     * @param game
-     *            Game
+     *
+     * @param plugin FlagGame
+     * @param game Game
      */
     public GameTimerTask(final FlagGame plugin, final Game game) {
         this.game = game;
@@ -60,12 +58,10 @@ public class GameTimerTask implements Runnable {
         // 15秒以下
         if (game.getRemainTime() <= 15) {
             game.message(msgPrefix + "&aゲーム終了まで あと " + game.getRemainTime() + " 秒です！");
-        }
-        // 30秒前
+        } // 30秒前
         else if (game.getRemainTime() == 30) {
             game.message(msgPrefix + "&aゲーム終了まで あと " + game.getRemainTime() + " 秒です！");
-        }
-        // 60秒間隔
+        } // 60秒間隔
         else if ((game.getRemainTime() % 60) == 0) {
             game.message(msgPrefix + "&aゲーム終了まで あと " + game.getRemainTime() / 60 + " 分です！");
         }
@@ -74,9 +70,6 @@ public class GameTimerTask implements Runnable {
         if (cuboid != null) {
             checkPlayersLocation();
         }
-        
-        // 無敵モードチェック
-        checkGodModePlayers();
 
         // remainsec--
         game.tickRemainTime();
@@ -90,7 +83,9 @@ public class GameTimerTask implements Runnable {
         for (String name : game.getPlayersSet()) {
             Player player = Bukkit.getPlayer(name);
 
-            if (player == null || !player.isOnline()) continue;
+            if (player == null || !player.isOnline()) {
+                continue;
+            }
 
             // ステージ外に出ていればチームスポーン地点に戻す
             if (!cuboid.isIn(player.getLocation())) {
@@ -115,21 +110,6 @@ public class GameTimerTask implements Runnable {
                     player.teleport(loc, TeleportCause.PLUGIN);
                     Actions.message(player, "&cステージエリア外に出たためスポーン地点に戻されました！");
                 }
-            }
-        }
-    }
-    
-    /**
-     * プレイヤーの無敵時間が超過しているかチェックを行う
-     */
-    private void checkGodModePlayers(){
-        ConcurrentHashMap<String, Long> godPlayers = game.getGodModeMap();
-        for (Entry<String, Long> entry : godPlayers.entrySet()){
-            if (entry.getValue() + this.godModeTime < System.currentTimeMillis() / 1000){
-                godPlayers.remove(entry.getKey());
-                Player player = Bukkit.getPlayerExact(entry.getKey());
-                if (player != null && player.isOnline())
-                    Actions.message(player, "&b無敵時間が終了しました！");
             }
         }
     }

@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -72,8 +71,6 @@ public class Game implements IGame {
 
     // Tabリスト表示名変更
     private Map<String, String> tabListMap = new ConcurrentHashMap<>();
-    // リスポン後の無敵プレイヤーリスト
-    private ConcurrentHashMap<String, Long> godModeMap = new ConcurrentHashMap<>();
 
     // Kill/Death記録
     private Map<GameTeam, Integer> teamKilledCount = new EnumMap<>(GameTeam.class);
@@ -112,7 +109,6 @@ public class Game implements IGame {
         // 一度プレイヤーリスト初期化
         redPlayers.clear();
         bluePlayers.clear();
-        godModeMap.clear();
         // 再マッピング
         mappingPlayersList();
 
@@ -787,10 +783,6 @@ public class Game implements IGame {
     public boolean isJoined(Player player) {
         if (player == null) return false;
         return this.isJoined(player.getName());
-    }
-
-    public ConcurrentHashMap<String, Long> getGodModeMap(){
-        return this.godModeMap;
     }
     
     /* ***** 参加しているプレイヤーへのアクション関係 ***** */

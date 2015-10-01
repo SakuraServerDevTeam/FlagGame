@@ -22,6 +22,8 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import syam.flaggame.FlagGame;
 import syam.flaggame.enums.FlagType;
@@ -203,7 +205,7 @@ public class FGPlayerListener implements Listener {
                 if (loc == null) {
                     // 所属チームのスポーン地点設定なし
                     Actions.message(player, msgPrefix + "&cあなたのチームのスポーン地点が設定されていません");
-                    log.log(Level.WARNING,logPrefix + "Player {0} died, But undefined spawn-location. Game: {1} Team: {2}",
+                    log.log(Level.WARNING, logPrefix + "Player {0} died, But undefined spawn-location. Game: {1} Team: {2}",
                             new Object[]{player.getName(), game.getStage().getName(), team.name()});
 
                     event.setRespawnLocation(Bukkit.getWorld(plugin.getConfigs().getGameWorld()).getSpawnLocation());
@@ -215,7 +217,7 @@ public class FGPlayerListener implements Listener {
                     player.getInventory().setHelmet(new ItemStack(team.getBlockID(), 1, (short) 0, team.getBlockData()));
                 }
                 // リスポン後無敵時間設定
-                game.getGodModeMap().put(player.getName(), System.currentTimeMillis() / 1000);
+                player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, this.plugin.getConfigs().getGodModeTime(), 4));
 
                 return; // 複数ゲーム所属はあり得ないのでここで返す
             }
@@ -378,7 +380,7 @@ public class FGPlayerListener implements Listener {
                     return;
                 }
             }
-            
+
             for (Game game : GameManager.getGames().values()) {
                 // 待機中ゲーム
                 if (game.isReady()) {
@@ -391,7 +393,7 @@ public class FGPlayerListener implements Listener {
                     if (game.getStage().getAward() <= 0) {
                         awardMsg = "&7なし";
                     }
-                    
+
                     // アナウンス
                     if (!game.isRandom()) {
                         Actions.message(player, "&b* ===================================");
@@ -406,7 +408,7 @@ public class FGPlayerListener implements Listener {
                         Actions.message(player, msgPrefix + "&2 '&6/flag join random&2' コマンドで参加してください！");
                         Actions.message(player, "&b* ===================================");
                     }
-                    
+
                 } // 開始中ゲーム
                 else if (game.isStarting()) {
                     // 観戦アナウンス
@@ -604,7 +606,7 @@ public class FGPlayerListener implements Listener {
 
             default:
                 Actions.message(player, msgPrefix + "&cSorry I forgot this sign-action. Please contact server staff!");
-                log.log(Level.WARNING,logPrefix + "{0}: Sorry I forgot this sign-action. Please contact server staff!", player.getName());
+                log.log(Level.WARNING, logPrefix + "{0}: Sorry I forgot this sign-action. Please contact server staff!", player.getName());
         }
 
     }

@@ -31,6 +31,8 @@ public class ConfigurationManager {
     private static final List<String> DEFAULT_DISABLED_COMMANDS = Arrays.asList("/spawn", "/home", "/setspawn");
     private static final List<String> DEFAULT_PERMISSIONS = Arrays.asList("vault","superperms","ops");
 
+    private static final double VERSION = 0.3D;
+    
     private final JavaPlugin plugin;
     private final File pluginDir;
     // 設定項目
@@ -90,7 +92,7 @@ public class ConfigurationManager {
         plugin.reloadConfig();
 
         // Check config.yml version
-        checkver(plugin.getConfig().getDouble("Version", 0.1D));
+        checkver(plugin.getConfig().getDouble("Version", VERSION));
 
         /* Basic Configs */
         toolID = plugin.getConfig().getInt("ToolID", 269);
@@ -260,7 +262,7 @@ public class ConfigurationManager {
      */
     private void checkver(final double ver) {
         double configVersion = ver; // 設定ファイルのバージョン
-        double nowVersion = 0.1D; // プラグインのバージョン
+        double nowVersion = VERSION; // プラグインのバージョン
 
         String versionString = plugin.getDescription().getVersion();
         try {

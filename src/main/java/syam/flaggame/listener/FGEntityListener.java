@@ -72,12 +72,6 @@ public class FGEntityListener implements Listener {
                 
                 boolean cancel = false;
                 
-                // 無敵時間
-                if (game.getGodModeMap().containsKey(damager.getName())){
-                    cancel = true;
-                    Actions.message(attacker, "&cこのプレイヤーはリスポーン後の無敵時間中です！");
-                }
-                
                 // 同じチームメンバー
                 if (damagerTeam == attackerTeam) {
                     cancel = true;

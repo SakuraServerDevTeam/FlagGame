@@ -29,8 +29,8 @@ DeathWhenLogout: true
 DisableTeamPVP: true
 # If it true, Prevent regain health on game world
 DisableRegainHealth: true
-# Prevents respawn kill, god-mode time in seconds
-RespawnGodModeTime: 4
+# Prevents respawn kill, god-mode time in ticks
+RespawnGodModeTime: 80
 # Lists of disabled commands during the game
 DisableCommands:
 - /spawn
@@ -74,4 +74,4 @@ Permissions:
 #   DO NOT TOUCH   #
 #==================#
 # Do not touch this option! It is a check if you are running the recent configuration version
-Version: 0.2
+Version: 0.3
