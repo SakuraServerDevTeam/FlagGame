@@ -197,8 +197,8 @@
       <!-- Vault Dependency -->
       <dependency>
           <groupId>net.milkbowl.vault</groupId>
-          <artifactId>Vault</artifactId>
-          <version>1.4.1</version>
+          <artifactId>VaultAPI</artifactId>
+          <version>1.5</version>
       </dependency>
       <!-- WorldEdit Dependency -->
       <dependency>

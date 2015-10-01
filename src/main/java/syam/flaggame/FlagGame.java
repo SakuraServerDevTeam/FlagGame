@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.command.Command;
@@ -75,8 +74,6 @@ public class FlagGame extends JavaPlugin {
     private static FlagGame instance;
 
     // Hookup plugins
-    // public boolean usingDeathNotifier = false;
-    private static Vault vault = null;
     private static Economy economy = null;
     private DynmapHandler dynmap = null;
 
@@ -235,7 +232,7 @@ public class FlagGame extends JavaPlugin {
      */
     private void setupVault() {
         Plugin plugin = this.getServer().getPluginManager().getPlugin("Vault");
-        if (plugin != null & plugin instanceof Vault) {
+        if (plugin != null) {
             RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
             // 経済概念のプラグインがロードされているかチェック
             if (economyProvider == null) {
@@ -245,7 +242,6 @@ public class FlagGame extends JavaPlugin {
             }
 
             try {
-                vault = (Vault) plugin;
                 economy = economyProvider.getProvider();
             } // 例外チェック
             catch (Exception e) {
@@ -405,15 +401,6 @@ public class FlagGame extends JavaPlugin {
      */
     public ConfirmQueue getQueue() {
         return queue;
-    }
-
-    /**
-     * Vaultを返す
-     *
-     * @return Vault
-     */
-    public Vault getVault() {
-        return vault;
     }
 
     /**
