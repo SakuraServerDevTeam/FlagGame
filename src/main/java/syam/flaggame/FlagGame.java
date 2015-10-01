@@ -87,11 +87,6 @@ public class FlagGame extends JavaPlugin {
         instance = this;
 
         PluginManager pm = getServer().getPluginManager();
-        if (!initInternalAccessor()) {
-            logger.severe("Your version of craftbukkit is not supported");
-            pm.disablePlugin(this);
-            return;
-        }
 
         config = new ConfigurationManager(this);
 
@@ -218,13 +213,6 @@ public class FlagGame extends JavaPlugin {
         // メッセージ表示
         PluginDescriptionFile pdfFile = this.getDescription();
         logger.log(Level.INFO, "[{0}] version {1} is disabled!", new Object[]{pdfFile.getName(), pdfFile.getVersion()});
-    }
-
-    private boolean initInternalAccessor() {
-        String version = this.getServer().getClass().getPackage().getName();
-        version = version.substring(version.lastIndexOf('.') + 1);
-
-        return "v1_5_R2".equals(version.trim());
     }
 
     /**
