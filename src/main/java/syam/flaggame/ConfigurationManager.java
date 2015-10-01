@@ -29,7 +29,7 @@ public class ConfigurationManager {
     // Defaults
     private static final String DEFAULT_WORLD_NAME = "flag";
     private static final List<String> DEFAULT_DISABLED_COMMANDS = Arrays.asList("/spawn", "/home", "/setspawn");
-    private static final List<String> DEFAULT_PERMISSIONS = Arrays.asList("vault","pex","superperms","ops");
+    private static final List<String> DEFAULT_PERMISSIONS = Arrays.asList("vault","superperms","ops");
 
     private final JavaPlugin plugin;
     private final File pluginDir;

@@ -16,8 +16,6 @@ import org.bukkit.permissions.Permissible;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
-import ru.tehkode.permissions.PermissionUser;
-import ru.tehkode.permissions.bukkit.PermissionsEx;
 import syam.flaggame.FlagGame;
 
 /**
@@ -32,7 +30,7 @@ public class PermissionHandler {
      * @author syam(syamn)
      */
     public enum PermType {
-        VAULT, PEX, SUPERPERMS, OPS, ;
+        VAULT, SUPERPERMS, OPS, ;
     }
 
     // Logger
@@ -48,7 +46,6 @@ public class PermissionHandler {
 
     // 外部権限管理プラグイン
     private net.milkbowl.vault.permission.Permission vaultPermission = null; // 混同する可能性があるのでパッケージをimportしない
-    private PermissionsEx pex = null;
 
     /**
      * コンストラクタ
@@ -75,11 +72,6 @@ public class PermissionHandler {
             if ("vault".equalsIgnoreCase(pname)) {
                 if (setupVaultPermission()) {
                     usePermType = PermType.VAULT;
-                    break;
-                }
-            } else if ("pex".equals(pname)) {
-                if (setupPEXPermission()) {
-                    usePermType = PermType.PEX;
                     break;
                 }
             } else if ("superperms".equalsIgnoreCase(pname)) {
@@ -131,10 +123,6 @@ public class PermissionHandler {
             case VAULT:
                 return vaultPermission.has(player, permission);
 
-                // PEX
-            case PEX:
-                return pex.has(player, permission);
-
                 // SuperPerms
             case SUPERPERMS:
                 return player.hasPermission(permission);
@@ -167,12 +155,6 @@ public class PermissionHandler {
         // Vault
             case VAULT:
                 return vaultPermission.has(worldName, playerName, permission);
-
-                // PEX
-            case PEX:
-                PermissionUser user = PermissionsEx.getPermissionManager().getUser(playerName);
-                if (user == null) { return false; }
-                return user.has(permission, worldName);
 
                 // SuperPerms
             case SUPERPERMS: {
@@ -215,17 +197,6 @@ public class PermissionHandler {
             case VAULT:
                 return vaultPermission.getPrimaryGroup(worldName, playerName);
 
-                // PEX
-            case PEX:
-                PermissionUser user = PermissionsEx.getPermissionManager().getUser(playerName);
-                if (user == null) { return null; }
-                String[] groups = user.getGroupsNames();
-                if (groups != null && groups.length > 0) {
-                    return groups[0];
-                } else {
-                    return null;
-                }
-
                 // SuperPerms
             case SUPERPERMS: {
                 // SuperPerms not support group
@@ -254,10 +225,6 @@ public class PermissionHandler {
         // Vault
             case VAULT:
                 return "Vault: " + Bukkit.getServer().getServicesManager().getRegistration(Permission.class).getProvider().getName();
-
-                // PEX
-            case PEX:
-                return "PermissionsEx";
 
                 // Ops
             case OPS:
@@ -291,25 +258,6 @@ public class PermissionHandler {
         }
 
         return (vaultPermission != null);
-    }
-
-    /**
-     * PermissionsEx権限管理システム セットアップ
-     * 
-     * @return boolean
-     */
-    private boolean setupPEXPermission() {
-        Plugin testPex = plugin.getServer().getPluginManager().getPlugin("PermissionsEx");
-        if (testPex == null) testPex = plugin.getServer().getPluginManager().getPlugin("permissionsex");
-        if (testPex == null) return false;
-        try {
-            pex = (PermissionsEx) testPex;
-        } catch (Exception ex) {
-            log.warning(logPrefix + "Unexpected error trying to setup PEX permissions!");
-            ex.printStackTrace();
-        }
-
-        return (pex != null);
     }
 
     // ここまで

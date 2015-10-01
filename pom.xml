@@ -212,16 +212,6 @@
           <artifactId>dynmap-api</artifactId>
           <version>2.0</version>
       </dependency>
-
-      <!-- Use Library (basedir/lib/) Directory -->
-      <!-- PermissionsEx Dependency -->
-      <dependency>
-          <groupId>ru.tehkode</groupId>
-          <artifactId>PermissionsEx</artifactId>
-          <version>1.22</version>
-          <scope>system</scope>
-          <systemPath>${project.basedir}/lib/PermissionsEx-1.22.jar</systemPath>
-      </dependency>
   </dependencies>
 
   <!-- Profiles -->
