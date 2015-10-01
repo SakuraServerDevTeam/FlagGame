@@ -409,7 +409,7 @@ public class Stage implements IStage {
 
     @Override
     public Location getSpecSpawn() {
-        return this.specSpawn.clone();
+        return this.specSpawn != null ? this.specSpawn.clone() : null;
     }
 
     @Override
