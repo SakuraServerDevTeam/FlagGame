@@ -222,14 +222,6 @@
           <scope>system</scope>
           <systemPath>${project.basedir}/lib/PermissionsEx-1.22.jar</systemPath>
       </dependency>
-      <!-- DeathNotifier Dependency -->
-      <dependency>
-          <groupId>com.titankingdoms.nodinchan</groupId>
-          <artifactId>deathnotifier</artifactId>
-          <version>2.2</version>
-          <scope>system</scope>
-          <systemPath>${project.basedir}/lib/DeathNotifier-2.2.jar</systemPath>
-      </dependency>
   </dependencies>
 
   <!-- Profiles -->

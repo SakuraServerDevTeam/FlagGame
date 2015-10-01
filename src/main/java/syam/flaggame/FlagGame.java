@@ -11,7 +11,6 @@ import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
@@ -57,7 +56,6 @@ public class FlagGame extends JavaPlugin {
     private final FGBlockListener blockListener = new FGBlockListener(this);
     private final FGEntityListener entityListener = new FGEntityListener(this);
     private final FGInventoryListener inventoryListener = new FGInventoryListener(this);
-    private final DeathNotifierListener dnListener = new DeathNotifierListener(this);
 
     // ** Commands **
     private static final List<BaseCommand> commands = new ArrayList<>();
@@ -129,12 +127,6 @@ public class FlagGame extends JavaPlugin {
 
         // Regist Listeners
         debug.startTimer("listeners");
-        Plugin p = pm.getPlugin("DeathNotifier");
-        if (p != null) {
-            pm.registerEvents(dnListener, this); // Regist Listener
-            // usingDeathNotifier = true; //フラグ
-            logger.info(logPrefix + "Hooked to DeathNotifier!");
-        }
         pm.registerEvents(playerListener, this);
         pm.registerEvents(blockListener, this);
         pm.registerEvents(entityListener, this);
