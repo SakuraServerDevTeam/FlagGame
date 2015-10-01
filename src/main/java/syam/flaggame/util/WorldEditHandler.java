@@ -10,13 +10,12 @@ import org.bukkit.plugin.Plugin;
 import syam.flaggame.FlagGame;
 
 import com.sk89q.worldedit.IncompleteRegionException;
-import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.bukkit.BukkitPlayer;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.regions.CuboidRegion;
-import com.sk89q.worldedit.regions.CuboidRegionSelector;
+import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
 import java.util.logging.Level;
 
 /**
@@ -77,16 +76,16 @@ public class WorldEditHandler {
         WorldEditPlugin we = getWorldEdit(bPlayer);
         if (we == null) return null;
 
-        LocalPlayer player = new BukkitPlayer(we, we.getServerInterface(), bPlayer);
-        LocalSession session = we.getWorldEdit().getSession(player);
+        BukkitPlayer player = new BukkitPlayer(we, we.getServerInterface(), bPlayer);
+        LocalSession session = we.getWorldEdit().getSessionManager().get(player);
 
         // セレクタが立方体セレクタか判定
-        if (!(session.getRegionSelector() instanceof CuboidRegionSelector)) {
+        if (!(session.getRegionSelector(session.getSelectionWorld()) instanceof CuboidRegionSelector)) {
             Actions.message(bPlayer, msgPrefix + "&cFlagGame supports only cuboid regions!");
             return null;
         }
 
-        CuboidRegionSelector selector = (CuboidRegionSelector) session.getRegionSelector();
+        CuboidRegionSelector selector = (CuboidRegionSelector) session.getRegionSelector(session.getSelectionWorld());
 
         try {
             CuboidRegion region = selector.getRegion();
@@ -132,16 +131,17 @@ public class WorldEditHandler {
         WorldEditPlugin we = getWorldEdit(bPlayer);
         if (we == null) return false;
 
-        LocalPlayer player = new BukkitPlayer(we, we.getServerInterface(), bPlayer);
-        LocalSession session = we.getWorldEdit().getSession(player);
+        BukkitPlayer player = new BukkitPlayer(we, we.getServerInterface(), bPlayer);
+        com.sk89q.worldedit.world.World world = player.getWorld();
+        LocalSession session = we.getWorldEdit().getSessionManager().get(player);
 
         try {
-            CuboidRegionSelector selector = new CuboidRegionSelector(player.getWorld());
+            CuboidRegionSelector selector = new CuboidRegionSelector(world);
 
-            selector.selectPrimary(new Vector(pos1.getBlockX(), pos1.getBlockY(), pos1.getBlockZ()));
-            selector.selectSecondary(new Vector(pos2.getBlockX(), pos2.getBlockY(), pos2.getBlockZ()));
+            selector.selectPrimary(new Vector(pos1.getBlockX(), pos1.getBlockY(), pos1.getBlockZ()), null);
+            selector.selectSecondary(new Vector(pos2.getBlockX(), pos2.getBlockY(), pos2.getBlockZ()), null);
 
-            session.setRegionSelector(player.getWorld(), selector);
+            session.setRegionSelector(world, selector);
             session.dispatchCUISelection(player);
         } catch (Exception ex) {
             // 一般例外
