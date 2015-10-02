@@ -193,8 +193,9 @@ public class Stage implements IStage {
      * @param team
      *            設定するGameTeam
      */
-    public void setFlag(Location loc, Flag flag) {
-        flags.put(loc, flag);
+    @Override
+    public void addFlag(Flag flag) {
+        flags.put(flag.getLocation(), flag);
     }
 
     /**
@@ -392,11 +393,7 @@ public class Stage implements IStage {
     }
 
     public boolean hasStage() {
-        if (this.stageArea == null) {
-            return false;
-        } else {
-            return true;
-        }
+        return this.stageArea != null;
     }
 
     @Override

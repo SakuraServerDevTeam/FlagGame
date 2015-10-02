@@ -29,7 +29,7 @@ public interface IStage {
     int rollbackChests();
 
     // フラッグ関係
-    void setFlag(Location loc, Flag flag);
+    void addFlag(Flag flag);
 
     void removeFlag(Location loc);
 

@@ -98,7 +98,7 @@ public class FGPlayerListener implements Listener {
                     }
 
                     // 新規フラッグ登録
-                    new Flag(plugin, stage, loc, type, 0, (byte) 0);
+                    stage.addFlag(new Flag(loc, type, 0, (byte) 0));
                     Actions.message(player, "&aステージ'" + stage.getName() + "'の" + type + "ポイントフラッグを登録しました！");
                     break;
 

@@ -269,7 +269,8 @@ public class StageFileManager {
             }
 
             Location loc = new Location(world, new Double(coord[0]), new Double(coord[1]), new Double(coord[2])).getBlock().getLocation();
-            ret.put(loc, new Flag(plugin, stage, loc, type, Integer.parseInt(block[0]), Byte.parseByte(block[1])));
+            Flag f = new Flag(loc, type, Integer.parseInt(block[0]), Byte.parseByte(block[1]));
+            ret.put(loc, f);
         }
 
         return ret;
