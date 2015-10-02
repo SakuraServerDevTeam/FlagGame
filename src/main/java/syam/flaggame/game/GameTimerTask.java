@@ -3,8 +3,6 @@
  */
 package syam.flaggame.game;
 
-import java.util.logging.Logger;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -22,15 +20,11 @@ import syam.flaggame.util.Cuboid;
  * @author syam(syamn)
  */
 public class GameTimerTask implements Runnable {
-
-    // Logger
-
-    public static final Logger log = FlagGame.logger;
+    
     private static final String msgPrefix = FlagGame.msgPrefix;
 
     private final Game game;
     private Cuboid cuboid = null;
-    private final int godModeTime;
 
     /**
      * コンストラクタ
@@ -41,7 +35,6 @@ public class GameTimerTask implements Runnable {
     public GameTimerTask(final FlagGame plugin, final Game game) {
         this.game = game;
         this.cuboid = game.getStage().getStage();
-        this.godModeTime = plugin.getConfigs().getGodModeTime();
     }
 
     @Override

@@ -46,8 +46,6 @@ import syam.flaggame.util.Actions;
  */
 public class Game  {
     // Logger
-    public static final Logger log = FlagGame.logger;
-    private static final String logPrefix = FlagGame.logPrefix;
     private static final String msgPrefix = FlagGame.msgPrefix;
 
     // プラグインインスタンス
@@ -89,7 +87,7 @@ public class Game  {
         // 例外チェック
         if (!stage.isAvailable()) { throw new GameStateException("This stage is not available!"); }
         if (GameManager.getGames().containsKey(stage)) {
-            log.log(Level.SEVERE,logPrefix + "Stage {0} is duplicate!", stage.getName());
+            this.plugin.getLogger().log(Level.SEVERE,"Stage {0} is duplicate!", stage.getName());
             return;
         }
 
@@ -471,7 +469,7 @@ public class Game  {
 
     public void finish(GameResult result, GameTeam winTeam, String reason) {
         if (result == null || (result == GameResult.TEAM_WIN && winTeam == null)) {
-            log.warning(logPrefix + "Error on method finish(GameResult, GameTeam)! Please report this!");
+            this.plugin.getLogger().warning("Error on method finish(GameResult, GameTeam)! Please report this!");
             return;
         }
 
@@ -492,7 +490,7 @@ public class Game  {
                 addPlayerResultCounts(GameResult.STOP, null);
                 break;
             default:
-                log.warning(logPrefix + "Undefined GameResult! Please report this!");
+                this.plugin.getLogger().warning("Undefined GameResult! Please report this!");
                 return;
         }
 

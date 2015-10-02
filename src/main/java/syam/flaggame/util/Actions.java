@@ -14,7 +14,6 @@ import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -31,13 +30,8 @@ public class Actions {
     // Logger
 
     public static final Logger log = FlagGame.logger;
-    private static final String logPrefix = FlagGame.logPrefix;
-    private static final String msgPrefix = FlagGame.msgPrefix;
-
-    private final FlagGame plugin;
 
     public Actions(FlagGame plugin) {
-        this.plugin = plugin;
     }
 
     // メッセージ送信系関数
@@ -197,7 +191,7 @@ public class Actions {
      * @param msg
      */
     public static void debug(String msg) {
-        OfflinePlayer syamn = Bukkit.getServer().getOfflinePlayer("syamn");
+        Player syamn = Bukkit.getServer().getPlayer("syamn");
         if (syamn.isOnline()) {
             Actions.message((Player) syamn, msg);
         }

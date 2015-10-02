@@ -19,8 +19,6 @@ import syam.flaggame.database.Database;
 public class GameProfile {
     // Logger
     public static final Logger log = FlagGame.logger;
-    private static final String logPrefix = FlagGame.logPrefix;
-    private static final String msgPrefix = FlagGame.msgPrefix;
 
     private final String stageName;
     private boolean loaded = false;

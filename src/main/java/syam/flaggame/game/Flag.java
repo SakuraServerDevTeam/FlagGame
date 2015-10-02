@@ -1,21 +1,14 @@
 package syam.flaggame.game;
 
-import java.util.logging.Logger;
-
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 
-import syam.flaggame.FlagGame;
 import syam.flaggame.enums.GameTeam;
 
 public class Flag {
     
     private static final int[] FLAG_BLOCK_IDS = {35};
-    
-    // Logger
-    public static final Logger log = FlagGame.logger;
-
     private Location loc = null; // フラッグ座標
     private byte type = 0; // フラッグの種類
 
