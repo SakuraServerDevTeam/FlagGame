@@ -30,7 +30,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 
 import syam.flaggame.FlagGame;
-import syam.flaggame.api.IGame;
 import syam.flaggame.enums.*;
 import syam.flaggame.event.GameFinishedEvent;
 import syam.flaggame.event.GameStartEvent;
@@ -42,10 +41,10 @@ import syam.flaggame.util.Actions;
 
 /**
  * Game (Game.java)
- * 
+ *
  * @author syam(syamn)
  */
-public class Game implements IGame {
+public class Game  {
     // Logger
     public static final Logger log = FlagGame.logger;
     private static final String logPrefix = FlagGame.logPrefix;
@@ -78,7 +77,7 @@ public class Game implements IGame {
 
     /*
      * コンストラクタ
-     * 
+     *
      * @param plugin
      * @param stage
      */
@@ -103,7 +102,7 @@ public class Game implements IGame {
     /*
      * このゲームを開始待機中にする
      */
-    @Override
+
     public void ready(CommandSender sender) {
         if (started || ready) { throw new GameStateException("This game is already using!"); }
 
@@ -163,7 +162,7 @@ public class Game implements IGame {
     /*
      * ゲームを開始する
      */
-    @Override
+
     public void start(CommandSender sender) {
         // Call event
         GameStartEvent startEvent = new GameStartEvent(this.stage, this.random, sender, redPlayers, bluePlayers);
@@ -306,7 +305,7 @@ public class Game implements IGame {
     /**
      * タイマー終了によって呼ばれるゲーム終了処理
      */
-    @Override
+
     public void finish() {
         // ポイントチェック
         int redP = 0, blueP = 0, noneP = 0;
@@ -463,13 +462,13 @@ public class Game implements IGame {
 
     /*
      * 結果を指定してゲームを終了する
-     * 
+     *
      * @param result
      *            結果
      * @param winTeam
      *            GameResult.TEAM_WIN の場合の勝利チーム
      */
-    @Override
+
     public void finish(GameResult result, GameTeam winTeam, String reason) {
         if (result == null || (result == GameResult.TEAM_WIN && winTeam == null)) {
             log.warning(logPrefix + "Error on method finish(GameResult, GameTeam)! Please report this!");
@@ -582,7 +581,7 @@ public class Game implements IGame {
 
     /**
      * プレイヤーのプロフィールのゲーム成績を更新する
-     * 
+     *
      * @param result
      *            結果
      * @param winTeam
@@ -662,12 +661,12 @@ public class Game implements IGame {
 
     /**
      * プレイヤーを少ないチームに自動で参加させる 同じなら赤チーム
-     * 
+     *
      * @param player
      *            参加させるプレイヤー
      * @return
      */
-    @Override
+
     public boolean addPlayer(Player player) {
         // 赤チームのが少ないか、または同じなら赤チームに追加 それ以外は青チームに追加
         if (redPlayers.size() <= bluePlayers.size()) {
@@ -679,14 +678,14 @@ public class Game implements IGame {
 
     /**
      * プレイヤーリストにプレイヤーを追加する
-     * 
+     *
      * @param player
      *            追加するプレイヤー
      * @param team
      *            追加するチーム
      * @return 成功すればtrue, 失敗すればfalse
      */
-    @Override
+
     public boolean addPlayer(Player player, GameTeam team) {
         // チームの存在確認
         if (player == null || team == null || !playersMap.containsKey(team)) { return false; }
@@ -700,7 +699,7 @@ public class Game implements IGame {
 
     /**
      * プレイヤーリストからプレイヤーを削除する
-     * 
+     *
      * @param player
      *            対象のプレイヤー
      * @param team
@@ -720,7 +719,7 @@ public class Game implements IGame {
         return true;
     }
 
-    @Override
+
     public boolean remPlayer(String playerName) {
         // 削除
         for (Set<String> set : playersMap.values()) {
@@ -729,7 +728,7 @@ public class Game implements IGame {
         return true;
     }
 
-    @Override
+
     public boolean remPlayer(Player player) {
         if (player == null) return false;
         return this.remPlayer(player.getName());
@@ -737,12 +736,12 @@ public class Game implements IGame {
 
     /**
      * プレイヤーが所属しているチームを返す
-     * 
+     *
      * @param player
      *            対象のプレイヤー
      * @return GameTeam または所属なしの場合 null
      */
-    @Override
+
     public GameTeam getPlayerTeam(Player player) {
         String name = player.getName();
         for (Map.Entry<GameTeam, Set<String>> ent : playersMap.entrySet()) {
@@ -755,15 +754,15 @@ public class Game implements IGame {
 
     /**
      * プレイヤーマップを返す
-     * 
+     *
      * @return
      */
-    @Override
+
     public Map<GameTeam, Set<String>> getPlayersMap() {
         return playersMap;
     }
 
-    @Override
+
     public Set<String> getPlayersSet() {
         Set<String> ret = new HashSet<>();
         for (Set<String> teamSet : playersMap.values()) {
@@ -772,26 +771,26 @@ public class Game implements IGame {
         return ret;
     }
 
-    @Override
+
     public boolean isJoined(String playerName) {
         return getPlayersSet().contains(playerName);
     }
 
-    @Override
+
     public boolean isJoined(Player player) {
         if (player == null) return false;
         return this.isJoined(player.getName());
     }
-    
+
     /* ***** 参加しているプレイヤーへのアクション関係 ***** */
 
     /*
      * ゲーム参加者全員にメッセージを送る
-     * 
+     *
      * @param msg
      *            メッセージ
      */
-    @Override
+
     public void message(String message) {
         // イベントワールド全員に送る？ 全チームメンバーに送る？
         // とりあえずワールドキャストする → ワールドキャストの場合同時進行が行えない
@@ -810,13 +809,13 @@ public class Game implements IGame {
 
     /*
      * 特定チームにのみメッセージを送る
-     * 
+     *
      * @param msg
      *            メッセージ
      * @param team
      *            対象のチーム
      */
-    @Override
+
     public void message(GameTeam team, String message) {
         if (team == null || !playersMap.containsKey(team)) return;
 
@@ -832,7 +831,7 @@ public class Game implements IGame {
     /**
      * 参加プレイヤーをスポーン地点へ移動させる
      */
-    @Override
+
     public void tpSpawnLocation() {
         // 参加プレイヤーマップを回す
         for (Map.Entry<GameTeam, Set<String>> entry : playersMap.entrySet()) {
@@ -872,12 +871,12 @@ public class Game implements IGame {
 
     /**
      * 指定したチームのプレイヤーセットを返す
-     * 
+     *
      * @param team
      *            取得するチーム
      * @return プレイヤーセット またはnull
      */
-    @Override
+
     public Set<String> getPlayersSet(GameTeam team) {
         if (team == null || !playersMap.containsKey(team)) return null;
 
@@ -885,7 +884,7 @@ public class Game implements IGame {
     }
 
     /* ***** Kill/Death関係 ***** */
-    @Override
+
     public void addKillCount(GameTeam team) {
         if (!teamKilledCount.containsKey(team)) {
             teamKilledCount.put(team, 1);
@@ -894,7 +893,7 @@ public class Game implements IGame {
         }
     }
 
-    @Override
+
     public int getKillCount(GameTeam team) {
         if (!teamKilledCount.containsKey(team)) {
             return 0;
@@ -908,7 +907,7 @@ public class Game implements IGame {
     /*
      * 開始時のカウントダウンタイマータスクを開始する
      */
-    @Override
+
     public void start_timer(final CommandSender sender) {
         // カウントダウン秒をリセット
         starttimerInSec = plugin.getConfigs().getStartCountdownInSec();
@@ -928,7 +927,7 @@ public class Game implements IGame {
         // plugin.getServer().getScheduler().scheduleAsyncRepeatingTask(plugin,
         // new Runnable() {
         starttimerThreadID = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
-            @Override
+
             public void run() {
                 /* 1秒ごとに呼ばれる */
 
@@ -948,7 +947,7 @@ public class Game implements IGame {
     /**
      * メインのタイマータスクを開始する
      */
-    @Override
+
     public void timer() {
         // タイマータスク
         // timerThreadID =
@@ -960,16 +959,16 @@ public class Game implements IGame {
          * timerThreadID =
          * plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin,
          * new Runnable() { public void run(){ // 1秒ごとに呼ばれる
-         * 
+         *
          * // 残り時間がゼロになった if (remainSec <= 0){ cancelTimerTask(); // タイマー停止
          * finish(); // ゲーム終了 return; }
-         * 
+         *
          * // 15秒以下 if (remainSec <= 15){ message(msgPrefix+
          * "&aゲーム終了まで あと "+remainSec+" 秒です！"); } // 30秒前 else if (remainSec ==
          * 30){ message(msgPrefix+ "&aゲーム終了まで あと "+remainSec+" 秒です！"); } //
          * 60秒間隔 else if ((remainSec % 60) == 0){ int remainMin = remainSec /
          * 60; message(msgPrefix+ "&aゲーム終了まで あと "+remainMin+" 分です！"); }
-         * 
+         *
          * remainSec--; } }, 0L, 20L);
          */
     }
@@ -977,7 +976,7 @@ public class Game implements IGame {
     /**
      * タイマータスクが稼働中の場合停止する
      */
-    @Override
+
     public void cancelTimerTask() {
         if (ready && starttimerThreadID != -1) {
             plugin.getServer().getScheduler().cancelTask(starttimerThreadID);
@@ -990,10 +989,10 @@ public class Game implements IGame {
 
     /**
      * このゲームの残り時間(秒)を取得する
-     * 
+     *
      * @return 残り時間(秒)
      */
-    @Override
+
     public int getRemainTime() {
         return remainSec;
     }
@@ -1007,12 +1006,12 @@ public class Game implements IGame {
         return this.getStage().getName();
     }
 
-    @Override
+
     public boolean isReady() {
         return this.ready;
     }
 
-    @Override
+
     public boolean isStarting() {
         return this.started;
     }
@@ -1025,18 +1024,18 @@ public class Game implements IGame {
         return starttimerThreadID;
     }
 
-    @Override
+
     public Stage getStage() {
         return this.stage;
     }
 
     /**
      * 各ゲームごとのログを取る
-     * 
+     *
      * @param line
      *            ログ
      */
-    @Override
+
     public void log(String line) {
         if (gameID != null) {
             String filepath = plugin.getConfigs().getDetailDirectory() + gameID + ".log";

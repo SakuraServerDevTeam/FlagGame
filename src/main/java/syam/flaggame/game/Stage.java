@@ -21,7 +21,6 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import syam.flaggame.FlagGame;
-import syam.flaggame.api.IStage;
 import syam.flaggame.enums.GameTeam;
 import syam.flaggame.manager.StageManager;
 import syam.flaggame.util.Actions;
@@ -32,7 +31,7 @@ import syam.flaggame.util.Cuboid;
  *
  * @author syam(syamn)
  */
-public class Stage implements IStage {
+public class Stage {
 
     // Logger
 
@@ -91,7 +90,7 @@ public class Stage implements IStage {
      *
      * @return
      */
-    @Override
+    
     public int rollbackFlags() {
         int count = 0;
         for (Flag flag : flags.values()) {
@@ -178,7 +177,7 @@ public class Stage implements IStage {
         return count;
     }
 
-    @Override
+    
     public int rollbackChests() {
         return this.rollbackChests(null);
     }
@@ -193,7 +192,7 @@ public class Stage implements IStage {
      * @param team
      *            設定するGameTeam
      */
-    @Override
+    
     public void addFlag(Flag flag) {
         flags.put(flag.getLocation(), flag);
     }
@@ -204,7 +203,7 @@ public class Stage implements IStage {
      * @param loc 調べるブロックの座標
      * @return GameTeam または存在しない場合 null
      */
-    @Override
+    
     public Flag getFlag(Location loc) {
         return flags.get(loc);
     }
@@ -224,7 +223,7 @@ public class Stage implements IStage {
      *
      * @param loc 削除するフラッグのブロック座標
      */
-    @Override
+    
     public void removeFlag(Location loc) {
         flags.remove(loc);
     }
@@ -234,7 +233,7 @@ public class Stage implements IStage {
      * 
      * @return
      */
-    @Override
+    
     public Map<Location, Flag> getFlags() {
         return flags;
     }
@@ -244,7 +243,7 @@ public class Stage implements IStage {
      *
      * @param flags
      */
-    @Override
+    
     public void setFlags(Map<Location, Flag> flags) {
         this.flags.clear();
         this.flags.putAll(flags);
@@ -255,7 +254,7 @@ public class Stage implements IStage {
      *
      * @return {@code Map<FlagState, HashMap<FlagType, Integer>>}
      */
-    @Override
+    
     public Map<GameTeam, Map<Byte, Integer>> checkFlag() {
         // 各チームのポイントを格納する
         Map<GameTeam,  Map<Byte, Integer>> ret = new EnumMap<>(GameTeam.class);
@@ -279,7 +278,7 @@ public class Stage implements IStage {
      *
      * @param loc チェストの座標
      */
-    @Override
+    
     public void setChest(Location loc) {
         chests.add(loc);
     }
@@ -290,7 +289,7 @@ public class Stage implements IStage {
      * @param loc 調べるブロックの座標
      * @return GameTeam または存在しない場合 null
      */
-    @Override
+    
     public Block getChest(Location loc) {
         if (chests.contains(loc)) {
             return loc.getBlock();
@@ -308,7 +307,7 @@ public class Stage implements IStage {
      *
      * @param loc 削除するチェストのブロック座標
      */
-    @Override
+    
     public void removeChest(Location loc) {
         chests.remove(loc);
     }
@@ -318,7 +317,7 @@ public class Stage implements IStage {
      *
      * @return チェストブロックマップ Map<Location, Block>
      */
-    @Override
+    
     public Set<Location> getChests() {
         return chests;
     }
@@ -328,7 +327,7 @@ public class Stage implements IStage {
      *
      * @param chests 設定する元のLocation, Blockマップ
      */
-    @Override
+    
     public void setChests(Set<Location> chests) {
         this.chests.clear();
         this.chests.addAll(chests);
@@ -341,12 +340,12 @@ public class Stage implements IStage {
      * 
      * @param loc
      */
-    @Override
+    
     public void setSpawn(GameTeam team, Location loc) {
         spawnMap.put(team, loc);
     }
 
-    @Override
+    
     public Location getSpawn(GameTeam team) {
         if (team == null || !spawnMap.containsKey(team)) {
             return null;
@@ -354,40 +353,40 @@ public class Stage implements IStage {
         return spawnMap.get(team).clone();
     }
 
-    @Override
+    
     public Map<GameTeam, Location> getSpawns() {
         return Collections.unmodifiableMap(spawnMap);
     }
 
-    @Override
+    
     public void setSpawns(Map<GameTeam, Location> spawns) {
         this.spawnMap.clear();
         this.spawnMap.putAll(spawns);
     }
 
-    @Override
+    
     public Location getSpecSpawn() {
         return this.specSpawn != null ? this.specSpawn.clone() : null;
     }
 
-    @Override
+    
     public void setSpecSpawn(Location loc) {
         this.specSpawn = loc != null ? loc.clone() : null;
     }
 
     /* ***** エリア関係 ***** */
     // ステージ
-    @Override
+    
     public void setStage(Location pos1, Location pos2) {
         stageArea = new Cuboid(pos1, pos2);
     }
 
-    @Override
+    
     public void setStage(Cuboid cuboid) {
         this.stageArea = cuboid;
     }
 
-    @Override
+    
     public Cuboid getStage() {
         return this.stageArea;
     }
@@ -396,28 +395,28 @@ public class Stage implements IStage {
         return this.stageArea != null;
     }
 
-    @Override
+    
     public void setStageProtected(boolean protect) {
         this.stageProtect = protect;
     }
 
-    @Override
+    
     public boolean isStageProtected() {
         return this.stageProtect;
     }
 
     // 拠点
-    @Override
+    
     public void setBase(GameTeam team, Location pos1, Location pos2) {
         baseMap.put(team, new Cuboid(pos1, pos2));
     }
 
-    @Override
+    
     public void setBase(GameTeam team, Cuboid cuboid) {
         baseMap.put(team, cuboid);
     }
 
-    @Override
+    
     public Cuboid getBase(GameTeam team) {
         if (team == null || !baseMap.containsKey(team)) {
             return null;
@@ -425,12 +424,12 @@ public class Stage implements IStage {
         return baseMap.get(team);
     }
 
-    @Override
+    
     public Map<GameTeam, Cuboid> getBases() {
         return baseMap;
     }
 
-    @Override
+    
     public void setBases(Map<GameTeam, Cuboid> bases) {
         this.baseMap.clear();
         this.baseMap.putAll(bases);
@@ -442,7 +441,7 @@ public class Stage implements IStage {
      *
      * @return GameProfile
      */
-    @Override
+    
     public GameProfile getProfile() {
         return this.profile;
     }
@@ -452,7 +451,7 @@ public class Stage implements IStage {
      *
      * @param filename
      */
-    @Override
+    
     public void setFileName(String filename) {
         this.fileName = filename;
     }
@@ -462,7 +461,7 @@ public class Stage implements IStage {
      *
      * @return
      */
-    @Override
+    
     public String getFileName() {
         return fileName;
     }
@@ -472,7 +471,7 @@ public class Stage implements IStage {
      *
      * @return このゲームの名前
      */
-    @Override
+    
     public String getName() {
         return stageName;
     }
@@ -482,7 +481,7 @@ public class Stage implements IStage {
      *
      * @param sec 制限時間(秒)
      */
-    @Override
+    
     public void setGameTime(int sec) {
         gameTimeInSec = sec;
     }
@@ -492,7 +491,7 @@ public class Stage implements IStage {
      *
      * @return
      */
-    @Override
+    
     public int getGameTime() {
         return gameTimeInSec;
     }
@@ -502,7 +501,7 @@ public class Stage implements IStage {
      *
      * @param limit チーム毎の人数上限
      */
-    @Override
+    
     public void setTeamLimit(int limit) {
         this.teamPlayerLimit = limit;
     }
@@ -512,7 +511,7 @@ public class Stage implements IStage {
      *
      * @return チーム毎の人数上限
      */
-    @Override
+    
     public int getTeamLimit() {
         return teamPlayerLimit;
     }
@@ -522,7 +521,7 @@ public class Stage implements IStage {
      *
      * @param award 賞金
      */
-    @Override
+    
     public void setAward(int award) {
         if (award < 0) {
             award = 0;
@@ -535,7 +534,7 @@ public class Stage implements IStage {
      *
      * @return 賞金
      */
-    @Override
+    
     public int getAward() {
         return award;
     }
@@ -545,7 +544,7 @@ public class Stage implements IStage {
      *
      * @param entryFee 参加料
      */
-    @Override
+    
     public void setEntryFee(int entryFee) {
         if (entryFee < 0) {
             entryFee = 0;
@@ -558,7 +557,7 @@ public class Stage implements IStage {
      *
      * @return 参加料
      */
-    @Override
+    
     public int getEntryFee() {
         return entryFee;
     }
@@ -568,7 +567,7 @@ public class Stage implements IStage {
      *
      * @param available
      */
-    @Override
+    
     public void setAvailable(boolean available) {
         this.available = available;
     }
@@ -578,7 +577,7 @@ public class Stage implements IStage {
      *
      * @return available
      */
-    @Override
+    
     public boolean isAvailable() {
         return this.available;
     }
