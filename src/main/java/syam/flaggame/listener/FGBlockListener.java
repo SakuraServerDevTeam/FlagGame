@@ -32,6 +32,7 @@ import syam.flaggame.util.Actions;
 import syam.flaggame.util.Cuboid;
 
 public class FGBlockListener implements Listener {
+
     public static final Logger log = FlagGame.logger;
     private static final String logPrefix = FlagGame.logPrefix;
     private static final String msgPrefix = FlagGame.msgPrefix;
@@ -71,7 +72,9 @@ public class FGBlockListener implements Listener {
     public boolean onBlockChange(final BlockEvent event, final Player player) {
         final Block block = event.getBlock();
         // ゲーム用ワールドでなければ返す
-        if (block.getWorld() != Bukkit.getWorld(plugin.getConfigs().getGameWorld())) { return false; }
+        if (block.getWorld() != Bukkit.getWorld(plugin.getConfigs().getGameWorld())) {
+            return false;
+        }
 
         boolean placeEvent = false, breakEvent = false, cancel = false;
         if (event instanceof BlockPlaceEvent) {
@@ -112,7 +115,6 @@ public class FGBlockListener implements Listener {
             Game game = stage.getGame();
 
             /* ゲーム中のステージでフラッグを設置/破壊した */
-
             // プレイヤーと設置/破壊したブロックのチーム取得
             GameTeam pTeam = game.getPlayerTeam(player);
             if (pTeam == null) {
@@ -124,13 +126,15 @@ public class FGBlockListener implements Listener {
             int id = block.getTypeId();
             byte data = block.getData();
             for (GameTeam gt : GameTeam.values()) {
-                if (gt.getBlockID() == id && gt.getBlockData() == data) {
+                if (Flag.isFlag(block.getType()) && gt.getBlockData() == data) {
                     bTeam = gt;
                 }
             }
 
             // フラッグブロックの位置だが、影響のないブロックは何もしない
-            if (bTeam == null) continue;
+            if (bTeam == null) {
+                continue;
+            }
 
             // メッセージ -> カウント -> エフェクト
             if (placeEvent) { // 設置
@@ -140,9 +144,9 @@ public class FGBlockListener implements Listener {
                     continue;
                 }
 
-                game.message(pTeam, msgPrefix + "&f'&6" + player.getName() + "&f'&aが" + flag.getTypeName() + "フラッグを獲得しました！");
-                game.message(pTeam.getAgainstTeam(), msgPrefix + "&f'&6" + player.getName() + "&f'&cに" + flag.getTypeName() + "フラッグを獲得されました！");
-                game.log(" Player " + player.getName() + " Get " + flag.getFlagType().name() + " Flag: " + Actions.getBlockLocationString(block.getLocation()));
+                game.message(pTeam, msgPrefix + "&f'&6" + player.getName() + "&f'&aが" + flag.getTypeName() + "ポイントフラッグを獲得しました！");
+                game.message(pTeam.getAgainstTeam(), msgPrefix + "&f'&6" + player.getName() + "&f'&cに" + flag.getTypeName() + "ポイントフラッグを獲得されました！");
+                game.log(" Player " + player.getName() + " Get " + flag.getFlagPoint() + "Point Flag: " + Actions.getBlockLocationString(block.getLocation()));
 
                 PlayerManager.getProfile(player.getName()).addPlace();
                 stage.getProfile().addPlace();
@@ -157,9 +161,9 @@ public class FGBlockListener implements Listener {
                     Actions.message(player, "&cこれは自分のチームのフラッグです！");
                     continue;
                 }
-                game.message(pTeam, msgPrefix + "&f'&6" + player.getName() + "&f'&aが相手の" + flag.getTypeName() + "フラッグを破壊しました！");
-                game.message(pTeam.getAgainstTeam(), msgPrefix + "&f'&6" + player.getName() + "&f'&cに" + flag.getTypeName() + "フラッグを破壊されました！");
-                game.log(" Player " + player.getName() + " Break " + flag.getFlagType().name() + " Flag: " + Actions.getBlockLocationString(block.getLocation()));
+                game.message(pTeam, msgPrefix + "&f'&6" + player.getName() + "&f'&aが相手の" + flag.getTypeName() + "ポイントフラッグを破壊しました！");
+                game.message(pTeam.getAgainstTeam(), msgPrefix + "&f'&6" + player.getName() + "&f'&cに" + flag.getTypeName() + "ポイントフラッグを破壊されました！");
+                game.log(" Player " + player.getName() + " Break " + flag.getFlagPoint() + "Point Flag: " + Actions.getBlockLocationString(block.getLocation()));
 
                 PlayerManager.getProfile(player.getName()).addBreak();
                 stage.getProfile().addBreak();
@@ -174,7 +178,9 @@ public class FGBlockListener implements Listener {
         }
 
         // 権限チェック
-        if (Perms.IGNORE_PROTECT.has(player)) { return cancel; }
+        if (Perms.IGNORE_PROTECT.has(player)) {
+            return cancel;
+        }
 
         // ワールド保護チェック
         if (plugin.getConfigs().isProtected()) {
@@ -208,12 +214,13 @@ public class FGBlockListener implements Listener {
     }
 
     /* 以下ワールド保護 */
-
     // 葉の消滅を抑制
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onLeavesDecay(final LeavesDecayEvent event) {
         // ゲーム用ワールドでなければ返す
-        if (event.getBlock().getWorld() != Bukkit.getWorld(plugin.getConfigs().getGameWorld())) return;
+        if (event.getBlock().getWorld() != Bukkit.getWorld(plugin.getConfigs().getGameWorld())) {
+            return;
+        }
 
         // ワールド保護チェック
         if (plugin.getConfigs().isProtected()) {
@@ -225,7 +232,9 @@ public class FGBlockListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onBlockFade(final BlockFadeEvent event) {
         // ゲーム用ワールドでなければ返す
-        if (event.getBlock().getWorld() != Bukkit.getWorld(plugin.getConfigs().getGameWorld())) return;
+        if (event.getBlock().getWorld() != Bukkit.getWorld(plugin.getConfigs().getGameWorld())) {
+            return;
+        }
 
         // ワールド保護チェック
         if (plugin.getConfigs().isProtected()) {
@@ -237,7 +246,9 @@ public class FGBlockListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onBlockForm(final BlockFormEvent event) {
         // ゲーム用ワールドでなければ返す
-        if (event.getBlock().getWorld() != Bukkit.getWorld(plugin.getConfigs().getGameWorld())) return;
+        if (event.getBlock().getWorld() != Bukkit.getWorld(plugin.getConfigs().getGameWorld())) {
+            return;
+        }
 
         // ワールド保護チェック
         if (plugin.getConfigs().isProtected()) {

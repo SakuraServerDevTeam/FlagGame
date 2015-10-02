@@ -20,6 +20,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
@@ -248,7 +249,7 @@ public class Game implements IGame {
                 // アイテムクリア
                 player.getInventory().clear();
                 // 頭だけ羊毛に変える
-                player.getInventory().setHelmet(new ItemStack(team.getBlockID(), 1, (short) 0, team.getBlockData()));
+                player.getInventory().setHelmet(new ItemStack(Material.WOOL, 1, (short) 0, team.getBlockData()));
                 // player.getInventory().setHelmet(null);
                 player.getInventory().setChestplate(null);
                 player.getInventory().setLeggings(null);
@@ -310,53 +311,50 @@ public class Game implements IGame {
         // ポイントチェック
         int redP = 0, blueP = 0, noneP = 0;
         String redS = "", blueS = "", noneS = "";
-        Map<FlagState, Map<FlagType, Integer>> pointsMap = stage.checkFlag();
+        Map<GameTeam, Map<Byte, Integer>> pointsMap = stage.checkFlag();
         // 赤チームチェック
-        if (pointsMap.containsKey(FlagState.RED)) {
-            Map<FlagType, Integer> points = pointsMap.get(FlagState.RED);
-            for (Map.Entry<FlagType, Integer> entry : points.entrySet()) {
-                FlagType ft = entry.getKey();
+        if (pointsMap.containsKey(GameTeam.RED)) {
+            Map<Byte, Integer> points = pointsMap.get(GameTeam.RED);
+            for (Map.Entry<Byte, Integer> entry : points.entrySet()) {
+                Byte ft = entry.getKey();
                 // 総得点に加算
-                redP = redP + (ft.getPoint() * entry.getValue());
+                redP = redP + (ft * entry.getValue());
                 // 文章組み立て
-                redS = redS + ft.getColor() + entry.getKey().getTypeName() + "フラッグ: &f" + entry.getValue() + " | ";
+                redS = redS + ft+ "ポイントフラッグ: &f" + entry.getValue() + " | ";
             }
             redS = redS.substring(0, redS.length() - 3);
         }
         // 青チームチェック
-        if (pointsMap.containsKey(FlagState.BLUE)) {
-            Map<FlagType, Integer> points = pointsMap.get(FlagState.BLUE);
-            for (Map.Entry<FlagType, Integer> entry : points.entrySet()) {
-                FlagType ft = entry.getKey();
+        if (pointsMap.containsKey(GameTeam.BLUE)) {
+            Map<Byte, Integer> points = pointsMap.get(GameTeam.BLUE);
+            for (Map.Entry<Byte, Integer> entry : points.entrySet()) {
+                Byte ft = entry.getKey();
                 // 総得点に加算
-                blueP = blueP + (ft.getPoint() * entry.getValue());
+                blueP = blueP + (ft * entry.getValue());
                 // 文章組み立て
-                blueS = blueS + ft.getColor() + entry.getKey().getTypeName() + "フラッグ: &f" + entry.getValue() + " | ";
+                blueS = blueS + ft + "ポイントフラッグ: &f" + entry.getValue() + " | ";
             }
             blueS = blueS.substring(0, blueS.length() - 3);
         }
         // NONEチームチェック
-        if (pointsMap.containsKey(FlagState.NONE)) {
-            Map<FlagType, Integer> points = pointsMap.get(FlagState.NONE);
-            for (Map.Entry<FlagType, Integer> entry : points.entrySet()) {
-                FlagType ft = entry.getKey();
+        if (pointsMap.containsKey(null)) {
+            Map<Byte, Integer> points = pointsMap.get(null);
+            for (Map.Entry<Byte, Integer> entry : points.entrySet()) {
+                Byte ft = entry.getKey();
                 // 総得点に加算
-                noneP = noneP + (ft.getPoint() * entry.getValue());
+                noneP = noneP + (ft * entry.getValue());
                 // 文章組み立て
-                noneS = noneS + ft.getColor() + entry.getKey().getTypeName() + "フラッグ: &f" + entry.getValue() + " | ";
+                noneS = noneS + ft + "ポイントフラッグ: &f" + entry.getValue() + " | ";
             }
             noneS = noneS.substring(0, noneS.length() - 3);
         }
 
         // 勝敗判定
         GameTeam winTeam = null;
-        GameTeam loseTeam = null;
         if (redP > blueP) {
             winTeam = GameTeam.RED;
-            loseTeam = GameTeam.BLUE;
         } else if (blueP > redP) {
             winTeam = GameTeam.BLUE;
-            loseTeam = GameTeam.RED;
         }
 
         // 引き分けはKill数比較

@@ -4,6 +4,7 @@
 package syam.flaggame.listener;
 
 import java.util.logging.Logger;
+import org.bukkit.Material;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
@@ -15,8 +16,6 @@ import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.inventory.ItemStack;
 
 import syam.flaggame.FlagGame;
-import syam.flaggame.enums.GameTeam;
-import syam.flaggame.game.Game;
 import syam.flaggame.manager.GameManager;
 
 /**
@@ -56,7 +55,7 @@ public class FGInventoryListener implements Listener {
                 .filter(team -> team != null)
                 .forEach(team -> {
                     // ゲーム参加中のプレイヤーはイベントキャンセル
-                    event.setCurrentItem(new ItemStack(team.getBlockID(), 1, (short) 0, team.getBlockData()));
+                    event.setCurrentItem(new ItemStack(Material.WOOL, 1, (short) 0, team.getBlockData()));
                     event.setCancelled(true);
                     event.setResult(Result.DENY);
                 });

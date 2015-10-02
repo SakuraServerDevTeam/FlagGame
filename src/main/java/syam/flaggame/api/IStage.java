@@ -4,14 +4,13 @@
 package syam.flaggame.api;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 
-import syam.flaggame.enums.FlagState;
-import syam.flaggame.enums.FlagType;
 import syam.flaggame.enums.GameTeam;
 import syam.flaggame.game.Flag;
 import syam.flaggame.game.GameProfile;
@@ -40,7 +39,7 @@ public interface IStage {
 
     Map<Location, Flag> getFlags();
 
-    public Map<FlagState, Map<FlagType, Integer>> checkFlag();
+    public Map<GameTeam, Map<Byte, Integer>> checkFlag();
 
     // チェスト関係
     void setChest(Location loc);

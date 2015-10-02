@@ -26,7 +26,6 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import syam.flaggame.FlagGame;
-import syam.flaggame.enums.FlagType;
 import syam.flaggame.enums.GameTeam;
 import syam.flaggame.enums.SignAction;
 import syam.flaggame.enums.config.Configables;
@@ -92,7 +91,7 @@ public class FGPlayerListener implements Listener {
                     }
 
                     // フラッグタイプを取得
-                    FlagType type = SetupManager.getSelectedFlagType(player);
+                    Byte type = SetupManager.getSelectedFlagType(player);
                     if (type == null) {
                         Actions.message(player, "&cフラッグの種類が指定されていません！");
                         return;
@@ -100,7 +99,7 @@ public class FGPlayerListener implements Listener {
 
                     // 新規フラッグ登録
                     new Flag(plugin, stage, loc, type, 0, (byte) 0);
-                    Actions.message(player, "&aステージ'" + stage.getName() + "'の" + type.getTypeName() + "フラッグを登録しました！");
+                    Actions.message(player, "&aステージ'" + stage.getName() + "'の" + type + "ポイントフラッグを登録しました！");
                     break;
 
                 // チェストモード
@@ -214,7 +213,7 @@ public class FGPlayerListener implements Listener {
                     Actions.message(player, msgPrefix + "&c[*]&6このゲームはあと &a" + Actions.getTimeString(game.getRemainTime()) + "&6 残っています！");
 
                     event.setRespawnLocation(loc);
-                    player.getInventory().setHelmet(new ItemStack(team.getBlockID(), 1, (short) 0, team.getBlockData()));
+                    player.getInventory().setHelmet(new ItemStack(Material.WOOL, 1, (short) 0, team.getBlockData()));
                 }
                 // リスポン後無敵時間設定
                 player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, this.plugin.getConfigs().getGodModeTime(), 4));

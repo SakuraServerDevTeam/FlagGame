@@ -22,8 +22,6 @@ import org.bukkit.inventory.ItemStack;
 
 import syam.flaggame.FlagGame;
 import syam.flaggame.api.IStage;
-import syam.flaggame.enums.FlagState;
-import syam.flaggame.enums.FlagType;
 import syam.flaggame.enums.GameTeam;
 import syam.flaggame.manager.StageManager;
 import syam.flaggame.util.Actions;
@@ -257,61 +255,20 @@ public class Stage implements IStage {
      * @return {@code Map<FlagState, HashMap<FlagType, Integer>>}
      */
     @Override
-    public Map<FlagState, Map<FlagType, Integer>> checkFlag() {
+    public Map<GameTeam, Map<Byte, Integer>> checkFlag() {
         // 各チームのポイントを格納する
-        Map<FlagState, Map<FlagType, Integer>> ret = new EnumMap<>(FlagState.class);
+        Map<GameTeam,  Map<Byte, Integer>> ret = new EnumMap<>(GameTeam.class);
 
         // 全フラッグを回す
-        flag:
-        for (Flag flag : flags.values()) {
-            Block block = flag.getNowBlock(); // フラッグ座標のブロックを取得
-            FlagType ft = flag.getFlagType();
-            FlagState state; // フラッグの現在状態
-            int i = 0; // 加算後と加算後の得点
-
-            // 全チームを回す
-            for (GameTeam gt : GameTeam.values()) {
-
-                // チームのフラッグデータと一致すればそのチームにカウント
-                if (gt.getBlockID() == block.getTypeId() && gt.getBlockData() == block.getData()) {
-                    state = gt.getFlagState();
-
-                    // get - FlagType, Integer
-                    Map<FlagType, Integer> hm = ret.get(state);
-                    if (hm == null) {
-                        hm = new EnumMap<>(FlagType.class);
-                    }
-
-                    // get Integer
-                    if (hm.containsKey(ft)) {
-                        i = hm.get(ft);
-                    }
-
-                    // 個数加算
-                    i++;
-
-                    // put
-                    hm.put(ft, i); // num
-                    ret.put(state, hm); // state
-
-                    // 先に進まないように
-                    continue flag;
-                }
+        flags.values().forEach(flag -> {
+            GameTeam state = flag.getOwner(); // フラッグの現在状態
+            Map<Byte, Integer> score = ret.get(state);
+            if (score == null) {
+                ret.put(state, score = new HashMap<>());
             }
-            // 一致しなかった、どちらのブロックでもない場合
-            state = FlagState.NONE;
-            Map<FlagType, Integer> hm = ret.get(state);
-            if (hm == null) {
-                hm = new EnumMap<>(FlagType.class); // get
-            }
-            if (hm.containsKey(ft)) {
-                i = hm.get(ft); // get
-            }
-            i++; // 個数加算
-            hm.put(ft, i); // put
-            ret.put(state, hm); // put
-        }
-
+            Integer count = score.get(flag.getFlagPoint());
+            score.put(flag.getFlagPoint(), count != null ? count + 1 : 1);
+        });
         return ret;
     }
 

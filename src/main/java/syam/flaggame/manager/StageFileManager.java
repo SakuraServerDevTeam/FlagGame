@@ -20,14 +20,15 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import syam.flaggame.FlagGame;
-import syam.flaggame.enums.FlagType;
 import syam.flaggame.enums.GameTeam;
 import syam.flaggame.game.Flag;
 import syam.flaggame.game.Stage;
 import syam.flaggame.util.Cuboid;
 
 public class StageFileManager {
+
     // Logger
+
     public static final Logger log = FlagGame.logger;
     private static final String logPrefix = FlagGame.logPrefix;
     private static final String msgPrefix = FlagGame.msgPrefix;
@@ -40,9 +41,8 @@ public class StageFileManager {
 
     /* ステージデータ保存/読み出し */
     public void saveStages() {
-        String fileDir = plugin.getDataFolder() + System.getProperty("file.separator") +
-
-        "stageData" + System.getProperty("file.separator");
+        String fileDir = plugin.getDataFolder() + System.getProperty("file.separator")
+                + "stageData" + System.getProperty("file.separator");
         FileConfiguration confFile;
         for (Stage stage : StageManager.getStages().values()) {
             confFile = new YamlConfiguration();
@@ -51,7 +51,9 @@ public class StageFileManager {
 
             // マップデータをリストに変換
             String stageArea = null;
-            if (stage.getStage() != null) stageArea = convertStageCuboidToString(stage.getStage());
+            if (stage.getStage() != null) {
+                stageArea = convertStageCuboidToString(stage.getStage());
+            }
             List<String> flagList = convertFlagMapToList(stage.getFlags());
             List<String> spawnList = convertSpawnMapToList(stage.getSpawns());
             List<String> baseList = convertBaseMapToList(stage.getBases());
@@ -94,7 +96,9 @@ public class StageFileManager {
         StageManager.removeStages();
 
         // ファイルなし
-        if (files == null || files.length == 0) return;
+        if (files == null || files.length == 0) {
+            return;
+        }
 
         // 取得データ
         String name;
@@ -119,7 +123,9 @@ public class StageFileManager {
                 stage.setStageProtected(confFile.getBoolean("StageProtected", true));
 
                 Cuboid stageArea = convertStageStringToCuboid(confFile.getString("Stage")); // ステージエリア
-                if (stageArea != null) stage.setStage(stageArea);
+                if (stageArea != null) {
+                    stage.setStage(stageArea);
+                }
                 stage.setSpawns(convertSpawnListToMap(confFile.getStringList("Spawns"))); // スポーン地点
                 stage.setSpecSpawn(convertPlayerLocation(confFile.getString("SpecSpawn", null))); // 観戦者スポーン地点
                 stage.setFlags(convertFlagListToMap(confFile.getStringList("Flags"), stage)); // フラッグ
@@ -129,10 +135,10 @@ public class StageFileManager {
                 // 有効かどうか
                 stage.setAvailable(confFile.getBoolean("Available", true));
 
-                log.log(Level.INFO,logPrefix + "Loaded Game: {0} ({1})", new Object[]{file.getName(), name});
+                log.log(Level.INFO, logPrefix + "Loaded Game: {0} ({1})", new Object[]{file.getName(), name});
 
             } catch (IOException | InvalidConfigurationException ex) {
-                log.log(Level.WARNING, "Failed to load a stage: "+file.getName(), ex);
+                log.log(Level.WARNING, "Failed to load a stage: " + file.getName(), ex);
             }
         }
     }
@@ -152,7 +158,9 @@ public class StageFileManager {
     }
 
     private Cuboid convertStageStringToCuboid(String stageArea) {
-        if (stageArea == null) return null;
+        if (stageArea == null) {
+            return null;
+        }
 
         String[] data;
         String[] pos1;
@@ -186,9 +194,8 @@ public class StageFileManager {
     /* フラッグデータを変換 */
     /**
      * フラッグデータをハッシュマップからリストに変換
-     * 
-     * @param flags
-     *            フラッグマップ
+     *
+     * @param flags フラッグマップ
      * @return フラッグ情報文字列のリスト
      */
     private List<String> convertFlagMapToList(Map<Location, Flag> flags) {
@@ -198,7 +205,7 @@ public class StageFileManager {
         for (Flag flag : flags.values()) {
             // 331,41,213@IRON@44:3 みたいな感じに
             // → GOLD@44:3@331,41,213に修正
-            String s = flag.getFlagType().name() + "@";
+            String s = flag.getFlagPoint() + "@";
             s = s + flag.getOriginBlockID() + ":" + flag.getOriginBlockData() + "@";
 
             Location loc = flag.getLocation();
@@ -213,7 +220,7 @@ public class StageFileManager {
 
     /**
      * フラッグデータをリストからハッシュマップに変換
-     * 
+     *
      * @param flags
      * @param stage
      * @return
@@ -234,33 +241,30 @@ public class StageFileManager {
             // デリミタで分ける
             data = s.split("@");
             if (data.length != 3) {
-                log.log(Level.WARNING,logPrefix + "Skipping FlagLine {0}: incorrect format (@)", line);
+                log.log(Level.WARNING, logPrefix + "Skipping FlagLine {0}: incorrect format (@)", line);
                 continue;
             }
 
             // data[0] : フラッグ種類チェック
-            FlagType type = null;
-            for (FlagType ft : FlagType.values()) {
-                if (ft.name().equalsIgnoreCase(data[0])) {
-                    type = ft;
-                }
-            }
-            if (type == null) {
-                log.log(Level.WARNING,logPrefix + "Skipping FlagLine {0}: undefined FlagType", line);
+            byte type;
+            try {
+                type = Byte.parseByte(data[0]);
+            } catch (NumberFormatException ex) {
+                log.log(Level.WARNING, logPrefix + "Skipping FlagLine {0}: undefined FlagType", line);
                 continue;
             }
 
             // data[1] : ブロックID・データ値チェック
             block = data[1].split(":");
             if (block.length != 2) {
-                log.log(Level.WARNING,logPrefix + "Skipping FlagLine {0}: incorrect block format (:)", line);
+                log.log(Level.WARNING, logPrefix + "Skipping FlagLine {0}: incorrect block format (:)", line);
                 continue;
             }
 
             // data[2] : 座標形式チェック
             coord = data[2].split(",");
             if (coord.length != 3) {
-                log.log(Level.WARNING,logPrefix + "Skipping FlagLine {0}: incorrect coord format (,)", line);
+                log.log(Level.WARNING, logPrefix + "Skipping FlagLine {0}: incorrect coord format (,)", line);
                 continue;
             }
 
@@ -304,7 +308,7 @@ public class StageFileManager {
             // デリミタ分割
             data = s.split("@");
             if (data.length != 2) {
-                log.log(Level.WARNING,logPrefix + "Skipping SpawnLine {0}: incorrect format (@)", line);
+                log.log(Level.WARNING, logPrefix + "Skipping SpawnLine {0}: incorrect format (@)", line);
                 continue;
             }
 
@@ -316,14 +320,14 @@ public class StageFileManager {
                 }
             }
             if (team == null) {
-                log.log(Level.WARNING,logPrefix + "Skipping SpawnLine {0}: undefined TeamName", line);
+                log.log(Level.WARNING, logPrefix + "Skipping SpawnLine {0}: undefined TeamName", line);
                 continue;
             }
 
             // data[1] : 座標形式チェック
             coord = data[1].split(",");
             if (coord.length != 5) {
-                log.log(Level.WARNING,logPrefix + "Skipping SpawnLine {0}: incorrect coord format (,)", line);
+                log.log(Level.WARNING, logPrefix + "Skipping SpawnLine {0}: incorrect coord format (,)", line);
                 continue;
             }
 
@@ -373,7 +377,7 @@ public class StageFileManager {
             // デリミタ分割
             data = s.split("@");
             if (data.length != 3) {
-                log.log(Level.WARNING,logPrefix + "Skipping BaseLine {0}: incorrect format (@)", line);
+                log.log(Level.WARNING, logPrefix + "Skipping BaseLine {0}: incorrect format (@)", line);
                 continue;
             }
 
@@ -385,21 +389,21 @@ public class StageFileManager {
                 }
             }
             if (team == null) {
-                log.log(Level.WARNING,logPrefix + "Skipping BaseLine {0}: undefined TeamName", line);
+                log.log(Level.WARNING, logPrefix + "Skipping BaseLine {0}: undefined TeamName", line);
                 continue;
             }
 
             // data[1] : 座標形式チェック
             pos1 = data[1].split(",");
             if (pos1.length != 3) {
-                log.log(Level.WARNING,logPrefix + "Skipping BaseLine {0}: incorrect 1st coord format (,)", line);
+                log.log(Level.WARNING, logPrefix + "Skipping BaseLine {0}: incorrect 1st coord format (,)", line);
                 continue;
             }
 
             // data[2] : 座標形式チェック
             pos2 = data[2].split(",");
             if (pos2.length != 3) {
-                log.log(Level.WARNING,logPrefix + "Skipping BaseLine {0}: incorrect 2nd coord format (,)", line);
+                log.log(Level.WARNING, logPrefix + "Skipping BaseLine {0}: incorrect 2nd coord format (,)", line);
                 continue;
             }
 
@@ -439,7 +443,7 @@ public class StageFileManager {
             // 座標形式チェック
             coord = s.split(",");
             if (coord.length != 3) {
-                log.log(Level.WARNING,logPrefix + "Skipping ChestLine {0}: incorrect coord format (,)", line);
+                log.log(Level.WARNING, logPrefix + "Skipping ChestLine {0}: incorrect coord format (,)", line);
                 continue;
             }
 
@@ -451,15 +455,21 @@ public class StageFileManager {
 
     // プレイヤーのLocationオブジェクトから文字列に変換
     private String convertPlayerLocation(Location loc) {
-        if (loc == null) return null;
+        if (loc == null) {
+            return null;
+        }
         return loc.getX() + "," + loc.getY() + "," + loc.getZ() + "," + loc.getYaw() + "," + loc.getPitch();
     }
 
     // convertPlayerLocationToStringで変換したプレイヤーLocationに戻す
     private Location convertPlayerLocation(String loc) {
-        if (loc == null) return null;
+        if (loc == null) {
+            return null;
+        }
         String[] coord = loc.split(",");
-        if (coord.length != 5) return null;
+        if (coord.length != 5) {
+            return null;
+        }
         return new Location(Bukkit.getWorld(plugin.getConfigs().getGameWorld()), Double.valueOf(coord[0]), Double.valueOf(coord[1]), Double.valueOf(coord[2]), Float.valueOf(coord[3]), Float.valueOf(coord[4]));
     }
 }

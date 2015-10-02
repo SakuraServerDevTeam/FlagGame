@@ -11,7 +11,6 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import syam.flaggame.FlagGame;
-import syam.flaggame.enums.FlagType;
 import syam.flaggame.enums.config.Configables;
 import syam.flaggame.game.Stage;
 import syam.flaggame.util.Actions;
@@ -32,7 +31,7 @@ public class SetupManager {
     // 選択中のブロック
     private static final Map<String, Location> selectedBlock = new HashMap<>();
     // 選択中のフラッグ種類
-    private static final Map<String, FlagType> selectedFlagType = new HashMap<>();
+    private static final Map<String, Byte> selectedFlagType = new HashMap<>();
 
     // ゲームマネージャモードのリスト
     // private static List<String> fgFlagManager = new ArrayList<String>();
@@ -101,7 +100,7 @@ public class SetupManager {
      * @param loc
      *            設定するフラッグタイプ
      */
-    public static void setSelectedFlagType(Player player, FlagType type) {
+    public static void setSelectedFlagType(Player player, Byte type) {
         if (type == null) {
             if (selectedFlagType.containsKey(player.getName())) selectedFlagType.remove(player.getName());
         } else {
@@ -116,7 +115,7 @@ public class SetupManager {
      *            対象プレイヤー
      * @return null またはフラッグタイプ
      */
-    public static FlagType getSelectedFlagType(Player player) {
+    public static Byte getSelectedFlagType(Player player) {
         if (player == null || !selectedFlagType.containsKey(player.getName())) {
             return null;
         } else {

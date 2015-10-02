@@ -4,37 +4,40 @@ import syam.flaggame.exception.FlagGameException;
 
 /**
  * ゲームチーム
- * 
+ *
  * @author syam
  */
 public enum GameTeam {
-    RED("赤", 35, 14, FlagState.RED, "&c"), // 赤チーム
-    BLUE("青", 35, 11, FlagState.BLUE, "&b"), // 青チーム
+
+    RED("赤", 35, 14, "&c"), // 赤チーム
+    BLUE("青", 35, 11, "&b"), // 青チーム
     ;
 
     private final String teamName;
     private final int blockID;
     private final byte blockData;
-    private final FlagState flagState;
     private final String colorTag;
 
-    GameTeam(String teamName, int blockID, int blockData, FlagState flagState, String colorTag) {
+    GameTeam(String teamName, int blockID, int blockData, String colorTag) {
         this.teamName = teamName;
 
         // 例外回避
-        if (blockID < 0) blockID = 0;
-        if (blockData < 0 || blockData > 127) blockData = 0;
+        if (blockID < 0) {
+            blockID = 0;
+        }
+        if (blockData < 0 || blockData > 127) {
+            blockData = 0;
+        }
 
         this.blockID = blockID;
         this.blockData = (byte) blockData;
 
-        this.flagState = flagState;
         this.colorTag = colorTag;
     }
 
     /**
      * このチームの名前を返す
-     * 
+     *
      * @return
      */
     public String getTeamName() {
@@ -42,17 +45,8 @@ public enum GameTeam {
     }
 
     /**
-     * このチームのブロックIDを返す
-     * 
-     * @return
-     */
-    public int getBlockID() {
-        return blockID;
-    }
-
-    /**
      * このチームのブロックデータ値を返す
-     * 
+     *
      * @return
      */
     public byte getBlockData() {
@@ -60,17 +54,8 @@ public enum GameTeam {
     }
 
     /**
-     * チームに関連付けられたフラッグステートを返す
-     * 
-     * @return nullあり？
-     */
-    public FlagState getFlagState() {
-        return flagState;
-    }
-
-    /**
      * チームの色タグ "&(char)" を返す
-     * 
+     *
      * @return
      */
     public String getColor() {
@@ -79,7 +64,7 @@ public enum GameTeam {
 
     /**
      * 相手のGameTeamを返す
-     * 
+     *
      * @return GameTeam
      */
     public GameTeam getAgainstTeam() {
@@ -98,8 +83,19 @@ public enum GameTeam {
             return GameTeam.RED;
         } else {
             String error = "Request team is not defined";
-            if (team != null) error += ": " + team.name();
+            if (team != null) {
+                error += ": " + team.name();
+            }
             throw new FlagGameException(error);
         }
+    }
+
+    public static GameTeam getByColorData(byte data) {
+        for (GameTeam t : values()) {
+            if (t.blockData == data) {
+                return t;
+            }
+        }
+        return null;
     }
 }

@@ -7,7 +7,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 
-import syam.flaggame.enums.FlagType;
 import syam.flaggame.enums.GameTeam;
 import syam.flaggame.enums.config.ConfigType;
 import syam.flaggame.enums.config.Configables;
@@ -229,15 +228,16 @@ public class SetCommand extends BaseCommand {
      */
     private void setFlag(Stage game) throws CommandException {
         // 引数チェック
-        if (args.size() < 2) { throw new CommandException("&c引数が足りません！フラッグの種類を指定してください！"); }
+        if (args.size() < 2) { throw new CommandException("&c引数が足りません！フラッグの得点を指定してください！"); }
 
         // フラッグタイプチェック
-        FlagType type = null;
-        for (FlagType ft : FlagType.values()) {
-            if (ft.name().equalsIgnoreCase(args.get(1))) type = ft;
+        byte type;
+        try {
+            type = Byte.parseByte(args.get(1));
+        } catch (NumberFormatException ex) {
+            throw new CommandException("フラッグの得点を正しく指定してください!", ex);
         }
-        if (type == null) { throw new CommandException("&cフラッグの種類を正しく指定してください！"); }
-
+        
         // マネージャーセット
         SetupManager.setManager(player, Configables.FLAG);
         SetupManager.setSelectedFlagType(player, type);

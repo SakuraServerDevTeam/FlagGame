@@ -3,12 +3,16 @@ package syam.flaggame.game;
 import java.util.logging.Logger;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 
 import syam.flaggame.FlagGame;
-import syam.flaggame.enums.FlagType;
+import syam.flaggame.enums.GameTeam;
 
 public class Flag {
+    
+    private static final int[] FLAG_BLOCK_IDS = {35};
+    
     // Logger
     public static final Logger log = FlagGame.logger;
 
@@ -16,7 +20,7 @@ public class Flag {
     private Stage stage = null; // フラッグが所属するステージ
 
     private Location loc = null; // フラッグ座標
-    private FlagType type = null; // フラッグの種類
+    private byte type = 0; // フラッグの種類
 
     // 元のブロックデータ
     // TODO: デフォルトブロックを可変にする とりあえず空気に変える
@@ -28,7 +32,7 @@ public class Flag {
      * 
      * @param plugin
      */
-    public Flag(final FlagGame plugin, final Stage stage, final Location loc, final FlagType type, final int blockID, final byte blockData) {
+    public Flag(final FlagGame plugin, final Stage stage, final Location loc, final byte type, final int blockID, final byte blockData) {
 
         // フラッグデータ登録
         this.stage = stage;
@@ -42,7 +46,7 @@ public class Flag {
         init();
     }
 
-    public Flag(final FlagGame plugin, final Stage stage, final Location loc, final FlagType type) {
+    public Flag(final FlagGame plugin, final Stage stage, final Location loc, final byte type) {
         this(plugin, stage, loc, type, 0, (byte) 0);
     }
 
@@ -84,18 +88,12 @@ public class Flag {
      * 
      * @return フラッグの点数
      */
-    public int getFlagPoint() {
-        return type.getPoint();
-        /*
-         * int point = 0; switch(type){ case NORMAL: point = 0; break; case
-         * IRON: point = 1; break; case GOLD: point = 2; break; case DIAMOND:
-         * point = 3; break; default: log.warning(logPrefix+
-         * "Undefined FlagPoint: "+ type.name()); break; } return point;
-         */
+    public byte getFlagPoint() {
+        return type;
     }
 
     public String getTypeName() {
-        return type.getTypeName();
+        return Byte.toString(type);
     }
 
     /* getter / setter */
@@ -107,15 +105,28 @@ public class Flag {
         return loc;
     }
 
-    public FlagType getFlagType() {
-        return type;
-    }
-
     public int getOriginBlockID() {
         return blockID;
     }
 
     public byte getOriginBlockData() {
         return blockData;
+    }
+    
+    public GameTeam getOwner() {
+        Block b = this.loc.getBlock();
+        if (!isFlag(b.getType())) {
+            return null;
+        }
+        return GameTeam.getByColorData(b.getData());
+    }
+    
+    public static boolean isFlag(Material material) {
+        for (int id : FLAG_BLOCK_IDS) {
+            if (material.getId() == id) {
+                return true;
+            }
+        }
+        return false;
     }
 }
