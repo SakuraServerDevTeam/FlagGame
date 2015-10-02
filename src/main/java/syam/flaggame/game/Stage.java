@@ -414,7 +414,7 @@ public class Stage implements IStage {
 
     @Override
     public void setSpecSpawn(Location loc) {
-        this.specSpawn = loc.clone();
+        this.specSpawn = loc != null ? loc.clone() : null;
     }
 
     /* ***** エリア関係 ***** */
