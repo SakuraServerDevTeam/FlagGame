@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -45,6 +44,9 @@ import syam.flaggame.util.Actions;
  * @author syam(syamn)
  */
 public class Game  {
+    
+    public enum State {PREPARATION, ENTRY, STARTED, FINISHED,;}
+    
     // Logger
     private static final String msgPrefix = FlagGame.msgPrefix;
 
@@ -59,8 +61,7 @@ public class Game  {
     private int timerThreadID = -1; // タイマータスクのID
     private int starttimerInSec = 10;
     private int starttimerThreadID = -1;
-    private boolean ready = false; // 待機状態フラグ
-    private boolean started = false; // 開始状態フラグ
+    private State state = State.PREPARATION;
 
     // 参加プレイヤー
     private Map<GameTeam, Set<String>> playersMap = new EnumMap<>(GameTeam.class);
@@ -102,7 +103,7 @@ public class Game  {
      */
 
     public void ready(CommandSender sender) {
-        if (started || ready) { throw new GameStateException("This game is already using!"); }
+        if (this.state != State.PREPARATION) { throw new GameStateException("This game is already using!"); }
 
         // 一度プレイヤーリスト初期化
         redPlayers.clear();
@@ -122,7 +123,7 @@ public class Game  {
         }
 
         // 待機
-        ready = true;
+        this.state = State.ENTRY;
         stage.setUsing(true);
         stage.setGame(this);
 
@@ -167,8 +168,8 @@ public class Game  {
         plugin.getServer().getPluginManager().callEvent(startEvent);
         if (startEvent.isCancelled()) { return; }
 
-        if (started) {
-            Actions.message(sender, "&cこのゲームは既に始まっています");
+        if (this.state != State.ENTRY) {
+            Actions.message(sender, "&cこのゲームは開始待機中ではありません");
             return;
         }
 
@@ -211,8 +212,7 @@ public class Game  {
 
         // 開始
         timer(); // タイマースタート
-        ready = false;
-        started = true;
+        state = State.STARTED;
 
         // プロファイル更新
         stage.getProfile().updateLastPlayedStage();
@@ -976,10 +976,10 @@ public class Game  {
      */
 
     public void cancelTimerTask() {
-        if (ready && starttimerThreadID != -1) {
+        if (this.state == State.ENTRY && starttimerThreadID != -1) {
             plugin.getServer().getScheduler().cancelTask(starttimerThreadID);
         }
-        if (started && timerThreadID != -1) {
+        if (this.state == State.STARTED && timerThreadID != -1) {
             // タスクキャンセル
             plugin.getServer().getScheduler().cancelTask(timerThreadID);
         }
@@ -1004,14 +1004,8 @@ public class Game  {
         return this.getStage().getName();
     }
 
-
-    public boolean isReady() {
-        return this.ready;
-    }
-
-
-    public boolean isStarting() {
-        return this.started;
+    public State getState() {
+        return this.state;
     }
 
     public boolean isRandom() {

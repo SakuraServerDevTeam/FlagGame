@@ -23,6 +23,7 @@ import syam.flaggame.player.PlayerProfile;
 import syam.flaggame.util.Actions;
 
 public class LeaveCommand extends BaseCommand implements Queueable {
+
     public LeaveCommand() {
         bePlayer = true;
         name = "leave";
@@ -48,44 +49,48 @@ public class LeaveCommand extends BaseCommand implements Queueable {
         // ゲームに参加していないプレイヤー
         if (game == null) {
             // check permission
-            if (!Perms.LEAVE_SPECTATE.has(sender)) { throw new CommandException("&cあなたはゲームに参加していません"); }
+            if (!Perms.LEAVE_SPECTATE.has(sender)) {
+                throw new CommandException("&cあなたはゲームに参加していません");
+            }
 
             // ゲームワールド内
             if (world.equals(Bukkit.getWorld(plugin.getConfigs().getGameWorld()))) {
                 leaveFromGameworld(player, world.getSpawnLocation());
-            }
-            // 別ワールド
+            } // 別ワールド
             else {
                 throw new CommandException("&cこのゲームワールド外からこのコマンドを使うことはできません！");
             }
-        }
-        // ゲームに参加しているプレイヤー
+        } // ゲームに参加しているプレイヤー
         else {
             // ゲーム開始中
-            if (game.isStarting()) {
+            if (game.getState() == Game.State.STARTED) {
                 // check permission
-                if (!Perms.LEAVE_GAME.has(sender)) { throw new CommandException("&cゲームを途中退場する権限がありません"); }
+                if (!Perms.LEAVE_GAME.has(sender)) {
+                    throw new CommandException("&cゲームを途中退場する権限がありません");
+                }
 
                 // confirmキュー追加
                 plugin.getQueue().addQueue(sender, this, args, 15);
                 Actions.message(sender, "&d途中退場回数は記録されます。本当にこのゲームを途中退場しますか？");
                 Actions.message(sender, "&d退場するには &a/flag confirm &dコマンドを入力してください。");
                 Actions.message(sender, "&a/flag confirm &dコマンドは15秒間のみ有効です。");
-            }
-            // ゲーム待機中
-            else if (game.isReady()) {
+            } // ゲーム待機中
+            else if (game.getState() == Game.State.ENTRY) {
                 // check permission
-                if (!Perms.LEAVE_READY.has(sender)) { throw new CommandException("&cゲームのエントリーを取り消す権限がありません"); }
+                if (!Perms.LEAVE_READY.has(sender)) {
+                    throw new CommandException("&cゲームのエントリーを取り消す権限がありません");
+                }
                 // プレイヤーリストから削除
                 game.remPlayer(player, team);
 
                 String stageName = game.getName();
-                if (game.isRandom() && game.isReady()) stageName = "ランダムステージ";
+                if (game.isRandom() && game.getState() == Game.State.STARTED) {
+                    stageName = "ランダムステージ";
+                }
                 Actions.broadcastMessage(msgPrefix + "&a'" + team.getColor() + player.getName() + "&a'がゲーム'&6" + stageName + "&a'のエントリーを取り消しました！");
 
                 Actions.message(player, "&aゲーム'" + stageName + "'の参加申請を取り消しました！");
-            }
-            // 例外
+            } // 例外
             else {
                 Actions.message(player, "&c内部エラー: LeaveCommand.class");
                 log.warning(logPrefix + "Internal Exception on LeaveCommand.class, Please report this.");
@@ -108,13 +113,12 @@ public class LeaveCommand extends BaseCommand implements Queueable {
                 break;
             }
         }
-        if (game == null || !game.isStarting()) {
+        if (game == null || game.getState() == Game.State.FINISHED) {
             Actions.message(sender, "&c既にゲームは終了しています！");
             return;
         }
 
         // 途中退場処理
-
         game.remPlayer(player, team);
 
         // アイテムをすべてその場にドロップさせる

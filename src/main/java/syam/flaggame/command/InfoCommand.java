@@ -5,6 +5,7 @@ import java.util.Set;
 
 import syam.flaggame.enums.GameTeam;
 import syam.flaggame.exception.CommandException;
+import syam.flaggame.game.Game;
 import syam.flaggame.game.Stage;
 import syam.flaggame.manager.StageManager;
 import syam.flaggame.permission.Perms;
@@ -33,7 +34,7 @@ public class InfoCommand extends BaseCommand {
                     // ゲームステータス取得
                     String status = "&7待機中";
                     if (stage.isUsing() && stage.getGame() != null) {
-                        if (stage.getGame().isStarting()) {
+                        if (stage.getGame().getState() == Game.State.STARTED) {
                             // 開始中なら残り時間も表示
                             String time = Actions.getTimeString(stage.getGame().getRemainTime());
                             status = "&c開始中&7(あと:" + time + ")";
@@ -61,7 +62,7 @@ public class InfoCommand extends BaseCommand {
             // ゲームステータス取得
             String status = "&7待機中";
             if (stage.isUsing() && stage.getGame() != null) {
-                if (stage.getGame().isStarting()) {
+                if (stage.getGame().getState() == Game.State.STARTED) {
                     // 開始中なら残り時間も表示
                     String time = Actions.getTimeString(stage.getGame().getRemainTime());
                     status = "&c開始中&7(あと:" + time + ")";

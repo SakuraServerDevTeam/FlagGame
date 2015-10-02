@@ -10,13 +10,8 @@ import syam.flaggame.game.Game;
 public class GameManager {
     // Logger
     public static final Logger log = FlagGame.logger;
-    private static final String logPrefix = FlagGame.logPrefix;
-    private static final String msgPrefix = FlagGame.msgPrefix;
-
-    private final FlagGame plugin;
-
+    
     public GameManager(final FlagGame plugin) {
-        this.plugin = plugin;
     }
 
     private static HashMap<String, Game> games = new HashMap<>();
@@ -25,7 +20,7 @@ public class GameManager {
     /**
      * ゲームマップを返す
      * 
-     * @return HashMap<String, Game>
+     * @return {@code HashMap<String, Game>}
      */
     public static HashMap<String, Game> getGames() {
         return games;
@@ -72,7 +67,7 @@ public class GameManager {
         ArrayList<Game> ret = new ArrayList<>();
 
         games.values().stream()
-                .filter(Game::isReady)
+                .filter(g -> g.getState() == Game.State.ENTRY)
                 .forEach(ret::add);
 
         return ret;
@@ -87,7 +82,7 @@ public class GameManager {
         ArrayList<Game> ret = new ArrayList<>();
 
         games.values().stream()
-                .filter(Game::isStarting)
+                .filter(g -> g.getState() == Game.State.STARTED)
                 .forEach(ret::add);
 
         return ret;

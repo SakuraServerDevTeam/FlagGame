@@ -26,7 +26,7 @@ public class StartCommand extends BaseCommand {
             if (args.get(0).equalsIgnoreCase("random")) {
                 // ランダムステージ
                 game = GameManager.getRandomGame();
-                if (game == null || !game.isReady()) { throw new CommandException("&c参加受付状態のランダムステージはありません！"); }
+                if (game == null || game.getState() != Game.State.ENTRY) { throw new CommandException("&c参加受付状態のランダムステージはありません！"); }
             } else {
                 game = GameManager.getGame(args.get(0));
             }
@@ -45,7 +45,7 @@ public class StartCommand extends BaseCommand {
             }
         }
 
-        if (game == null || !game.isReady()) {
+        if (game == null || game.getState() != Game.State.ENTRY) {
             // そのステージが本当にあるかチェック
             if (StageManager.getStage(args.get(0)) == null) {
                 throw new CommandException("&cステージ'" + args.get(0) + "'が見つかりません");

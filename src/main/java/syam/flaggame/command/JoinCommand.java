@@ -62,7 +62,7 @@ public class JoinCommand extends BaseCommand {
             if (game == null) { throw new CommandException("&c現在受付中のランダムステージはありません！"); }
         }
 
-        if (game.isStarting()) { throw new CommandException("&cゲーム'" + args.get(0) + "'は既に始まっています！"); }
+        if (game.getState() == Game.State.STARTED) { throw new CommandException("&cゲーム'" + args.get(0) + "'は既に始まっています！"); }
 
         // 既に参加していないかチェック
         if (game.getPlayerTeam(player) != null) {

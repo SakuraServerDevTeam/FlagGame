@@ -194,7 +194,7 @@ public class FGPlayerListener implements Listener {
         // ゲーム参加チェック
         for (Game game : GameManager.getGames().values()) {
             // 開始されていないゲームはチェックしない
-            if (!game.isStarting()) {
+            if (game.getState() != Game.State.STARTED) {
                 continue;
             }
 
@@ -298,7 +298,7 @@ public class FGPlayerListener implements Listener {
 
         // 存在するゲームを回す
         for (Game game : GameManager.getGames().values()) {
-            if (!game.isStarting()) {
+            if (game.getState() != Game.State.STARTED) {
                 continue;
             }
 
@@ -348,7 +348,7 @@ public class FGPlayerListener implements Listener {
 
         /* TODO: GC here */
         for (Game game : GameManager.getGames().values()) {
-            if (!game.isStarting()) {
+            if (game.getState() != Game.State.STARTED) {
                 continue;
             }
 
@@ -382,7 +382,7 @@ public class FGPlayerListener implements Listener {
 
             for (Game game : GameManager.getGames().values()) {
                 // 待機中ゲーム
-                if (game.isReady()) {
+                if (game.getState() == Game.State.ENTRY) {
                     // 賞金系メッセージ
                     String entryFeeMsg = String.valueOf(game.getStage().getEntryFee()) + "Coin";
                     String awardMsg = String.valueOf(game.getStage().getAward()) + "Coin";
@@ -409,7 +409,7 @@ public class FGPlayerListener implements Listener {
                     }
 
                 } // 開始中ゲーム
-                else if (game.isStarting()) {
+                else if (game.getState() == Game.State.STARTED) {
                     // 観戦アナウンス
                     Actions.message(player, "&b* ===================================");
                     Actions.message(player, msgPrefix + "&2フラッグゲーム'&6" + game.getName() + "&2'が始まっています！");
@@ -546,7 +546,7 @@ public class FGPlayerListener implements Listener {
                         return;
                     }
                     for (Game game : GameManager.getGames().values()) {
-                        if (!game.isStarting()) {
+                        if (game.getState() != Game.State.STARTED) {
                             continue;
                         }
                         if (game.getPlayerTeam(player) != null) {
@@ -590,7 +590,7 @@ public class FGPlayerListener implements Listener {
             // 自殺
             case KILL:
                 for (Game game : GameManager.getGames().values()) {
-                    if (!game.isStarting()) {
+                    if (game.getState() != Game.State.STARTED) {
                         continue;
                     }
                     if (game.getPlayerTeam(player) != null) {

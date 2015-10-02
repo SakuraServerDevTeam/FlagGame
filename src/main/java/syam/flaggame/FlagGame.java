@@ -178,11 +178,11 @@ public class FlagGame extends JavaPlugin {
         // 開始中のゲームをすべて終わらせる
         boolean readying = false;
         for (Game game : GameManager.getGames().values()) {
-            if (game.isStarting()) {
+            if (game.getState() == Game.State.STARTED) {
                 game.cancelTimerTask();
                 game.finish(GameResult.STOP, null, "Unloading FlagGame Plugin");
                 game.log("Game finished because disabling plugin..");
-            } else if (game.isReady()) {
+            } else if (game.getState() == Game.State.ENTRY) {
                 game.message(msgPrefix + "&cあなたのエントリーはプラグインが無効になったため取り消されました");
                 readying = true;
             }
