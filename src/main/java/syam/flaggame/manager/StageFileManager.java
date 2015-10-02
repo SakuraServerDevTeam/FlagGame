@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -130,8 +131,8 @@ public class StageFileManager {
 
                 log.log(Level.INFO,logPrefix + "Loaded Game: {0} ({1})", new Object[]{file.getName(), name});
 
-            } catch (Exception ex) {
-                ex.printStackTrace();
+            } catch (IOException | InvalidConfigurationException ex) {
+                log.log(Level.WARNING, "Failed to load a stage: "+file.getName(), ex);
             }
         }
     }
