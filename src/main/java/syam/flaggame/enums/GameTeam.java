@@ -9,27 +9,21 @@ import syam.flaggame.exception.FlagGameException;
  */
 public enum GameTeam {
 
-    RED("赤", 35, 14, "&c"), // 赤チーム
-    BLUE("青", 35, 11, "&b"), // 青チーム
+    RED("赤", 14, "&c"), // 赤チーム
+    BLUE("青", 11, "&b"), // 青チーム
     ;
 
     private final String teamName;
-    private final int blockID;
     private final byte blockData;
     private final String colorTag;
 
-    GameTeam(String teamName, int blockID, int blockData, String colorTag) {
+    GameTeam(String teamName,int blockData, String colorTag) {
         this.teamName = teamName;
-
-        // 例外回避
-        if (blockID < 0) {
-            blockID = 0;
+        
+        if (blockData < Byte.MIN_VALUE || blockData > Byte.MAX_VALUE) {
+            blockData = Byte.MIN_VALUE;
         }
-        if (blockData < 0 || blockData > 127) {
-            blockData = 0;
-        }
-
-        this.blockID = blockID;
+        
         this.blockData = (byte) blockData;
 
         this.colorTag = colorTag;
