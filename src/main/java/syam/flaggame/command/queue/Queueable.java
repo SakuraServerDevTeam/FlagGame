@@ -1,5 +1,6 @@
-/**
- * FlagGame - Package: syam.flaggame.command Created: 2012/09/30 1:23:16
+/* 
+ * Copyright (C) 2015 Syamn, SakruaServerDev.
+ * All rights reserved.
  */
 package syam.flaggame.command.queue;
 

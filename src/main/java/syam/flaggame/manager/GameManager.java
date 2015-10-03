@@ -1,3 +1,7 @@
+/* 
+ * Copyright (C) 2015 Syamn, SakruaServerDev.
+ * All rights reserved.
+ */
 package syam.flaggame.manager;
 
 import java.util.ArrayList;

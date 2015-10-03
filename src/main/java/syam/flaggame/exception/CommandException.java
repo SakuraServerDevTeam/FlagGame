@@ -1,5 +1,6 @@
-/**
- * FlagGame - Package: syam.flaggame.exception Created: 2012/10/07 8:21:30
+/* 
+ * Copyright (C) 2015 Syamn, SakruaServerDev.
+ * All rights reserved.
  */
 package syam.flaggame.exception;
 
