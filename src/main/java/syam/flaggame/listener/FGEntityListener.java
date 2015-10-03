@@ -17,6 +17,7 @@ import syam.flaggame.FlagGame;
 import syam.flaggame.enums.GameTeam;
 import syam.flaggame.game.Game;
 import syam.flaggame.manager.GameManager;
+import syam.flaggame.player.PlayerManager;
 import syam.flaggame.util.Actions;
 
 public class FGEntityListener implements Listener {
@@ -67,8 +68,8 @@ public class FGEntityListener implements Listener {
             if (game.getState() != Game.State.STARTED) continue;
             
             if (game.isJoined(damager) && game.isJoined(attacker)){
-                GameTeam damagerTeam = game.getPlayerTeam(damager);
-                GameTeam attackerTeam = game.getPlayerTeam(attacker);
+                GameTeam damagerTeam = game.getPlayerTeam(PlayerManager.getPlayer(damager));
+                GameTeam attackerTeam = game.getPlayerTeam(PlayerManager.getPlayer(attacker));
                 
                 boolean cancel = false;
                 

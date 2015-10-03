@@ -53,7 +53,7 @@ public class WatchCommand extends BaseCommand {
         }
 
         for (Game check : GameManager.getGames().values()) {
-            if (check.getPlayerTeam(player) != null) {
+            if (check.getPlayerTeam(PlayerManager.getPlayer(player)) != null) {
                 Actions.message(player, "&cあなたはゲーム'" + check.getName() + "'に参加しているため移動できません！");
                 return;
             }
@@ -61,7 +61,7 @@ public class WatchCommand extends BaseCommand {
 
         // テレポート
         if (!player.getWorld().equals(specSpawn.getWorld())) {
-            PlayerManager.getProfile(player.getName()).setTpBackLocation(player.getLocation());
+            PlayerManager.getProfile(player).setTpBackLocation(player.getLocation());
         }
         player.teleport(specSpawn, TeleportCause.PLUGIN);
         Actions.message(player, "&aステージ'" + stage.getName() + "'の観戦者スポーン地点へ移動しました！");

@@ -1,5 +1,6 @@
 package syam.flaggame.player;
 
+import java.util.UUID;
 import java.util.logging.Logger;
 
 import org.bukkit.entity.Player;
@@ -25,11 +26,23 @@ public class FGPlayer {
      * 
      * @param player
      */
-    public FGPlayer(final Player player) {
+    /*package*/ FGPlayer(final Player player) {
+        if (player == null) {
+            throw new NullPointerException();
+        }
         this.player = player;
-        this.profile = new PlayerProfile(player.getName(), true);
+        this.profile = new PlayerProfile(player.getUniqueId(), true);
+        this.profile.setPlayerName(player.getName());
     }
 
+    public String getName() {
+        return this.player.getName();
+    }
+    
+    public UUID getUUID() {
+        return this.player.getUniqueId();
+    }
+    
     /* getter / setter */
     public void setPlayingGame(Game game) {
         this.game = game;
@@ -43,7 +56,7 @@ public class FGPlayer {
         return this.player;
     }
 
-    public void setPlayer(Player player) {
+    /*package*/ void setPlayer(Player player) {
         this.player = player;
     }
 

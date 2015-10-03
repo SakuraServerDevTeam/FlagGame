@@ -6,6 +6,7 @@ import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,9 +31,6 @@ public class Actions {
     // Logger
 
     public static final Logger log = FlagGame.logger;
-
-    public Actions(FlagGame plugin) {
-    }
 
     // メッセージ送信系関数
     /* メッセージをユニキャスト
@@ -94,9 +92,7 @@ public class Actions {
      * @param message メッセージ
      */
     public static void permcastMessage(String permission, String message) {
-        int i = 0;
-
-        i = Bukkit.getServer().getOnlinePlayers().stream()
+        int  i = Bukkit.getServer().getOnlinePlayers().stream()
                 .filter(player -> player.hasPermission(permission))
                 .map(player -> {
                     Actions.message(player, message);
@@ -332,51 +328,45 @@ public class Actions {
     /**
      * 指定したユーザーにお金を加える
      *
-     * @param name ユーザー名
+     * @param uuid ユーザーのuuid
      * @param amount 金額
      * @return 成功ならtrue、失敗ならfalse
      */
-    public static boolean addMoney(String name, double amount) {
+    public static boolean addMoney(UUID uuid, double amount) {
         if (amount < 0) {
             return false; // 負数は許容しない
         }
-        EconomyResponse r = FlagGame.getInstance().getEconomy().depositPlayer(name, amount);
+        EconomyResponse r = FlagGame.getInstance().getEconomy().depositPlayer(Bukkit.getOfflinePlayer(uuid), amount);
         return r.transactionSuccess();
     }
 
     /**
      * 指定したユーザーからお金を引く
      *
-     * @param name ユーザー名
+     * @param uuid ユーザーのuuid
      * @param amount 金額
      * @return 成功ならtrue、失敗ならfalse
      */
-    public static boolean takeMoney(String name, double amount) {
+    public static boolean takeMoney(UUID uuid,  double amount) {
         if (amount < 0) {
             return false; // 負数は許容しない
         }
-        EconomyResponse r = FlagGame.getInstance().getEconomy().withdrawPlayer(name, amount);
+        EconomyResponse r = FlagGame.getInstance().getEconomy().withdrawPlayer(Bukkit.getOfflinePlayer(uuid), amount);
         return r.transactionSuccess();
     }
 
     /**
      * 指定したユーザーがお金を持っているか
      *
-     * @param name ユーザー名
+     * @param uuid ユーザーのuuid
      * @param amount 金額
      * @return 持っていればtrue、無ければfalse
      */
-    public static boolean checkMoney(String name, double amount) {
-        return (FlagGame.getInstance().getEconomy().has(name, amount));
+    public static boolean checkMoney(UUID uuid, double amount) {
+        return (FlagGame.getInstance().getEconomy().has(Bukkit.getOfflinePlayer(uuid), amount));
     }
 
-    /**
-     * *************************************
-     */
     /* ログ操作系 */
-    /**
-     * *************************************
-     */
     /*
      * ログファイルに書き込み
      *

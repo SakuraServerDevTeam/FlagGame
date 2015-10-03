@@ -2,6 +2,7 @@ package syam.flaggame.player;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -13,12 +14,15 @@ import syam.flaggame.FlagGame;
 import syam.flaggame.database.Database;
 
 public class PlayerProfile {
+
     // Logger
+
     public static final Logger log = FlagGame.logger;
     private static final String logPrefix = FlagGame.logPrefix;
     private static final String msgPrefix = FlagGame.msgPrefix;
 
-    private final String playerName;
+    private final UUID uuid;
+    private String playerName =null;
     private boolean loaded = false;
 
     /* mySQL Stuff */
@@ -31,7 +35,6 @@ public class PlayerProfile {
     private Location backLocation = null; // 戻る先の地点
 
     /* Records */
-
     private int played = 0; // プレイ回数
     private int exit = 0; // 途中退場回数
 
@@ -47,14 +50,12 @@ public class PlayerProfile {
 
     /**
      * コンストラクタ
-     * 
-     * @param playerName
-     *            プレイヤー名
-     * @param addNew
-     *            新規プレイヤーとしてデータを読み込むかどうか
+     *
+     * @param uuid UUID
+     * @param addNew 新規プレイヤーとしてデータを読み込むかどうか
      */
-    public PlayerProfile(String playerName, boolean addNew) {
-        this.playerName = playerName;
+    public PlayerProfile(UUID uuid, boolean addNew) {
+        this.uuid = uuid;
 
         if (!loadMySQL() && addNew) {
             addMySQLPlayer();
@@ -64,40 +65,43 @@ public class PlayerProfile {
 
     /**
      * データベースからプレイヤーデータを読み込み
-     * 
+     *
      * @return 正常終了すればtrue、基本データテーブルにデータがなければfalse
      */
     public boolean loadMySQL() {
         Database db = FlagGame.getDatabases();
 
         // プレイヤーID(DB割り当て)を読み出す
-        playerID = db.getInt("SELECT `player_id` FROM " + db.getTablePrefix() + "users WHERE `player_name` = ?", playerName);
+        playerID = db.getInt("SELECT `player_id` FROM " + db.getTablePrefix() + "users WHERE `uuid` = ?", uuid);
 
         // プレイヤー基本テーブルにデータがなければ何もしない
-        if (playerID == 0) { return false; }
+        if (playerID == 0) {
+            return false;
+        }
 
         /* *** usersテーブルデータ読み込み *************** */
-        HashMap<Integer, ArrayList<String>> usersDatas = db.read("SELECT `lastjoingame`, `status` FROM " + db.getTablePrefix() + "users WHERE `player_id` = ?", playerID);
+        HashMap<Integer, ArrayList<String>> usersDatas = db.read("SELECT `player_name`, `lastjoingame`, `status` FROM " + db.getTablePrefix() + "users WHERE `player_id` = ?", playerID);
         ArrayList<String> dataValues = usersDatas.get(1);
 
         if (dataValues == null) {
-            log.severe(playerName + "does not exist in the users table! (user: " + playerName + ")");
+            log.log(Level.SEVERE, "{0}does not exist in the users table! (user: {1})", new Object[]{uuid, uuid});
             return false;
         } else {
             // データ読み出し
-            this.lastjoingame = Long.valueOf(dataValues.get(0));
-            this.status = Integer.valueOf(dataValues.get(1));
+            this.playerName = dataValues.get(0);
+            this.lastjoingame = Long.valueOf(dataValues.get(1));
+            this.status = Integer.valueOf(dataValues.get(2));
         }
         dataValues.clear();
 
         /* *** recordsテーブルデータ読み込み *************** */
-        HashMap<Integer, ArrayList<String>> recordsDatas = db.read("SELECT `played`, `exit`, `win`, `lose`, `draw`, `place`, `break`, `kill`, `death` FROM " + db.getTablePrefix() + "records " + "WHERE `player_id` = ?", playerID);
+        HashMap<Integer, ArrayList<String>> recordsDatas = db.read("SELECT `played`, `exit`, `win`, `lose`, `draw`, `place`, `break`, `kill`, `death` FROM " + db.getTablePrefix() + "records " + "WHERE `uuid` = ?", uuid);
         dataValues = recordsDatas.get(1);
 
         if (dataValues == null) {
             // 新規レコード追加
             db.write("INSERT INTO " + db.getTablePrefix() + "records (`player_id`) VALUES (?)", playerID);
-            log.log(Level.WARNING, "{0} does not exist in the records table. Their records will be reset.", playerName);
+            log.log(Level.WARNING, "{0} does not exist in the records table. Their records will be reset.", uuid);
         } else {
             // データ読み出し
             this.played = Integer.valueOf(dataValues.get(0));
@@ -123,7 +127,7 @@ public class PlayerProfile {
             // データ読み出し
             World world = Bukkit.getWorld(dataValues.get(0));
             if (world == null) {
-                log.log(Level.WARNING,logPrefix + "World {0} is Not Found! Removing this location.", dataValues.get(0));
+                log.log(Level.WARNING, logPrefix + "World {0} is Not Found! Removing this location.", dataValues.get(0));
                 backLocation = null;
             } else {
                 double x, y, z;
@@ -156,8 +160,8 @@ public class PlayerProfile {
     private void addMySQLPlayer() {
         Database db = FlagGame.getDatabases();
 
-        db.write("INSERT INTO " + db.getTablePrefix() + "users (`player_name`) VALUES (?)", playerName); // usersテーブル
-        playerID = db.getInt("SELECT `player_id` FROM " + db.getTablePrefix() + "users WHERE `player_name` = ?", playerName);
+        db.write("INSERT INTO " + db.getTablePrefix() + "users (`uuid`) VALUES (?)", uuid); // usersテーブル
+        playerID = db.getInt("SELECT `player_id` FROM " + db.getTablePrefix() + "users WHERE `uuid` = ?", uuid);
         db.write("INSERT INTO " + db.getTablePrefix() + "records (`player_id`) VALUES (?)", playerID); // recordsテーブル
     }
 
@@ -172,7 +176,7 @@ public class PlayerProfile {
         // データベースupdate
 
         /* usersテーブル */
-        db.write("UPDATE " + db.getTablePrefix() + "users SET " + "`lastjoingame` = ?, `status` = ? " + "WHERE `player_id` = ?", lastjoingame.intValue(), status, playerID);
+        db.write("UPDATE " + db.getTablePrefix() + "users SET " + "`player_name` = ?, `lastjoingame` = ?, `status` = ? " + "WHERE `player_id` = ?", playerName, lastjoingame.intValue(), status, playerID);
 
         /* recordsテーブル */
         db.write("UPDATE " + db.getTablePrefix() + "records SET " + "`played` = ?, `exit` = ?, `win` = ?, `lose` = ?, `draw` = ?, `place` = ?, `break` = ?, `kill` = ?, `death` = ? " + "WHERE `player_id` = ?", played, exit, win, lose, draw, flag_place, flag_break, kill, death, playerID);
@@ -212,6 +216,11 @@ public class PlayerProfile {
         return playerID;
     }
 
+    public void setPlayerName(String name) {
+        if (name == null) throw new NullPointerException();
+        this.playerName = name;
+    }
+    
     public String getPlayerName() {
         return playerName;
     }
@@ -221,7 +230,6 @@ public class PlayerProfile {
     }
 
     /* Data */
-
     // lastjoingame
     public void updateLastJoinedGame() {
         this.lastjoingame = System.currentTimeMillis() / 1000;
@@ -365,4 +373,9 @@ public class PlayerProfile {
     public void addDeath() {
         this.death = this.death + 1;
     }
+    
+    public UUID getUUID() {
+        return this.uuid;
+    }
+    
 }

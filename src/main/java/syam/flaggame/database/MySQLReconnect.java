@@ -18,9 +18,7 @@ public class MySQLReconnect implements Runnable {
             if (Database.isConnected()) {
                 // プレイヤープロファイルを更新
                 PlayerManager.saveAll();
-                PlayerManager.clearAll();
-
-                plugin.getServer().getOnlinePlayers().stream().forEach(PlayerManager::addPlayer);
+                PlayerManager.update();
 
                 // ゲームステージプロファイルを保存
                 StageManager.saveAll();

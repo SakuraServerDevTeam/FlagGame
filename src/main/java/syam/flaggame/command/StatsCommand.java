@@ -2,6 +2,7 @@ package syam.flaggame.command;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.bukkit.Bukkit;
 
 import org.bukkit.entity.Player;
 
@@ -33,7 +34,7 @@ public class StatsCommand extends BaseCommand {
             // check permission
             if (!Perms.STATS_SELF.has(sender)) { throw new CommandException("&cあなたはこのコマンドを使う権限がありません"); }
 
-            prof = PlayerManager.getProfile(player.getName());
+            prof = PlayerManager.getProfile(player);
         }
         // 他人の情報表示
         else {
@@ -50,7 +51,7 @@ public class StatsCommand extends BaseCommand {
             }
             // オフライン
             else {
-                prof = new PlayerProfile(args.get(0), false);
+                prof = new PlayerProfile(Bukkit.getOfflinePlayer(args.get(0)).getUniqueId(), false);
 
                 if (!prof.isLoaded()) { throw new CommandException("&c指定したプレイヤーの情報が見つかりません"); }
             }
@@ -66,7 +67,7 @@ public class StatsCommand extends BaseCommand {
     }
 
     private List<String> buildStrings(PlayerProfile prof, boolean other) {
-        List<String> l = new ArrayList<String>();
+        List<String> l = new ArrayList<>();
         l.clear();
 
         // ヘッダー

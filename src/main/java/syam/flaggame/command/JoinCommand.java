@@ -10,6 +10,8 @@ import syam.flaggame.game.Stage;
 import syam.flaggame.manager.GameManager;
 import syam.flaggame.manager.StageManager;
 import syam.flaggame.permission.Perms;
+import syam.flaggame.player.FGPlayer;
+import syam.flaggame.player.PlayerManager;
 import syam.flaggame.util.Actions;
 
 public class JoinCommand extends BaseCommand {
@@ -65,12 +67,13 @@ public class JoinCommand extends BaseCommand {
         if (game.getState() == Game.State.STARTED) { throw new CommandException("&cゲーム'" + args.get(0) + "'は既に始まっています！"); }
 
         // 既に参加していないかチェック
-        if (game.getPlayerTeam(player) != null) {
-            GameTeam team = game.getPlayerTeam(player);
+        FGPlayer fgp = PlayerManager.getPlayer(player);
+        if (game.getPlayerTeam(fgp) != null) {
+            GameTeam team = game.getPlayerTeam(fgp);
             throw new CommandException("&cあなたは既にこのゲームに" + team.getColor() + team.getTeamName() + "チーム&cとしてエントリーしています！");
         }
         for (Game check : GameManager.getGames().values()) {
-            GameTeam checkT = check.getPlayerTeam(player);
+            GameTeam checkT = check.getPlayerTeam(fgp);
             if (checkT != null) { throw new CommandException("&cあなたは別のゲーム'" + check.getName() + "'に" + checkT.getColor() + checkT.getTeamName() + "チーム&cとして参加しています！"); }
         }
 
@@ -89,9 +92,9 @@ public class JoinCommand extends BaseCommand {
         // 参加料チェック
         if (cost > 0) {
             // 所持金確認
-            if (!Actions.checkMoney(player.getName(), cost)) { throw new CommandException("&c参加するためには参加料 " + cost + "Coin が必要です！"); }
+            if (!Actions.checkMoney(player.getUniqueId(), cost)) { throw new CommandException("&c参加するためには参加料 " + cost + "Coin が必要です！"); }
             // 引き落とし
-            if (!Actions.takeMoney(player.getName(), cost)) {
+            if (!Actions.takeMoney(player.getUniqueId(), cost)) {
                 throw new CommandException("&c参加料の引き落としにエラーが発生しました。管理人までご連絡ください。");
             } else {
                 Actions.message(player, "&c参加料として " + cost + "Coin を支払いました！");
@@ -100,13 +103,13 @@ public class JoinCommand extends BaseCommand {
 
         // join
         if (joinEvent.getGameTeam() == null) {
-            game.addPlayer(player);
+            game.join(PlayerManager.getPlayer(player));
         } else {
-            game.addPlayer(player, joinEvent.getGameTeam());
+            game.join(PlayerManager.getPlayer(player), joinEvent.getGameTeam());
         }
 
         // 所属チーム取得
-        GameTeam team = game.getPlayerTeam(player);
+        GameTeam team = game.getPlayerTeam(fgp);
         Actions.broadcastMessage(msgPrefix + "&aプレイヤー'&6" + player.getName() + "&a'が" + team.getColor() + team.getTeamName() + "チーム&aに参加しました！");
         // game.message(msgPrefix+"&aプレイヤー'&6"+player.getName()+"&a'が"+team.getColor()+team.getTeamName()+"チーム&aに参加しました！");
 

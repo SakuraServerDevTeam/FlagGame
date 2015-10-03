@@ -79,6 +79,7 @@ public class Database {
     public void createStructure() {
         // ユーザーデータテーブル
         write("CREATE TABLE IF NOT EXISTS `" + tablePrefix + "users` (" + "`player_id` int(10) unsigned NOT NULL AUTO_INCREMENT," + // 割り当てるID
+                "`uuid` binary(16) NOT NULL,"+
                 "`player_name` varchar(32) NOT NULL," + // プレイヤー名
                 "`lastjoingame` int(32) unsigned NOT NULL DEFAULT '0'," + // 最後にゲームに参加した時間
                 "`status` int(2) NOT NULL DEFAULT '0'," + // ステータスデータ

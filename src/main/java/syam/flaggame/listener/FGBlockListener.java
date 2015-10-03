@@ -27,6 +27,7 @@ import syam.flaggame.game.Game;
 import syam.flaggame.game.Stage;
 import syam.flaggame.manager.StageManager;
 import syam.flaggame.permission.Perms;
+import syam.flaggame.player.FGPlayer;
 import syam.flaggame.player.PlayerManager;
 import syam.flaggame.util.Actions;
 import syam.flaggame.util.Cuboid;
@@ -113,10 +114,11 @@ public class FGBlockListener implements Listener {
             }
 
             Game game = stage.getGame();
+            FGPlayer fgp = PlayerManager.getPlayer(player);
 
             /* ゲーム中のステージでフラッグを設置/破壊した */
             // プレイヤーと設置/破壊したブロックのチーム取得
-            GameTeam pTeam = game.getPlayerTeam(player);
+            GameTeam pTeam = game.getPlayerTeam(fgp);
             if (pTeam == null) {
                 Actions.message(player, "&cあなたはこのゲームに参加していません！");
                 cancel = true;
@@ -148,7 +150,7 @@ public class FGBlockListener implements Listener {
                 game.message(pTeam.getAgainstTeam(), msgPrefix + "&f'&6" + player.getName() + "&f'&cに" + flag.getTypeName() + "ポイントフラッグを獲得されました！");
                 game.log(" Player " + player.getName() + " Get " + flag.getFlagPoint() + "Point Flag: " + Actions.getBlockLocationString(block.getLocation()));
 
-                PlayerManager.getProfile(player.getName()).addPlace();
+                fgp.getProfile().addPlace();
                 stage.getProfile().addPlace();
 
                 if (plugin.getConfigs().getUseFlagEffects()) {
@@ -165,7 +167,7 @@ public class FGBlockListener implements Listener {
                 game.message(pTeam.getAgainstTeam(), msgPrefix + "&f'&6" + player.getName() + "&f'&cに" + flag.getTypeName() + "ポイントフラッグを破壊されました！");
                 game.log(" Player " + player.getName() + " Break " + flag.getFlagPoint() + "Point Flag: " + Actions.getBlockLocationString(block.getLocation()));
 
-                PlayerManager.getProfile(player.getName()).addBreak();
+                fgp.getProfile().addBreak();
                 stage.getProfile().addBreak();
 
                 if (plugin.getConfigs().getUseFlagEffects()) {

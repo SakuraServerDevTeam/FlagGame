@@ -11,6 +11,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 import syam.flaggame.game.Stage;
+import syam.flaggame.player.FGPlayer;
 
 /**
  * GameStartEvent (GameStartEvent.java)
@@ -24,8 +25,8 @@ public class GameStartEvent extends Event implements Cancellable {
     private final Stage stage;
     private final boolean random;
     private final CommandSender sender;
-    private final Set<String> redTeam;
-    private final Set<String> blueTeam;
+    private final Set<FGPlayer> redTeam;
+    private final Set<FGPlayer> blueTeam;
 
     /**
      * コンストラクタ
@@ -36,7 +37,7 @@ public class GameStartEvent extends Event implements Cancellable {
      * @param redTeam
      * @param blueTeam
      */
-    public GameStartEvent(Stage stage, boolean random, CommandSender sender, Set<String> redTeam, Set<String> blueTeam) {
+    public GameStartEvent(Stage stage, boolean random, CommandSender sender, Set<FGPlayer> redTeam, Set<FGPlayer> blueTeam) {
         this.stage = stage;
         this.random = random;
         this.sender = sender;
@@ -57,11 +58,11 @@ public class GameStartEvent extends Event implements Cancellable {
         return this.sender;
     }
 
-    public Set<String> getRedTeam() {
+    public Set<FGPlayer> getRedTeam() {
         return this.redTeam;
     }
 
-    public Set<String> getBlueTeam() {
+    public Set<FGPlayer> getBlueTeam() {
         return this.blueTeam;
     }
 

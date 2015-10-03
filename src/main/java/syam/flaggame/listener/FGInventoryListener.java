@@ -17,6 +17,7 @@ import org.bukkit.inventory.ItemStack;
 
 import syam.flaggame.FlagGame;
 import syam.flaggame.manager.GameManager;
+import syam.flaggame.player.PlayerManager;
 
 /**
  * FGInventoryListener (FGInventoryListener.java)
@@ -51,7 +52,7 @@ public class FGInventoryListener implements Listener {
         Player player = (Player) event.getWhoClicked();
 
         GameManager.getGames().values().stream()
-                .map(game -> game.getPlayerTeam(player))
+                .map(game -> game.getPlayerTeam(PlayerManager.getPlayer(player)))
                 .filter(team -> team != null)
                 .forEach(team -> {
                     // ゲーム参加中のプレイヤーはイベントキャンセル

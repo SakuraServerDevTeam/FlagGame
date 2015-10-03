@@ -12,6 +12,7 @@ import org.bukkit.event.HandlerList;
 import syam.flaggame.enums.GameResult;
 import syam.flaggame.enums.GameTeam;
 import syam.flaggame.game.Stage;
+import syam.flaggame.player.FGPlayer;
 
 /**
  * GameFinishedEvent (GameFinishedEvent.java)
@@ -25,7 +26,7 @@ public class GameFinishedEvent extends Event {
     private GameResult result;
     private GameTeam winTeam;
     private String reason;
-    private Map<GameTeam, Set<String>> players;
+    private Map<GameTeam, Set<FGPlayer>> players;
 
     /**
      * コンストラクタ
@@ -36,7 +37,7 @@ public class GameFinishedEvent extends Event {
      * @param reason
      * @param playersMap
      */
-    public GameFinishedEvent(Stage stage, GameResult result, GameTeam winTeam, String reason, Map<GameTeam, Set<String>> playersMap) {
+    public GameFinishedEvent(Stage stage, GameResult result, GameTeam winTeam, String reason, Map<GameTeam, Set<FGPlayer>> playersMap) {
         this.stage = stage;
         this.result = result;
         this.winTeam = winTeam;
@@ -44,7 +45,7 @@ public class GameFinishedEvent extends Event {
         this.players = playersMap;
     }
 
-    public GameFinishedEvent(Stage stage, GameResult result, GameTeam winTeam, Map<GameTeam, Set<String>> playersMap) {
+    public GameFinishedEvent(Stage stage, GameResult result, GameTeam winTeam, Map<GameTeam, Set<FGPlayer>> playersMap) {
         this(stage, result, winTeam, null, playersMap);
     }
 
@@ -64,7 +65,7 @@ public class GameFinishedEvent extends Event {
         return this.reason;
     }
 
-    public Map<GameTeam, Set<String>> getPlayers() {
+    public Map<GameTeam, Set<FGPlayer>> getPlayers() {
         return this.players;
     }
 

@@ -18,6 +18,7 @@ import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Game;
 import syam.flaggame.manager.GameManager;
 import syam.flaggame.permission.Perms;
+import syam.flaggame.player.FGPlayer;
 import syam.flaggame.player.PlayerManager;
 import syam.flaggame.player.PlayerProfile;
 import syam.flaggame.util.Actions;
@@ -36,10 +37,11 @@ public class LeaveCommand extends BaseCommand implements Queueable {
         // 参加しているゲームを取得する
         Game game = null;
         GameTeam team = null;
+        FGPlayer fgp = PlayerManager.getPlayer(player);
         for (Game g : GameManager.getGames().values()) {
-            if (g.getPlayerTeam(player) != null) {
+            if (g.getPlayerTeam(fgp) != null) {
                 game = g;
-                team = g.getPlayerTeam(player);
+                team = g.getPlayerTeam(fgp);
                 break;
             }
         }
@@ -81,7 +83,7 @@ public class LeaveCommand extends BaseCommand implements Queueable {
                     throw new CommandException("&cゲームのエントリーを取り消す権限がありません");
                 }
                 // プレイヤーリストから削除
-                game.remPlayer(player, team);
+                game.leave(PlayerManager.getPlayer(player), team);
 
                 String stageName = game.getName();
                 if (game.isRandom() && game.getState() == Game.State.STARTED) {
@@ -106,10 +108,11 @@ public class LeaveCommand extends BaseCommand implements Queueable {
         // 参加しているゲームを取得する
         Game game = null;
         GameTeam team = null;
+        FGPlayer fgp = PlayerManager.getPlayer(player);
         for (Game g : GameManager.getGames().values()) {
-            if (g.getPlayerTeam(player) != null) {
+            if (g.getPlayerTeam(fgp) != null) {
                 game = g;
-                team = g.getPlayerTeam(player);
+                team = g.getPlayerTeam(fgp);
                 break;
             }
         }
@@ -119,7 +122,7 @@ public class LeaveCommand extends BaseCommand implements Queueable {
         }
 
         // 途中退場処理
-        game.remPlayer(player, team);
+        game.leave(PlayerManager.getPlayer(player), team);
 
         // アイテムをすべてその場にドロップさせる
         player.getInventory().setHelmet(null);
@@ -137,12 +140,12 @@ public class LeaveCommand extends BaseCommand implements Queueable {
         Actions.message(player, "&aゲーム'" + game.getName() + "'から抜けました！");
 
         // exit++
-        PlayerManager.getProfile(player.getName()).addExit();
+        PlayerManager.getPlayer(player).getProfile().addExit();
 
         // 参加者チェック 全員抜けたらゲーム終了
-        Iterator<Entry<GameTeam, Set<String>>> entryIte = game.getPlayersMap().entrySet().iterator();
+        Iterator<Entry<GameTeam, Set<FGPlayer>>> entryIte = game.getPlayersMap().entrySet().iterator();
         while (entryIte.hasNext()) {
-            Entry<GameTeam, Set<String>> entry = entryIte.next();
+            Entry<GameTeam, Set<FGPlayer>> entry = entryIte.next();
             if (entry.getValue().size() <= 0) {
                 GameTeam t = entry.getKey();
                 game.finish(GameResult.STOP, null, "&6" + t.getColor() + t.getTeamName() + "チーム &6の参加者が居なくなりました");
@@ -152,7 +155,7 @@ public class LeaveCommand extends BaseCommand implements Queueable {
     }
 
     private void leaveFromGameworld(Player player, Location def) {
-        PlayerProfile prof = PlayerManager.getProfile(player.getName());
+        PlayerProfile prof = PlayerManager.getPlayer(player).getProfile();
 
         // プレイヤーデータに以前の座標が記録されていればその場所へTp
         if (prof.isLoaded() && prof.getTpBackLocation() != null) {

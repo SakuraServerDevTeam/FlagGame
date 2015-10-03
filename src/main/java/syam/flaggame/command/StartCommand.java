@@ -8,6 +8,7 @@ import syam.flaggame.game.Game;
 import syam.flaggame.manager.GameManager;
 import syam.flaggame.manager.StageManager;
 import syam.flaggame.permission.Perms;
+import syam.flaggame.player.FGPlayer;
 
 public class StartCommand extends BaseCommand {
     public StartCommand() {
@@ -54,7 +55,7 @@ public class StartCommand extends BaseCommand {
             }
         }
 
-        for (Set<String> teamSet : game.getPlayersMap().values()) {
+        for (Set<FGPlayer> teamSet : game.getPlayersMap().values()) {
             if (teamSet.size() <= 0) { throw new CommandException("&cプレイヤーが参加していないチームがあります"); }
         }
 

@@ -9,6 +9,7 @@ import syam.flaggame.game.Game;
 import syam.flaggame.game.Stage;
 import syam.flaggame.manager.StageManager;
 import syam.flaggame.permission.Perms;
+import syam.flaggame.player.FGPlayer;
 import syam.flaggame.util.Actions;
 
 public class InfoCommand extends BaseCommand {
@@ -84,10 +85,10 @@ public class InfoCommand extends BaseCommand {
             String players = "";
             int cnt_players = 0;
             if (stage.isUsing() && stage.getGame() != null) {
-                for (Map.Entry<GameTeam, Set<String>> entry : stage.getGame().getPlayersMap().entrySet()) {
+                for (Map.Entry<GameTeam, Set<FGPlayer>> entry : stage.getGame().getPlayersMap().entrySet()) {
                     String color = entry.getKey().getColor();
-                    for (String n : entry.getValue()) {
-                        players = players + color + n + "&f, ";
+                    for (FGPlayer n : entry.getValue()) {
+                        players = players + color + n.getName() + "&f, ";
                         cnt_players++;
                     }
                 }

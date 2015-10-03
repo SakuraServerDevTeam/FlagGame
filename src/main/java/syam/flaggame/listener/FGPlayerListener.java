@@ -36,6 +36,7 @@ import syam.flaggame.manager.GameManager;
 import syam.flaggame.manager.SetupManager;
 import syam.flaggame.manager.StageManager;
 import syam.flaggame.permission.Perms;
+import syam.flaggame.player.FGPlayer;
 import syam.flaggame.player.PlayerManager;
 import syam.flaggame.util.Actions;
 import syam.flaggame.util.Cuboid;
@@ -198,7 +199,7 @@ public class FGPlayerListener implements Listener {
                 continue;
             }
 
-            GameTeam team = game.getPlayerTeam(player);
+            GameTeam team = game.getPlayerTeam(PlayerManager.getPlayer(player));
             if (team != null) {
                 Location loc = game.getStage().getSpawn(team);
                 if (loc == null) {
@@ -304,7 +305,7 @@ public class FGPlayerListener implements Listener {
 
             // ダメージを受けたプレイヤーがゲームに参加しているプレイヤーか
             if (game.isJoined(deader)) {
-                PlayerManager.getProfile(deader.getName()).addDeath(); // death数追加
+                PlayerManager.getProfile(deader).addDeath(); // death数追加
                 game.getStage().getProfile().addDeath();
 
                 // 頭の羊毛ブロックをドロップさせない
@@ -322,8 +323,8 @@ public class FGPlayerListener implements Listener {
             }
 
             if (game.isJoined(killer)) {
-                GameTeam aTeam = game.getPlayerTeam(killer);
-                GameTeam dTeam = game.getPlayerTeam(deader);
+                GameTeam aTeam = game.getPlayerTeam(PlayerManager.getPlayer(killer));
+                GameTeam dTeam = game.getPlayerTeam(PlayerManager.getPlayer(deader));
 
                 deathMsg = msgPrefix + "&6[" + game.getStage().getName() + "] " + aTeam.getColor() + killer.getName() + "&6 が " + dTeam.getColor() + deader.getName() + "&6 を倒しました！";
                 Actions.worldcastMessage(Bukkit.getWorld(plugin.getConfigs().getGameWorld()), deathMsg);
@@ -332,7 +333,7 @@ public class FGPlayerListener implements Listener {
                 // チームキル数追加
                 game.addKillCount(aTeam);
 
-                PlayerManager.getProfile(killer.getName()).addKill(); // kill数追加
+                PlayerManager.getProfile(killer).addKill(); // kill数追加
                 game.getStage().getProfile().addKill();
 
                 game.log(" Player (" + aTeam.name() + ")" + killer.getName() + " Killed (" + dTeam.name() + ")" + deader.getName() + "!");
@@ -356,7 +357,7 @@ public class FGPlayerListener implements Listener {
             if (game.isJoined(player) && plugin.getConfigs().getDeathWhenLogout()) {
                 player.setHealth(0);
 
-                GameTeam team = game.getPlayerTeam(player);
+                GameTeam team = game.getPlayerTeam(PlayerManager.getPlayer(player));
                 String deathMsg = msgPrefix + team.getColor() + team.getTeamName() + "チーム &6のプレイヤー'" + team.getColor() + player.getName() + "&6'がログアウトしたため死亡しました";
                 Actions.worldcastMessage(Bukkit.getWorld(plugin.getConfigs().getGameWorld()), deathMsg);
                 // game.message(deathMsg);
@@ -452,7 +453,7 @@ public class FGPlayerListener implements Listener {
             }
 
             // プレイヤーのチーム取得
-            playerTeam = game.getPlayerTeam(player);
+            playerTeam = game.getPlayerTeam(PlayerManager.getPlayer(player));
             if (playerTeam == null) {
                 continue;
             }
@@ -528,6 +529,7 @@ public class FGPlayerListener implements Listener {
             Actions.message(player, "&cThis sign is broken! Please contact server staff!");
             return;
         }
+        FGPlayer fgp = PlayerManager.getPlayer(player);
 
         // 処理を分ける
         switch (action) {
@@ -549,8 +551,8 @@ public class FGPlayerListener implements Listener {
                         if (game.getState() != Game.State.STARTED) {
                             continue;
                         }
-                        if (game.getPlayerTeam(player) != null) {
-                            playerTeam = game.getPlayerTeam(player);
+                        if (game.getPlayerTeam(fgp) != null) {
+                            playerTeam = game.getPlayerTeam(fgp);
                             break;
                         }
                     }
@@ -593,8 +595,8 @@ public class FGPlayerListener implements Listener {
                     if (game.getState() != Game.State.STARTED) {
                         continue;
                     }
-                    if (game.getPlayerTeam(player) != null) {
-                        GameTeam team = game.getPlayerTeam(player);
+                    if (game.getPlayerTeam(fgp) != null) {
+                        GameTeam team = game.getPlayerTeam(fgp);
                         game.message(msgPrefix + "&6[" + game.getName() + "]&6 '" + team.getColor() + player.getName() + "&6'が自殺しました。");
                         break;
                     }
