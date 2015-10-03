@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2015 Toyblocks All rights reserved.
+/* 
+ * Copyright (c) 2015 SakuraServerDev All rights reserved.
  */
 package syam.flaggame.util;
 

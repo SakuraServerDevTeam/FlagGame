@@ -1,5 +1,5 @@
-/**
- * FlagGame - Package: syam.flaggame.game Created: 2012/09/22 2:34:55
+/* 
+ * Copyright (c) 2015 SakuraServerDev All rights reserved.
  */
 package syam.flaggame.game;
 
