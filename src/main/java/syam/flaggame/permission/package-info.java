@@ -1,4 +1,4 @@
-/* 
- * Copyright (c) 2015 SakuraServerDev All rights reserved.
+/**
+ * Bukkit Permission related classes.
  */
 package syam.flaggame.permission;

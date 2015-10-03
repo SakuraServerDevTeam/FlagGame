@@ -1,5 +1,5 @@
-/* 
- * Copyright (c) 2015 SakuraServerDev All rights reserved.
+/**
+ * FlagGame - Package: syam.flaggame.util Created: 2012/09/20 23:59:40
  */
 package syam.flaggame.permission;
 

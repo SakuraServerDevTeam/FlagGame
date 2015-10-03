@@ -1,4 +1,4 @@
-/* 
- * Copyright (c) 2015 SakuraServerDev All rights reserved.
+/**
+ * Plugin Managers.
  */
 package syam.flaggame.manager;

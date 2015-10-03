@@ -1,4 +1,4 @@
-/* 
- * Copyright (c) 2015 SakuraServerDev All rights reserved.
+/**
+ * Enumerations for configuration.
  */
 package syam.flaggame.enums.config;

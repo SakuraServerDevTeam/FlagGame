@@ -1,5 +1,5 @@
-/* 
- * Copyright (c) 2015 SakuraServerDev All rights reserved.
+/**
+ * FlagGame - Package: syam.flaggame.listener Created: 2012/10/05 9:07:10
  */
 package syam.flaggame.listener;
 

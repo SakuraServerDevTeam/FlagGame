@@ -1,5 +1,5 @@
-/* 
- * Copyright (c) 2015 SakuraServerDev All rights reserved.
+/**
+ * FlagGame - Package: syam.flaggame.enums Created: 2012/09/20 22:32:47
  */
 package syam.flaggame.permission;
 

@@ -1,4 +1,4 @@
-/* 
- * Copyright (c) 2015 SakuraServerDev All rights reserved.
+/**
+ * Game and Stage related classes.
  */
 package syam.flaggame.game;

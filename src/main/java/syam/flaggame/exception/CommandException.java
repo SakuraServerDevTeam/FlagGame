@@ -1,5 +1,5 @@
-/* 
- * Copyright (c) 2015 SakuraServerDev All rights reserved.
+/**
+ * FlagGame - Package: syam.flaggame.exception Created: 2012/10/07 8:21:30
  */
 package syam.flaggame.exception;
 

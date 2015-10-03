@@ -1,4 +1,4 @@
-/* 
- * Copyright (c) 2015 SakuraServerDev All rights reserved.
+/**
+ * Bukkit custom event classes
  */
 package syam.flaggame.event;
