@@ -268,18 +268,6 @@ public class ConfigurationManager {
         double configVersion = ver; // 設定ファイルのバージョン
         double nowVersion = VERSION; // プラグインのバージョン
 
-        String versionString = plugin.getDescription().getVersion();
-        try {
-            // Support maven and Jenkins build number
-            int index = versionString.indexOf("-");
-            if (index > 0) {
-                versionString = versionString.substring(0, index);
-            }
-            nowVersion = Double.parseDouble(versionString);
-        } catch (NumberFormatException ex) {
-            logger.warning(LOG_PREFIX + "Cannot parse version string!");
-        }
-
         // 比較 設定ファイルのバージョンが古ければ config.yml を上書きする
         if (configVersion < nowVersion) {
             // 先に古い設定ファイルをリネームする
