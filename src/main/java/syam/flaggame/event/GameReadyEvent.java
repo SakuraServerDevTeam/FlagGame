@@ -15,7 +15,9 @@ import syam.flaggame.game.Stage;
  * GameReadyEvent (GameReadyEvent.java)
  * 
  * @author syam(syamn)
+ * @deprecated this won't be called, use {@link jp.llv.flaggame.event.ReceptionOpenEvent} instead of.
  */
+@Deprecated
 public class GameReadyEvent extends Event implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
     private boolean isCancelled = false;

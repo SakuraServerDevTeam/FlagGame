@@ -8,7 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 
-import syam.flaggame.enums.GameTeam;
+import syam.flaggame.enums.TeamColor;
 
 public class Flag {
     
@@ -91,12 +91,12 @@ public class Flag {
         return blockData;
     }
     
-    public GameTeam getOwner() {
+    public TeamColor getOwner() {
         Block b = this.loc.getBlock();
         if (!isFlag(b.getType())) {
             return null;
         }
-        return GameTeam.getByColorData(b.getData());
+        return TeamColor.getByColorData(b.getData());
     }
     
     public static boolean isFlag(Material material) {

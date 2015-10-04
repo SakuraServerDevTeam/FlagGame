@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import jp.llv.flaggame.reception.GameReception;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -22,7 +23,7 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import syam.flaggame.FlagGame;
-import syam.flaggame.enums.GameTeam;
+import syam.flaggame.enums.TeamColor;
 import syam.flaggame.manager.StageManager;
 import syam.flaggame.util.Actions;
 import syam.flaggame.util.Cuboid;
@@ -43,7 +44,7 @@ public class Stage {
     private final GameProfile profile;
 
     // 開始中のゲーム
-    private Game game = null;
+    private GameReception reception;
 
     // ***** ステージデータ *****
     private String fileName;
@@ -65,8 +66,8 @@ public class Stage {
     // 地点・エリア
     private Cuboid stageArea = null;
     private boolean stageProtect = true;
-    private final Map<GameTeam, Location> spawnMap = Collections.synchronizedMap(new EnumMap<>(GameTeam.class));
-    private final Map<GameTeam, Cuboid> baseMap = Collections.synchronizedMap(new EnumMap<>(GameTeam.class));
+    private final Map<TeamColor, Location> spawnMap = Collections.synchronizedMap(new EnumMap<>(TeamColor.class));
+    private final Map<TeamColor, Cuboid> baseMap = Collections.synchronizedMap(new EnumMap<>(TeamColor.class));
     private Location specSpawn = null;
 
     /**
@@ -256,13 +257,13 @@ public class Stage {
      * @return {@code Map<FlagState, HashMap<FlagType, Integer>>}
      */
     
-    public Map<GameTeam, Map<Byte, Integer>> checkFlag() {
+    public Map<TeamColor, Map<Byte, Integer>> checkFlag() {
         // 各チームのポイントを格納する
-        Map<GameTeam,  Map<Byte, Integer>> ret = new EnumMap<>(GameTeam.class);
+        Map<TeamColor,  Map<Byte, Integer>> ret = new EnumMap<>(TeamColor.class);
 
         // 全フラッグを回す
         flags.values().forEach(flag -> {
-            GameTeam state = flag.getOwner(); // フラッグの現在状態
+            TeamColor state = flag.getOwner(); // フラッグの現在状態
             Map<Byte, Integer> score = ret.get(state);
             if (score == null) {
                 ret.put(state, score = new HashMap<>());
@@ -342,12 +343,12 @@ public class Stage {
      * @param loc
      */
     
-    public void setSpawn(GameTeam team, Location loc) {
+    public void setSpawn(TeamColor team, Location loc) {
         spawnMap.put(team, loc);
     }
 
     
-    public Location getSpawn(GameTeam team) {
+    public Location getSpawn(TeamColor team) {
         if (team == null || !spawnMap.containsKey(team)) {
             return null;
         }
@@ -355,12 +356,12 @@ public class Stage {
     }
 
     
-    public Map<GameTeam, Location> getSpawns() {
+    public Map<TeamColor, Location> getSpawns() {
         return Collections.unmodifiableMap(spawnMap);
     }
 
     
-    public void setSpawns(Map<GameTeam, Location> spawns) {
+    public void setSpawns(Map<TeamColor, Location> spawns) {
         this.spawnMap.clear();
         this.spawnMap.putAll(spawns);
     }
@@ -408,17 +409,17 @@ public class Stage {
 
     // 拠点
     
-    public void setBase(GameTeam team, Location pos1, Location pos2) {
+    public void setBase(TeamColor team, Location pos1, Location pos2) {
         baseMap.put(team, new Cuboid(pos1, pos2));
     }
 
     
-    public void setBase(GameTeam team, Cuboid cuboid) {
+    public void setBase(TeamColor team, Cuboid cuboid) {
         baseMap.put(team, cuboid);
     }
 
     
-    public Cuboid getBase(GameTeam team) {
+    public Cuboid getBase(TeamColor team) {
         if (team == null || !baseMap.containsKey(team)) {
             return null;
         }
@@ -426,14 +427,18 @@ public class Stage {
     }
 
     
-    public Map<GameTeam, Cuboid> getBases() {
+    public Map<TeamColor, Cuboid> getBases() {
         return baseMap;
     }
 
     
-    public void setBases(Map<GameTeam, Cuboid> bases) {
+    public void setBases(Map<TeamColor, Cuboid> bases) {
         this.baseMap.clear();
         this.baseMap.putAll(bases);
+    }
+    
+    public Set<TeamColor> getTeams() {
+        return Collections.unmodifiableSet(this.getBases().keySet());
     }
 
     /* getter / setter */
@@ -591,11 +596,11 @@ public class Stage {
         return this.using;
     }
 
-    public void setGame(Game game) {
-        this.game = game;
+    /*package*/ void setReception(GameReception reception) {
+        this.reception = reception;
     }
 
-    public Game getGame() {
-        return this.game;
+    public GameReception getReception() {
+        return this.reception;
     }
 }

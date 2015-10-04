@@ -18,7 +18,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 
 import syam.flaggame.FlagGame;
-import syam.flaggame.enums.GameTeam;
+import syam.flaggame.enums.TeamColor;
 import syam.flaggame.game.Game;
 import syam.flaggame.manager.GameManager;
 import syam.flaggame.player.PlayerManager;
@@ -72,8 +72,8 @@ public class FGEntityListener implements Listener {
             if (game.getState() != Game.State.STARTED) continue;
             
             if (game.isJoined(damager) && game.isJoined(attacker)){
-                GameTeam damagerTeam = game.getPlayerTeam(PlayerManager.getPlayer(damager));
-                GameTeam attackerTeam = game.getPlayerTeam(PlayerManager.getPlayer(attacker));
+                TeamColor damagerTeam = game.getPlayerTeam(PlayerManager.getPlayer(damager));
+                TeamColor attackerTeam = game.getPlayerTeam(PlayerManager.getPlayer(attacker));
                 
                 boolean cancel = false;
                 

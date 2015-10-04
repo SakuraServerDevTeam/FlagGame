@@ -7,13 +7,13 @@ package syam.flaggame.command;
 import java.util.Map;
 import java.util.Set;
 
-import syam.flaggame.enums.GameTeam;
+import syam.flaggame.enums.TeamColor;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Game;
 import syam.flaggame.game.Stage;
 import syam.flaggame.manager.StageManager;
 import syam.flaggame.permission.Perms;
-import syam.flaggame.player.FGPlayer;
+import syam.flaggame.player.GamePlayer;
 import syam.flaggame.util.Actions;
 
 public class InfoCommand extends BaseCommand {
@@ -78,10 +78,10 @@ public class InfoCommand extends BaseCommand {
 
             String chksp_red = "&c未設定";
             String chksp_blue = "&c未設定";
-            if (stage.getSpawn(GameTeam.RED) != null) {
+            if (stage.getSpawn(TeamColor.RED) != null) {
                 chksp_red = "&6設定済";
             }
-            if (stage.getSpawn(GameTeam.BLUE) != null) {
+            if (stage.getSpawn(TeamColor.BLUE) != null) {
                 chksp_blue = "&6設定済";
             }
 
@@ -89,9 +89,9 @@ public class InfoCommand extends BaseCommand {
             String players = "";
             int cnt_players = 0;
             if (stage.isUsing() && stage.getGame() != null) {
-                for (Map.Entry<GameTeam, Set<FGPlayer>> entry : stage.getGame().getPlayersMap().entrySet()) {
+                for (Map.Entry<TeamColor, Set<GamePlayer>> entry : stage.getGame().getPlayersMap().entrySet()) {
                     String color = entry.getKey().getColor();
-                    for (FGPlayer n : entry.getValue()) {
+                    for (GamePlayer n : entry.getValue()) {
                         players = players + color + n.getName() + "&f, ";
                         cnt_players++;
                     }

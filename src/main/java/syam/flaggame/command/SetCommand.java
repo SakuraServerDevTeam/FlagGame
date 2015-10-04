@@ -11,7 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 
-import syam.flaggame.enums.GameTeam;
+import syam.flaggame.enums.TeamColor;
 import syam.flaggame.enums.config.ConfigType;
 import syam.flaggame.enums.config.Configables;
 import syam.flaggame.exception.CommandException;
@@ -168,8 +168,8 @@ public class SetCommand extends BaseCommand {
         if (args.size() < 2) { throw new CommandException("&c引数が足りません！設定するチームを指定してください！"); }
 
         // チーム取得
-        GameTeam team = null;
-        for (GameTeam tm : GameTeam.values()) {
+        TeamColor team = null;
+        for (TeamColor tm : TeamColor.values()) {
             if (tm.name().toLowerCase().equalsIgnoreCase(args.get(1))) {
                 team = tm;
                 break;
@@ -207,8 +207,8 @@ public class SetCommand extends BaseCommand {
         if (args.size() < 2) { throw new CommandException("&c引数が足りません！設定するチームを指定してください！"); }
 
         // チーム取得
-        GameTeam team = null;
-        for (GameTeam tm : GameTeam.values()) {
+        TeamColor team = null;
+        for (TeamColor tm : TeamColor.values()) {
             if (tm.name().toLowerCase().equalsIgnoreCase(args.get(1))) {
                 team = tm;
                 break;

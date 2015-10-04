@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.permission.Perms;
-import syam.flaggame.player.FGPlayer;
+import syam.flaggame.player.GamePlayer;
 import syam.flaggame.player.PlayerManager;
 import syam.flaggame.player.PlayerProfile;
 import syam.flaggame.util.Actions;
@@ -47,7 +47,7 @@ public class StatsCommand extends BaseCommand {
             // check permission
             if (!Perms.STATS_OTHER.has(sender)) { throw new CommandException("&cあなたは他人の情報を見る権限がありません"); }
 
-            FGPlayer fgPlayer = PlayerManager.getPlayer(args.get(0));
+            GamePlayer fgPlayer = PlayerManager.getPlayer(args.get(0));
 
             // 対象者がログイン中かどうか
             if (fgPlayer != null) {

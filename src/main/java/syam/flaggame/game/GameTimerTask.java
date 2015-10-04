@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
 import syam.flaggame.FlagGame;
-import syam.flaggame.player.FGPlayer;
+import syam.flaggame.player.GamePlayer;
 import syam.flaggame.util.Actions;
 import syam.flaggame.util.Cuboid;
 
@@ -75,7 +75,7 @@ public class GameTimerTask implements Runnable {
      */
     private void checkPlayersLocation() {
         // ゲーム参加者リストを回す
-        for (FGPlayer name : game.getPlayersSet()) {
+        for (GamePlayer name : game.getPlayersSet()) {
             Player player = name.getPlayer();
 
             if (player == null || !player.isOnline()) {

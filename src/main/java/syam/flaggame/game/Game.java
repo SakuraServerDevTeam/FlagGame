@@ -35,7 +35,7 @@ import syam.flaggame.event.GameFinishedEvent;
 import syam.flaggame.event.GameStartEvent;
 import syam.flaggame.exception.GameStateException;
 import syam.flaggame.manager.GameManager;
-import syam.flaggame.player.FGPlayer;
+import syam.flaggame.player.GamePlayer;
 import syam.flaggame.player.PlayerManager;
 import syam.flaggame.player.PlayerProfile;
 import syam.flaggame.util.Actions;
@@ -49,7 +49,7 @@ public class Game {
 
     public enum State {
 
-        PREPARATION, ENTRY, STARTED, FINISHED,;
+        PREPARATION, STARTED, FINISHED,;
     }
 
     // Logger
@@ -60,7 +60,6 @@ public class Game {
 
     private String gameID; // 一意なゲームID ログ用
     private Stage stage;
-    private boolean random = false;
 
     private int remainSec; // 1ゲームの制限時間
     private int timerThreadID = -1; // タイマータスクのID
@@ -69,15 +68,15 @@ public class Game {
     private State state = State.PREPARATION;
 
     // 参加プレイヤー
-    private Map<GameTeam, Set<FGPlayer>> playersMap = new EnumMap<>(GameTeam.class);
-    private Set<FGPlayer> redPlayers = Collections.newSetFromMap(new ConcurrentHashMap<FGPlayer, Boolean>());
-    private Set<FGPlayer> bluePlayers = Collections.newSetFromMap(new ConcurrentHashMap<FGPlayer, Boolean>());
+    private Map<TeamColor, Set<GamePlayer>> playersMap = new EnumMap<>(TeamColor.class);
+    private Set<GamePlayer> redPlayers = Collections.newSetFromMap(new ConcurrentHashMap<GamePlayer, Boolean>());
+    private Set<GamePlayer> bluePlayers = Collections.newSetFromMap(new ConcurrentHashMap<GamePlayer, Boolean>());
 
     // Tabリスト表示名変更
-    private Map<FGPlayer, String> tabListMap = new ConcurrentHashMap<>();
+    private Map<GamePlayer, String> tabListMap = new ConcurrentHashMap<>();
 
     // Kill/Death記録
-    private Map<GameTeam, Integer> teamKilledCount = new EnumMap<>(GameTeam.class);
+    private Map<TeamColor, Integer> teamKilledCount = new EnumMap<>(TeamColor.class);
 
     /*
      * コンストラクタ
@@ -85,10 +84,9 @@ public class Game {
      * @param plugin
      * @param stage
      */
-    public Game(final FlagGame plugin, final Stage stage, final boolean random) {
+    public Game(final FlagGame plugin, final Stage stage) {
         this.plugin = plugin;
         this.stage = stage;
-        this.random = random;
 
         // 例外チェック
         if (!stage.isAvailable()) {
@@ -250,9 +248,9 @@ public class Game {
         tabListMap.clear();
 
         // 試合に参加する全プレイヤーを回す
-        for (Map.Entry<GameTeam, Set<FGPlayer>> entry : playersMap.entrySet()) {
-            GameTeam team = entry.getKey();
-            for (FGPlayer fgplayer : entry.getValue()) {
+        for (Map.Entry<TeamColor, Set<GamePlayer>> entry : playersMap.entrySet()) {
+            TeamColor team = entry.getKey();
+            for (GamePlayer fgplayer : entry.getValue()) {
                 Player player = fgplayer.getPlayer();
                 // オフラインプレイヤーをスキップ
                 if (!player.isOnline()) {
@@ -299,9 +297,6 @@ public class Game {
                 PlayerManager.getProfile(player).updateLastJoinedGame();
                 PlayerManager.getProfile(player).addPlayed();
 
-                // 参加ゲーム更新
-                PlayerManager.getPlayer(player).setPlayingGame(this);
-
                 // メッセージ通知
                 Actions.message(player, msgPrefix + "&a *** " + team.getColor() + "あなたは " + team.getTeamName() + "チーム です！ &a***");
 
@@ -314,8 +309,8 @@ public class Game {
                 player.setPlayerListName(tabname);
             }
         }
-        String red = redPlayers.stream().map(FGPlayer::getName).collect(Collectors.joining(", ")),
-                blue = bluePlayers.stream().map(FGPlayer::getName).collect(Collectors.joining(", "));
+        String red = redPlayers.stream().map(GamePlayer::getName).collect(Collectors.joining(", ")),
+                blue = bluePlayers.stream().map(GamePlayer::getName).collect(Collectors.joining(", "));
 
         log("========================================");
         log("Sender " + sender.getName() + " Start Game");
@@ -331,10 +326,10 @@ public class Game {
         // ポイントチェック
         int redP = 0, blueP = 0, noneP = 0;
         String redS = "", blueS = "", noneS = "";
-        Map<GameTeam, Map<Byte, Integer>> pointsMap = stage.checkFlag();
+        Map<TeamColor, Map<Byte, Integer>> pointsMap = stage.checkFlag();
         // 赤チームチェック
-        if (pointsMap.containsKey(GameTeam.RED)) {
-            Map<Byte, Integer> points = pointsMap.get(GameTeam.RED);
+        if (pointsMap.containsKey(TeamColor.RED)) {
+            Map<Byte, Integer> points = pointsMap.get(TeamColor.RED);
             for (Map.Entry<Byte, Integer> entry : points.entrySet()) {
                 Byte ft = entry.getKey();
                 // 総得点に加算
@@ -345,8 +340,8 @@ public class Game {
             redS = redS.substring(0, redS.length() - 3);
         }
         // 青チームチェック
-        if (pointsMap.containsKey(GameTeam.BLUE)) {
-            Map<Byte, Integer> points = pointsMap.get(GameTeam.BLUE);
+        if (pointsMap.containsKey(TeamColor.BLUE)) {
+            Map<Byte, Integer> points = pointsMap.get(TeamColor.BLUE);
             for (Map.Entry<Byte, Integer> entry : points.entrySet()) {
                 Byte ft = entry.getKey();
                 // 総得点に加算
@@ -370,19 +365,19 @@ public class Game {
         }
 
         // 勝敗判定
-        GameTeam winTeam = null;
+        TeamColor winTeam = null;
         if (redP > blueP) {
-            winTeam = GameTeam.RED;
+            winTeam = TeamColor.RED;
         } else if (blueP > redP) {
-            winTeam = GameTeam.BLUE;
+            winTeam = TeamColor.BLUE;
         }
 
         // 引き分けはKill数比較
         if (winTeam == null) {
-            if (getKillCount(GameTeam.RED) > getKillCount(GameTeam.BLUE)) {
-                winTeam = GameTeam.RED;
-            } else if (getKillCount(GameTeam.BLUE) > getKillCount(GameTeam.RED)) {
-                winTeam = GameTeam.BLUE;
+            if (getKillCount(TeamColor.RED) > getKillCount(TeamColor.BLUE)) {
+                winTeam = TeamColor.RED;
+            } else if (getKillCount(TeamColor.BLUE) > getKillCount(TeamColor.RED)) {
+                winTeam = TeamColor.BLUE;
             }
         }
 
@@ -402,13 +397,13 @@ public class Game {
         } else {
             Actions.broadcastMessage(msgPrefix + "&6このゲームは引き分けです！ &7(&c" + redP + "&7 - &b" + blueP + "&7)");
         }
-        Actions.broadcastMessage("&c赤チームKill数: &6" + getKillCount(GameTeam.RED) + "&b 青チームKill数: &6" + getKillCount(GameTeam.BLUE));
+        Actions.broadcastMessage("&c赤チームKill数: &6" + getKillCount(TeamColor.RED) + "&b 青チームKill数: &6" + getKillCount(TeamColor.BLUE));
 
         log("========================================");
 
         // 賞金支払い
         if (winTeam != null && stage.getAward() > 0) {
-            for (FGPlayer fgp : playersMap.get(winTeam)) {
+            for (GamePlayer fgp : playersMap.get(winTeam)) {
                 Player player = fgp.getPlayer();
                 if (player != null && player.isOnline()) {
                     // 入金
@@ -451,7 +446,7 @@ public class Game {
         tpSpawnLocation();
 
         // 同じゲーム参加者のインベントリをクリア
-        for (FGPlayer name : getPlayersSet()) {
+        for (GamePlayer name : getPlayersSet()) {
             if (name == null) {
                 continue;
             }
@@ -468,9 +463,6 @@ public class Game {
 
                 // TABリスト名を戻す
                 restorePlayerListColor(player);
-
-                // 参加中のゲーム情報更新
-                PlayerManager.getPlayer(player.getName()).setPlayingGame(null);
             }
         }
 
@@ -501,7 +493,7 @@ public class Game {
      * @param winTeam
      *            GameResult.TEAM_WIN の場合の勝利チーム
      */
-    public void finish(GameResult result, GameTeam winTeam, String reason) {
+    public void finish(GameResult result, TeamColor winTeam, String reason) {
         if (result == null || (result == GameResult.TEAM_WIN && winTeam == null)) {
             this.plugin.getLogger().warning("Error on method finish(GameResult, GameTeam)! Please report this!");
             return;
@@ -548,7 +540,7 @@ public class Game {
         // 参加プレイヤーをスポーン地点に移動させる
         tpSpawnLocation();
         // 同じゲーム参加者のインベントリをクリア
-        for (FGPlayer name : getPlayersSet()) {
+        for (GamePlayer name : getPlayersSet()) {
             if (name == null) {
                 continue;
             }
@@ -565,9 +557,6 @@ public class Game {
 
                 // TABリスト名を戻す
                 restorePlayerListColor(player);
-
-                // 参加中のゲーム情報更新
-                PlayerManager.getPlayer(player.getName()).setPlayingGame(null);
             }
         }
         // Call event
@@ -619,14 +608,14 @@ public class Game {
      * @param result 結果
      * @param winTeam 勝利チーム
      */
-    private void addPlayerResultCounts(GameResult result, GameTeam winTeam) {
+    private void addPlayerResultCounts(GameResult result, TeamColor winTeam) {
         // オフラインプレイヤーリスト
-        List<FGPlayer> offlines = new ArrayList<>();
+        List<GamePlayer> offlines = new ArrayList<>();
         offlines.clear();
 
         if (result == GameResult.STOP) {
-            for (Set<FGPlayer> names : playersMap.values()) {
-                for (FGPlayer fgp : names) {
+            for (Set<GamePlayer> names : playersMap.values()) {
+                for (GamePlayer fgp : names) {
                     PlayerProfile prof = fgp.getProfile();
                     prof.setPlayed(prof.getPlayed() - 1);
                 }
@@ -634,8 +623,8 @@ public class Game {
             return;
         } else if (result == GameResult.DRAW) {
             // 引き分け
-            for (Map.Entry<GameTeam, Set<FGPlayer>> entry : playersMap.entrySet()) {
-                for (FGPlayer fgp : entry.getValue()) {
+            for (Map.Entry<TeamColor, Set<GamePlayer>> entry : playersMap.entrySet()) {
+                for (GamePlayer fgp : entry.getValue()) {
                     Player player = fgp.getPlayer();
                     if (player.isOnline()) {
                         fgp.getProfile().addDraw(); // draw++
@@ -646,15 +635,15 @@ public class Game {
             }
         } else if (result == GameResult.TEAM_WIN) {
             // Set Lose team
-            GameTeam loseTeam = null;
-            if (winTeam.equals(GameTeam.RED)) {
-                loseTeam = GameTeam.BLUE;
-            } else if (winTeam.equals(GameTeam.BLUE)) {
-                loseTeam = GameTeam.RED;
+            TeamColor loseTeam = null;
+            if (winTeam.equals(TeamColor.RED)) {
+                loseTeam = TeamColor.BLUE;
+            } else if (winTeam.equals(TeamColor.BLUE)) {
+                loseTeam = TeamColor.RED;
             }
 
             // Win team
-            for (FGPlayer fgplayer : playersMap.get(winTeam)) {
+            for (GamePlayer fgplayer : playersMap.get(winTeam)) {
                 Player player = fgplayer.getPlayer();
                 if (player.isOnline()) {
                     fgplayer.getProfile().addWin(); // win++
@@ -665,7 +654,7 @@ public class Game {
 
             // Lose team
             if (loseTeam != null) {
-                for (FGPlayer fgplayer : playersMap.get(loseTeam)) {
+                for (GamePlayer fgplayer : playersMap.get(loseTeam)) {
                     Player player = fgplayer.getPlayer();
                     if (player.isOnline()) {
                         fgplayer.getProfile().addLose(); // lose++
@@ -677,7 +666,7 @@ public class Game {
         }
 
         // オフラインユーザーは途中退場カウント追加
-        offlines.stream().map(FGPlayer::getProfile).forEach(PlayerProfile::addExit);
+        offlines.stream().map(GamePlayer::getProfile).forEach(PlayerProfile::addExit);
     }
 
     /**
@@ -687,8 +676,8 @@ public class Game {
         // 一度クリア
         playersMap.clear();
         // マッピング
-        playersMap.put(GameTeam.RED, redPlayers);
-        playersMap.put(GameTeam.BLUE, bluePlayers);
+        playersMap.put(TeamColor.RED, redPlayers);
+        playersMap.put(TeamColor.BLUE, bluePlayers);
     }
 
     /* ***** 参加プレイヤー関係 ***** */
@@ -697,12 +686,12 @@ public class Game {
      *
      * @param player 参加させるプレイヤー
      */
-    public void join(FGPlayer player) {
+    public void join(GamePlayer player) {
         // 赤チームのが少ないか、または同じなら赤チームに追加 それ以外は青チームに追加
         if (redPlayers.size() <= bluePlayers.size()) {
-            join(player, GameTeam.RED);
+            join(player, TeamColor.RED);
         } else {
-            join(player, GameTeam.BLUE);
+            join(player, TeamColor.BLUE);
         }
     }
 
@@ -712,7 +701,7 @@ public class Game {
      * @param player 追加するプレイヤー
      * @param team 追加するチーム
      */
-    public void join(FGPlayer player, GameTeam team) {
+    public void join(GamePlayer player, TeamColor team) {
         // チームの存在確認
         if (player == null || team == null || !playersMap.containsKey(team)) {
             throw new IllegalArgumentException();
@@ -732,7 +721,7 @@ public class Game {
      * @param player 対象のプレイヤー
      * @param team 対象チーム nullなら全チームから
      */
-    public void leave(FGPlayer player, GameTeam team) {
+    public void leave(GamePlayer player, TeamColor team) {
         if (player == null || (team != null && !playersMap.containsKey(team))) {
             throw new IllegalArgumentException();
         }
@@ -745,7 +734,7 @@ public class Game {
         }
     }
 
-    public void leave(FGPlayer player) {
+    public void leave(GamePlayer player) {
         if (player == null) {
             throw new NullPointerException();
         }
@@ -758,9 +747,9 @@ public class Game {
      * @param player 対象のプレイヤー
      * @return GameTeam または所属なしの場合 null
      */
-    public GameTeam getPlayerTeam(FGPlayer player) {
+    public TeamColor getPlayerTeam(GamePlayer player) {
         String name = player.getName();
-        for (Map.Entry<GameTeam, Set<FGPlayer>> ent : playersMap.entrySet()) {
+        for (Map.Entry<TeamColor, Set<GamePlayer>> ent : playersMap.entrySet()) {
             // すべてのチームセットを回す
             if (ent.getValue().contains(player)) {
                 return ent.getKey();
@@ -775,19 +764,19 @@ public class Game {
      *
      * @return
      */
-    public Map<GameTeam, Set<FGPlayer>> getPlayersMap() {
+    public Map<TeamColor, Set<GamePlayer>> getPlayersMap() {
         return playersMap;
     }
 
-    public Set<FGPlayer> getPlayersSet() {
-        Set<FGPlayer> ret = new HashSet<>();
-        for (Set<FGPlayer> teamSet : playersMap.values()) {
+    public Set<GamePlayer> getPlayersSet() {
+        Set<GamePlayer> ret = new HashSet<>();
+        for (Set<GamePlayer> teamSet : playersMap.values()) {
             ret.addAll(teamSet);
         }
         return ret;
     }
 
-    public boolean isJoined(FGPlayer player) {
+    public boolean isJoined(GamePlayer player) {
         return getPlayersSet().contains(player);
     }
 
@@ -813,8 +802,8 @@ public class Game {
         // msg);
 
         // 全チームメンバーにメッセージを送る
-        for (Set<FGPlayer> set : playersMap.values()) {
-            for (FGPlayer name : set) {
+        for (Set<GamePlayer> set : playersMap.values()) {
+            for (GamePlayer name : set) {
                 if (name == null) {
                     continue;
                 }
@@ -834,7 +823,7 @@ public class Game {
      * @param team
      *            対象のチーム
      */
-    public void message(GameTeam team, String message) {
+    public void message(TeamColor team, String message) {
         if (team == null || !playersMap.containsKey(team)) {
             return;
         }
@@ -842,7 +831,7 @@ public class Game {
         // チームメンバーでループさせてメッセージを送る
         playersMap.get(team).stream()
                 .filter(name -> name != null)
-                .map(FGPlayer::getPlayer)
+                .map(GamePlayer::getPlayer)
                 .filter(player -> player != null)
                 .filter(Player::isOnline)
                 .forEach(player -> Actions.message(player, message));
@@ -853,8 +842,8 @@ public class Game {
      */
     public void tpSpawnLocation() {
         // 参加プレイヤーマップを回す
-        for (Map.Entry<GameTeam, Set<FGPlayer>> entry : playersMap.entrySet()) {
-            GameTeam team = entry.getKey();
+        for (Map.Entry<TeamColor, Set<GamePlayer>> entry : playersMap.entrySet()) {
+            TeamColor team = entry.getKey();
             Location loc = stage.getSpawn(team);
             // チームのスポーン地点が未設定の場合何もしない
             if (loc == null) {
@@ -862,7 +851,7 @@ public class Game {
             }
 
             // チームの全プレイヤーをスポーン地点にテレポート
-            for (FGPlayer name : entry.getValue()) {
+            for (GamePlayer name : entry.getValue()) {
                 if (name == null) {
                     continue;
                 }
@@ -898,7 +887,7 @@ public class Game {
      * @param team 取得するチーム
      * @return プレイヤーセット またはnull
      */
-    public Set<FGPlayer> getPlayersSet(GameTeam team) {
+    public Set<GamePlayer> getPlayersSet(TeamColor team) {
         if (team == null || !playersMap.containsKey(team)) {
             return null;
         }
@@ -907,7 +896,7 @@ public class Game {
     }
 
     /* ***** Kill/Death関係 ***** */
-    public void addKillCount(GameTeam team) {
+    public void addKillCount(TeamColor team) {
         if (!teamKilledCount.containsKey(team)) {
             teamKilledCount.put(team, 1);
         } else {
@@ -915,7 +904,7 @@ public class Game {
         }
     }
 
-    public int getKillCount(GameTeam team) {
+    public int getKillCount(TeamColor team) {
         if (!teamKilledCount.containsKey(team)) {
             return 0;
         } else {

@@ -25,13 +25,13 @@ import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.block.SignChangeEvent;
 
 import syam.flaggame.FlagGame;
-import syam.flaggame.enums.GameTeam;
+import syam.flaggame.enums.TeamColor;
 import syam.flaggame.game.Flag;
 import syam.flaggame.game.Game;
 import syam.flaggame.game.Stage;
 import syam.flaggame.manager.StageManager;
 import syam.flaggame.permission.Perms;
-import syam.flaggame.player.FGPlayer;
+import syam.flaggame.player.GamePlayer;
 import syam.flaggame.player.PlayerManager;
 import syam.flaggame.util.Actions;
 import syam.flaggame.util.Cuboid;
@@ -118,20 +118,20 @@ public class FGBlockListener implements Listener {
             }
 
             Game game = stage.getGame();
-            FGPlayer fgp = PlayerManager.getPlayer(player);
+            GamePlayer fgp = PlayerManager.getPlayer(player);
 
             /* ゲーム中のステージでフラッグを設置/破壊した */
             // プレイヤーと設置/破壊したブロックのチーム取得
-            GameTeam pTeam = game.getPlayerTeam(fgp);
+            TeamColor pTeam = game.getPlayerTeam(fgp);
             if (pTeam == null) {
                 Actions.message(player, "&cあなたはこのゲームに参加していません！");
                 cancel = true;
                 return cancel;
             }
-            GameTeam bTeam = null;
+            TeamColor bTeam = null;
             int id = block.getTypeId();
             byte data = block.getData();
-            for (GameTeam gt : GameTeam.values()) {
+            for (TeamColor gt : TeamColor.values()) {
                 if (Flag.isFlag(block.getType()) && gt.getBlockData() == data) {
                     bTeam = gt;
                 }

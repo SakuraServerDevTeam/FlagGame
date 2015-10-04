@@ -12,7 +12,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.InventoryHolder;
 
-import syam.flaggame.enums.GameTeam;
+import syam.flaggame.enums.TeamColor;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.manager.StageManager;
@@ -52,7 +52,7 @@ public class CheckCommand extends BaseCommand {
             Actions.message(sender, msgPrefix + "&6[*]&bステージエリア: &6設定済み");
 
         // チームスポーン
-        if (stage.getSpawns().size() != GameTeam.values().length) {
+        if (stage.getSpawns().size() != TeamColor.values().length) {
             error = true;
             Actions.message(sender, msgPrefix + "&6[*]&b各チームスポーン地点: &c未設定");
             if (help == null) help = "&6 * 各チームのスポーン地点を設定してください！ *\n" + "&6 スポーン地点で'&a/flag set spawn <チーム名>&6'コマンドを実行してください";
@@ -60,7 +60,7 @@ public class CheckCommand extends BaseCommand {
             Actions.message(sender, msgPrefix + "&6[*]&b各チームスポーン地点: &6設定済み");
 
         // チームエリア
-        if (stage.getBases().size() != GameTeam.values().length) {
+        if (stage.getBases().size() != TeamColor.values().length) {
             error = true;
             Actions.message(sender, msgPrefix + "&6[*]&b各チームスポーンエリア: &c未設定");
             if (help == null) help = "&6 * 各チームのスポーンエリアを設定してください！ *\n" + "&6 WorldEditでスポーンエリアを選択して、\n" + "&6 '&a/flag set base <チーム名>&6'コマンドを実行してください";

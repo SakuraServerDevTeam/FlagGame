@@ -22,23 +22,23 @@ public class PlayerManager {
 
     public static final Logger log = FlagGame.logger;
 
-    private static final Map<UUID, FGPlayer> players = new HashMap<>();
+    private static final Map<UUID, GamePlayer> players = new HashMap<>();
 
     /**
      * プレイヤーを追加します
      *
      * @param player 追加するプレイヤー
-     * @return プレイヤーオブジェクト {@link FGPlayer}
+     * @return プレイヤーオブジェクト {@link GamePlayer}
      */
-    public static FGPlayer addPlayer(Player player) {
-        FGPlayer fgPlayer = players.get(player.getUniqueId());
+    public static GamePlayer addPlayer(Player player) {
+        GamePlayer fgPlayer = players.get(player.getUniqueId());
 
         if (fgPlayer != null) {
             // プレイヤーオブジェクトは接続ごとに違うものなので再設定する
             fgPlayer.setPlayer(player);
         } else {
             // 新規プレイヤー
-            fgPlayer = new FGPlayer(player);
+            fgPlayer = new GamePlayer(player);
             players.put(player.getUniqueId(), fgPlayer);
         }
 
@@ -46,20 +46,11 @@ public class PlayerManager {
     }
 
     /**
-     * 指定したプレイヤーをマップから削除します
-     *
-     * @param playerName 削除するプレイヤー名
-     */
-    public static void remove(UUID playerName) {
-        players.remove(playerName);
-    }
-
-    /**
      * 全プレイヤーデータを保存する
      */
     public static void saveAll() {
         players.values().stream()
-                .map(FGPlayer::getProfile)
+                .map(GamePlayer::getProfile)
                 .forEach(PlayerProfile::save);
     }
 
@@ -67,13 +58,13 @@ public class PlayerManager {
      * プレイヤーを取得する
      *
      * @param playerName 取得対象のプレイヤー名
-     * @return プレイヤー {@link FGPlayer}
+     * @return プレイヤー {@link GamePlayer}
      */
-    public static FGPlayer getPlayer(UUID playerName) {
+    public static GamePlayer getPlayer(UUID playerName) {
         return players.get(playerName);
     }
     
-    public static FGPlayer getPlayer(String name) {
+    public static GamePlayer getPlayer(String name) {
         return players.values().stream()
                 .filter(p -> p.getName().toLowerCase().startsWith(name.toLowerCase()))
                 .findAny().orElse(null);
@@ -83,9 +74,9 @@ public class PlayerManager {
      * プレイヤーを取得する
      *
      * @param player 取得対象のプレイヤー
-     * @return プレイヤー {@link FGPlayer}
+     * @return プレイヤー {@link GamePlayer}
      */
-    public static FGPlayer getPlayer(Player player) {
+    public static GamePlayer getPlayer(Player player) {
         return getPlayer(player.getUniqueId());
     }
 
@@ -97,7 +88,7 @@ public class PlayerManager {
      * @return プレイヤープロフィール {@link PlayerProfile}
      */
     public static PlayerProfile getProfile(UUID uuid) {
-        FGPlayer fgPlayer = players.get(uuid);
+        GamePlayer fgPlayer = players.get(uuid);
 
         return (fgPlayer != null) ? fgPlayer.getProfile() : null;
     }
@@ -110,11 +101,6 @@ public class PlayerManager {
      */
     public static PlayerProfile getProfile(OfflinePlayer player) {
         return getProfile(player.getUniqueId());
-    }
-
-    /* getter / setter */
-    public static Map<UUID, FGPlayer> getPlayers() {
-        return Collections.unmodifiableMap(players);
     }
     
     public static void update() {

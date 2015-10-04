@@ -30,7 +30,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import syam.flaggame.FlagGame;
-import syam.flaggame.enums.GameTeam;
+import syam.flaggame.enums.TeamColor;
 import syam.flaggame.enums.SignAction;
 import syam.flaggame.enums.config.Configables;
 import syam.flaggame.game.Flag;
@@ -40,7 +40,7 @@ import syam.flaggame.manager.GameManager;
 import syam.flaggame.manager.SetupManager;
 import syam.flaggame.manager.StageManager;
 import syam.flaggame.permission.Perms;
-import syam.flaggame.player.FGPlayer;
+import syam.flaggame.player.GamePlayer;
 import syam.flaggame.player.PlayerManager;
 import syam.flaggame.util.Actions;
 import syam.flaggame.util.Cuboid;
@@ -203,7 +203,7 @@ public class FGPlayerListener implements Listener {
                 continue;
             }
 
-            GameTeam team = game.getPlayerTeam(PlayerManager.getPlayer(player));
+            TeamColor team = game.getPlayerTeam(PlayerManager.getPlayer(player));
             if (team != null) {
                 Location loc = game.getStage().getSpawn(team);
                 if (loc == null) {
@@ -327,8 +327,8 @@ public class FGPlayerListener implements Listener {
             }
 
             if (game.isJoined(killer)) {
-                GameTeam aTeam = game.getPlayerTeam(PlayerManager.getPlayer(killer));
-                GameTeam dTeam = game.getPlayerTeam(PlayerManager.getPlayer(deader));
+                TeamColor aTeam = game.getPlayerTeam(PlayerManager.getPlayer(killer));
+                TeamColor dTeam = game.getPlayerTeam(PlayerManager.getPlayer(deader));
 
                 deathMsg = msgPrefix + "&6[" + game.getStage().getName() + "] " + aTeam.getColor() + killer.getName() + "&6 が " + dTeam.getColor() + deader.getName() + "&6 を倒しました！";
                 Actions.worldcastMessage(Bukkit.getWorld(plugin.getConfigs().getGameWorld()), deathMsg);
@@ -361,7 +361,7 @@ public class FGPlayerListener implements Listener {
             if (game.isJoined(player) && plugin.getConfigs().getDeathWhenLogout()) {
                 player.setHealth(0);
 
-                GameTeam team = game.getPlayerTeam(PlayerManager.getPlayer(player));
+                TeamColor team = game.getPlayerTeam(PlayerManager.getPlayer(player));
                 String deathMsg = msgPrefix + team.getColor() + team.getTeamName() + "チーム &6のプレイヤー'" + team.getColor() + player.getName() + "&6'がログアウトしたため死亡しました";
                 Actions.worldcastMessage(Bukkit.getWorld(plugin.getConfigs().getGameWorld()), deathMsg);
                 // game.message(deathMsg);
@@ -439,14 +439,14 @@ public class FGPlayerListener implements Listener {
             return true;
         }
 
-        GameTeam playerTeam;
+        TeamColor playerTeam;
         Location loc = block.getLocation();
 
         // 開始中のゲームを回す
         for (Game game : GameManager.getGames().values()) {
-            GameTeam blockTeam = null;
+            TeamColor blockTeam = null;
             // 拠点マップを回してブロックの所属拠点チームを取得
-            for (Map.Entry<GameTeam, Cuboid> entry : game.getStage().getBases().entrySet()) {
+            for (Map.Entry<TeamColor, Cuboid> entry : game.getStage().getBases().entrySet()) {
                 if (entry.getValue().isIn(loc)) {
                     blockTeam = entry.getKey();
                     break;
@@ -533,16 +533,16 @@ public class FGPlayerListener implements Listener {
             Actions.message(player, "&cThis sign is broken! Please contact server staff!");
             return;
         }
-        FGPlayer fgp = PlayerManager.getPlayer(player);
+        GamePlayer fgp = PlayerManager.getPlayer(player);
 
         // 処理を分ける
         switch (action) {
             // 回復
             case HEAL:
                 if (!"".equals(line3) && !line3.isEmpty()) {
-                    GameTeam signTeam = null;
-                    GameTeam playerTeam = null;
-                    for (GameTeam gt : GameTeam.values()) {
+                    TeamColor signTeam = null;
+                    TeamColor playerTeam = null;
+                    for (TeamColor gt : TeamColor.values()) {
                         if (gt.name().toLowerCase().equalsIgnoreCase(line3)) {
                             signTeam = gt;
                         }
@@ -600,7 +600,7 @@ public class FGPlayerListener implements Listener {
                         continue;
                     }
                     if (game.getPlayerTeam(fgp) != null) {
-                        GameTeam team = game.getPlayerTeam(fgp);
+                        TeamColor team = game.getPlayerTeam(fgp);
                         game.message(msgPrefix + "&6[" + game.getName() + "]&6 '" + team.getColor() + player.getName() + "&6'が自殺しました。");
                         break;
                     }

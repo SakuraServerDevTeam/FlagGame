@@ -11,9 +11,9 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 import syam.flaggame.enums.GameResult;
-import syam.flaggame.enums.GameTeam;
+import syam.flaggame.enums.TeamColor;
 import syam.flaggame.game.Stage;
-import syam.flaggame.player.FGPlayer;
+import syam.flaggame.player.GamePlayer;
 
 /**
  * GameFinishedEvent (GameFinishedEvent.java)
@@ -25,9 +25,9 @@ public class GameFinishedEvent extends Event {
 
     private Stage stage;
     private GameResult result;
-    private GameTeam winTeam;
+    private TeamColor winTeam;
     private String reason;
-    private Map<GameTeam, Set<FGPlayer>> players;
+    private Map<TeamColor, Set<GamePlayer>> players;
 
     /**
      * コンストラクタ
@@ -38,7 +38,7 @@ public class GameFinishedEvent extends Event {
      * @param reason
      * @param playersMap
      */
-    public GameFinishedEvent(Stage stage, GameResult result, GameTeam winTeam, String reason, Map<GameTeam, Set<FGPlayer>> playersMap) {
+    public GameFinishedEvent(Stage stage, GameResult result, TeamColor winTeam, String reason, Map<TeamColor, Set<GamePlayer>> playersMap) {
         this.stage = stage;
         this.result = result;
         this.winTeam = winTeam;
@@ -46,7 +46,7 @@ public class GameFinishedEvent extends Event {
         this.players = playersMap;
     }
 
-    public GameFinishedEvent(Stage stage, GameResult result, GameTeam winTeam, Map<GameTeam, Set<FGPlayer>> playersMap) {
+    public GameFinishedEvent(Stage stage, GameResult result, TeamColor winTeam, Map<TeamColor, Set<GamePlayer>> playersMap) {
         this(stage, result, winTeam, null, playersMap);
     }
 
@@ -58,7 +58,7 @@ public class GameFinishedEvent extends Event {
         return this.result;
     }
 
-    public GameTeam getWinTeam() {
+    public TeamColor getWinTeam() {
         return this.winTeam;
     }
 
@@ -66,7 +66,7 @@ public class GameFinishedEvent extends Event {
         return this.reason;
     }
 
-    public Map<GameTeam, Set<FGPlayer>> getPlayers() {
+    public Map<TeamColor, Set<GamePlayer>> getPlayers() {
         return this.players;
     }
 

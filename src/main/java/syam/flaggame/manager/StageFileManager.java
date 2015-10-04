@@ -24,7 +24,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import syam.flaggame.FlagGame;
-import syam.flaggame.enums.GameTeam;
+import syam.flaggame.enums.TeamColor;
 import syam.flaggame.game.Flag;
 import syam.flaggame.game.Stage;
 import syam.flaggame.util.Cuboid;
@@ -281,11 +281,11 @@ public class StageFileManager {
     }
 
     /* スポーン地点データを変換 */
-    private List<String> convertSpawnMapToList(Map<GameTeam, Location> spawns) {
+    private List<String> convertSpawnMapToList(Map<TeamColor, Location> spawns) {
         List<String> ret = new ArrayList<>();
         ret.clear();
 
-        for (Map.Entry<GameTeam, Location> entry : spawns.entrySet()) {
+        for (Map.Entry<TeamColor, Location> entry : spawns.entrySet()) {
             // RED@x,y,z,pitch,yaw
             String s = entry.getKey().name() + "@";
             Location loc = entry.getValue();
@@ -298,8 +298,8 @@ public class StageFileManager {
         return ret;
     }
 
-    private Map<GameTeam, Location> convertSpawnListToMap(List<String> spawns) {
-        Map<GameTeam, Location> ret = new EnumMap<>(GameTeam.class);
+    private Map<TeamColor, Location> convertSpawnListToMap(List<String> spawns) {
+        Map<TeamColor, Location> ret = new EnumMap<>(TeamColor.class);
         ret.clear();
 
         String[] data;
@@ -318,8 +318,8 @@ public class StageFileManager {
             }
 
             // data[0] : チームチェック
-            GameTeam team = null;
-            for (GameTeam gt : GameTeam.values()) {
+            TeamColor team = null;
+            for (TeamColor gt : TeamColor.values()) {
                 if (gt.name().equalsIgnoreCase(data[0])) {
                     team = gt;
                 }
@@ -344,11 +344,11 @@ public class StageFileManager {
     }
 
     /* 拠点データを変換 */
-    private List<String> convertBaseMapToList(Map<GameTeam, Cuboid> bases) {
+    private List<String> convertBaseMapToList(Map<TeamColor, Cuboid> bases) {
         List<String> ret = new ArrayList<>();
         ret.clear();
 
-        for (Map.Entry<GameTeam, Cuboid> entry : bases.entrySet()) {
+        for (Map.Entry<TeamColor, Cuboid> entry : bases.entrySet()) {
             // RED@x,y,z@x,y,z
             String s = entry.getKey().name() + "@";
 
@@ -366,8 +366,8 @@ public class StageFileManager {
         return ret;
     }
 
-    private Map<GameTeam, Cuboid> convertBaseListToMap(List<String> bases) {
-        Map<GameTeam, Cuboid> ret = new EnumMap<>(GameTeam.class);
+    private Map<TeamColor, Cuboid> convertBaseListToMap(List<String> bases) {
+        Map<TeamColor, Cuboid> ret = new EnumMap<>(TeamColor.class);
         ret.clear();
 
         String[] data;
@@ -387,8 +387,8 @@ public class StageFileManager {
             }
 
             // data[0] : チームチェック
-            GameTeam team = null;
-            for (GameTeam gt : GameTeam.values()) {
+            TeamColor team = null;
+            for (TeamColor gt : TeamColor.values()) {
                 if (gt.name().equalsIgnoreCase(data[0])) {
                     team = gt;
                 }

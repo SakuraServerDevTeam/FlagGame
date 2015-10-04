@@ -17,12 +17,12 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
 import syam.flaggame.command.queue.Queueable;
 import syam.flaggame.enums.GameResult;
-import syam.flaggame.enums.GameTeam;
+import syam.flaggame.enums.TeamColor;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Game;
 import syam.flaggame.manager.GameManager;
 import syam.flaggame.permission.Perms;
-import syam.flaggame.player.FGPlayer;
+import syam.flaggame.player.GamePlayer;
 import syam.flaggame.player.PlayerManager;
 import syam.flaggame.player.PlayerProfile;
 import syam.flaggame.util.Actions;
@@ -40,8 +40,8 @@ public class LeaveCommand extends BaseCommand implements Queueable {
     public void execute() throws CommandException {
         // 参加しているゲームを取得する
         Game game = null;
-        GameTeam team = null;
-        FGPlayer fgp = PlayerManager.getPlayer(player);
+        TeamColor team = null;
+        GamePlayer fgp = PlayerManager.getPlayer(player);
         for (Game g : GameManager.getGames().values()) {
             if (g.getPlayerTeam(fgp) != null) {
                 game = g;
@@ -111,8 +111,8 @@ public class LeaveCommand extends BaseCommand implements Queueable {
     public void executeQueue(List<String> args) {
         // 参加しているゲームを取得する
         Game game = null;
-        GameTeam team = null;
-        FGPlayer fgp = PlayerManager.getPlayer(player);
+        TeamColor team = null;
+        GamePlayer fgp = PlayerManager.getPlayer(player);
         for (Game g : GameManager.getGames().values()) {
             if (g.getPlayerTeam(fgp) != null) {
                 game = g;
@@ -147,11 +147,11 @@ public class LeaveCommand extends BaseCommand implements Queueable {
         PlayerManager.getPlayer(player).getProfile().addExit();
 
         // 参加者チェック 全員抜けたらゲーム終了
-        Iterator<Entry<GameTeam, Set<FGPlayer>>> entryIte = game.getPlayersMap().entrySet().iterator();
+        Iterator<Entry<TeamColor, Set<GamePlayer>>> entryIte = game.getPlayersMap().entrySet().iterator();
         while (entryIte.hasNext()) {
-            Entry<GameTeam, Set<FGPlayer>> entry = entryIte.next();
+            Entry<TeamColor, Set<GamePlayer>> entry = entryIte.next();
             if (entry.getValue().size() <= 0) {
-                GameTeam t = entry.getKey();
+                TeamColor t = entry.getKey();
                 game.finish(GameResult.STOP, null, "&6" + t.getColor() + t.getTeamName() + "チーム &6の参加者が居なくなりました");
                 break;
             }

@@ -6,7 +6,7 @@ package syam.flaggame.command;
 
 import org.bukkit.Location;
 
-import syam.flaggame.enums.GameTeam;
+import syam.flaggame.enums.TeamColor;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.manager.SetupManager;
@@ -38,8 +38,8 @@ public class TpCommand extends BaseCommand {
             if (stage == null) { throw new CommandException("&c先にゲームを選択してください"); }
 
             // チーム取得
-            GameTeam team = null;
-            for (GameTeam tm : GameTeam.values()) {
+            TeamColor team = null;
+            for (TeamColor tm : TeamColor.values()) {
                 if (tm.name().toLowerCase().equalsIgnoreCase(args.get(1))) {
                     team = tm;
                     break;

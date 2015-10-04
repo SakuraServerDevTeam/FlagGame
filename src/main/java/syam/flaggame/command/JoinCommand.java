@@ -6,7 +6,7 @@ package syam.flaggame.command;
 
 import java.util.ArrayList;
 
-import syam.flaggame.enums.GameTeam;
+import syam.flaggame.enums.TeamColor;
 import syam.flaggame.event.GameJoinEvent;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Game;
@@ -14,7 +14,7 @@ import syam.flaggame.game.Stage;
 import syam.flaggame.manager.GameManager;
 import syam.flaggame.manager.StageManager;
 import syam.flaggame.permission.Perms;
-import syam.flaggame.player.FGPlayer;
+import syam.flaggame.player.GamePlayer;
 import syam.flaggame.player.PlayerManager;
 import syam.flaggame.util.Actions;
 
@@ -71,19 +71,19 @@ public class JoinCommand extends BaseCommand {
         if (game.getState() == Game.State.STARTED) { throw new CommandException("&cゲーム'" + args.get(0) + "'は既に始まっています！"); }
 
         // 既に参加していないかチェック
-        FGPlayer fgp = PlayerManager.getPlayer(player);
+        GamePlayer fgp = PlayerManager.getPlayer(player);
         if (game.getPlayerTeam(fgp) != null) {
-            GameTeam team = game.getPlayerTeam(fgp);
+            TeamColor team = game.getPlayerTeam(fgp);
             throw new CommandException("&cあなたは既にこのゲームに" + team.getColor() + team.getTeamName() + "チーム&cとしてエントリーしています！");
         }
         for (Game check : GameManager.getGames().values()) {
-            GameTeam checkT = check.getPlayerTeam(fgp);
+            TeamColor checkT = check.getPlayerTeam(fgp);
             if (checkT != null) { throw new CommandException("&cあなたは別のゲーム'" + check.getName() + "'に" + checkT.getColor() + checkT.getTeamName() + "チーム&cとして参加しています！"); }
         }
 
         // 人数チェック
         int limit = game.getStage().getTeamLimit();
-        if ((game.getPlayersSet(GameTeam.RED).size() >= limit) && (game.getPlayersSet(GameTeam.BLUE).size() >= limit)) { throw new CommandException("&cこのゲームは参加可能な定員に達しています！"); }
+        if ((game.getPlayersSet(TeamColor.RED).size() >= limit) && (game.getPlayersSet(TeamColor.BLUE).size() >= limit)) { throw new CommandException("&cこのゲームは参加可能な定員に達しています！"); }
 
         double cost = game.getStage().getEntryFee();
 
@@ -113,7 +113,7 @@ public class JoinCommand extends BaseCommand {
         }
 
         // 所属チーム取得
-        GameTeam team = game.getPlayerTeam(fgp);
+        TeamColor team = game.getPlayerTeam(fgp);
         Actions.broadcastMessage(msgPrefix + "&aプレイヤー'&6" + player.getName() + "&a'が" + team.getColor() + team.getTeamName() + "チーム&aに参加しました！");
         // game.message(msgPrefix+"&aプレイヤー'&6"+player.getName()+"&a'が"+team.getColor()+team.getTeamName()+"チーム&aに参加しました！");
 

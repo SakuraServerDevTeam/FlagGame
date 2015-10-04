@@ -31,6 +31,7 @@ import syam.flaggame.manager.StageFileManager;
 import syam.flaggame.manager.StageManager;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.player.PlayerManager;
+import syam.flaggame.player.PlayerStatusListener;
 import syam.flaggame.util.Actions;
 import syam.flaggame.util.Debug;
 import syam.flaggame.util.DynmapHandler;
@@ -123,6 +124,7 @@ public class FlagGame extends JavaPlugin {
 
         // Regist Listeners
         debug.startTimer("listeners");
+        pm.registerEvents(new PlayerStatusListener(this), this);
         pm.registerEvents(playerListener, this);
         pm.registerEvents(blockListener, this);
         pm.registerEvents(entityListener, this);
