@@ -48,25 +48,10 @@ public class Cuboid {
      * @return 領域内ならtrue 違えばfalse
      */
     public boolean isIn(Location loc) {
-        if (loc.getWorld() != this.getWorld()) {
-            return false;
-        }
-        if (loc.getBlockX() < min.getBlockX()) {
-            return false;
-        }
-        if (loc.getBlockX() > max.getBlockX()) {
-            return false;
-        }
-        if (loc.getBlockY() < min.getBlockY()) {
-            return false;
-        }
-        if (loc.getBlockY() > max.getBlockY()) {
-            return false;
-        }
-        if (loc.getBlockZ() < min.getBlockZ()) {
-            return false;
-        }
-        return loc.getBlockZ() <= max.getBlockX();
+        return this.getWorld().equals(loc.getWorld())
+                && min.getX() <= loc.getX() && loc.getX() <= max.getX()
+                && min.getY() <= loc.getY() && loc.getY() <= max.getY()
+                && min.getZ() <= loc.getZ() && loc.getZ() <= max.getZ();
     }
 
     /**
