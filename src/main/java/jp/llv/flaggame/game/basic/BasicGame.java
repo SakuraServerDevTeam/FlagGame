@@ -223,7 +223,7 @@ public class BasicGame implements Game {
         List<String> msg = new ArrayList<>();
 
         Map<TeamColor, Map<Byte, Integer>> flagPointsMap = stage.checkFlag();
-        for (TeamColor col : flagPoints.keySet()) {
+        for (TeamColor col : this.stage.getSpawns().keySet()) {
             int f = flagPointsMap.get(col).entrySet().stream().mapToInt(e -> e.getKey() * e.getValue()).sum();
             flagPoints.put(col, f);
 
@@ -231,7 +231,7 @@ public class BasicGame implements Game {
             kills.put(col, k);
 
             double p = f;
-            points.put(col, Double.valueOf(f));
+            points.put(col, p);
             msg.add(col.getColor() + col.getTeamName() + "チーム得点: &6" + p + col.getColor() + "点&f(フラッグ: " + f + "点)");
         }
 
