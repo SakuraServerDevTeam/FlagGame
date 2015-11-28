@@ -35,7 +35,7 @@ public class FakePlayerProfile implements PlayerProfile {
 
     @Override
     public String getName() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "FAKE";
     }
 
     @Override
@@ -48,7 +48,7 @@ public class FakePlayerProfile implements PlayerProfile {
 
     @Override
     public int getKill() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return 0;
     }
 
     @Override
@@ -57,7 +57,7 @@ public class FakePlayerProfile implements PlayerProfile {
 
     @Override
     public int getDeath() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return 0;
     }
 
     @Override
@@ -66,7 +66,7 @@ public class FakePlayerProfile implements PlayerProfile {
 
     @Override
     public int getPlayed() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return 0;
     }
 
     @Override
@@ -75,7 +75,7 @@ public class FakePlayerProfile implements PlayerProfile {
 
     @Override
     public int getExited() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return 0;
     }
 
     @Override
@@ -84,7 +84,7 @@ public class FakePlayerProfile implements PlayerProfile {
 
     @Override
     public int getWonGame() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return 0;
     }
 
     @Override
@@ -93,7 +93,7 @@ public class FakePlayerProfile implements PlayerProfile {
 
     @Override
     public int getLostGame() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return 0;
     }
 
     @Override
@@ -102,7 +102,7 @@ public class FakePlayerProfile implements PlayerProfile {
 
     @Override
     public int getBrokenFlag() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return 0;
     }
 
     @Override
@@ -111,7 +111,7 @@ public class FakePlayerProfile implements PlayerProfile {
 
     @Override
     public int getPlacedFlag() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return 0;
     }
 
     @Override
@@ -120,7 +120,7 @@ public class FakePlayerProfile implements PlayerProfile {
 
     @Override
     public long getLastPlayedAt() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return 0;
     }
     
 }
