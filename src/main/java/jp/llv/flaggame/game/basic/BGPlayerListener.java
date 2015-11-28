@@ -19,7 +19,6 @@ package jp.llv.flaggame.game.basic;
 import java.util.Collection;
 import java.util.stream.Collectors;
 import jp.llv.flaggame.reception.Team;
-import jp.llv.flaggame.util.ConvertUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;

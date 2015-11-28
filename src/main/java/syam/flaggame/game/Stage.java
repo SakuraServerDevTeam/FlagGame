@@ -96,7 +96,7 @@ public class Stage {
 
         this.profile = profile;
     }
-    
+
     public Stage(String name) {
         this(name, new StageProfile());
     }
@@ -104,7 +104,7 @@ public class Stage {
     public StageProfile getProfile() {
         return this.profile;
     }
-    
+
     /* ***** フラッグ関係 ***** */
 
     /*
@@ -190,6 +190,9 @@ public class Stage {
         // 全フラッグを回す
         flags.values().forEach(flag -> {
             TeamColor state = flag.getOwner(); // フラッグの現在状態
+            if (state == null) {
+                return;
+            }
             Map<Byte, Integer> score = ret.get(state);
             if (score == null) {
                 ret.put(state, score = new HashMap<>());
@@ -412,7 +415,7 @@ public class Stage {
         }
         gameTime = sec * 1000;
     }
-    
+
     public void setGameTime(long sec) {
         if (this.isReserved()) {
             throw new IllegalStateException("This stage has been reserved!");
@@ -480,7 +483,7 @@ public class Stage {
         return this.reception != null;
     }
 
-    public Reservation reserve(GameReception reception) throws StageReservedException{
+    public Reservation reserve(GameReception reception) throws StageReservedException {
         if (this.isReserved()) {
             throw new StageReservedException();
         }
