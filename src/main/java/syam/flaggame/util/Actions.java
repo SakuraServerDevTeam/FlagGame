@@ -17,8 +17,6 @@
 package syam.flaggame.util;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -320,6 +318,10 @@ public class Actions {
         int m = sec / 60; // 小数点以下は切られるのでこれで問題ないはず..
         int s = sec % 60;
         return m + "分" + s + "秒";
+    }
+    
+    public static String getTimeString(long sec) {
+        return getTimeString(((int) sec / 1000));
     }
 
     /**

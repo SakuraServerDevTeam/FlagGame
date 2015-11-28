@@ -45,6 +45,7 @@ import syam.flaggame.FlagGame;
 import syam.flaggame.enums.TeamColor;
 import syam.flaggame.game.Stage;
 import syam.flaggame.player.GamePlayer;
+import syam.flaggame.util.Actions;
 
 /**
  *
@@ -96,7 +97,7 @@ public class BGPlayerListener extends BGListener {
 
         GamePlayer gplayer = this.plugin.getPlayers().getPlayer(player);
         TeamColor color = gplayer.getTeam().get().getColor();
-        gplayer.sendMessage("&c[*]&6このゲームはあと &a" + ConvertUtils.format(this.game.getRemainTime()) + "&6 残っています！");
+        gplayer.sendMessage("&c[*]&6このゲームはあと &a" +Actions.getTimeString(this.game.getRemainTime()) + "&6 残っています！");
         Location loc = this.game.getStage().getSpawn(color);
         event.setRespawnLocation(loc);
         player.getInventory().setHelmet(new ItemStack(Material.WOOL, 1, (short) 0, color.getBlockData()));

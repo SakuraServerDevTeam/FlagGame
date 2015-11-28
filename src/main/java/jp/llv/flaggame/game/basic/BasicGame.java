@@ -48,6 +48,7 @@ import syam.flaggame.enums.TeamColor;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.player.GamePlayer;
+import syam.flaggame.util.Actions;
 
 /**
  *
@@ -197,7 +198,8 @@ public class BasicGame implements Game {
                 .filter(t -> t <= this.stage.getGameTime());
         LongStream aMinute = LongStream.rangeClosed(1, this.stage.getGameTime())
                 .filter(t -> t % 60000L == 0);
-        LongStream.concat(lessThanAMinute, aMinute).map(ConvertUtils::toTick).forEach(t -> {
+        LongStream.concat(lessThanAMinute, aMinute).map(t -> this.stage.getGameTime()-t)
+                .map(ConvertUtils::toTick).forEach(t -> {
             BukkitTask task = this.plugin.getServer().getScheduler()
                     .runTaskLater(plugin, this::notifyRemainTime, t);
             this.onFinishing.offer(task::cancel);
@@ -304,7 +306,7 @@ public class BasicGame implements Game {
     }
 
     private void notifyRemainTime() {
-        GamePlayer.sendMessage(this.getReception().getPlayers(), "&aゲーム終了まであと " + ConvertUtils.format(this.getRemainTime()) + "秒です!");
+        GamePlayer.sendMessage(this.getReception().getPlayers(), "&aゲーム終了まであと " + Actions.getTimeString(getRemainTime()) + "です!");
     }
 
     /*package*/ void addKillCount(GamePlayer player) {
