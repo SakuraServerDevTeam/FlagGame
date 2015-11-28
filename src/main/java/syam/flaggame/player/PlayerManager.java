@@ -35,6 +35,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import syam.flaggame.FlagGame;
+import syam.flaggame.exception.CommandException;
 
 /**
  * A {@link PlayerManager} provides ways of getting
@@ -189,10 +190,16 @@ public class PlayerManager implements Iterable<GamePlayer> {
          * @param e An event to handle
          */
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void on(PlayerJoinEvent e) {
+        @SuppressWarnings("deprecation")
+        public void on(PlayerJoinEvent e) throws CommandException {
             Player p = e.getPlayer();
-            PlayerManager.this.players.put(p.getUniqueId(),
-                    new GamePlayer(PlayerManager.this, p));
+            GamePlayer gp = new GamePlayer(PlayerManager.this, p);
+            PlayerManager.this.players.put(p.getUniqueId(),gp);
+            for (jp.llv.flaggame.reception.GameReception r : PlayerManager.this.plugin.getReceptions()) {
+                if (r.getPlayers().contains(gp)) {
+                    gp.join(r, Collections.emptyList());
+                }
+            }
         }
 
         /**

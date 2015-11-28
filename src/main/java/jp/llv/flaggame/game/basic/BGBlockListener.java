@@ -17,7 +17,6 @@
 package jp.llv.flaggame.game.basic;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
 import jp.llv.flaggame.reception.Team;
 import org.bukkit.Effect;
 import org.bukkit.Material;
@@ -39,20 +38,19 @@ import syam.flaggame.player.GamePlayer;
 public class BGBlockListener extends BGListener {
 
     private final FlagGame plugin;
-    private final Collection<Player> players;
+    private final Collection<GamePlayer> players;
 
     public BGBlockListener(FlagGame plugin, BasicGame game) {
         super(game);
         this.plugin = plugin;
-        this.players = game.getReception().getPlayers()
-                .stream().map(GamePlayer::getPlayer)
-                .collect(Collectors.toSet());
+        this.players = game.getReception().getPlayers();
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
-        if (!this.players.contains(player)) {
+        GamePlayer gplayer = this.plugin.getPlayers().getPlayer(player);
+        if (!this.players.contains(gplayer)) {
             return;
         }
 
@@ -62,7 +60,6 @@ public class BGBlockListener extends BGListener {
             return;
         }
         
-        GamePlayer gplayer = this.plugin.getPlayers().getPlayer(player);
         Team placerTeam = gplayer.getTeam().get();
         @SuppressWarnings("deprecation")
         TeamColor placedTeamColor = TeamColor.getByColorData(event.getBlock().getData());
@@ -87,7 +84,8 @@ public class BGBlockListener extends BGListener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onBlockPlace(BlockPlaceEvent event) {
         Player player = event.getPlayer();
-        if (!this.players.contains(player)) {
+        GamePlayer gplayer = this.plugin.getPlayers().getPlayer(player);
+        if (!this.players.contains(gplayer)) {
             return;
         }
 
@@ -103,7 +101,6 @@ public class BGBlockListener extends BGListener {
             return;
         }
 
-        GamePlayer gplayer = this.plugin.getPlayers().getPlayer(player);
         Team placerTeam = gplayer.getTeam().get();
         @SuppressWarnings("deprecation")
         TeamColor placedTeamColor = TeamColor.getByColorData(b.getData());

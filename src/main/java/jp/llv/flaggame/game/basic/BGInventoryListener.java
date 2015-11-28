@@ -17,7 +17,6 @@
 package jp.llv.flaggame.game.basic;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -36,14 +35,12 @@ import syam.flaggame.player.GamePlayer;
 public class BGInventoryListener extends BGListener {
 
     private final FlagGame plugin;
-    private final Collection<Player> players;
+    private final Collection<GamePlayer> players;
 
     public BGInventoryListener(FlagGame plugin, BasicGame game) {
         super(game);
         this.plugin = plugin;
-        this.players = game.getReception().getPlayers()
-                .stream().map(GamePlayer::getPlayer)
-                .collect(Collectors.toSet());
+        this.players = game.getReception().getPlayers();
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
@@ -57,12 +54,12 @@ public class BGInventoryListener extends BGListener {
             return;
         }
         Player player = (Player) event.getWhoClicked();
+        GamePlayer gplayer = this.plugin.getPlayers().getPlayer(player);
 
-        if (!this.players.contains(player)) {
+        if (!this.players.contains(gplayer)) {
             return;
         }
 
-        GamePlayer gplayer = this.plugin.getPlayers().getPlayer(player);
         event.setCurrentItem(
                 new ItemStack(Material.WOOL, 1, (short) 0, gplayer.getTeam().get().getColor().getBlockData())
         );

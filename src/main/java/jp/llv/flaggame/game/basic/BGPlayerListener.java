@@ -17,7 +17,6 @@
 package jp.llv.flaggame.game.basic;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
 import jp.llv.flaggame.reception.Team;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -53,20 +52,19 @@ import syam.flaggame.util.Actions;
 public class BGPlayerListener extends BGListener {
 
     private final FlagGame plugin;
-    private final Collection<Player> players;
+    private final Collection<GamePlayer> players;
 
     public BGPlayerListener(FlagGame plugin, BasicGame game) {
         super(game);
         this.plugin = plugin;
-        this.players = game.getReception().getPlayers()
-                .stream().map(GamePlayer::getPlayer)
-                .collect(Collectors.toSet());
+        this.players = game.getReception().getPlayers();
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void on(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        if (!this.players.contains(player)) {
+        GamePlayer gplayer = this.plugin.getPlayers().getPlayer(player);
+        if (!this.players.contains(gplayer)) {
             return;
         }
 
@@ -76,7 +74,6 @@ public class BGPlayerListener extends BGListener {
             return;
         }
 
-        GamePlayer gplayer = this.plugin.getPlayers().getPlayer(player);
 
         if (!canUseBlockAt(gplayer, event.getClickedBlock().getLocation())) {
             gplayer.sendMessage("&cここは敵拠点です!");
@@ -90,11 +87,11 @@ public class BGPlayerListener extends BGListener {
     @SuppressWarnings("deprecation")
     public void on(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
-        if (!this.players.contains(player)) {
+        GamePlayer gplayer = this.plugin.getPlayers().getPlayer(player);
+        if (!this.players.contains(gplayer)) {
             return;
         }
 
-        GamePlayer gplayer = this.plugin.getPlayers().getPlayer(player);
         TeamColor color = gplayer.getTeam().get().getColor();
         gplayer.sendMessage("&c[*]&6このゲームはあと &a" +Actions.getTimeString(this.game.getRemainTime()) + "&6 残っています！");
         Location loc = this.game.getStage().getSpawn(color);
@@ -106,13 +103,13 @@ public class BGPlayerListener extends BGListener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void on(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
-        if (!this.players.contains(player)) {
+        GamePlayer gplayer = this.plugin.getPlayers().getPlayer(player);
+        if (!this.players.contains(gplayer)) {
             return;
         }
 
         String cmd = event.getMessage().split(" ")[0];
 
-        GamePlayer gplayer = this.plugin.getPlayers().getPlayer(player);
         for (String s : plugin.getConfigs().getDisableCommands()) {
             if (s.equalsIgnoreCase(cmd)) {
                 event.setCancelled(true);
@@ -125,10 +122,10 @@ public class BGPlayerListener extends BGListener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void on(PlayerDeathEvent event) {
         Player player = event.getEntity();
-        if (!this.players.contains(player)) {
+        GamePlayer gplayer = this.plugin.getPlayers().getPlayer(player);
+        if (!this.players.contains(gplayer)) {
             return;
         }
-        GamePlayer gplayer = this.plugin.getPlayers().getPlayer(player);
 
         event.setDeathMessage(null);
         ItemStack helmet = player.getInventory().getHelmet();
@@ -196,7 +193,8 @@ public class BGPlayerListener extends BGListener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPlayerQuit(final PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        if (!this.players.contains(player)) {
+        GamePlayer gplayer = this.plugin.getPlayers().getPlayer(player);
+        if (!this.players.contains(gplayer)) {
             return;
         }
 
@@ -204,7 +202,6 @@ public class BGPlayerListener extends BGListener {
             return;
         }
 
-        GamePlayer gplayer = this.plugin.getPlayers().getPlayer(player);
         String message = gplayer.getColoredName() + "&6がログアウトしたため死亡しました";
         GamePlayer.sendMessage(this.plugin.getPlayers().getPlayersIn(player.getWorld()), message);
     }

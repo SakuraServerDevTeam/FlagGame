@@ -17,7 +17,6 @@
 package jp.llv.flaggame.game.basic;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -33,14 +32,12 @@ import syam.flaggame.player.GamePlayer;
 public class BGEntityListener extends BGListener {
 
     private final FlagGame plugin;
-    private final Collection<Player> players;
+    private final Collection<GamePlayer> players;
 
     public BGEntityListener(FlagGame plugin, BasicGame game) {
         super(game);
         this.plugin = plugin;
-        this.players = game.getReception().getPlayers()
-                .stream().map(GamePlayer::getPlayer)
-                .collect(Collectors.toSet());
+        this.players = game.getReception().getPlayers();
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -63,16 +60,15 @@ public class BGEntityListener extends BGListener {
         }
 
         Player player = (Player) event.getEntity();
-        if (!this.players.contains(player) || !this.players.contains(damager)) {
+        GamePlayer gp = this.plugin.getPlayers().getPlayer(player);
+        GamePlayer gd = this.plugin.getPlayers().getPlayer(damager);
+        if (!this.players.contains(gp) || !this.players.contains(gd)) {
             return;
         }
 
         if (!plugin.getConfigs().getDisableTeamPVP()) {
             return;
         }
-
-        GamePlayer gp = this.plugin.getPlayers().getPlayer(player);
-        GamePlayer gd = this.plugin.getPlayers().getPlayer(damager);
 
         if (!gp.getTeam().isPresent() || !gd.getTeam().isPresent()) {
             return;
