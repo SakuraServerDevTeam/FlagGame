@@ -61,7 +61,27 @@ public class BGBlockListener extends BGListener {
             event.setCancelled(true);
             return;
         }
+        
+        GamePlayer gplayer = this.plugin.getPlayers().getPlayer(player);
+        Team placerTeam = gplayer.getTeam().get();
+        @SuppressWarnings("deprecation")
+        TeamColor placedTeamColor = TeamColor.getByColorData(event.getBlock().getData());
+        if (placerTeam.getColor() == placedTeamColor) {
+            gplayer.sendMessage("&c味方チームのフラッグは破壊できません!");
+            event.setCancelled(true);
+            return;
+        }
+        
         event.setCancelled(false);
+        
+        GamePlayer.sendMessage(placerTeam,
+                gplayer.getColoredName() + "&aが"+placedTeamColor.getTeamName()+"チームの&6" + f.getTypeName() + "pフラッグ&aを破壊しました!");
+        this.game.getTeams().stream().filter(team -> team.getColor() == placedTeamColor)
+                .forEach(team -> GamePlayer.sendMessage(team,
+                                gplayer.getColoredName() + "&aに&6" + f.getTypeName() + "pフラッグ&aを破壊されました!"));
+
+        gplayer.getProfile().addBrokenFlag();
+        this.game.getStage().getProfile().addBrokenFlag();
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
