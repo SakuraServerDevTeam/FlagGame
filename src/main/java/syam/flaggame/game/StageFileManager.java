@@ -78,20 +78,14 @@ public class StageFileManager {
         }
 
         // 取得データ
-        String name;
         for (File file : files) {
             try {
                 confFile.load(file);
-
-                // 読むデータキー
-                name = confFile.getString("stage.name", null);
-
-                // ステージ追加
                 Stage stage = ConfigUtils.readStage(confFile, "stage");
-                this.plugin.getStages().addStage(name, stage);
-                log.log(Level.INFO, logPrefix + "Loaded Game: {0} ({1})", new Object[]{file.getName(), name});
+                this.plugin.getStages().addStage(stage.getName(), stage);
+                log.log(Level.INFO, logPrefix + "Loaded Game: {0} ({1})", new Object[]{file.getName(), stage.getName()});
 
-            } catch (IOException | InvalidConfigurationException ex) {
+            } catch (IOException | InvalidConfigurationException | NullPointerException ex) {
                 log.log(Level.WARNING, "Failed to load a stage: " + file.getName(), ex);
             }
         }
