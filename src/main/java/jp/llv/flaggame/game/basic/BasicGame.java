@@ -214,7 +214,7 @@ public class BasicGame implements Game {
         this.state = State.FINISHED;
 
         while (!this.onFinishing.isEmpty()) {
-            this.onFinishing.peek().run();
+            this.onFinishing.poll().run();
         }
 
         Map<TeamColor, Double> points = new EnumMap<>(TeamColor.class);
