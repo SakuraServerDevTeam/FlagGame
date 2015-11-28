@@ -78,7 +78,7 @@ public class FlagGame extends JavaPlugin {
     private StageFileManager gfm;
     private Debug debug;
     private ConfirmQueue queue;
-    
+
     private PlayerManager pm;
     private ReceptionManager rm;
     private GameManager gm;
@@ -106,7 +106,12 @@ public class FlagGame extends JavaPlugin {
 
         PluginManager pluginManager = getServer().getPluginManager();
 
-        config = new ConfigurationManager(this);
+        try {
+            config = new ConfigurationManager(this);
+        } catch (IllegalStateException ex) {
+            this.getPluginLoader().disablePlugin(this);
+            return;
+        }
 
         // loadconfig
         try {
@@ -148,14 +153,13 @@ public class FlagGame extends JavaPlugin {
 
         // データベース連携
         /*debug.startTimer("database");
-        database = new Database(this);
-        database.createStructure();
-        debug.endTimer("database");*/
-
+         database = new Database(this);
+         database.createStructure();
+         debug.endTimer("database");*/
         // マネージャ
         debug.startTimer("managers");
         gfm = new StageFileManager(this); // 内部でDB使用
-        
+
         pm = new PlayerManager(this);
         rm = new ReceptionManager(this);
         rm.addType("rt", RealtimeTeamingReception::new);
@@ -192,23 +196,25 @@ public class FlagGame extends JavaPlugin {
     public void onDisable() {
         commands.clear();
 
-        this.getReceptions().closeAll("&cDisabled");
+        if (this.rm != null) {
+            this.rm.closeAll("&cDisabled");
+        }
         // 開始中のゲームをすべて終わらせる
         /*
-        boolean readying = false;
-        for (Game_LEGACY game : GameManager_LEGACY.getGames().values()) {
-            if (game.getState() == Game_LEGACY.State.STARTED) {
-                game.cancelTimerTask();
-                game.finish(GameResult.STOP, null, "Unloading FlagGame Plugin");
-                game.log("Game finished because disabling plugin..");
-            } else if (game.getState() == Game_LEGACY.State.ENTRY) {
-                game.message(msgPrefix + "&cあなたのエントリーはプラグインが無効になったため取り消されました");
-                readying = true;
-            }
-        }
-        if (readying) {
-            Actions.broadcastMessage(msgPrefix + "&cプラグインが無効にされたため、参加受付中のゲームは削除されました");
-        }*/
+         boolean readying = false;
+         for (Game_LEGACY game : GameManager_LEGACY.getGames().values()) {
+         if (game.getState() == Game_LEGACY.State.STARTED) {
+         game.cancelTimerTask();
+         game.finish(GameResult.STOP, null, "Unloading FlagGame Plugin");
+         game.log("Game finished because disabling plugin..");
+         } else if (game.getState() == Game_LEGACY.State.ENTRY) {
+         game.message(msgPrefix + "&cあなたのエントリーはプラグインが無効になったため取り消されました");
+         readying = true;
+         }
+         }
+         if (readying) {
+         Actions.broadcastMessage(msgPrefix + "&cプラグインが無効にされたため、参加受付中のゲームは削除されました");
+         }*/
 
         // ゲームデータを保存
         if (gfm != null) {
@@ -304,7 +310,7 @@ public class FlagGame extends JavaPlugin {
                 ReloadCommand::new
         ).map(f -> f.apply(this)).forEach(this.commands::add);
     }
-    
+
     private void registerListeners() {
         Stream.<Function<FlagGame, ? extends Listener>>of(
                 FGPlayerListener::new,
