@@ -1,5 +1,5 @@
 FlagGame: CraftBukkit Plugin
-Author: syamn
+Author: [syamn](https://twitter.com/syamncat), [ja731j](https://twitter.com/ja731j), [toyblocks](https://twitter.com/toyblocks)
 
 
 FlagGame

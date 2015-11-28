@@ -1,19 +1,39 @@
 /* 
- * Copyright (C) 2015 Syamn, SakruaServerDev.
- * All rights reserved.
+ * Copyright (C) 2015 Syamn, SakuraServerDev
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package syam.flaggame;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
+import jp.llv.flaggame.game.GameManager;
+import jp.llv.flaggame.reception.RealtimeTeamingReception;
+import jp.llv.flaggame.reception.ReceptionManager;
 
 import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
@@ -23,16 +43,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 import syam.flaggame.command.*;
 import syam.flaggame.command.queue.ConfirmQueue;
 import syam.flaggame.database.Database;
-import syam.flaggame.enums.GameResult;
-import syam.flaggame.game.Game;
 import syam.flaggame.listener.*;
-import syam.flaggame.manager.GameManager;
-import syam.flaggame.manager.StageFileManager;
-import syam.flaggame.manager.StageManager;
+import syam.flaggame.game.StageFileManager;
+import syam.flaggame.game.StageManager;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.player.PlayerManager;
-import syam.flaggame.player.PlayerStatusListener;
-import syam.flaggame.util.Actions;
 import syam.flaggame.util.Debug;
 import syam.flaggame.util.DynmapHandler;
 import syam.flaggame.util.Metrics;
@@ -55,21 +70,19 @@ public class FlagGame extends JavaPlugin {
     public final static String logPrefix = "[FlagGame] ";
     public final static String msgPrefix = "&6[FlagGame] &f";
 
-    // ** Listener **
-    private final FGPlayerListener playerListener = new FGPlayerListener(this);
-    private final FGBlockListener blockListener = new FGBlockListener(this);
-    private final FGEntityListener entityListener = new FGEntityListener(this);
-    private final FGInventoryListener inventoryListener = new FGInventoryListener(this);
-
     // ** Commands **
-    private static final List<BaseCommand> commands = new ArrayList<>();
+    private final List<BaseCommand> commands = new ArrayList<>();
 
     // ** Private classes **
     private ConfigurationManager config;
-    private GameManager gm;
     private StageFileManager gfm;
     private Debug debug;
     private ConfirmQueue queue;
+    
+    private PlayerManager pm;
+    private ReceptionManager rm;
+    private GameManager gm;
+    private StageManager sm;
 
     // ** Variable **
     // プレイヤーデータベース
@@ -91,7 +104,7 @@ public class FlagGame extends JavaPlugin {
 
         instance = this;
 
-        PluginManager pm = getServer().getPluginManager();
+        PluginManager pluginManager = getServer().getPluginManager();
 
         config = new ConfigurationManager(this);
 
@@ -113,7 +126,7 @@ public class FlagGame extends JavaPlugin {
         debug.endTimer("vault");
 
         // プラグインを無効にした場合進まないようにする
-        if (!pm.isPluginEnabled(this)) {
+        if (!pluginManager.isPluginEnabled(this)) {
             return;
         }
 
@@ -124,11 +137,7 @@ public class FlagGame extends JavaPlugin {
 
         // Regist Listeners
         debug.startTimer("listeners");
-        pm.registerEvents(new PlayerStatusListener(this), this);
-        pm.registerEvents(playerListener, this);
-        pm.registerEvents(blockListener, this);
-        pm.registerEvents(entityListener, this);
-        pm.registerEvents(inventoryListener, this);
+        registerListeners();
         debug.endTimer("listeners");
 
         // コマンド登録
@@ -138,24 +147,26 @@ public class FlagGame extends JavaPlugin {
         debug.endTimer("commands");
 
         // データベース連携
-        debug.startTimer("database");
+        /*debug.startTimer("database");
         database = new Database(this);
         database.createStructure();
-        debug.endTimer("database");
+        debug.endTimer("database");*/
 
         // マネージャ
         debug.startTimer("managers");
-        gm = new GameManager(this);
         gfm = new StageFileManager(this); // 内部でDB使用
+        
+        pm = new PlayerManager(this);
+        rm = new ReceptionManager(this);
+        rm.addType("rt", RealtimeTeamingReception::new);
+        gm = new GameManager(this);
+        sm = new StageManager();
         debug.endTimer("managers");
 
         // ゲームデータ読み込み
         debug.startTimer("load games");
         gfm.loadStages();
         debug.endTimer("load games");
-
-        // プレイヤー追加
-        getServer().getOnlinePlayers().stream().forEach(PlayerManager::addPlayer);
 
         // dynmapフック
         debug.startTimer("dynmap");
@@ -181,32 +192,28 @@ public class FlagGame extends JavaPlugin {
     public void onDisable() {
         commands.clear();
 
+        this.getReceptions().closeAll("&cDisabled");
         // 開始中のゲームをすべて終わらせる
+        /*
         boolean readying = false;
-        for (Game game : GameManager.getGames().values()) {
-            if (game.getState() == Game.State.STARTED) {
+        for (Game_LEGACY game : GameManager_LEGACY.getGames().values()) {
+            if (game.getState() == Game_LEGACY.State.STARTED) {
                 game.cancelTimerTask();
                 game.finish(GameResult.STOP, null, "Unloading FlagGame Plugin");
                 game.log("Game finished because disabling plugin..");
-            } else if (game.getState() == Game.State.ENTRY) {
+            } else if (game.getState() == Game_LEGACY.State.ENTRY) {
                 game.message(msgPrefix + "&cあなたのエントリーはプラグインが無効になったため取り消されました");
                 readying = true;
             }
         }
         if (readying) {
             Actions.broadcastMessage(msgPrefix + "&cプラグインが無効にされたため、参加受付中のゲームは削除されました");
-        }
-
-        // プレイヤープロファイルを保存
-        PlayerManager.saveAll();
+        }*/
 
         // ゲームデータを保存
         if (gfm != null) {
             gfm.saveStages();
         }
-
-        // ゲームステージプロファイルを保存
-        StageManager.saveAll();
 
         // タスクをすべて止める
         getServer().getScheduler().cancelTasks(this);
@@ -276,32 +283,35 @@ public class FlagGame extends JavaPlugin {
         }
     }
 
-    /**
-     * コマンドを登録
-     */
     private void registerCommands() {
-        // Intro Commands
-        commands.add(new HelpCommand());
-        commands.add(new InfoCommand());
-        commands.add(new JoinCommand());
-        commands.add(new WatchCommand());
-        commands.add(new LeaveCommand());
-        commands.add(new StatsCommand());
-        commands.add(new TopCommand());
-        commands.add(new ConfirmCommand());
-
-        // Start Commands
-        commands.add(new ReadyCommand());
-        commands.add(new StartCommand());
-
-        // Admin Commands
-        commands.add(new StageCommand());
-        commands.add(new SelectCommand());
-        commands.add(new SetCommand());
-        commands.add(new CheckCommand());
-        commands.add(new TpCommand());
-        commands.add(new SaveCommand());
-        commands.add(new ReloadCommand());
+        Stream.<Function<FlagGame, ? extends BaseCommand>>of(
+                HelpCommand::new,
+                InfoCommand::new,
+                JoinCommand::new,
+                WatchCommand::new,
+                LeaveCommand::new,
+                StatsCommand::new,
+                TopCommand::new,
+                ConfirmCommand::new,
+                ReadyCommand::new,
+                StartCommand::new,
+                StageCommand::new,
+                SelectCommand::new,
+                SetCommand::new,
+                CheckCommand::new,
+                TpCommand::new,
+                SaveCommand::new,
+                ReloadCommand::new
+        ).map(f -> f.apply(this)).forEach(this.commands::add);
+    }
+    
+    private void registerListeners() {
+        Stream.<Function<FlagGame, ? extends Listener>>of(
+                FGPlayerListener::new,
+                FGBlockListener::new,
+                FGEntityListener::new,
+                FGInventoryListener::new
+        ).map(l -> l.apply(this)).forEach(l -> this.getServer().getPluginManager().registerEvents(l, this));
     }
 
     /*
@@ -323,24 +333,14 @@ public class FlagGame extends JavaPlugin {
                         continue outer;
                     }
                     // 実行
-                    return command.run(this, sender, args, commandLabel);
+                    return command.run(sender, args, commandLabel);
                 }
             }
             // 有効コマンドなし ヘルプ表示
-            new HelpCommand().run(this, sender, args, commandLabel);
+            new HelpCommand(this).run(sender, args, commandLabel);
             return true;
         }
         return false;
-    }
-
-    /* getter */
-    /**
-     * ゲームマネージャを返す
-     *
-     * @return GameManager
-     */
-    public GameManager getManager() {
-        return gm;
     }
 
     /**
@@ -384,8 +384,8 @@ public class FlagGame extends JavaPlugin {
      *
      * @return {@code List<BaseCommand>}
      */
-    public static List<BaseCommand> getCommands() {
-        return commands;
+    public Collection<BaseCommand> getCommands() {
+        return Collections.unmodifiableCollection(this.commands);
     }
 
     /**
@@ -393,24 +393,30 @@ public class FlagGame extends JavaPlugin {
      *
      * @return ConfirmQueue
      */
-    public ConfirmQueue getQueue() {
+    public ConfirmQueue getConfirmQueue() {
         return queue;
     }
 
-    /**
-     * Economyを返す
-     *
-     * @return Economy
-     */
     public Economy getEconomy() {
         return economy;
     }
 
-    /**
-     * インスタンスを返す
-     *
-     * @return FlagGameインスタンス
-     */
+    public PlayerManager getPlayers() {
+        return pm;
+    }
+
+    public ReceptionManager getReceptions() {
+        return rm;
+    }
+
+    public GameManager getGames() {
+        return gm;
+    }
+
+    public StageManager getStages() {
+        return sm;
+    }
+
     public static FlagGame getInstance() {
         return instance;
     }

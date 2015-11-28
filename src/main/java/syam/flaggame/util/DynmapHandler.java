@@ -1,6 +1,18 @@
 /* 
- * Copyright (C) 2015 Syamn, SakruaServerDev.
- * All rights reserved.
+ * Copyright (C) 2015 Syamn, SakuraServerDev
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package syam.flaggame.util;
 
@@ -24,7 +36,7 @@ import org.dynmap.markers.MarkerSet;
 
 import syam.flaggame.FlagGame;
 import syam.flaggame.game.Stage;
-import syam.flaggame.manager.StageManager;
+import syam.flaggame.game.StageManager;
 
 public class DynmapHandler {
     // Logger
@@ -128,7 +140,7 @@ public class DynmapHandler {
 
         Map<String, AreaMarker> newmap = new HashMap<>();
 
-        StageManager.getStages().values().stream().forEach(stage -> handleStage(stage, newmap));
+        plugin.getStages().getStages().values().stream().forEach(stage -> handleStage(stage, newmap));
 
         // 古いマーカーを削除
         markers.values().stream().forEach(oldm -> oldm.deleteMarker());
@@ -162,7 +174,7 @@ public class DynmapHandler {
         double[] z;
 
         // ステージエリア未設定ならスキップ
-        Cuboid region = stage.getStage();
+        Cuboid region = stage.getStageArea();
         if (region == null) return;
 
         // ステージエリアの頂点を取得
@@ -226,16 +238,10 @@ public class DynmapHandler {
         s = s.replaceAll("%chestcount%", stage.getChests().size() + "個");
 
         // Build options
-        s = s.replaceAll("%gametime%", Actions.getTimeString(stage.getGameTime()));
+        s = s.replaceAll("%gametime%", Actions.getTimeString(stage.getGameTimeInSec()));
         s = s.replaceAll("%teamlimit%", stage.getTeamLimit() + "人");
 
         // Build Award/EntryFee
-        String entryFeeMsg = String.valueOf(stage.getEntryFee()) + " Coin";
-        String awardMsg = String.valueOf(stage.getAward()) + " Coin";
-        if (stage.getEntryFee() <= 0) entryFeeMsg = "&7FREE";
-        if (stage.getAward() <= 0) awardMsg = "&7なし";
-        s = s.replaceAll("%entryfee%", entryFeeMsg);
-        s = s.replaceAll("%award%", awardMsg);
 
         // Build specspawn
         if (stage.getSpecSpawn() == null) {

@@ -1,10 +1,20 @@
 /* 
- * Copyright (C) 2015 Syamn, SakruaServerDev.
- * All rights reserved.
+ * Copyright (C) 2015 Syamn, SakuraServerDev
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package syam.flaggame.enums;
-
-import syam.flaggame.exception.FlagGameException;
 
 /**
  * ゲームチーム
@@ -13,21 +23,27 @@ import syam.flaggame.exception.FlagGameException;
  */
 public enum TeamColor {
 
-    RED("赤", 14, "&c"), // 赤チーム
-    BLUE("青", 11, "&b"), // 青チーム
-    ;
+    RED("赤", 0xE, 'c'),
+    BLUE("青", 0xB, '9'),
+    GREEN("緑", 0x5, 'a'),
+    ORANGE("橙", 0x1, '6'),
+    PINK("桃", 0x6, 'd'),
+    SKYBLUE("水", 0x3, 'b'),
+    YELLOW("黄", 0x4, 'e'),
+    PURPLE("紫", 0x2, '5');
 
+    private static final char COLOR_PREFIX = '\u00A7';
     private final String teamName;
     private final byte blockData;
-    private final String colorTag;
+    private final char colorTag;
 
-    TeamColor(String teamName,int blockData, String colorTag) {
+    private TeamColor(String teamName, int blockData, char colorTag) {
         this.teamName = teamName;
-        
+
         if (blockData < Byte.MIN_VALUE || blockData > Byte.MAX_VALUE) {
             blockData = Byte.MIN_VALUE;
         }
-        
+
         this.blockData = (byte) blockData;
 
         this.colorTag = colorTag;
@@ -57,35 +73,11 @@ public enum TeamColor {
      * @return
      */
     public String getColor() {
-        return colorTag;
+        return new StringBuilder().append(COLOR_PREFIX).append(this.colorTag).toString();
     }
 
-    /**
-     * 相手のGameTeamを返す
-     *
-     * @return GameTeam
-     */
-    public TeamColor getAgainstTeam() {
-        return getAgainstTeam(this);
-    }
-
-    /*
-     * 相手のGameTeamを返す
-     * 
-     * @return GameTeam
-     */
-    public static TeamColor getAgainstTeam(final TeamColor team) {
-        if (team.equals(TeamColor.RED)) {
-            return TeamColor.BLUE;
-        } else if (team.equals(TeamColor.BLUE)) {
-            return TeamColor.RED;
-        } else {
-            String error = "Request team is not defined";
-            if (team != null) {
-                error += ": " + team.name();
-            }
-            throw new FlagGameException(error);
-        }
+    public String getRichName() {
+        return this.getColor() + this.getTeamName() + "チーム";
     }
 
     public static TeamColor getByColorData(byte data) {

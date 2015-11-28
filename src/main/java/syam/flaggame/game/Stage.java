@@ -1,30 +1,44 @@
 /* 
- * Copyright (C) 2015 Syamn, SakruaServerDev.
- * All rights reserved.
+ * Copyright (C) 2015 Syamn, SakuraServerDev
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package syam.flaggame.game;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import jp.llv.flaggame.reception.GameReception;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import syam.flaggame.FlagGame;
 import syam.flaggame.enums.TeamColor;
-import syam.flaggame.manager.StageManager;
+import syam.flaggame.exception.StageReservedException;
 import syam.flaggame.util.Actions;
 import syam.flaggame.util.Cuboid;
 
@@ -36,12 +50,13 @@ import syam.flaggame.util.Cuboid;
 public class Stage {
 
     // Logger
-
     public static final Logger log = FlagGame.logger;
     private static final String logPrefix = FlagGame.logPrefix;
 
+    public static final Pattern NAME_REGEX = Pattern.compile("^[a-z0-9](?:[a-z0-9_-]*[a-z0-9])?$");
+
     // ステージ情報
-    private final GameProfile profile;
+    private final StageProfile profile;
 
     // 開始中のゲーム
     private GameReception reception;
@@ -51,12 +66,8 @@ public class Stage {
     private final String stageName;
     private int teamPlayerLimit = 16;
 
-    private int gameTimeInSec = 6 * 60;
+    private long gameTime = 6 * 60 * 1000;
 
-    private int award = 300;
-    private int entryFee = 100;
-
-    private boolean using = false;
     private boolean available = false;
 
     // フラッグ・チェスト
@@ -73,117 +84,27 @@ public class Stage {
     /**
      * コンストラクタ
      *
-     * @param plugin
      * @param name
+     * @param profile
      */
-    public Stage(final FlagGame plugin, final String name) {
+    public Stage(final String name, StageProfile profile) {
+        if (name == null) {
+            throw new NullPointerException();
+        }
         this.stageName = name;
         this.fileName = this.stageName + ".yml";
 
-        this.profile = new GameProfile(name);
-
-        // ステージマネージャにステージ登録
-        StageManager.addStage(stageName, this);
+        this.profile = profile;
     }
-
-    /* ロールバックメソッド */
-    /**
-     * このゲームの全ブロックをロールバックする
-     *
-     * @return
-     */
     
-    public int rollbackFlags() {
-        int count = 0;
-        for (Flag flag : flags.values()) {
-            if (flag.rollback()) {
-                count++;
-            }
-        }
-        return count;
+    public Stage(String name) {
+        this(name, new StageProfile());
     }
 
-    /*
-     * コンテナブロックを2ブロック下の同じコンテナから要素をコピーする
-     */
-    public int rollbackChests(CommandSender sender) {
-        int count = 0;
-        Player player = null;
-
-        if (sender != null) {
-            if (sender instanceof Player) {
-                player = (Player) sender;
-            }
-        }
-
-        for (Location loc : chests) {
-            Block toBlock = loc.getBlock();
-            Block fromBlock = toBlock.getRelative(BlockFace.DOWN, 2);
-
-            // インベントリインターフェースを持たないブロックはスキップ
-            if (!(toBlock.getState() instanceof InventoryHolder)) {
-                log.log(Level.WARNING, logPrefix + "Block is not InventoryHolder!Rollback skipping.. Block: {0}", Actions.getBlockLocationString(toBlock.getLocation()));
-                if (player != null) {
-                    Actions.message(player, "&6" + this.getName() + "エラー:&c インベントリホルダではありません: " + Actions.getBlockLocationString(toBlock.getLocation()));
-                }
-                continue;
-            }
-            // 2ブロック下とブロックIDが違えばスキップ
-            if (toBlock.getTypeId() != fromBlock.getTypeId()) {
-                log.log(Level.WARNING, logPrefix + "BlockID unmatched!Rollback skipping.. Block: {0}", Actions.getBlockLocationString(toBlock.getLocation()));
-                if (player != null) {
-                    Actions.message(player, "&6" + this.getName() + "エラー:&c 2ブロック下と違うブロックです: " + Actions.getBlockLocationString(toBlock.getLocation()));
-                }
-                continue;
-            }
-
-            // 各チェストがインベントリホルダにキャスト出来ない場合例外にならないようtryで囲う
-            InventoryHolder toContainer;
-            InventoryHolder fromContainer; // チェストでなければここで例外 修正予定 →
-            // 7/22修正済み
-            try {
-                toContainer = (InventoryHolder) toBlock.getState();
-                fromContainer = (InventoryHolder) fromBlock.getState();
-            } catch (ClassCastException ex) {
-                log.log(Level.WARNING, logPrefix + "Container can''t cast to InventoryHolder! Rollback skipping.. Block: {0}", Actions.getBlockLocationString(toBlock.getLocation()));
-                if (player != null) {
-                    Actions.message(player, "&6" + this.getName() + "エラー:&c イベントリホルダにキャストできません: " + Actions.getBlockLocationString(toBlock.getLocation()));
-                }
-                continue;
-            }
-
-            // チェスト内容コピー
-            try {
-                ItemStack[] oldIs = fromContainer.getInventory().getContents().clone();
-                ItemStack[] newIs = new ItemStack[oldIs.length];
-                for (int i = 0; i < oldIs.length; i++) {
-                    if (oldIs[i] == null) {
-                        continue;
-                    }
-                    // newIs[i] = oldIs[i].clone(); // ItemStackシャローコピー不可
-                    newIs[i] = new ItemStack(oldIs[i]); // ディープコピー
-                }
-
-                toContainer.getInventory().setContents(newIs);
-            } catch (NullPointerException npe) {
-                Actions.message(player, "&6" + this.getName() + "エラー:&c Occurred NullPointerException: " + Actions.getBlockLocationString(toBlock.getLocation()));
-                npe.printStackTrace();
-                continue;
-            } catch (Exception ex) {
-                Actions.message(player, "&6" + this.getName() + "エラー:&c Occurred Exception: " + Actions.getBlockLocationString(toBlock.getLocation()));
-                ex.printStackTrace();
-                continue;
-            }
-            count++;
-        }
-        return count;
+    public StageProfile getProfile() {
+        return this.profile;
     }
-
     
-    public int rollbackChests() {
-        return this.rollbackChests(null);
-    }
-
     /* ***** フラッグ関係 ***** */
 
     /*
@@ -194,8 +115,10 @@ public class Stage {
      * @param team
      *            設定するGameTeam
      */
-    
     public void addFlag(Flag flag) {
+        if (this.isReserved()) {
+            throw new IllegalStateException("This stage has been reserved!");
+        }
         flags.put(flag.getLocation(), flag);
     }
 
@@ -205,7 +128,6 @@ public class Stage {
      * @param loc 調べるブロックの座標
      * @return GameTeam または存在しない場合 null
      */
-    
     public Flag getFlag(Location loc) {
         return flags.get(loc);
     }
@@ -225,8 +147,10 @@ public class Stage {
      *
      * @param loc 削除するフラッグのブロック座標
      */
-    
     public void removeFlag(Location loc) {
+        if (this.isReserved()) {
+            throw new IllegalStateException("This stage has been reserved!");
+        }
         flags.remove(loc);
     }
 
@@ -235,9 +159,8 @@ public class Stage {
      * 
      * @return
      */
-    
     public Map<Location, Flag> getFlags() {
-        return flags;
+        return Collections.unmodifiableMap(flags);
     }
 
     /**
@@ -245,10 +168,14 @@ public class Stage {
      *
      * @param flags
      */
-    
-    public void setFlags(Map<Location, Flag> flags) {
+    public void setFlags(Collection<Flag> flags) {
+        if (this.isReserved()) {
+            throw new IllegalStateException("This stage has been reserved!");
+        }
         this.flags.clear();
-        this.flags.putAll(flags);
+        for (Flag f : flags) {
+            this.flags.put(f.getLocation(), f);
+        }
     }
 
     /**
@@ -256,10 +183,9 @@ public class Stage {
      *
      * @return {@code Map<FlagState, HashMap<FlagType, Integer>>}
      */
-    
     public Map<TeamColor, Map<Byte, Integer>> checkFlag() {
         // 各チームのポイントを格納する
-        Map<TeamColor,  Map<Byte, Integer>> ret = new EnumMap<>(TeamColor.class);
+        Map<TeamColor, Map<Byte, Integer>> ret = new EnumMap<>(TeamColor.class);
 
         // 全フラッグを回す
         flags.values().forEach(flag -> {
@@ -280,8 +206,10 @@ public class Stage {
      *
      * @param loc チェストの座標
      */
-    
     public void setChest(Location loc) {
+        if (this.isReserved()) {
+            throw new IllegalStateException("This stage has been reserved!");
+        }
         chests.add(loc);
     }
 
@@ -291,7 +219,6 @@ public class Stage {
      * @param loc 調べるブロックの座標
      * @return GameTeam または存在しない場合 null
      */
-    
     public Block getChest(Location loc) {
         if (chests.contains(loc)) {
             return loc.getBlock();
@@ -309,19 +236,20 @@ public class Stage {
      *
      * @param loc 削除するチェストのブロック座標
      */
-    
     public void removeChest(Location loc) {
+        if (this.isReserved()) {
+            throw new IllegalStateException("This stage has been reserved!");
+        }
         chests.remove(loc);
     }
 
     /**
      * チェストブロックマップを一括取得する
      *
-     * @return チェストブロックマップ Map<Location, Block>
+     * @return チェストブロックマップ {@code Map<Location, Block>}
      */
-    
     public Set<Location> getChests() {
-        return chests;
+        return Collections.unmodifiableSet(chests);
     }
 
     /**
@@ -329,8 +257,10 @@ public class Stage {
      *
      * @param chests 設定する元のLocation, Blockマップ
      */
-    
-    public void setChests(Set<Location> chests) {
+    public void setChests(Collection<Location> chests) {
+        if (this.isReserved()) {
+            throw new IllegalStateException("This stage has been reserved!");
+        }
         this.chests.clear();
         this.chests.addAll(chests);
     }
@@ -342,12 +272,13 @@ public class Stage {
      * 
      * @param loc
      */
-    
     public void setSpawn(TeamColor team, Location loc) {
+        if (this.isReserved()) {
+            throw new IllegalStateException("This stage has been reserved!");
+        }
         spawnMap.put(team, loc);
     }
 
-    
     public Location getSpawn(TeamColor team) {
         if (team == null || !spawnMap.containsKey(team)) {
             return null;
@@ -355,70 +286,79 @@ public class Stage {
         return spawnMap.get(team).clone();
     }
 
-    
     public Map<TeamColor, Location> getSpawns() {
         return Collections.unmodifiableMap(spawnMap);
     }
 
-    
     public void setSpawns(Map<TeamColor, Location> spawns) {
+        if (this.isReserved()) {
+            throw new IllegalStateException("This stage has been reserved!");
+        }
         this.spawnMap.clear();
         this.spawnMap.putAll(spawns);
     }
 
-    
-    public Location getSpecSpawn() {
-        return this.specSpawn != null ? this.specSpawn.clone() : null;
+    public Optional<Location> getSpecSpawn() {
+        return Optional.ofNullable(this.specSpawn).map(Location::clone);
     }
 
-    
     public void setSpecSpawn(Location loc) {
+        if (this.isReserved()) {
+            throw new IllegalStateException("This stage has been reserved!");
+        }
         this.specSpawn = loc != null ? loc.clone() : null;
     }
 
     /* ***** エリア関係 ***** */
     // ステージ
-    
-    public void setStage(Location pos1, Location pos2) {
-        stageArea = new Cuboid(pos1, pos2);
+    public void setStageArea(Location pos1, Location pos2) {
+        if (this.isReserved()) {
+            throw new IllegalStateException("This stage has been reserved!");
+        }
+        this.setStageArea(new Cuboid(pos1, pos2));
     }
 
-    
-    public void setStage(Cuboid cuboid) {
+    public void setStageArea(Cuboid cuboid) {
+        if (this.isReserved()) {
+            throw new IllegalStateException("This stage has been reserved!");
+        }
         this.stageArea = cuboid;
     }
 
-    
-    public Cuboid getStage() {
+    public Cuboid getStageArea() {
         return this.stageArea;
     }
 
-    public boolean hasStage() {
+    public boolean hasStageArea() {
         return this.stageArea != null;
     }
 
-    
     public void setStageProtected(boolean protect) {
+        if (this.isReserved()) {
+            throw new IllegalStateException("This stage has been reserved!");
+        }
         this.stageProtect = protect;
     }
 
-    
     public boolean isStageProtected() {
         return this.stageProtect;
     }
 
     // 拠点
-    
     public void setBase(TeamColor team, Location pos1, Location pos2) {
+        if (this.isReserved()) {
+            throw new IllegalStateException("This stage has been reserved!");
+        }
         baseMap.put(team, new Cuboid(pos1, pos2));
     }
 
-    
     public void setBase(TeamColor team, Cuboid cuboid) {
+        if (this.isReserved()) {
+            throw new IllegalStateException("This stage has been reserved!");
+        }
         baseMap.put(team, cuboid);
     }
 
-    
     public Cuboid getBase(TeamColor team) {
         if (team == null || !baseMap.containsKey(team)) {
             return null;
@@ -426,40 +366,20 @@ public class Stage {
         return baseMap.get(team);
     }
 
-    
     public Map<TeamColor, Cuboid> getBases() {
         return baseMap;
     }
 
-    
     public void setBases(Map<TeamColor, Cuboid> bases) {
+        if (this.isReserved()) {
+            throw new IllegalStateException("This stage has been reserved!");
+        }
         this.baseMap.clear();
         this.baseMap.putAll(bases);
     }
-    
+
     public Set<TeamColor> getTeams() {
         return Collections.unmodifiableSet(this.getBases().keySet());
-    }
-
-    /* getter / setter */
-    /**
-     * ゲームステージプロファイルを返す
-     *
-     * @return GameProfile
-     */
-    
-    public GameProfile getProfile() {
-        return this.profile;
-    }
-
-    /**
-     * ファイル名を設定
-     *
-     * @param filename
-     */
-    
-    public void setFileName(String filename) {
-        this.fileName = filename;
     }
 
     /**
@@ -467,7 +387,6 @@ public class Stage {
      *
      * @return
      */
-    
     public String getFileName() {
         return fileName;
     }
@@ -477,7 +396,6 @@ public class Stage {
      *
      * @return このゲームの名前
      */
-    
     public String getName() {
         return stageName;
     }
@@ -487,9 +405,19 @@ public class Stage {
      *
      * @param sec 制限時間(秒)
      */
+    @Deprecated
+    public void setGameTimeInSec(int sec) {
+        if (this.isReserved()) {
+            throw new IllegalStateException("This stage has been reserved!");
+        }
+        gameTime = sec * 1000;
+    }
     
-    public void setGameTime(int sec) {
-        gameTimeInSec = sec;
+    public void setGameTime(long sec) {
+        if (this.isReserved()) {
+            throw new IllegalStateException("This stage has been reserved!");
+        }
+        gameTime = sec;
     }
 
     /**
@@ -497,9 +425,13 @@ public class Stage {
      *
      * @return
      */
-    
-    public int getGameTime() {
-        return gameTimeInSec;
+    @Deprecated
+    public int getGameTimeInSec() {
+        return (int) (gameTime / 1000);
+    }
+
+    public long getGameTime() {
+        return this.gameTime;
     }
 
     /**
@@ -507,8 +439,10 @@ public class Stage {
      *
      * @param limit チーム毎の人数上限
      */
-    
     public void setTeamLimit(int limit) {
+        if (this.isReserved()) {
+            throw new IllegalStateException("This stage has been reserved!");
+        }
         this.teamPlayerLimit = limit;
     }
 
@@ -517,55 +451,8 @@ public class Stage {
      *
      * @return チーム毎の人数上限
      */
-    
     public int getTeamLimit() {
         return teamPlayerLimit;
-    }
-
-    /**
-     * 賞金を設定する
-     *
-     * @param award 賞金
-     */
-    
-    public void setAward(int award) {
-        if (award < 0) {
-            award = 0;
-        }
-        this.award = award;
-    }
-
-    /**
-     * 賞金を取得する
-     *
-     * @return 賞金
-     */
-    
-    public int getAward() {
-        return award;
-    }
-
-    /**
-     * 参加料を設定する
-     *
-     * @param entryFee 参加料
-     */
-    
-    public void setEntryFee(int entryFee) {
-        if (entryFee < 0) {
-            entryFee = 0;
-        }
-        this.entryFee = entryFee;
-    }
-
-    /**
-     * 参加料を取得する
-     *
-     * @return 参加料
-     */
-    
-    public int getEntryFee() {
-        return entryFee;
     }
 
     /**
@@ -573,8 +460,10 @@ public class Stage {
      *
      * @param available
      */
-    
     public void setAvailable(boolean available) {
+        if (this.isReserved()) {
+            throw new IllegalStateException("This stage has been reserved!");
+        }
         this.available = available;
     }
 
@@ -583,24 +472,123 @@ public class Stage {
      *
      * @return available
      */
-    
     public boolean isAvailable() {
         return this.available;
     }
 
-    public void setUsing(boolean using) {
-        this.using = using;
+    public boolean isReserved() {
+        return this.reception != null;
     }
 
-    public boolean isUsing() {
-        return this.using;
-    }
-
-    /*package*/ void setReception(GameReception reception) {
+    public Reservation reserve(GameReception reception) throws StageReservedException{
+        if (this.isReserved()) {
+            throw new StageReservedException();
+        }
         this.reception = reception;
+        return new Reservation(this);
     }
 
-    public GameReception getReception() {
-        return this.reception;
+    private void release() {
+        this.reception = null;
     }
+
+    public Optional<GameReception> getReception() {
+        return Optional.ofNullable(this.reception);
+    }
+
+    public void initialize() {
+        this.rollbackChests();
+        this.rollbackFlags();
+    }
+
+    /* ロールバックメソッド */
+    /**
+     * このゲームの全ブロックをロールバックする
+     *
+     * @return
+     */
+    private void rollbackFlags() {
+        for (Flag flag : flags.values()) {
+            flag.rollback();
+        }
+    }
+
+    /*
+     * コンテナブロックを2ブロック下の同じコンテナから要素をコピーする
+     */
+    private void rollbackChests() {
+        for (Location loc : chests) {
+            Block toBlock = loc.getBlock();
+            Block fromBlock = toBlock.getRelative(BlockFace.DOWN, 2);
+
+            // インベントリインターフェースを持たないブロックはスキップ
+            if (!(toBlock.getState() instanceof InventoryHolder)) {
+                log.log(Level.WARNING, logPrefix + "Block is not InventoryHolder!Rollback skipping.. Block: {0}", Actions.getBlockLocationString(toBlock.getLocation()));
+                continue;
+            }
+            // 2ブロック下とブロックIDが違えばスキップ
+            if (toBlock.getType() != fromBlock.getType()) {
+                log.log(Level.WARNING, logPrefix + "BlockID unmatched!Rollback skipping.. Block: {0}", Actions.getBlockLocationString(toBlock.getLocation()));
+                continue;
+            }
+
+            // 各チェストがインベントリホルダにキャスト出来ない場合例外にならないようtryで囲う
+            InventoryHolder toContainer;
+            InventoryHolder fromContainer; // チェストでなければここで例外 修正予定 →
+            // 7/22修正済み
+            try {
+                toContainer = (InventoryHolder) toBlock.getState();
+                fromContainer = (InventoryHolder) fromBlock.getState();
+            } catch (ClassCastException ex) {
+                log.log(Level.WARNING, logPrefix + "Container can''t cast to InventoryHolder! Rollback skipping.. Block: {0}", Actions.getBlockLocationString(toBlock.getLocation()));
+                continue;
+            }
+
+            // チェスト内容コピー
+            try {
+                ItemStack[] oldIs = fromContainer.getInventory().getContents().clone();
+                ItemStack[] newIs = new ItemStack[oldIs.length];
+                for (int i = 0; i < oldIs.length; i++) {
+                    if (oldIs[i] == null) {
+                        continue;
+                    }
+                    // newIs[i] = oldIs[i].clone(); // ItemStackシャローコピー不可
+                    newIs[i] = new ItemStack(oldIs[i]); // ディープコピー
+                }
+
+                toContainer.getInventory().setContents(newIs);
+            } catch (NullPointerException npe) {
+                npe.printStackTrace();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    public void validate() throws NullPointerException {
+        Objects.requireNonNull(stageArea);
+        if (!available || !stageProtect || spawnMap.isEmpty() || baseMap.isEmpty()) {
+            Objects.requireNonNull(null);//=>NPE
+        } else if (!Objects.equals(spawnMap.keySet(), baseMap.keySet())) {
+            Objects.requireNonNull(null);//=>NPE
+        }
+    }
+
+    public static final class Reservation {
+
+        private Stage reserved;
+
+        private Reservation(Stage stage) {
+            this.reserved = stage;
+        }
+
+        public void release() {
+            if (this.reserved == null) {
+                throw new IllegalStateException("This reservation is invalid");
+            }
+            this.reserved.release();
+            this.reserved = null;
+        }
+    }
+
 }

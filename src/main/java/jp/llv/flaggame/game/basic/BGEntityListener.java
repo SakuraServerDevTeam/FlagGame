@@ -1,0 +1,87 @@
+/* 
+ * Copyright (C) 2015 Toyblocks, SakuraServerDev
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package jp.llv.flaggame.game.basic;
+
+import java.util.Collection;
+import java.util.stream.Collectors;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import syam.flaggame.FlagGame;
+import syam.flaggame.player.GamePlayer;
+
+/**
+ *
+ * @author Toyblocks
+ */
+public class BGEntityListener extends BGListener {
+
+    private final FlagGame plugin;
+    private final Collection<Player> players;
+
+    public BGEntityListener(FlagGame plugin, BasicGame game) {
+        super(game);
+        this.plugin = plugin;
+        this.players = game.getReception().getPlayers()
+                .stream().map(GamePlayer::getPlayer)
+                .collect(Collectors.toSet());
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+        if (!(event.getEntity() instanceof Player)) {
+            return;
+        }
+
+        Player damager = null;
+        if (event.getDamager() instanceof Player) {
+            damager = (Player) event.getDamager();
+        } else if (event.getDamager() instanceof Projectile) {
+            Object shooter = ((Projectile) event.getDamager()).getShooter();
+            if (shooter instanceof Player) {
+                damager = (Player) shooter;
+            }
+        }
+        if (damager == null) {
+            return;
+        }
+
+        Player player = (Player) event.getEntity();
+        if (!this.players.contains(player) || !this.players.contains(damager)) {
+            return;
+        }
+
+        if (!plugin.getConfigs().getDisableTeamPVP()) {
+            return;
+        }
+
+        GamePlayer gp = this.plugin.getPlayers().getPlayer(player);
+        GamePlayer gd = this.plugin.getPlayers().getPlayer(damager);
+
+        if (!gp.getTeam().isPresent() || !gd.getTeam().isPresent()) {
+            return;
+        }
+
+        if (gp.getTeam().get() == gd.getTeam().get()) {
+            event.setDamage(0D);
+            event.setCancelled(true);
+        }
+    }
+
+}

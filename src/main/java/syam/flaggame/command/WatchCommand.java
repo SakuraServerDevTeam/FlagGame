@@ -1,24 +1,39 @@
 /* 
- * Copyright (C) 2015 Syamn, SakruaServerDev.
- * All rights reserved.
+ * Copyright (C) 2015 Syamn, SakuraServerDev
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package syam.flaggame.command;
 
-import java.util.ArrayList;
+import java.util.Collection;
+import jp.llv.flaggame.game.Game;
 
 import org.bukkit.Location;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import syam.flaggame.FlagGame;
+import syam.flaggame.exception.CommandException;
 
-import syam.flaggame.game.Game;
 import syam.flaggame.game.Stage;
-import syam.flaggame.manager.GameManager;
-import syam.flaggame.manager.StageManager;
 import syam.flaggame.permission.Perms;
+import syam.flaggame.player.GamePlayer;
 import syam.flaggame.player.PlayerManager;
 import syam.flaggame.util.Actions;
 
 public class WatchCommand extends BaseCommand {
-    public WatchCommand() {
+
+    public WatchCommand(FlagGame plugin) {
+        super(plugin);
         bePlayer = true;
         name = "watch";
         argLength = 0;
@@ -26,46 +41,38 @@ public class WatchCommand extends BaseCommand {
     }
 
     @Override
-    public void execute() {
+    public void execute() throws CommandException {
         Stage stage;
+        GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
 
         if (args.size() >= 1) {
-            stage = StageManager.getStage(args.get(0));
-            if (stage == null) {
-                Actions.message(player, "&cステージ'" + args.get(0) + "'が見つかりません");
-                return;
-            }
-        }
-        // 引数がなければ自動補完
+            stage = plugin.getStages().getStage(args.get(0))
+                    .orElseThrow(() -> new CommandException("&cステージ'" + args.get(0) + "'が見つかりません"));
+        } // 引数がなければ自動補完
         else {
-            ArrayList<Game> startingGames = GameManager.getStartingGames();
-            if (startingGames.size() <= 0) {
+            Collection<Game> startingGames = this.plugin.getGames().getGames(Game.State.STARTED);
+            if (startingGames.isEmpty()) {
                 Actions.message(player, "&c現在、始まっているゲームはありません！");
                 return;
             } else if (startingGames.size() >= 2) {
                 Actions.message(player, "&c複数のゲームが始まっています！観戦するステージを指定してください！");
                 return;
             } else {
-                stage = startingGames.get(0).getStage();
+                stage = startingGames.iterator().next().getStage();
             }
         }
 
-        Location specSpawn = stage.getSpecSpawn();
-        if (specSpawn == null) {
-            Actions.message(player, "&cステージ'" + stage.getName() + "'は観戦者のスポーン地点が設定されていません");
+        Location specSpawn = stage.getSpecSpawn().orElseThrow(() -> new CommandException(
+                "&cステージ'" + stage.getName() + "'は観戦者のスポーン地点が設定されていません"));
+
+        if (gPlayer.getGame().isPresent() && gPlayer.getGame().get().getState() == Game.State.STARTED) {
+            Actions.message(player, "&cあなたはゲームに参加しているため移動できません！");
             return;
-        }
-
-        for (Game check : GameManager.getGames().values()) {
-            if (check.getPlayerTeam(PlayerManager.getPlayer(player)) != null) {
-                Actions.message(player, "&cあなたはゲーム'" + check.getName() + "'に参加しているため移動できません！");
-                return;
-            }
         }
 
         // テレポート
         if (!player.getWorld().equals(specSpawn.getWorld())) {
-            PlayerManager.getProfile(player).setTpBackLocation(player.getLocation());
+            gPlayer.setTpBackLocation(player.getLocation());
         }
         player.teleport(specSpawn, TeleportCause.PLUGIN);
         Actions.message(player, "&aステージ'" + stage.getName() + "'の観戦者スポーン地点へ移動しました！");

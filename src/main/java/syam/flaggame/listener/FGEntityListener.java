@@ -1,6 +1,18 @@
 /* 
- * Copyright (C) 2015 Syamn, SakruaServerDev.
- * All rights reserved.
+ * Copyright (C) 2015 Syamn, SakuraServerDev
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package syam.flaggame.listener;
 
@@ -18,16 +30,10 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 
 import syam.flaggame.FlagGame;
-import syam.flaggame.enums.TeamColor;
-import syam.flaggame.game.Game;
-import syam.flaggame.manager.GameManager;
-import syam.flaggame.player.PlayerManager;
-import syam.flaggame.util.Actions;
+import syam.flaggame.player.GamePlayer;
 
 public class FGEntityListener implements Listener {
     public static final Logger log = FlagGame.logger;
-    private static final String logPrefix = FlagGame.logPrefix;
-    private static final String msgPrefix = FlagGame.msgPrefix;
 
     private final FlagGame plugin;
 
@@ -45,51 +51,35 @@ public class FGEntityListener implements Listener {
         // ゲーム用ワールドでなければ返す
         if (entity.getWorld() != Bukkit.getWorld(plugin.getConfigs().getGameWorld())) return;
 
-        Player damager = null;
+        Player damaged = null;
         Player attacker = null;
 
         // プレイヤー対プレイヤーの直接攻撃
         if ((event.getCause() == DamageCause.ENTITY_ATTACK) && (entity instanceof Player) && (event.getDamager() instanceof Player)) {
-            damager = (Player) entity; // 攻撃された人
+            damaged = (Player) entity; // 攻撃された人
             attacker = (Player) event.getDamager(); // 攻撃した人
         }
         // 矢・雪球・卵など
         else if ((event.getCause() == DamageCause.PROJECTILE) && (entity instanceof Player) && (event.getDamager() instanceof Projectile)) {
             // プレイヤーが打ったもの
             if (((Projectile) event.getDamager()).getShooter() instanceof Player) {
-                damager = (Player) entity; // 攻撃された人
+                damaged = (Player) entity; // 攻撃された人
                 attacker = (Player) ((Projectile) event.getDamager()).getShooter(); // 攻撃した人
             }
         }
 
-        if (damager == null || attacker == null) return;
+        if (damaged == null || attacker == null) return;
 
         // 設定確認 チーム内PVPを無効にする設定が無効であれば何もしない
         if (!plugin.getConfigs().getDisableTeamPVP()) return;
 
-        // 存在するゲームを回す
-        for (Game game : GameManager.getGames().values()) {
-            if (game.getState() != Game.State.STARTED) continue;
-            
-            if (game.isJoined(damager) && game.isJoined(attacker)){
-                TeamColor damagerTeam = game.getPlayerTeam(PlayerManager.getPlayer(damager));
-                TeamColor attackerTeam = game.getPlayerTeam(PlayerManager.getPlayer(attacker));
-                
-                boolean cancel = false;
-                
-                // 同じチームメンバー
-                if (damagerTeam == attackerTeam) {
-                    cancel = true;
-                    Actions.message(attacker, "&c同じチームメンバーには攻撃できません！");
-                }
-                
-                if (cancel){
-                    event.setDamage(0);
-                    event.setCancelled(true);
-                }
-                return;
-            }
+        GamePlayer gAttacker = plugin.getPlayers().getPlayer(attacker),
+                gDamaged = plugin.getPlayers().getPlayer(damaged);
+        if (!gAttacker.getTeam().equals(gDamaged.getTeam())) {
+            return;
         }
+        event.setCancelled(true);
+        gAttacker.sendMessage("&c味方に攻撃するだなんて...!");
     }
 
     // 体力が回復した

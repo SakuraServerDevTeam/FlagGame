@@ -1,6 +1,18 @@
 /* 
- * Copyright (C) 2015 Syamn, SakruaServerDev.
- * All rights reserved.
+ * Copyright (C) 2015 Syamn, SakuraServerDev
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package syam.flaggame.command.queue;
 
@@ -10,6 +22,7 @@ import java.util.List;
 import org.bukkit.command.CommandSender;
 
 import syam.flaggame.FlagGame;
+import syam.flaggame.exception.CommandException;
 
 /**
  * ConfirmQueue (ConfirmQueue.java)
@@ -44,7 +57,7 @@ public class ConfirmQueue {
      * 
      * @param sender コマンド送信者
      */
-    public boolean confirmQueue(CommandSender sender) {
+    public boolean confirmQueue(CommandSender sender) throws CommandException {
         for (QueuedCommand cmd : this.queue) {
             if (cmd.getSender().equals(sender)) {
                 cmd.execute();

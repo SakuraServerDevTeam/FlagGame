@@ -1,9 +1,22 @@
 /* 
- * Copyright (C) 2015 Syamn, SakruaServerDev.
- * All rights reserved.
+ * Copyright (C) 2015 Syamn, SakuraServerDev
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package syam.flaggame.util;
 
+import com.google.common.base.Objects;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +40,7 @@ public class Cuboid {
      * @param point2 Pos2
      */
     public Cuboid(Location point1, Location point2) {
-        if (!point1.getWorld().equals(point2.getWorld())) {
+        if (!Objects.equal(point1.getWorld(), point2.getWorld())) {
             throw new IllegalArgumentException("Both of two points must be in the same world!");
         }
         // 各頂点設定

@@ -1,6 +1,18 @@
 /* 
- * Copyright (C) 2015 Syamn, SakruaServerDev.
- * All rights reserved.
+ * Copyright (C) 2015 Syamn, SakuraServerDev
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package syam.flaggame.command;
 
@@ -9,6 +21,7 @@ import java.util.List;
 import org.bukkit.Bukkit;
 
 import org.bukkit.entity.Player;
+import syam.flaggame.FlagGame;
 
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.permission.Perms;
@@ -18,7 +31,9 @@ import syam.flaggame.player.PlayerProfile;
 import syam.flaggame.util.Actions;
 
 public class StatsCommand extends BaseCommand {
-    public StatsCommand() {
+
+    public StatsCommand(FlagGame plugin) {
+        super(plugin);
         bePlayer = false;
         name = "stats";
         argLength = 0;
@@ -33,36 +48,32 @@ public class StatsCommand extends BaseCommand {
         // 自分の情報表示
         if (args.size() <= 0) {
             // check console
-            if (!(sender instanceof Player)) { throw new CommandException("&c情報を表示するユーザ名を入力してください"); }
+            if (!(sender instanceof Player)) {
+                throw new CommandException("&c情報を表示するユーザ名を入力してください");
+            }
 
             // check permission
-            if (!Perms.STATS_SELF.has(sender)) { throw new CommandException("&cあなたはこのコマンドを使う権限がありません"); }
+            if (!Perms.STATS_SELF.has(sender)) {
+                throw new CommandException("&cあなたはこのコマンドを使う権限がありません");
+            }
 
-            prof = PlayerManager.getProfile(player);
-        }
-        // 他人の情報表示
+            prof = this.plugin.getPlayers().getProfile(player);
+        } // 他人の情報表示
         else {
             other = true;
 
             // check permission
-            if (!Perms.STATS_OTHER.has(sender)) { throw new CommandException("&cあなたは他人の情報を見る権限がありません"); }
-
-            GamePlayer fgPlayer = PlayerManager.getPlayer(args.get(0));
-
-            // 対象者がログイン中かどうか
-            if (fgPlayer != null) {
-                prof = fgPlayer.getProfile();
+            if (!Perms.STATS_OTHER.has(sender)) {
+                throw new CommandException("&cあなたは他人の情報を見る権限がありません");
             }
-            // オフライン
-            else {
-                prof = new PlayerProfile(Bukkit.getOfflinePlayer(args.get(0)).getUniqueId(), false);
 
-                if (!prof.isLoaded()) { throw new CommandException("&c指定したプレイヤーの情報が見つかりません"); }
-            }
+            prof = this.plugin.getPlayers().getProfile(args.get(0));
         }
 
         // check null
-        if (prof == null) { throw new CommandException("&cプレイヤー情報が正しく読み込めませんでした"); }
+        if (prof == null) {
+            throw new CommandException("&cプレイヤー情報が正しく読み込めませんでした");
+        }
 
         // メッセージ送信
         for (String line : buildStrings(prof, other)) {
@@ -76,32 +87,32 @@ public class StatsCommand extends BaseCommand {
 
         // ヘッダー
         l.add("&a[FlagGame] プレイヤー情報");
-        if (other) l.add("&aプレイヤー: &6" + prof.getPlayerName());
+        if (other) {
+            l.add("&aプレイヤー: &6" + prof.getName());
+        }
 
         // 一般 *************************************************
         l.add("&6-=== 一般 ===-");
         l.add("&eゲーム参加: &a" + prof.getPlayed() + " 回");
-        if (prof.getExit() == 0)
-            l.add("&e  途中退場: &a0 回");
-        else
-            l.add("&e  途中退場: &c" + prof.getExit() + " 回");
+        l.add("&2 途中退場: " + (prof.getExited() == 0 ? "a" : "c") + prof.getExited() + " 回");
 
         // 結果 *************************************************
         l.add("&6-=== ゲーム勝敗 ===-");
-        l.add("&e Win: &a" + prof.getWin() + " 回");
-        l.add("&eLose: &a" + prof.getLose() + " 回");
-        l.add("&eDraw: &a" + prof.getDraw() + " 回");
+        l.add("&e Win: &a" + prof.getWonGame() + " 回");
+        l.add("&eLose: &a" + prof.getLostGame() + " 回");
+        l.add("&eDraw: &a" + prof.getDrewGame() + " 回");
+        l.add("&e勝率: " + prof.getFormattedWinningRate()+" %");
 
         // フラッグ *************************************************
         l.add("&6-=== フラッグ ===-");
-        l.add("&e 設置: &a" + prof.getPlace() + " フラッグ");
-        l.add("&e 破壊: &a" + prof.getBreak() + " フラッグ");
+        l.add("&e 設置: &a" + prof.getPlacedFlag() + " フラッグ");
+        l.add("&e 破壊: &a" + prof.getBrokenFlag() + " フラッグ");
 
         // 戦闘 *************************************************
         l.add("&6-=== 戦闘 ===-");
         l.add("&e Kill: &a" + prof.getKill() + " 回");
         l.add("&eDeath: &a" + prof.getDeath() + " 回");
-        l.add("&e  K/D: &a" + prof.getKDstring()); // kd
+        l.add("&e  K/D: " + prof.getFormattedKD()); // kd
 
         return l;
     }

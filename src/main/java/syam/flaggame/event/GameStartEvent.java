@@ -1,6 +1,18 @@
 /* 
- * Copyright (C) 2015 Syamn, SakruaServerDev.
- * All rights reserved.
+ * Copyright (C) 2015 Syamn, SakuraServerDev
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package syam.flaggame.event;
 
@@ -18,13 +30,14 @@ import syam.flaggame.player.GamePlayer;
  * GameStartEvent (GameStartEvent.java)
  * 
  * @author syam(syamn)
+ * @deprecated use {@link jp.llv.flaggame.event.}
  */
+@Deprecated
 public class GameStartEvent extends Event implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
     private boolean isCancelled = false;
 
     private final Stage stage;
-    private final boolean random;
     private final CommandSender sender;
     private final Set<GamePlayer> redTeam;
     private final Set<GamePlayer> blueTeam;
@@ -33,14 +46,12 @@ public class GameStartEvent extends Event implements Cancellable {
      * コンストラクタ
      * 
      * @param stage
-     * @param random
      * @param sender
      * @param redTeam
      * @param blueTeam
      */
-    public GameStartEvent(Stage stage, boolean random, CommandSender sender, Set<GamePlayer> redTeam, Set<GamePlayer> blueTeam) {
+    public GameStartEvent(Stage stage, CommandSender sender, Set<GamePlayer> redTeam, Set<GamePlayer> blueTeam) {
         this.stage = stage;
-        this.random = random;
         this.sender = sender;
 
         this.redTeam = redTeam;
@@ -49,10 +60,6 @@ public class GameStartEvent extends Event implements Cancellable {
 
     public Stage getStage() {
         return this.stage;
-    }
-
-    public boolean isRandom() {
-        return this.random;
     }
 
     public CommandSender getSender() {

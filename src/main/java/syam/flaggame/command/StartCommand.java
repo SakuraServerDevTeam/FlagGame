@@ -1,21 +1,35 @@
 /* 
- * Copyright (C) 2015 Syamn, SakruaServerDev.
- * All rights reserved.
+ * Copyright (C) 2015 Syamn, SakuraServerDev
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package syam.flaggame.command;
 
 import java.util.ArrayList;
-import java.util.Set;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import jp.llv.flaggame.reception.GameReception;
+import syam.flaggame.FlagGame;
 
 import syam.flaggame.exception.CommandException;
-import syam.flaggame.game.Game;
-import syam.flaggame.manager.GameManager;
-import syam.flaggame.manager.StageManager;
 import syam.flaggame.permission.Perms;
-import syam.flaggame.player.GamePlayer;
 
 public class StartCommand extends BaseCommand {
-    public StartCommand() {
+
+    public StartCommand(FlagGame plugin) {
+        super(plugin);
         bePlayer = false;
         name = "start";
         argLength = 0;
@@ -24,55 +38,36 @@ public class StartCommand extends BaseCommand {
 
     @Override
     public void execute() throws CommandException {
-        Game game = null;
+        GameReception reception = null;
+        List<String> startArgs;
 
-        // 引数があれば指定したステージを開始
-        if (args.size() >= 1) {
-            if (args.get(0).equalsIgnoreCase("random")) {
-                // ランダムステージ
-                game = GameManager.getRandomGame();
-                if (game == null || game.getState() != Game.State.ENTRY) { throw new CommandException("&c参加受付状態のランダムステージはありません！"); }
-            } else {
-                game = GameManager.getGame(args.get(0));
+        if (args.size() >= 1) {// 引数があれば指定したステージに参加
+            reception = this.plugin.getReceptions().getReception(args.get(0))
+                    .orElseThrow(() -> new CommandException("&cステージ'" + args.get(0) + "'が見つかりません"));
+            if (reception.getState() != GameReception.State.OPENED) {
+                throw new CommandException("&cそのゲームは受付中ではありません!");
             }
-        }
-        // 引数がなければ自動補完
-        else {
-            ArrayList<Game> readyingGames = GameManager.getReadyingGames();
-            if (readyingGames.size() <= 0) {
-                throw new CommandException("&c現在受付中のゲームはありません！");
-            } else if (readyingGames.size() >= 2) {
-                throw new CommandException("&c複数のゲームが受付中です！開始するステージを指定してください！");
-            }
-            // 受付中のステージが1つのみなら自動補完
-            else {
-                game = readyingGames.get(0);
-            }
-        }
-
-        if (game == null || game.getState() != Game.State.ENTRY) {
-            // そのステージが本当にあるかチェック
-            if (StageManager.getStage(args.get(0)) == null) {
-                throw new CommandException("&cステージ'" + args.get(0) + "'が見つかりません");
-            } else {
-                throw new CommandException("&cステージ'" + args.get(0) + "'は参加受付状態ではありません");
+            startArgs = new ArrayList<>(args);
+            startArgs.remove(0);
+        } else {// 引数がなければ自動補完
+            Collection<GameReception> openedReceptions = this.plugin.getReceptions()
+                    .getReceptions(GameReception.State.OPENED);
+            if (openedReceptions.size() <= 0) {
+                throw new CommandException("&c現在、参加受付中のゲームはありません！");
+            } else if (openedReceptions.size() >= 2) {
+                throw new CommandException("&c複数のゲームが受付中です！参加するステージを指定してください!");
+            } else {// 受付中が1つのみなら自動補完
+                reception = openedReceptions.iterator().next();
+                startArgs = Collections.emptyList();
             }
         }
 
-        for (Set<GamePlayer> teamSet : game.getPlayersMap().values()) {
-            if (teamSet.size() <= 0) { throw new CommandException("&cプレイヤーが参加していないチームがあります"); }
-        }
-
-        // check starting countdown
-        if (game.getStarttimerThreadID() != -1) { throw new CommandException("&cこのゲームは既に開始カウントダウン中です！"); }
-
-        // start
-        // game.start(sender);
-        game.start_timer(sender);
+        reception.start(startArgs);
     }
 
     @Override
     public boolean permission() {
         return Perms.START.has(sender);
     }
+
 }

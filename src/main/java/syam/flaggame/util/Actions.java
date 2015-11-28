@@ -1,6 +1,18 @@
 /* 
- * Copyright (C) 2015 Syamn, SakruaServerDev.
- * All rights reserved.
+ * Copyright (C) 2015 Syamn, SakuraServerDev
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package syam.flaggame.util;
 
@@ -35,6 +47,7 @@ public class Actions {
     // Logger
 
     public static final Logger log = FlagGame.logger;
+    public static final String MESSAGE_PREFIX = FlagGame.msgPrefix;
 
     // メッセージ送信系関数
     /* メッセージをユニキャスト
@@ -58,6 +71,10 @@ public class Actions {
             message = message.replaceAll("&([0-9a-fk-or])", "\u00A7$1");
             player.sendMessage(message);
         }
+    }
+    
+    public static void sendPrefixedMessage(CommandSender sender, String message) {
+        message(sender, MESSAGE_PREFIX + "\u00A7r" + message);
     }
 
     /**
@@ -140,23 +157,6 @@ public class Actions {
      */
     public static void executeCommandOnConsole(String command) {
         Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
-    }
-
-    /**
-     * 文字列の中に全角文字が含まれているか判定
-     *
-     * @param s 判定する文字列
-     * @return 1文字でも全角文字が含まれていればtrue 含まれていなければfalse
-     * @throws UnsupportedEncodingException
-     */
-    public static boolean containsZen(String s) throws UnsupportedEncodingException {
-        for (int i = 0; i < s.length(); i++) {
-            String s1 = s.substring(i, i + 1);
-            if (URLEncoder.encode(s1, "MS932").length() >= 4) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**

@@ -1,94 +1,56 @@
 /* 
- * Copyright (C) 2015 Syamn, SakruaServerDev.
- * All rights reserved.
+ * Copyright (C) 2015 Syamn, SakuraServerDev
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package syam.flaggame.command;
 
-import syam.flaggame.event.GameReadyEvent;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import jp.llv.flaggame.reception.GameReception;
+import syam.flaggame.FlagGame;
 import syam.flaggame.exception.CommandException;
-import syam.flaggame.game.Game;
-import syam.flaggame.game.Stage;
-import syam.flaggame.manager.GameManager;
-import syam.flaggame.manager.StageManager;
 import syam.flaggame.permission.Perms;
+import syam.flaggame.util.Actions;
 
 public class ReadyCommand extends BaseCommand {
 
-    public ReadyCommand() {
+    public ReadyCommand(FlagGame plugin) {
+        super(plugin);
         bePlayer = false;
         name = "ready";
         argLength = 1;
-        usage = "<stage> <- ready game";
+        usage = "<reception-type> [optional args...] <- ready game";
     }
 
     @Override
     public void execute() throws CommandException {
-        // flag ready - ゲームを開始準備中にする
-        if (args.isEmpty()) {
-            throw new CommandException("&cステージ名を入力してください！");
+        if (args.size() < 1) {
+            throw new CommandException("&c募集方法を入力してください!");
         }
+        List<String> readyArgs = new ArrayList<>(args);
+        readyArgs.remove(0);
 
-        Stage stage;
-        boolean random = false;
-
-        // ランダムゲーム
-        if (args.get(0).equalsIgnoreCase("random")) {
-            if (GameManager.getRandomGame() != null) {
-                if (GameManager.getRandomGame().getState() == Game.State.ENTRY) {
-                    throw new CommandException("&c現在、既にランダムステージが参加受付中です");
-                } else {
-                    GameManager.setRandomGame(null);
-                }
-            }
-
-            stage = StageManager.getRandomAvailableStage();
-            random = true;
-        } // 通常のゲーム
-        else {
-            stage = StageManager.getStage(args.get(0));
+        GameReception reception;
+        try {
+            reception = this.plugin.getReceptions().newReception(args.get(0), readyArgs);
+        } catch (IllegalArgumentException ex) {
+            throw new CommandException("&c"+ex.getMessage(), ex);
         }
-
-        if (stage == null) {
-            throw new CommandException("&cステージ'" + args.get(0) + "'が見つかりません");
-        }
-
-        // ** ステージチェック **
-        if (!stage.isAvailable()) {
-            throw new CommandException("&cステージ'" + stage.getName() + "'は現在使えません");
-        }
-
-        if (stage.isUsing()) {
-            if (stage.getGame() == null) {
-                throw new CommandException("&cステージ'" + stage.getName() + "'は現在使用中です");
-            } else {
-                if (stage.getGame().getState() == Game.State.STARTED) {
-                    throw new CommandException("&cこのゲームは既に始まっています");
-                } else if (stage.getGame().getState() == Game.State.ENTRY) {
-                    throw new CommandException("&cこのゲームは既に参加受付中です");
-                }
-            }
-        }
-
-        // ステージエリアチェック
-        if (stage.getStage() == null) {
-            throw new CommandException("&cステージエリアが正しく設定されていません");
-        }
-
-        // スポーン地点チェック
-        if (stage.getSpawns().size() != 2) {
-            throw new CommandException("&cチームスポーン地点が正しく設定されていません");
-        }
-
-        // Call event
-        GameReadyEvent readyEvent = new GameReadyEvent(stage, sender, random);
-        plugin.getServer().getPluginManager().callEvent(readyEvent);
-        if (readyEvent.isCancelled()) {
-            return;
-        }
-
-        // ready
-        Game game = new Game(plugin, readyEvent.getStage(), readyEvent.isRandom());
-        game.ready(sender);
+        reception.open(Collections.EMPTY_LIST);
+        Actions.sendPrefixedMessage(sender, "&a受付'" + reception.getID() + "'の募集が開始されました");
     }
 
     @Override

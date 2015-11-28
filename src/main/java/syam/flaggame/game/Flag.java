@@ -1,6 +1,18 @@
 /* 
- * Copyright (C) 2015 Syamn, SakruaServerDev.
- * All rights reserved.
+ * Copyright (C) 2015 Syamn, SakuraServerDev
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package syam.flaggame.game;
 
@@ -16,28 +28,17 @@ public class Flag {
     private Location loc = null; // フラッグ座標
     private byte type = 0; // フラッグの種類
 
-    // 元のブロックデータ
-    // TODO: デフォルトブロックを可変にする とりあえず空気に変える
-    private int blockID = 0;
-    private byte blockData = 0;
-
     /*
      * コンストラクタ
      * 
      * @param plugin
      */
-    public Flag(final Location loc, final byte type, final int blockID, final byte blockData) {
+    public Flag(final Location loc, final byte type) {
+        if (loc == null) throw new NullPointerException();
 
         // フラッグデータ登録
         this.loc = loc;
         this.type = type;
-
-        this.blockID = blockID;
-        this.blockData = blockData;
-    }
-
-    public Flag(final Location loc, final byte type) {
-        this(loc, type, 0, (byte) 0);
     }
 
     /**
@@ -51,18 +52,14 @@ public class Flag {
 
     /**
      * ブロックを元のブロックにロールバックする
-     * 
-     * @return ロールバックが発生した場合にだけtrue
      */
-    public boolean rollback() {
+    public void rollback() {
         Block block = loc.getBlock();
         // 既に同じブロックの場合は何もしない
-        if (block.getTypeId() != blockID || block.getData() != blockData) {
+        if (block.getTypeId() != 0 || block.getData() != 0) {
             // ブロック変更
-            block.setTypeIdAndData(blockID, blockData, false);
-            return true;
+            block.setTypeIdAndData(0, (byte) 0, false);
         }
-        return false;
     }
 
     /* フラッグ設定系 */
@@ -81,14 +78,6 @@ public class Flag {
 
     public Location getLocation() {
         return loc;
-    }
-
-    public int getOriginBlockID() {
-        return blockID;
-    }
-
-    public byte getOriginBlockData() {
-        return blockData;
     }
     
     public TeamColor getOwner() {
