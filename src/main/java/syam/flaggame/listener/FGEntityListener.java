@@ -79,7 +79,6 @@ public class FGEntityListener implements Listener {
             return;
         }
         event.setCancelled(true);
-        gAttacker.sendMessage("&c味方に攻撃するだなんて...!");
     }
 
     // 体力が回復した
