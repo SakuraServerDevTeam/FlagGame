@@ -22,6 +22,9 @@
 *.iws
 .idea/
 
+#wiki
+FlagGame.wiki/
+
 # others
 *.dat
 *.tmp
