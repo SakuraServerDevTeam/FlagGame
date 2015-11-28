@@ -162,7 +162,7 @@ public class BasicGame implements Game {
                 vp.setExp(0f);
 
                 //ステータス効果
-                Arrays.stream(PotionEffectType.values()).forEach(vp::removePotionEffect);
+                Arrays.stream(PotionEffectType.values()).filter(vp::hasPotionEffect).forEach(vp::removePotionEffect);
 
                 //プレイヤーリストへ色適用
                 player.setTabName(team.getColor() + player.getName());

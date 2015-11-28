@@ -128,7 +128,7 @@ public class GamePlayer {
     }
 
     public Optional<Team> getTeam() {
-        return this.reception.getTeams()
+        return this.getEntry().flatMap(GameReception::getTeams)
                 .map(Collection::stream)
                 .map(s -> s.filter(t -> t.hasJoined(this)))
                 .flatMap(s -> s.findAny());
