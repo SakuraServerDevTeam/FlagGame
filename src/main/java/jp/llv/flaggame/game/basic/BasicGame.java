@@ -124,6 +124,10 @@ public class BasicGame implements Game {
         this.expectedFinishAt = System.currentTimeMillis() + this.stage.getGameTime();
 
         this.stage.getProfile().addPlayed();
+        
+        //プレイヤーで初期化: 一度もkill/deathがないとnullが変えるのを抑止
+        personalKillCount.putAll(this.getReception().getPlayers(), 0);
+        personalDeathCount.putAll(this.getReception().getPlayers(), 0);
 
         GamePlayer.sendMessage(this.reception.getPlayers(),
                 "&2ゲーム'&6" + this.reception.getName() + "&2'が始まりました！",

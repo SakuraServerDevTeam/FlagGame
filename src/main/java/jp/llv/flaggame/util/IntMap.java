@@ -16,6 +16,7 @@
  */
 package jp.llv.flaggame.util;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.OptionalInt;
@@ -72,6 +73,12 @@ public class IntMap<K> extends HashMap<K, Integer> {
     public OptionalInt getOptional(K key) {
         Integer i = super.get(key);
         return i != null ? OptionalInt.of(i) : OptionalInt.empty();
+    }
+    
+    public void putAll(Collection<? extends K> keys, int value) {
+        for (K k : keys) {
+            super.put(k, value);
+        }
     }
     
 }
