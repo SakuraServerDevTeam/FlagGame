@@ -22,7 +22,7 @@
 *.iws
 .idea/
 
-#wiki
+#github wiki
 FlagGame.wiki/
 
 # others

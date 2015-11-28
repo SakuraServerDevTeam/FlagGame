@@ -1,24 +1,37 @@
 /* 
- * Copyright (C) 2015 Syamn, SakruaServerDev.
- * All rights reserved.
+ * Copyright (C) 2015 Syamn, SakuraServerDev
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package syam.flaggame.command;
 
-import java.util.Map;
-import java.util.Set;
+import jp.llv.flaggame.game.Game;
+import jp.llv.flaggame.reception.GameReception;
+import jp.llv.flaggame.reception.Team;
+import syam.flaggame.FlagGame;
 
-import syam.flaggame.enums.GameTeam;
+import syam.flaggame.enums.TeamColor;
 import syam.flaggame.exception.CommandException;
-import syam.flaggame.game.Game;
 import syam.flaggame.game.Stage;
-import syam.flaggame.manager.StageManager;
 import syam.flaggame.permission.Perms;
-import syam.flaggame.player.FGPlayer;
+import syam.flaggame.player.GamePlayer;
 import syam.flaggame.util.Actions;
 
 public class InfoCommand extends BaseCommand {
 
-    public InfoCommand() {
+    public InfoCommand(FlagGame plugin) {
+        super(plugin);
         bePlayer = false;
         name = "info";
         argLength = 0;
@@ -29,26 +42,19 @@ public class InfoCommand extends BaseCommand {
     public void execute() throws CommandException {
         // 引数が無ければすべてのステージデータを表示する
         if (args.isEmpty()) {
-            int stagecount = StageManager.getStages().size();
+            int stagecount = this.plugin.getStages().getStages().size();
 
             Actions.message(sender, "&a ===============&b StageList(" + stagecount + ") &a===============");
             if (stagecount == 0) {
                 Actions.message(sender, " &7読み込まれているステージがありません");
             } else {
-                for (Stage stage : StageManager.getStages().values()) {
+                for (Stage stage : this.plugin.getStages()) {
                     // ゲームステータス取得
-                    String status = "&7待機中";
-                    if (stage.isUsing() && stage.getGame() != null) {
-                        if (stage.getGame().getState() == Game.State.STARTED) {
-                            // 開始中なら残り時間も表示
-                            String time = Actions.getTimeString(stage.getGame().getRemainTime());
-                            status = "&c開始中&7(あと:" + time + ")";
-                        } else {
-                            status = "&6受付中";
-                        }
-                    }
+                    String status = stage.getReception().map(GameReception::getState)
+                            .map(GameReception.State::toGameState)
+                            .map(s -> s == Game.State.PREPARATION ? "&6受付中" : "&c開始中").orElse("&7待機中");
 
-                    String s = "&6" + stage.getName() + "&b: 状態=&f" + status + "&b 制限時間=&6" + Actions.getTimeString(stage.getGameTime()) + "&b フラッグ数=&6" + stage.getFlags().size();
+                    String s = "&6" + stage.getName() + "&b: 状態=&f" + status + "&b 制限時間=&6" + Actions.getTimeString(stage.getGameTimeInSec()) + "&b フラッグ数=&6" + stage.getFlags().size();
 
                     // メッセージ送信
                     Actions.message(sender, s);
@@ -57,41 +63,31 @@ public class InfoCommand extends BaseCommand {
             Actions.message(sender, "&a ============================================");
         } // 引数があれば指定したゲームについての詳細情報を表示する
         else {
-            Stage stage = StageManager.getStage(args.get(0));
-            if (stage == null) {
-                throw new CommandException("&cそのステージは存在しません！");
-            }
+            Stage stage = this.plugin.getStages().getStage(args.get(0))
+                    .orElseThrow(() -> new CommandException("&cそのステージは存在しません！"));
 
             Actions.message(sender, "&a ==================&b GameDetail &a==================");
 
             // ゲームステータス取得
-            String status = "&7待機中";
-            if (stage.isUsing() && stage.getGame() != null) {
-                if (stage.getGame().getState() == Game.State.STARTED) {
-                    // 開始中なら残り時間も表示
-                    String time = Actions.getTimeString(stage.getGame().getRemainTime());
-                    status = "&c開始中&7(あと:" + time + ")";
-                } else {
-                    status = "&6受付中";
-                }
-            }
+            String status = stage.getReception().map(GameReception::getState).map(GameReception.State::toGameState)
+                    .map(s -> s == Game.State.PREPARATION ? "&6受付中" : "&c開始中").orElse("&7待機中");
 
             String chksp_red = "&c未設定";
             String chksp_blue = "&c未設定";
-            if (stage.getSpawn(GameTeam.RED) != null) {
+            if (stage.getSpawn(TeamColor.RED) != null) {
                 chksp_red = "&6設定済";
             }
-            if (stage.getSpawn(GameTeam.BLUE) != null) {
+            if (stage.getSpawn(TeamColor.BLUE) != null) {
                 chksp_blue = "&6設定済";
             }
 
             // プレイヤーリスト構築
             String players = "";
             int cnt_players = 0;
-            if (stage.isUsing() && stage.getGame() != null) {
-                for (Map.Entry<GameTeam, Set<FGPlayer>> entry : stage.getGame().getPlayersMap().entrySet()) {
-                    String color = entry.getKey().getColor();
-                    for (FGPlayer n : entry.getValue()) {
+            if (stage.isReserved() && stage.getReception().get().getGame().isPresent()) {
+                for (Team entry : stage.getReception().get().getGame().get().getTeams()) {
+                    String color = entry.getColor().getColor();
+                    for (GamePlayer n : entry) {
                         players = players + color + n.getName() + "&f, ";
                         cnt_players++;
                     }
@@ -103,14 +99,15 @@ public class InfoCommand extends BaseCommand {
                 players = "&7参加プレイヤーなし";
             }
 
-            String s1 = "&6 " + stage.getName() + "&7(" + stage.getFileName() + ")" + "&b: 状態=&f" + status + "&b 制限時間=&6" + Actions.getTimeString(stage.getGameTime()) + "&b フラッグ数=&6" + stage.getFlags().size();
-            String s2 = "&b 参加料=&6" + stage.getEntryFee() + "&b 賞金=&6" + stage.getAward() + "&b チェスト数=&6" + stage.getChests().size();
+            String s1 = "&6 " + stage.getName() + "&7(" + stage.getFileName() + ")"
+                    + "&b: 状態=&f" + status
+                    + "&b 制限時間=&6" + Actions.getTimeString(stage.getGameTimeInSec())
+                    + "&b フラッグ数=&6" + stage.getFlags().size();
             String s3 = "&b チーム毎人数制限=&6" + stage.getTeamLimit() + "&b 赤チームスポーン=" + chksp_red + "&b 青チームスポーン=" + chksp_blue;
             String s4 = "&b プレイヤーリスト&7(" + cnt_players + "人)&b: " + players;
 
             // メッセージ送信
             Actions.message(sender, s1);
-            Actions.message(sender, s2);
             Actions.message(sender, s3);
             Actions.message(sender, s4);
 

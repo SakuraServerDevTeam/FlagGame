@@ -1,25 +1,38 @@
 /* 
- * Copyright (C) 2015 Syamn, SakruaServerDev.
- * All rights reserved.
+ * Copyright (C) 2015 Syamn, SakuraServerDev
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package syam.flaggame.command;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import jp.llv.flaggame.events.ReceptionJoinEvent;
+import jp.llv.flaggame.reception.GameReception;
+import syam.flaggame.FlagGame;
 
-import syam.flaggame.enums.GameTeam;
-import syam.flaggame.event.GameJoinEvent;
 import syam.flaggame.exception.CommandException;
-import syam.flaggame.game.Game;
-import syam.flaggame.game.Stage;
-import syam.flaggame.manager.GameManager;
-import syam.flaggame.manager.StageManager;
 import syam.flaggame.permission.Perms;
-import syam.flaggame.player.FGPlayer;
-import syam.flaggame.player.PlayerManager;
+import syam.flaggame.player.GamePlayer;
 import syam.flaggame.util.Actions;
 
 public class JoinCommand extends BaseCommand {
-    public JoinCommand() {
+
+    public JoinCommand(FlagGame plugin) {
+        super(plugin);
         bePlayer = true;
         name = "join";
         argLength = 0;
@@ -28,98 +41,56 @@ public class JoinCommand extends BaseCommand {
 
     @Override
     public void execute() throws CommandException {
-        boolean random = false;
-        Stage stage = null;
-        Game game = null;
+        GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
+        GameReception reception = null;
+        List<String> joinArgs;
 
-        // 引数があれば指定したステージに参加
-        if (args.size() >= 1) {
-            if (args.get(0).equalsIgnoreCase("random")) {
-                random = true;
-            } else {
-                stage = StageManager.getStage(args.get(0));
-                if (stage == null) { throw new CommandException("&cステージ'" + args.get(0) + "'が見つかりません"); }
-            }
+        if (gPlayer.getEntry().isPresent()) {
+            throw new CommandException("&cあなたは既に参加中のゲームがあります!");
         }
-        // 引数がなければ自動補完
-        else {
-            ArrayList<Game> readyingGames = GameManager.getReadyingGames();
-            if (readyingGames.size() <= 0) {
+        
+        if (args.size() >= 1) {// 引数があれば指定したステージに参加
+            reception = this.plugin.getReceptions().getReception(args.get(0))
+                    .orElseThrow(() -> new CommandException("&cステージ'" + args.get(0) + "'が見つかりません"));
+            if (reception.getState() != GameReception.State.OPENED) {
+                throw new CommandException("&cそのゲームは受付中ではありません!");
+            }
+            joinArgs = new ArrayList<>(args);
+            joinArgs.remove(0);
+        } else {// 引数がなければ自動補完
+            Collection<GameReception> openedReceptions = this.plugin.getReceptions()
+                    .getReceptions(GameReception.State.OPENED);
+            if (openedReceptions.size() <= 0) {
                 throw new CommandException("&c現在、参加受付中のゲームはありません！");
-            } else if (readyingGames.size() >= 2) {
-                throw new CommandException("&c複数のゲームが受付中です！参加するステージを指定してください！");
+            } else if (openedReceptions.size() >= 2) {
+                throw new CommandException("&c複数のゲームが受付中です！参加するステージを指定してください!");
+            } else {// 受付中が1つのみなら自動補完
+                reception = openedReceptions.iterator().next();
             }
-            // 受付中のステージが1つのみなら自動補完
-            else {
-                stage = readyingGames.get(0).getStage();
-            }
+            joinArgs = Collections.emptyList();
         }
-
-        if (!random) {
-            if (stage.isUsing() && stage.getGame() != null) {
-                game = stage.getGame();
-            } else {
-                throw new CommandException("&cステージ'" + args.get(0) + "'は現在参加受付中ではありません");
-            }
-        }
-        // ランダムゲーム
-        else {
-            game = GameManager.getRandomGame();
-            if (game == null) { throw new CommandException("&c現在受付中のランダムステージはありません！"); }
-        }
-
-        if (game.getState() == Game.State.STARTED) { throw new CommandException("&cゲーム'" + args.get(0) + "'は既に始まっています！"); }
-
-        // 既に参加していないかチェック
-        FGPlayer fgp = PlayerManager.getPlayer(player);
-        if (game.getPlayerTeam(fgp) != null) {
-            GameTeam team = game.getPlayerTeam(fgp);
-            throw new CommandException("&cあなたは既にこのゲームに" + team.getColor() + team.getTeamName() + "チーム&cとしてエントリーしています！");
-        }
-        for (Game check : GameManager.getGames().values()) {
-            GameTeam checkT = check.getPlayerTeam(fgp);
-            if (checkT != null) { throw new CommandException("&cあなたは別のゲーム'" + check.getName() + "'に" + checkT.getColor() + checkT.getTeamName() + "チーム&cとして参加しています！"); }
-        }
-
-        // 人数チェック
-        int limit = game.getStage().getTeamLimit();
-        if ((game.getPlayersSet(GameTeam.RED).size() >= limit) && (game.getPlayersSet(GameTeam.BLUE).size() >= limit)) { throw new CommandException("&cこのゲームは参加可能な定員に達しています！"); }
-
-        double cost = game.getStage().getEntryFee();
-
+        
         // Call event
-        GameJoinEvent joinEvent = new GameJoinEvent(player, cost);
+        ReceptionJoinEvent joinEvent = new ReceptionJoinEvent(gPlayer, reception, reception.getEntryFee());
         plugin.getServer().getPluginManager().callEvent(joinEvent);
-        if (joinEvent.isCancelled()) { return; }
-        cost = joinEvent.getEntryFee();
+        if (joinEvent.isCancelled()) {
+            return;
+        }
+        
+        
+        reception.join(gPlayer, joinArgs);
 
         // 参加料チェック
+        double cost = joinEvent.getEntryFee();
         if (cost > 0) {
-            // 所持金確認
-            if (!Actions.checkMoney(player.getUniqueId(), cost)) { throw new CommandException("&c参加するためには参加料 " + cost + "Coin が必要です！"); }
-            // 引き落とし
-            if (!Actions.takeMoney(player.getUniqueId(), cost)) {
+            if (!Actions.checkMoney(player.getUniqueId(), cost)) {// 所持金確認
+                throw new CommandException("&c参加するためには参加料 " + cost + "Coin が必要です！");
+            }
+            if (!Actions.takeMoney(player.getUniqueId(), cost)) {// 引き落とし
                 throw new CommandException("&c参加料の引き落としにエラーが発生しました。管理人までご連絡ください。");
             } else {
                 Actions.message(player, "&c参加料として " + cost + "Coin を支払いました！");
             }
-        }
-
-        // join
-        if (joinEvent.getGameTeam() == null) {
-            game.join(PlayerManager.getPlayer(player));
-        } else {
-            game.join(PlayerManager.getPlayer(player), joinEvent.getGameTeam());
-        }
-
-        // 所属チーム取得
-        GameTeam team = game.getPlayerTeam(fgp);
-        Actions.broadcastMessage(msgPrefix + "&aプレイヤー'&6" + player.getName() + "&a'が" + team.getColor() + team.getTeamName() + "チーム&aに参加しました！");
-        // game.message(msgPrefix+"&aプレイヤー'&6"+player.getName()+"&a'が"+team.getColor()+team.getTeamName()+"チーム&aに参加しました！");
-
-        // 参加後に人数チェックして定員通知
-        if (game.getPlayersSet().size() == limit * 2) {
-            Actions.broadcastMessage(msgPrefix + "&a参加定員" + limit * 2 + "人に達しました！");
         }
     }
 

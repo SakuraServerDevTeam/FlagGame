@@ -1,6 +1,18 @@
 /* 
- * Copyright (C) 2015 Syamn, SakruaServerDev.
- * All rights reserved.
+ * Copyright (C) 2015 Syamn, SakuraServerDev
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package syam.flaggame.command;
 
@@ -11,16 +23,18 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.InventoryHolder;
+import syam.flaggame.FlagGame;
 
-import syam.flaggame.enums.GameTeam;
+import syam.flaggame.enums.TeamColor;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
-import syam.flaggame.manager.StageManager;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.util.Actions;
 
 public class CheckCommand extends BaseCommand {
-    public CheckCommand() {
+
+    public CheckCommand(FlagGame plugin) {
+        super(plugin);
         bePlayer = false;
         name = "check";
         argLength = 1;
@@ -29,10 +43,12 @@ public class CheckCommand extends BaseCommand {
 
     @Override
     public void execute() throws CommandException {
-        Stage stage = StageManager.getStage(args.get(0));
-        if (stage == null) { throw new CommandException("&cステージ'" + args.get(0) + "'が見つかりません"); }
+        Stage stage = plugin.getStages().getStage(args.get(0))
+                .orElseThrow(()-> new CommandException("&cステージ'" + args.get(0) + "'が見つかりません"));
 
-        if (stage.isUsing()) { throw new CommandException("&cステージ'" + args.get(0) + "'は既に使われています！"); }
+        if (stage.isReserved()) {
+            throw new CommandException("&cステージ'" + args.get(0) + "'は既に使われています！");
+        }
 
         // 設定状況をチェックする
         Actions.message(sender, msgPrefix + "&aステージ'" + args.get(0) + "'の設定をチェックします..");
@@ -44,36 +60,48 @@ public class CheckCommand extends BaseCommand {
         List<String> errorLoc = new ArrayList<>();
 
         // ステージエリア
-        if (stage.getStage() == null) {
+        if (stage.getStageArea() == null) {
             error = true;
             Actions.message(sender, msgPrefix + "&6[*]&bステージエリア: &c未設定");
-            if (help == null) help = "&6 * ステージエリアを設定してください！ *\n" + "&6 WorldEditでステージエリアを選択して、\n" + "&6 '&a/flag set stage&6'コマンドを実行してください";
-        } else
+            if (help == null) {
+                help = "&6 * ステージエリアを設定してください！ *\n" + "&6 WorldEditでステージエリアを選択して、\n" + "&6 '&a/flag set stage&6'コマンドを実行してください";
+            }
+        } else {
             Actions.message(sender, msgPrefix + "&6[*]&bステージエリア: &6設定済み");
+        }
 
         // チームスポーン
-        if (stage.getSpawns().size() != GameTeam.values().length) {
+        if (stage.getSpawns().size() < 1 || stage.getSpawns().size() < stage.getBases().size()) {
             error = true;
             Actions.message(sender, msgPrefix + "&6[*]&b各チームスポーン地点: &c未設定");
-            if (help == null) help = "&6 * 各チームのスポーン地点を設定してください！ *\n" + "&6 スポーン地点で'&a/flag set spawn <チーム名>&6'コマンドを実行してください";
-        } else
+            if (help == null) {
+                help = "&6 * 各チームのスポーン地点を設定してください！ *\n" + "&6 スポーン地点で'&a/flag set spawn <チーム名>&6'コマンドを実行してください";
+            }
+        } else {
             Actions.message(sender, msgPrefix + "&6[*]&b各チームスポーン地点: &6設定済み");
+        }
 
         // チームエリア
-        if (stage.getBases().size() != GameTeam.values().length) {
+        if (stage.getBases().size() < 1 || stage.getBases().size() <  stage.getSpawns().size()) {
             error = true;
             Actions.message(sender, msgPrefix + "&6[*]&b各チームスポーンエリア: &c未設定");
-            if (help == null) help = "&6 * 各チームのスポーンエリアを設定してください！ *\n" + "&6 WorldEditでスポーンエリアを選択して、\n" + "&6 '&a/flag set base <チーム名>&6'コマンドを実行してください";
-        } else
+            if (help == null) {
+                help = "&6 * 各チームのスポーンエリアを設定してください！ *\n" + "&6 WorldEditでスポーンエリアを選択して、\n" + "&6 '&a/flag set base <チーム名>&6'コマンドを実行してください";
+            }
+        } else {
             Actions.message(sender, msgPrefix + "&6[*]&b各チームスポーンエリア: &6設定済み");
+        }
 
         // フラッグ
         if (stage.getFlags().size() < 1) {
             error = true;
             Actions.message(sender, msgPrefix + "&6[*]&bフラッグ: &c未設定");
-            if (help == null) help = "&6 * ゲームで使うフラッグを設定してください！ *\n" + "&6 '&a/flag set flag <フラッグ種類>&6'コマンドで管理モードになります";
-        } else
+            if (help == null) {
+                help = "&6 * ゲームで使うフラッグを設定してください！ *\n" + "&6 '&a/flag set flag <フラッグ種類>&6'コマンドで管理モードになります";
+            }
+        } else {
             Actions.message(sender, msgPrefix + "&6[*]&bフラッグ: &6" + stage.getFlags().size() + "個");
+        }
 
         // チェスト
         if (stage.getChests().size() > 0) {
@@ -91,34 +119,39 @@ public class CheckCommand extends BaseCommand {
                     errorLoc.add("&d 2つ下と同じブロックではありません: " + Actions.getBlockLocationString(toBlock.getLocation()));
                 }
             }
-            if (!errorLoc.isEmpty())
+            if (!errorLoc.isEmpty()) {
                 Actions.message(sender, msgPrefix + "&6   &bチェスト: &c" + stage.getChests().size() + "個中 エラー " + errorLoc.size() + "個");
-            else
+            } else {
                 Actions.message(sender, msgPrefix + "&6   &bチェスト: &6" + stage.getChests().size() + "個 OK");
-        } else
+            }
+        } else {
             Actions.message(sender, msgPrefix + "&6   &bチェスト: &6" + stage.getChests().size() + "個");
+        }
 
         // 観戦者スポーン
-        if (stage.getSpecSpawn() == null)
+        if (stage.getSpecSpawn() == null) {
             Actions.message(sender, msgPrefix + "&6   &b観戦者スポーン地点: &c未設定");
-        else
+        } else {
             Actions.message(sender, msgPrefix + "&6   &b観戦者スポーン地点: &6設定済み");
+        }
 
         Actions.message(sender, "&a ===========================================");
-        if (error)
+        if (error) {
             Actions.message(sender, "&6 設定が完了していません。[*]の設定は必須項目です");
-        else
+        } else {
             Actions.message(sender, "&a 必須項目は正しく設定されています");
+        }
 
         if (help != null) {
             String[] ma = help.split("\n");
-            for (String m : ma)
+            for (String m : ma) {
                 Actions.message(sender, m);
+            }
         }
 
         if (!errorLoc.isEmpty()) {
             Actions.message(sender, "&6 チェストに以下のエラーがあります:");
-            errorLoc.forEach(m ->Actions.message(sender, m));
+            errorLoc.forEach(m -> Actions.message(sender, m));
         }
 
         Actions.message(sender, "&a ===========================================");

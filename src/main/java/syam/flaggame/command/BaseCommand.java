@@ -1,6 +1,18 @@
 /* 
- * Copyright (C) 2015 Syamn, SakruaServerDev.
- * All rights reserved.
+ * Copyright (C) 2015 Syamn, SakuraServerDev
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package syam.flaggame.command;
 
@@ -24,7 +36,7 @@ public abstract class BaseCommand {
 
     /* コマンド関係 */
     // 初期化必要無し
-    protected FlagGame plugin;
+    protected final FlagGame plugin;
     protected CommandSender sender;
     protected String command;
 
@@ -38,8 +50,11 @@ public abstract class BaseCommand {
     protected int argLength = 0;
     protected String usage;
 
-    public boolean run(final FlagGame plugin, final CommandSender sender, final String[] preArgs, final String cmd) {
+    public BaseCommand(FlagGame plugin) {
         this.plugin = plugin;
+    }
+    
+    public boolean run(CommandSender sender, String[] preArgs, String cmd) {
         this.sender = sender;
         this.command = cmd;
 
