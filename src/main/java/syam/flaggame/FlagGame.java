@@ -199,22 +199,6 @@ public class FlagGame extends JavaPlugin {
         if (this.rm != null) {
             this.rm.closeAll("&cDisabled");
         }
-        // 開始中のゲームをすべて終わらせる
-        /*
-         boolean readying = false;
-         for (Game_LEGACY game : GameManager_LEGACY.getGames().values()) {
-         if (game.getState() == Game_LEGACY.State.STARTED) {
-         game.cancelTimerTask();
-         game.finish(GameResult.STOP, null, "Unloading FlagGame Plugin");
-         game.log("Game finished because disabling plugin..");
-         } else if (game.getState() == Game_LEGACY.State.ENTRY) {
-         game.message(msgPrefix + "&cあなたのエントリーはプラグインが無効になったため取り消されました");
-         readying = true;
-         }
-         }
-         if (readying) {
-         Actions.broadcastMessage(msgPrefix + "&cプラグインが無効にされたため、参加受付中のゲームは削除されました");
-         }*/
 
         // ゲームデータを保存
         if (gfm != null) {

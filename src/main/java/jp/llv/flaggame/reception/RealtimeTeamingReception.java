@@ -98,8 +98,6 @@ public class RealtimeTeamingReception implements GameReception {
     public void close(String reason) {
         if (this.getState() == State.STARTED) {
             this.stop(reason);
-        } else if (this.getState() != State.FINISHED) {
-            throw new IllegalStateException();
         }
         
         if (this.stageReservation != null) {

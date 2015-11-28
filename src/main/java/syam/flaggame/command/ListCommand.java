@@ -32,7 +32,7 @@ public class ListCommand extends BaseCommand {
             return;
         }
         for (GameReception r : this.plugin.getReceptions()) {
-            gPlayer.sendMessage("&"+getColorCodeOf(r.getState())+r.getName()+"&e"+r.getID());
+            gPlayer.sendMessage("&"+getColorCodeOf(r.getState())+r.getName()+"&e("+r.getID()+")");
         }
     }
     

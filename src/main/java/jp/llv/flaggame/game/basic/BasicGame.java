@@ -23,6 +23,7 @@ import java.util.EnumMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -162,7 +163,8 @@ public class BasicGame implements Game {
                 vp.setExp(0f);
 
                 //ステータス効果
-                Arrays.stream(PotionEffectType.values()).filter(vp::hasPotionEffect).forEach(vp::removePotionEffect);
+                Arrays.stream(PotionEffectType.values())
+                        .filter(Objects::nonNull).filter(vp::hasPotionEffect).forEach(vp::removePotionEffect);
 
                 //プレイヤーリストへ色適用
                 player.setTabName(team.getColor() + player.getName());
