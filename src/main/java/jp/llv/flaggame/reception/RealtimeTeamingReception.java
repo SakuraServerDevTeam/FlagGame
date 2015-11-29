@@ -103,6 +103,12 @@ public class RealtimeTeamingReception implements GameReception {
         if (this.stageReservation != null) {
             this.stageReservation.release();
         }
+        
+        for (GamePlayer p : this.getPlayers()) {
+            this.leave(p);
+        }
+        
+        this.plugin.getReceptions().remove(this);
         this.state = State.CLOSED;
     }
     
