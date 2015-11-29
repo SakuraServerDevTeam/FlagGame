@@ -38,6 +38,8 @@ import jp.llv.flaggame.util.ConvertUtils;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
@@ -215,6 +217,11 @@ public class BasicGame implements Game {
                 player.setTabName(team.getColor().getColor() + player.getName());
             }
         }
+        
+        this.stage.getStageArea().getPos1().getWorld().getEntities().stream()
+                .filter(e -> e instanceof Item)
+                .filter(e -> this.stage.getStageArea().isIn(e.getLocation()))
+                .forEach(Entity::remove);
 
         //各種処理系開始
         BGListener playerListener = new BGPlayerListener(plugin, this);
