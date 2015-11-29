@@ -143,8 +143,6 @@ public class BasicGame implements Game {
             throw new CommandException("&cthe stage is not ready", ex);
         }
 
-        this.state = State.STARTED;
-
         LongStream.of(10000L, 5000L, 4000L, 3000L, 2000L, 1000L)
                 .forEach(r -> {
                     this.plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
@@ -249,8 +247,6 @@ public class BasicGame implements Game {
                     .runTaskLater(plugin, this::notifyRemainTime, t);
                     this.onFinishing.offer(task::cancel);
                 });
-
-        this.onFinishing.offer(() -> this.reception.close("The game finished"));
     }
 
     private void stop() {
@@ -321,6 +317,8 @@ public class BasicGame implements Game {
 
         this.plugin.getServer().getPluginManager()
                 .callEvent(new jp.llv.flaggame.events.GameFinishedEvent(this));
+        
+        this.reception.close("The game finished");
     }
 
     @Override

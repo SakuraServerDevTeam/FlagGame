@@ -42,7 +42,7 @@ import syam.flaggame.player.GamePlayer;
  */
 @ReceptionFor(BasicGame.class)
 public class RealtimeTeamingReception implements GameReception {
-    
+
     private final FlagGame plugin;
     private final String id;
     private final Map<TeamColor, Set<GamePlayer>> players = new EnumMap<>(TeamColor.class);
@@ -50,7 +50,7 @@ public class RealtimeTeamingReception implements GameReception {
     private Stage.Reservation stageReservation;
     private BasicGame game;
     private State state = State.READY;
-    
+
     public RealtimeTeamingReception(FlagGame plugin, String id, List<String> args) {
         this.plugin = plugin;
         this.id = id;
@@ -60,32 +60,32 @@ public class RealtimeTeamingReception implements GameReception {
         this.stage = plugin.getStages().getStage(args.get(0))
                 .orElseThrow(() -> new IllegalArgumentException("No such stage"));
     }
-    
+
     @Override
     public Collection<GamePlayer> getPlayers() {
         Set<GamePlayer> result = new HashSet<>();
         this.players.values().stream().forEach(result::addAll);
         return Collections.unmodifiableSet(result);
     }
-    
+
     @Override
     public void open(List<String> args) throws CommandException {
         if (this.getState() != State.READY) {
             throw new CommandException("&cこの募集は既に開始されました!");
         }
-        
+
         try {
             this.stage.validate();
         } catch (NullPointerException ex) {
             throw new CommandException("&cそのステージは設定が無効です!");
         }
-        
+
         try {
             this.stageReservation = stage.reserve(this);
         } catch (StageReservedException ex) {
             throw new CommandException("&cそのステージは既に使用中です!", ex);
         }
-        
+
         for (TeamColor color : this.stage.getSpawns().keySet()) {
             this.players.put(color, new HashSet<>());
         }
@@ -93,25 +93,32 @@ public class RealtimeTeamingReception implements GameReception {
         GamePlayer.sendMessage(this.plugin.getPlayers(), "&2フラッグゲーム'&6" + this.getName() + "&2'の参加受付が開始されました！");
         GamePlayer.sendMessage(this.plugin.getPlayers(), "&2 '&6/flag join " + this.getID() + "&2' コマンドで参加してください！");
     }
-    
+
     @Override
+    @SuppressWarnings("deprecation")
     public void close(String reason) {
         if (this.getState() == State.STARTED) {
             this.stop(reason);
         }
-        
+
         if (this.stageReservation != null) {
             this.stageReservation.release();
         }
-        
+
         for (GamePlayer p : this.getPlayers()) {
-            this.leave(p);
+            for (Set<GamePlayer> team : this.players.values()) {
+                if (team.contains(p)) {
+                    team.remove(p);
+                    p.leave(this);
+                    return;
+                }
+            }
         }
-        
+
         this.plugin.getReceptions().remove(this);
         this.state = State.CLOSED;
     }
-    
+
     @Override
     public void join(GamePlayer player, List<String> args) throws CommandException {
         if (this.getState() != State.OPENED) {
@@ -130,18 +137,18 @@ public class RealtimeTeamingReception implements GameReception {
                 .orElseThrow(() -> new CommandException("&c参加可能チームがありません!"));
         List<TeamColor> can = m.get(min);
         TeamColor color = can.get((int) (Math.random() * can.size()));
-        
+
         this.players.get(color).add(player);
         player.join(this, args);
         GamePlayer.sendMessage(this.plugin.getPlayers(), color.getColor() + player.getName() + "&aが'" + this.getID() + "'へエントリーしました");
     }
-    
+
     @Override
     public void leave(GamePlayer player) {
         if (this.getState() == State.STARTED) {
             throw new IllegalStateException();
         }
-        
+
         for (Set<GamePlayer> team : this.players.values()) {
             if (team.contains(player)) {
                 team.remove(player);
@@ -152,7 +159,7 @@ public class RealtimeTeamingReception implements GameReception {
         }
         throw new IllegalArgumentException("That player is not joined");
     }
-    
+
     @Override
     public void start(List<String> args) throws CommandException {
         if (this.getState() != State.OPENED) {
@@ -167,36 +174,36 @@ public class RealtimeTeamingReception implements GameReception {
         this.game = new BasicGame(this.plugin, this, this.stage, teams);
         this.game.startLater(10000L);
     }
-    
+
     @Override
     public void stop(String reason) throws IllegalStateException {
         if (this.getState() != State.STARTED) {
             throw new IllegalStateException();
         }
-        
+
         this.game.stopForcibly(reason);
         this.state = State.FINISHED;
     }
-    
+
     @Override
     public Optional<Game> getGame() {
         return Optional.ofNullable(this.game);
     }
-    
+
     @Override
     public String getID() {
         return this.id;
     }
-    
+
     @Override
     public String getName() {
         return this.stage.getName();
     }
-    
+
     @Override
     public State getState() {
         //まずゲームと状態を同期
-        if (this.state == State.OPENED 
+        if (this.state == State.OPENED
                 && this.getGame().map(Game::getState).map(Game.State.STARTED::equals).orElse(Boolean.FALSE)) {
             this.state = State.STARTED;
         }
@@ -205,20 +212,20 @@ public class RealtimeTeamingReception implements GameReception {
         }
         return this.state;
     }
-    
+
     @Override
     public double getEntryFee() {
         return 0;
     }
-    
+
     @Override
     public double getMaxAward() {
         return 0;
     }
-    
+
     @Override
     public Iterator<GamePlayer> iterator() {
         return this.getPlayers().iterator();
     }
-    
+
 }
