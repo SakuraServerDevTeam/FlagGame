@@ -184,6 +184,12 @@ public class SetCommand extends BaseCommand {
         if (team == null) {
             throw new CommandException("&cチーム'" + args.get(1) + "'が見つかりません！");
         }
+        
+        if (args.size() >= 3 && args.get(2).equalsIgnoreCase("none")) {
+            game.setBase(team, null);
+            Actions.message(player, "&a" + team.getTeamName() + "チームの拠点を削除しました！");
+            return;
+        }
 
         // WorldEdit選択領域取得
         Block[] corners = WorldEditHandler.getWorldEditRegion(player);
@@ -230,6 +236,12 @@ public class SetCommand extends BaseCommand {
         }
         if (team == null) {
             throw new CommandException("&cチーム'" + args.get(1) + "'が見つかりません！");
+        }
+        
+        if (args.size() >= 3 && args.get(2).equalsIgnoreCase("none")) {
+            game.setSpawn(team, null);
+            Actions.message(player, "&a" + team.getTeamName() + "チームのスポーン地点を削除しました！");
+            return;
         }
 
         // スポーン地点設定

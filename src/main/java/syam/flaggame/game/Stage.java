@@ -278,7 +278,11 @@ public class Stage {
         if (this.isReserved()) {
             throw new IllegalStateException("This stage has been reserved!");
         }
-        spawnMap.put(team, loc);
+        if (loc == null) {
+            spawnMap.remove(loc);
+        } else {
+            spawnMap.put(team, loc);
+        }
     }
 
     public Location getSpawn(TeamColor team) {
@@ -358,7 +362,11 @@ public class Stage {
         if (this.isReserved()) {
             throw new IllegalStateException("This stage has been reserved!");
         }
-        baseMap.put(team, cuboid);
+        if (cuboid == null) {
+            baseMap.remove(team);
+        } else {
+            baseMap.put(team, cuboid);
+        }
     }
 
     public Cuboid getBase(TeamColor team) {
@@ -571,9 +579,9 @@ public class Stage {
     public void validate() throws NullPointerException {
         Objects.requireNonNull(stageArea);
         if (!available || !stageProtect || spawnMap.isEmpty() || baseMap.isEmpty()) {
-            Objects.requireNonNull(null);//=>NPE
+            throw new NullPointerException();
         } else if (!Objects.equals(spawnMap.keySet(), baseMap.keySet())) {
-            Objects.requireNonNull(null);//=>NPE
+            throw new NullPointerException();
         }
     }
 

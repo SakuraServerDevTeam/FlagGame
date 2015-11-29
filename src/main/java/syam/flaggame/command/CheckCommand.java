@@ -18,12 +18,15 @@ package syam.flaggame.command;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.InventoryHolder;
 import syam.flaggame.FlagGame;
+import syam.flaggame.enums.TeamColor;
 
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
@@ -90,6 +93,15 @@ public class CheckCommand extends BaseCommand {
         } else {
             Actions.message(sender, msgPrefix + "&6[*]&b各チームスポーンエリア: &6設定済み");
         }
+        
+        if (!Objects.equals(stage.getSpawns().keySet(), stage.getBases().keySet())) {
+            error = true;
+            if (help == null) {
+                String difference = stage.getSpawns().keySet().stream().filter(c -> !stage.getBases().keySet().contains(c))
+                        .map(TeamColor::getRichName).collect(Collectors.joining(", "));
+                help = "&6 * 各チームのスポーン地点とスポーンエリアの設定が対応していません!\nスポーンエリア未設定の色: "+difference;
+            }
+        }
 
         // フラッグ
         if (stage.getFlags().size() < 1) {
@@ -137,10 +149,10 @@ public class CheckCommand extends BaseCommand {
         Actions.message(sender, "&a ===========================================");
         if (error) {
             Actions.message(sender, "&6 設定が完了していません。[*]の設定は必須項目です");
-            Actions.message(sender, "&6ステージ" + (stage.isAvailable() ? "&a有効" : "&c無効") 
-                    + " &6保護" + (stage.isStageProtected() ? "&a有効" : "&c無効"));
         } else {
             Actions.message(sender, "&a 必須項目は正しく設定されています");
+            Actions.message(sender, "&6ステージ" + (stage.isAvailable() ? "&a有効" : "&c無効") 
+                    + " &6保護" + (stage.isStageProtected() ? "&a有効" : "&c無効"));
         }
 
         if (help != null) {
