@@ -170,7 +170,7 @@ public class BasicGame implements Game {
 
         GamePlayer.sendMessage(this.plugin.getPlayers(),
                 "&2ゲーム'&6" + this.reception.getName() + "&2'が始まりました！",
-                "&2開催ステージ: '&6" + this.stage.getName() + "&2' &f| &2制限時間: " + ConvertUtils.format(this.stage.getGameTime()),
+                "&2開催ステージ: '&6" + this.stage.getName() + "&2' &f| &2制限時間: " + Actions.getTimeString(this.stage.getGameTime()),
                 this.getTeams().stream()
                 .map(t -> t.getColor().getRichName() + "&f" + t.getPlayers().size() + "人&r").collect(Collectors.joining(", "))
         );
