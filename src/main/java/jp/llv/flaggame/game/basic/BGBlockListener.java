@@ -19,6 +19,7 @@ package jp.llv.flaggame.game.basic;
 import java.util.Collection;
 import jp.llv.flaggame.reception.Team;
 import org.bukkit.Effect;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -59,7 +60,7 @@ public class BGBlockListener extends BGListener {
             event.setCancelled(true);
             return;
         }
-        
+
         Team placerTeam = gplayer.getTeam().get();
         @SuppressWarnings("deprecation")
         TeamColor placedTeamColor = TeamColor.getByColorData(event.getBlock().getData());
@@ -68,17 +69,23 @@ public class BGBlockListener extends BGListener {
             event.setCancelled(true);
             return;
         }
-        
+
         event.setCancelled(false);
-        
+
         GamePlayer.sendMessage(placerTeam,
-                gplayer.getColoredName() + "&aが"+placedTeamColor.getTeamName()+"チームの&6" + f.getTypeName() + "pフラッグ&aを破壊しました!");
+                gplayer.getColoredName() + "&aが" + placedTeamColor.getTeamName() + "チームの&6" + f.getTypeName() + "pフラッグ&aを破壊しました!");
         this.game.getTeams().stream().filter(team -> team.getColor() == placedTeamColor)
                 .forEach(team -> GamePlayer.sendMessage(team,
                                 gplayer.getColoredName() + "&aに&6" + f.getTypeName() + "pフラッグ&aを破壊されました!"));
 
         gplayer.getProfile().addBrokenFlag();
         this.game.getStage().getProfile().addBrokenFlag();
+
+        if (plugin.getConfigs().getUseFlagEffects()) {
+            Location loc = event.getBlock().getLocation();
+            loc.getWorld().createExplosion(loc, 0F, false);
+            loc.getWorld().playEffect(loc, Effect.ENDER_SIGNAL, 0, 10);
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
@@ -122,8 +129,9 @@ public class BGBlockListener extends BGListener {
         this.game.getStage().getProfile().addPlacedFlag();
 
         if (plugin.getConfigs().getUseFlagEffects()) {
-            b.getLocation().getWorld().createExplosion(b.getLocation(), 0F, false);
-            b.getLocation().getWorld().playEffect(b.getLocation(), Effect.ENDER_SIGNAL, 0, 10);
+            Location loc = b.getLocation();
+            loc.getWorld().playEffect(loc, Effect.ENDER_SIGNAL, 0, 10);
+            loc.getWorld().playEffect(loc, Effect.SMOKE, 4, 2);
         }
     }
 
