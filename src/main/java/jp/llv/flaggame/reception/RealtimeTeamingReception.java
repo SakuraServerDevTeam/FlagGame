@@ -190,7 +190,8 @@ public class RealtimeTeamingReception implements GameReception {
     @Override
     public State getState() {
         //まずゲームと状態を同期
-        if (this.state == State.OPENED && this.game.getState() == Game.State.STARTED) {
+        if (this.state == State.OPENED 
+                && this.getGame().map(Game::getState).map(Game.State.STARTED::equals).orElse(Boolean.FALSE)) {
             this.state = State.STARTED;
         }
         if (this.state == State.STARTED && this.game.getState() == Game.State.FINISHED) {
