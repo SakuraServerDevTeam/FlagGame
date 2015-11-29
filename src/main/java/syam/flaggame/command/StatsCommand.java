@@ -25,8 +25,6 @@ import syam.flaggame.FlagGame;
 
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.permission.Perms;
-import syam.flaggame.player.GamePlayer;
-import syam.flaggame.player.PlayerManager;
 import syam.flaggame.player.PlayerProfile;
 import syam.flaggame.util.Actions;
 
@@ -94,7 +92,7 @@ public class StatsCommand extends BaseCommand {
         // 一般 *************************************************
         l.add("&6-=== 一般 ===-");
         l.add("&eゲーム参加: &a" + prof.getPlayed() + " 回");
-        l.add("&2 途中退場: " + (prof.getExited() == 0 ? "a" : "c") + prof.getExited() + " 回");
+        l.add("&e途中退場: &" + (prof.getExited() == 0 ? "a" : "c") + prof.getExited() + " 回");
 
         // 結果 *************************************************
         l.add("&6-=== ゲーム勝敗 ===-");

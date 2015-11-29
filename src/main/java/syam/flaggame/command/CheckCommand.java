@@ -25,7 +25,6 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.InventoryHolder;
 import syam.flaggame.FlagGame;
 
-import syam.flaggame.enums.TeamColor;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
@@ -44,7 +43,7 @@ public class CheckCommand extends BaseCommand {
     @Override
     public void execute() throws CommandException {
         Stage stage = plugin.getStages().getStage(args.get(0))
-                .orElseThrow(()-> new CommandException("&cステージ'" + args.get(0) + "'が見つかりません"));
+                .orElseThrow(() -> new CommandException("&cステージ'" + args.get(0) + "'が見つかりません"));
 
         if (stage.isReserved()) {
             throw new CommandException("&cステージ'" + args.get(0) + "'は既に使われています！");
@@ -82,7 +81,7 @@ public class CheckCommand extends BaseCommand {
         }
 
         // チームエリア
-        if (stage.getBases().size() < 1 || stage.getBases().size() <  stage.getSpawns().size()) {
+        if (stage.getBases().size() < 1 || stage.getBases().size() < stage.getSpawns().size()) {
             error = true;
             Actions.message(sender, msgPrefix + "&6[*]&b各チームスポーンエリア: &c未設定");
             if (help == null) {
@@ -138,6 +137,8 @@ public class CheckCommand extends BaseCommand {
         Actions.message(sender, "&a ===========================================");
         if (error) {
             Actions.message(sender, "&6 設定が完了していません。[*]の設定は必須項目です");
+            Actions.message(sender, "&6ステージ" + (stage.isAvailable() ? "&a有効" : "&c無効") 
+                    + " &6保護" + (stage.isStageProtected() ? "&a有効" : "&c無効"));
         } else {
             Actions.message(sender, "&a 必須項目は正しく設定されています");
         }
