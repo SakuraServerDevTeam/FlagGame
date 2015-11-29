@@ -211,7 +211,7 @@ public class BasicGame implements Game {
                         .filter(Objects::nonNull).filter(vp::hasPotionEffect).forEach(vp::removePotionEffect);
 
                 //プレイヤーリストへ色適用
-                player.setTabName(team.getColor() + player.getName());
+                player.setTabName(team.getColor().getColor() + player.getName());
             }
         }
 
