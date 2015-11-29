@@ -55,24 +55,24 @@ import syam.flaggame.util.Actions;
  * @author Toyblocks
  */
 public class BasicGame implements Game {
-    
+
     private final FlagGame plugin;
     private final GameReception reception;
     private final Stage stage;
     private final Map<TeamColor, Team> teams;
-    
+
     private final IntMap<GamePlayer> personalKillCount = new IntMap<>();
     private final IntMap<TeamColor> killCount = new IntMap<>();
     private final IntMap<GamePlayer> personalDeathCount = new IntMap<>();
     private final IntMap<TeamColor> deathCount = new IntMap<>();
-    
+
     private final Queue<Runnable> onFinishing = new LinkedList<>();
-    
+
     private State state = State.PREPARATION;
     private long expectedFinishAt = 0;
-    
+
     private Team wonTeam = null;
-    
+
     public BasicGame(FlagGame plugin, GameReception reception, Stage stage, Collection<Team> ts) {
         if (plugin == null || reception == null) {
             throw new NullPointerException();
@@ -90,86 +90,86 @@ public class BasicGame implements Game {
             this.teams.put(t.getColor(), t);
         });
     }
-    
+
     public BasicGame(FlagGame plugin, GameReception reception, Stage stage, Team... teams) {
         this(plugin, reception, stage, Arrays.asList(teams));
     }
-    
+
     @Override
     public void startNow() throws CommandException {
         if (this.state != State.PREPARATION) {
             throw new CommandException(new IllegalStateException());
         }
-        
+
         GameStartEvent event = new GameStartEvent(this);
         this.plugin.getServer().getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             throw new CommandException("&cCancelled by event-api");
         }
-        
+
         if (this.getTeams().stream().map(Team::getPlayers).anyMatch(Collection::isEmpty)) {
             throw new CommandException("&cany team is empty");
         }
-        
+
         try {
             this.stage.validate();
         } catch (NullPointerException ex) {
             throw new CommandException("&cthe stage is not ready", ex);
         }
-        
+
         this.state = State.STARTED;
         start();
     }
-    
+
     @Override
     public void startLater(long ms) throws CommandException {
         if (this.state != State.PREPARATION) {
             throw new CommandException(new IllegalStateException());
         }
-        
+
         GameStartEvent event = new GameStartEvent(this);
         this.plugin.getServer().getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             throw new CommandException("&cCancelled by event-api");
         }
-        
+
         if (this.getTeams().stream().map(Team::getPlayers).anyMatch(Collection::isEmpty)) {
             throw new CommandException("&cany team is empty");
         }
-        
+
         try {
             this.stage.validate();
         } catch (NullPointerException ex) {
             throw new CommandException("&cthe stage is not ready", ex);
         }
-        
+
         this.state = State.STARTED;
-        
+
         LongStream.of(10000L, 5000L, 4000L, 3000L, 2000L, 1000L)
-                .map(l -> ms - l).forEach(r -> {
+                .forEach(r -> {
                     this.plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
                         GamePlayer.sendMessage(this.reception.getPlayers(),
                                 "&2ゲーム'&6" + this.reception.getName() + "&2'が始まるまであと&6" + Actions.getTimeString(r) + "&2です!");
-                    }, ConvertUtils.toTick(r));
+                    }, ConvertUtils.toTick(ms - r));
                 });
         this.plugin.getServer().getScheduler().runTaskLater(plugin, this::start, ConvertUtils.toTick(ms));
     }
-    
+
     private void start() {
         if (this.state == State.PREPARATION) {
             this.state = State.STARTED;
         }
-        
+
         stage.initialize();
-        
+
         this.expectedFinishAt = System.currentTimeMillis() + this.stage.getGameTime();
-        
+
         this.stage.getProfile().addPlayed();
 
         //プレイヤーで初期化: 一度もkill/deathがないとnullが変えるのを抑止
         personalKillCount.putAll(this.getReception().getPlayers(), 0);
         personalDeathCount.putAll(this.getReception().getPlayers(), 0);
-        
+
         GamePlayer.sendMessage(this.plugin.getPlayers(),
                 "&2ゲーム'&6" + this.reception.getName() + "&2'が始まりました！",
                 "&2開催ステージ: '&6" + this.stage.getName() + "&2' &f| &2制限時間: " + ConvertUtils.format(this.stage.getGameTime()),
@@ -181,12 +181,12 @@ public class BasicGame implements Game {
                     "&2 '&6/f watch " + this.reception.getID() + "&2' コマンドで観戦することができます！"
             );
         });
-        
+
         for (Team team : this.getTeams()) {
             Location teamSpawn = this.stage.getSpawn(team.getColor());
             for (GamePlayer player : team) {
                 player.getProfile().addPlayed();
-                
+
                 Player vp = player.getPlayer();
                 if (!player.getPlayer().isOnline()) {
                     continue;
@@ -221,23 +221,23 @@ public class BasicGame implements Game {
         BGListener playerListener = new BGPlayerListener(plugin, this);
         this.plugin.getServer().getPluginManager().registerEvents(playerListener, this.plugin);
         this.onFinishing.offer(playerListener::unregister);
-        
+
         BGListener blockListener = new BGBlockListener(plugin, this);
         this.plugin.getServer().getPluginManager().registerEvents(blockListener, this.plugin);
         this.onFinishing.offer(blockListener::unregister);
-        
+
         BGListener inventoryListener = new BGInventoryListener(plugin, this);
         this.plugin.getServer().getPluginManager().registerEvents(inventoryListener, this.plugin);
         this.onFinishing.offer(inventoryListener::unregister);
-        
+
         BGListener entityListener = new BGEntityListener(plugin, this);
         this.plugin.getServer().getPluginManager().registerEvents(entityListener, this.plugin);
         this.onFinishing.offer(entityListener::unregister);
-        
+
         BukkitTask stopTask = this.plugin.getServer().getScheduler()
                 .runTaskLater(plugin, this::stop, ConvertUtils.toTick(this.stage.getGameTime()));
         this.onFinishing.offer(stopTask::cancel);
-        
+
         LongStream lessThanAMinute = LongStream//1~10秒,30秒
                 .of(1000L, 2000L, 3000L, 4000L, 5000L, 6000L, 7000L, 8000L, 9000L, 10000L, 30000L)
                 .filter(t -> t <= this.stage.getGameTime());
@@ -249,49 +249,49 @@ public class BasicGame implements Game {
                     .runTaskLater(plugin, this::notifyRemainTime, t);
                     this.onFinishing.offer(task::cancel);
                 });
-        
+
         this.onFinishing.offer(() -> this.reception.close("The game finished"));
     }
-    
+
     private void stop() {
         if (this.state != State.STARTED) {
             throw new IllegalStateException();
         }
-        
+
         this.state = State.FINISHED;
-        
+
         while (!this.onFinishing.isEmpty()) {
             this.onFinishing.poll().run();
         }
-        
+
         Map<TeamColor, Double> points = new EnumMap<>(TeamColor.class);
         Map<TeamColor, Integer> flagPoints = new EnumMap<>(TeamColor.class);
         Map<TeamColor, Integer> kills = new EnumMap<>(TeamColor.class);
         List<String> msg = new ArrayList<>();
-        
+
         Map<TeamColor, Map<Byte, Integer>> flagPointsMap = stage.checkFlag();
         for (TeamColor col : this.stage.getSpawns().keySet()) {
             int f = flagPointsMap.get(col).entrySet().stream().mapToInt(e -> e.getKey() * e.getValue()).sum();
             flagPoints.put(col, f);
-            
+
             int k = this.getKillCount(col);
             kills.put(col, k);
-            
+
             double p = f;
             points.put(col, p);
             msg.add(col.getColor() + col.getTeamName() + "チーム得点: &6" + p + col.getColor() + "点&f(フラッグ: " + f + "点)");
         }
-        
+
         TeamColor won = null;
         Map<Double, Set<TeamColor>> rPoints = MapUtils.rank(points, (d1, d2) -> Double.compare(d2, d1));
         Map.Entry<Double, Set<TeamColor>> first = rPoints.entrySet().iterator().next();
         if (first.getValue().size() == 1) {
             won = first.getValue().iterator().next();
         }
-        
+
         Map.Entry<Integer, Set<GamePlayer>> topKill
                 = MapUtils.rank(this.personalKillCount, (i1, i2) -> Integer.compare(i2, i1)).entrySet().iterator().next();
-        
+
         GamePlayer.sendMessage(this.plugin.getPlayers(),
                 "&2フラッグゲーム'&6" + this.stage.getName() + "&2'が終わりました!",
                 String.join("&f, ", msg),
@@ -301,7 +301,7 @@ public class BasicGame implements Game {
                 "&6トップキル: " + topKill.getValue().stream().map(GamePlayer::getColoredName)
                 .collect(Collectors.joining("&f, ")) + "&f (&6" + topKill.getKey() + "Kills&f)"
         );
-        
+
         for (GamePlayer g : this.getReception().getPlayers()) {
             if (!g.getPlayer().isOnline()) {
                 g.getProfile().addExited();
@@ -318,23 +318,23 @@ public class BasicGame implements Game {
                 }
             }
         }
-        
+
         this.plugin.getServer().getPluginManager()
                 .callEvent(new jp.llv.flaggame.events.GameFinishedEvent(this));
     }
-    
+
     @Override
     public void stopForcibly(String message) {
         if (this.state != State.STARTED) {
             throw new IllegalStateException();
         }
-        
+
         this.state = State.FINISHED;
-        
+
         while (!this.onFinishing.isEmpty()) {
             this.onFinishing.peek().run();
         }
-        
+
         for (GamePlayer g : this.reception.getPlayers()) {
             g.getProfile().decreasePlayed();
             if (g.getPlayer().isOnline()) {
@@ -343,15 +343,15 @@ public class BasicGame implements Game {
                 g.resetTabName();
             }
         }
-        
+
         GamePlayer.sendMessage(this.reception.getPlayers(), "&2フラッグゲーム'&6" + this.stage.getName() + "&2'は強制終了されました: "
                 + message);
     }
-    
+
     public long getRemainTime() {
         return this.expectedFinishAt - System.currentTimeMillis();
     }
-    
+
     private void notifyRemainTime() {
         GamePlayer.sendMessage(this.getReception().getPlayers(), "&aゲーム終了まであと " + Actions.getTimeString(getRemainTime()) + "です!");
     }
@@ -360,11 +360,11 @@ public class BasicGame implements Game {
         this.killCount.increase(player.getTeam().get().getColor());
         this.personalKillCount.increase(player);
     }
-    
+
     public int getKillCount(TeamColor color) {
         return this.killCount.getOrZero(color);
     }
-    
+
     public int getKillCount(GamePlayer color) {
         return this.personalKillCount.getOrZero(color);
     }
@@ -373,42 +373,42 @@ public class BasicGame implements Game {
         this.deathCount.increase(player.getTeam().get().getColor());
         this.personalDeathCount.increase(player);
     }
-    
+
     public int getDeathCount(TeamColor color) {
         return this.deathCount.getOrZero(color);
     }
-    
+
     public int getDeathCount(GamePlayer color) {
         return this.personalDeathCount.getOrZero(color);
     }
-    
+
     @Override
     public Collection<Team> getTeams() {
         return this.teams.values();
     }
-    
+
     @Override
     public Team getTeam(TeamColor color) {
         return this.teams.get(color);
     }
-    
+
     @Override
     public GameReception getReception() {
         return this.reception;
     }
-    
+
     @Override
     public Stage getStage() {
         return this.stage;
     }
-    
+
     @Override
     public State getState() {
         return this.state;
     }
-    
+
     public Team getWonTeam() {
         return this.wonTeam;
     }
-    
+
 }
