@@ -27,7 +27,6 @@ import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.player.GamePlayer;
-import syam.flaggame.player.PlayerManager;
 import syam.flaggame.util.Actions;
 
 public class WatchCommand extends BaseCommand {

@@ -276,7 +276,8 @@ public class FlagGame extends JavaPlugin {
     private void registerCommands() {
         Stream.<Function<FlagGame, ? extends BaseCommand>>of(
                 HelpCommand::new,
-                InfoCommand::new,
+                SInfoCommand::new,
+                PInfoCommand::new,
                 ListCommand::new,
                 JoinCommand::new,
                 WatchCommand::new,
@@ -286,6 +287,7 @@ public class FlagGame extends JavaPlugin {
                 ConfirmCommand::new,
                 ReadyCommand::new,
                 StartCommand::new,
+                CloseCommand::new,
                 StageCommand::new,
                 SelectCommand::new,
                 SetCommand::new,

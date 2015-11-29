@@ -49,7 +49,13 @@ public class ReadyCommand extends BaseCommand {
         } catch (IllegalArgumentException ex) {
             throw new CommandException("&c"+ex.getMessage(), ex);
         }
-        reception.open(Collections.EMPTY_LIST);
+        
+        try {
+            reception.open(Collections.EMPTY_LIST);
+        } catch(CommandException ex) {
+            reception.close("Failed to initialize");
+            throw ex;
+        }
         Actions.sendPrefixedMessage(sender, "&a受付'" + reception.getID() + "'の募集が開始されました");
     }
 

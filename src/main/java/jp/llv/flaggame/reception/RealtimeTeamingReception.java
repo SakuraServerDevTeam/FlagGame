@@ -110,7 +110,6 @@ public class RealtimeTeamingReception implements GameReception {
                 if (team.contains(p)) {
                     team.remove(p);
                     p.leave(this);
-                    return;
                 }
             }
         }

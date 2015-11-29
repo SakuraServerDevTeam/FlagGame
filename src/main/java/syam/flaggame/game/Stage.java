@@ -562,7 +562,8 @@ public class Stage {
             } catch (NullPointerException npe) {
                 npe.printStackTrace();
             } catch (Exception ex) {
-                ex.printStackTrace();
+                log.log(Level.WARNING, "Invalid inventory@{0}", toBlock.getLocation());
+                log.log(Level.WARNING, ex.getMessage());
             }
         }
     }

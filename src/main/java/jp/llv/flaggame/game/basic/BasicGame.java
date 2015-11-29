@@ -191,6 +191,7 @@ public class BasicGame implements Game {
                 }
                 vp.teleport(teamSpawn, TeleportCause.PLUGIN);
                 vp.setGameMode(GameMode.SURVIVAL);
+                vp.setFlying(false);
 
                 //インベントリ操作
                 vp.getInventory().clear();
@@ -344,6 +345,8 @@ public class BasicGame implements Game {
 
         GamePlayer.sendMessage(this.reception.getPlayers(), "&2フラッグゲーム'&6" + this.stage.getName() + "&2'は強制終了されました: "
                 + message);
+        
+        this.reception.close("The game finished");
     }
 
     public long getRemainTime() {

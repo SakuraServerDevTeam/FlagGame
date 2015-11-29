@@ -30,10 +30,10 @@ public enum Perms {
 
     /* コマンド系 */
     // User Commands
-    INFO("user.info"), LIST("user.list"), JOIN("user.join"), LEAVE_GAME("user.leave.game"), LEAVE_READY("user.leave.ready"), LEAVE_SPECTATE("user.leave.spectate"), STATS_SELF("user.stats.self"), STATS_OTHER("user.stats.other"), TOP("user.top"), WATCH("user.watch"),
+    SINFO("user.stageinfo"),  LIST("user.list"), JOIN("user.join"), LEAVE_GAME("user.leave.game"), LEAVE_READY("user.leave.ready"), LEAVE_SPECTATE("user.leave.spectate"), STATS_SELF("user.stats.self"), STATS_OTHER("user.stats.other"), TOP("user.top"), WATCH("user.watch"),
 
     // Admin Commands
-    READY("admin.ready"), SELECT("admin.select"), START("admin.start"), TP("admin.tp"), ROLLBACK("admin.rollback"),
+    PINFO("user.playerinfo"), READY("admin.ready"), CLOSE("admin.close"), SELECT("admin.select"), START("admin.start"), TP("admin.tp"), ROLLBACK("admin.rollback"),
 
     // Setup Commands
     CREATE("admin.setup.create"), DELETE("admin.setup.delete"), SET("admin.setup.set"), CHECK("admin.setup.check"),
