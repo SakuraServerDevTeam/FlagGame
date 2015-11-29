@@ -41,7 +41,9 @@ public interface Game extends Iterable<GamePlayer> {
          return this.getReception().getID();
     }
     
-    void start() throws CommandException;
+    void startNow() throws CommandException;
+    
+    void startLater(long ms) throws CommandException;
     
     void stopForcibly(String message);
 

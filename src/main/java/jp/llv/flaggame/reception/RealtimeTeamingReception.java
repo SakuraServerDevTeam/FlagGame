@@ -159,8 +159,7 @@ public class RealtimeTeamingReception implements GameReception {
         }
         //start game
         this.game = new BasicGame(this.plugin, this, this.stage, teams);
-        this.game.start();
-        this.state = State.STARTED;
+        this.game.startLater(10000L);
     }
     
     @Override
@@ -191,6 +190,9 @@ public class RealtimeTeamingReception implements GameReception {
     @Override
     public State getState() {
         //まずゲームと状態を同期
+        if (this.state == State.OPENED && this.game.getState() == Game.State.STARTED) {
+            this.state = State.STARTED;
+        }
         if (this.state == State.STARTED && this.game.getState() == Game.State.FINISHED) {
             this.state = State.FINISHED;
         }
