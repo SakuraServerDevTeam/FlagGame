@@ -137,7 +137,11 @@ public class RealtimeTeamingReception implements GameReception {
         List<TeamColor> can = m.get(min);
         TeamColor color = can.get((int) (Math.random() * can.size()));
 
-        this.players.get(color).add(player);
+        if (this.game == null) {
+            this.players.get(color).add(player);
+        } else {
+            this.game.getTeam(color).add(player);
+        }
         player.join(this, args);
         GamePlayer.sendMessage(this.plugin.getPlayers(), color.getColor() + player.getName() + "&aが'" + this.getID() + "'へエントリーしました");
     }
