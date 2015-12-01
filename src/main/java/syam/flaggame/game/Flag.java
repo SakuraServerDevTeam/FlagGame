@@ -25,8 +25,8 @@ import syam.flaggame.enums.TeamColor;
 public class Flag {
     
     private static final int[] FLAG_BLOCK_IDS = {35};
-    private Location loc = null; // フラッグ座標
-    private byte type = 0; // フラッグの種類
+    private final Location loc; // フラッグ座標
+    private final byte type; // フラッグの種類
 
     /*
      * コンストラクタ

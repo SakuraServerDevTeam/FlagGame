@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.BiFunction;
+import jp.llv.flaggame.game.basic.objective.Nexus;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
@@ -43,7 +44,7 @@ public final class ConfigUtils {
     private ConfigUtils() {
         throw new RuntimeException();
     }
-    
+
     public static void writeUUID(ConfigurationSection section, String key, UUID uuid) {
         if (uuid == null) {
             section.set(key, null);
@@ -207,7 +208,34 @@ public final class ConfigUtils {
             return new Flag(loc, p);
         }
     }
-    
+
+    public static void writeNexus(ConfigurationSection section, String key, Nexus nexus) {
+        if (nexus == null) {
+            section.set(key, null);
+        } else {
+            ConfigurationSection ns = section.createSection(key);
+            writeLocation(ns, "loc", nexus.getLocation());
+            ns.set("color", nexus.getColor().toString());
+            ns.set("point", nexus.getPoint());
+        }
+    }
+
+    public static Nexus readNexus(ConfigurationSection section, String key) {
+        if (section.getConfigurationSection(key) == null) {
+            return null;
+        } else {
+            try {
+                ConfigurationSection ns = section.getConfigurationSection(key);
+                Location loc = readLocation(ns, "loc");
+                TeamColor tc = TeamColor.valueOf(ns.getString("color").toUpperCase());
+                double p = ns.getDouble("point", 1.0D);
+                return new Nexus(loc, tc, p);
+            } catch (IllegalArgumentException | NullPointerException ex) {
+                return null;
+            }
+        }
+    }
+
     public static void writeStageProfile(ConfigurationSection section, String key, StageProfile profile) {
         if (profile == null) {
             section.set(key, null);
@@ -220,7 +248,7 @@ public final class ConfigUtils {
             ns.set("brokenflag", profile.getBrokenFlag());
         }
     }
-    
+
     public static StageProfile readStageProfile(ConfigurationSection section, String key) {
         if (section.getConfigurationSection(key) == null) {
             return null;
@@ -232,7 +260,7 @@ public final class ConfigUtils {
             int death = ns.getInt("death");
             int placedFlag = ns.getInt("placedflag");
             int brokenFlag = ns.getInt("brokenflag");
-            
+
             StageProfile profile = new StageProfile();
             profile.setLastPlayedAt(lastPlayed);
             profile.setKill(kill);
@@ -242,7 +270,7 @@ public final class ConfigUtils {
             return profile;
         }
     }
-    
+
     public static void writeStage(ConfigurationSection section, String key, Stage stage) {
         if (stage == null) {
             section.set(key, null);
@@ -257,12 +285,13 @@ public final class ConfigUtils {
             writeEnumMap(ns, "spawn", stage.getSpawns(), ConfigUtils::writeLocation);
             writeLocation(ns, "specspawn", stage.getSpecSpawn().orElse(null));
             writeList(ns, "flags", stage.getFlags().values(), ConfigUtils::writeFlag);
+            writeList(ns, "nexuses", stage.getNexuses().values(), ConfigUtils::writeNexus);
             writeEnumMap(ns, "bases", stage.getBases(), ConfigUtils::writeCuboid);
             writeList(ns, "containers", stage.getChests(), ConfigUtils::writeLocation);
             writeStageProfile(ns, "profile", stage.getProfile());
         }
     }
-    
+
     public static Stage readStage(ConfigurationSection section, String key) {
         if (section.getConfigurationSection(key) == null) {
             return null;
@@ -277,21 +306,39 @@ public final class ConfigUtils {
             EnumMap<TeamColor, Location> spawn = readEnumMap(ns, "spawn", TeamColor.class, ConfigUtils::readLocation);
             Location specspawn = readLocation(ns, "specspawn");
             List<Flag> flags = readList(ns, "flags", ConfigUtils::readFlag);
+            List<Nexus> nexuses = readList(ns, "nexuses", ConfigUtils::readNexus);
             EnumMap<TeamColor, Cuboid> bases = readEnumMap(ns, "bases", TeamColor.class, ConfigUtils::readCuboid);
             List<Location> containers = readList(ns, "containers", ConfigUtils::readLocation);
-            
+
             StageProfile profile = readStageProfile(ns, "profile");
             Stage stage = new Stage(name, profile);
-            if (time > 0) stage.setGameTime(time);
+            if (time > 0) {
+                stage.setGameTime(time);
+            }
             stage.setTeamLimit(teamlimit);
             stage.setStageProtected(protect);
             stage.setAvailable(available);
-            if (area != null) stage.setStageArea(area);
-            if (spawn != null) stage.setSpawns(spawn);
-            if (specspawn != null) stage.setSpecSpawn(specspawn);
-            if (flags != null) stage.setFlags(flags);
-            if (bases != null) stage.setBases(bases);
-            if (containers != null) stage.setChests(containers);
+            if (area != null) {
+                stage.setStageArea(area);
+            }
+            if (spawn != null) {
+                stage.setSpawns(spawn);
+            }
+            if (specspawn != null) {
+                stage.setSpecSpawn(specspawn);
+            }
+            if (flags != null) {
+                stage.setFlags(flags);
+            }
+            if (nexuses != null) {
+                stage.setNexuses(nexuses);
+            }
+            if (bases != null) {
+                stage.setBases(bases);
+            }
+            if (containers != null) {
+                stage.setChests(containers);
+            }
             return stage;
         }
     }

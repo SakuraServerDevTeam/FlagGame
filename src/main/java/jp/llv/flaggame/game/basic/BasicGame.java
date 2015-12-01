@@ -30,11 +30,13 @@ import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 import jp.llv.flaggame.events.GameStartEvent;
 import jp.llv.flaggame.game.Game;
+import jp.llv.flaggame.game.basic.objective.Nexus;
 import jp.llv.flaggame.reception.GameReception;
 import jp.llv.flaggame.reception.Team;
 import jp.llv.flaggame.util.IntMap;
 import jp.llv.flaggame.util.MapUtils;
 import jp.llv.flaggame.util.ConvertUtils;
+import jp.llv.flaggame.util.DoubleMap;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -68,6 +70,8 @@ public class BasicGame implements Game {
     private final IntMap<GamePlayer> personalDeathCount = new IntMap<>();
     private final IntMap<TeamColor> deathCount = new IntMap<>();
 
+    private final DoubleMap<GamePlayer> breakNexus = new DoubleMap<>();
+    
     private final Queue<Runnable> onFinishing = new LinkedList<>();
 
     private State state = State.PREPARATION;
@@ -388,6 +392,10 @@ public class BasicGame implements Game {
 
     public int getDeathCount(GamePlayer color) {
         return this.personalDeathCount.getOrZero(color);
+    }
+    
+    /*package*/ void addBreakNexus(GamePlayer player, Nexus nexus) {
+        this.breakNexus.add(player, nexus.getPoint());
     }
 
     @Override

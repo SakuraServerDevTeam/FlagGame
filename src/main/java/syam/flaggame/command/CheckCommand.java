@@ -93,26 +93,18 @@ public class CheckCommand extends BaseCommand {
         } else {
             Actions.message(sender, msgPrefix + "&6[*]&b各チームスポーンエリア: &6設定済み");
         }
-        
+
         if (!Objects.equals(stage.getSpawns().keySet(), stage.getBases().keySet())) {
             error = true;
             if (help == null) {
                 String difference = stage.getSpawns().keySet().stream().filter(c -> !stage.getBases().keySet().contains(c))
                         .map(TeamColor::getRichName).collect(Collectors.joining(", "));
-                help = "&6 * 各チームのスポーン地点とスポーンエリアの設定が対応していません!\nスポーンエリア未設定の色: "+difference;
+                help = "&6 * 各チームのスポーン地点とスポーンエリアの設定が対応していません!\nスポーンエリア未設定の色: " + difference;
             }
         }
 
         // フラッグ
-        if (stage.getFlags().size() < 1) {
-            error = true;
-            Actions.message(sender, msgPrefix + "&6[*]&bフラッグ: &c未設定");
-            if (help == null) {
-                help = "&6 * ゲームで使うフラッグを設定してください！ *\n" + "&6 '&a/flag set flag <フラッグ種類>&6'コマンドで管理モードになります";
-            }
-        } else {
-            Actions.message(sender, msgPrefix + "&6[*]&bフラッグ: &6" + stage.getFlags().size() + "個");
-        }
+        Actions.message(sender, msgPrefix + "&6[*]&bフラッグ: &6" + stage.getFlags().size() + "個");
 
         // チェスト
         if (stage.getChests().size() > 0) {
@@ -151,7 +143,7 @@ public class CheckCommand extends BaseCommand {
             Actions.message(sender, "&6 設定が完了していません。[*]の設定は必須項目です");
         } else {
             Actions.message(sender, "&a 必須項目は正しく設定されています");
-            Actions.message(sender, "&6ステージ" + (stage.isAvailable() ? "&a有効" : "&c無効") 
+            Actions.message(sender, "&6ステージ" + (stage.isAvailable() ? "&a有効" : "&c無効")
                     + " &6保護" + (stage.isStageProtected() ? "&a有効" : "&c無効"));
         }
 

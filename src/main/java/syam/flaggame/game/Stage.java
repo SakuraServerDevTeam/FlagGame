@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -28,6 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import jp.llv.flaggame.game.basic.objective.Nexus;
 import jp.llv.flaggame.reception.GameReception;
 
 import org.bukkit.Location;
@@ -72,6 +74,7 @@ public class Stage {
 
     // フラッグ・チェスト
     private final Map<Location, Flag> flags = Collections.synchronizedMap(new HashMap<>());
+    private final Map<Location, Nexus> nexuses = Collections.synchronizedMap(new HashMap<>());
     private final Set<Location> chests = Collections.newSetFromMap(new ConcurrentHashMap<Location, Boolean>());
 
     // 地点・エリア
@@ -105,15 +108,11 @@ public class Stage {
         return this.profile;
     }
 
-    /* ***** フラッグ関係 ***** */
-
     /*
      * フラッグブロックとそのチームを設定する
      * 
-     * @param loc
-     *            設定するブロック座標
-     * @param team
-     *            設定するGameTeam
+     * @param loc 設定するブロック座標
+     * @param team 設定するGameTeam
      */
     public void addFlag(Flag flag) {
         if (this.isReserved()) {
@@ -173,9 +172,45 @@ public class Stage {
             throw new IllegalStateException("This stage has been reserved!");
         }
         this.flags.clear();
-        for (Flag f : flags) {
-            this.flags.put(f.getLocation(), f);
+        flags.stream().forEach(f -> this.flags.put(f.getLocation(), f));
+    }
+
+    public void addNexus(Nexus nexus) {
+        if (this.isReserved()) {
+            throw new IllegalStateException("This stage has been reserved!");
         }
+        this.nexuses.put(nexus.getLocation(), nexus);
+    }
+
+    public void removeNexus(Nexus nexus) {
+        if (this.isReserved()) {
+            throw new IllegalStateException("This stage has been reserved!");
+        }
+        for (Iterator<Nexus> it = this.nexuses.values().iterator(); it.hasNext();) {
+            if (it.next() == nexus) {
+                it.remove();
+            }
+        }
+    }
+
+    public Optional<Nexus> getNexus(Location location) {
+        return Optional.ofNullable(this.nexuses.get(location));
+    }
+
+    public boolean isNexus(Location location) {
+        return this.nexuses.containsKey(location);
+    }
+
+    public Map<Location, Nexus> getNexuses() {
+        return Collections.unmodifiableMap(this.nexuses);
+    }
+
+    public void setNexuses(Collection<Nexus> nexuses) {
+        if (this.isReserved()) {
+            throw new IllegalStateException("This stage has been reserved!");
+        }
+        this.nexuses.clear();
+        nexuses.stream().forEach(f -> this.nexuses.put(f.getLocation(), f));
     }
 
     /**

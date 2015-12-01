@@ -1,5 +1,5 @@
-/* 
- * Copyright (C) 2015 Toyblocks, SakuraServerDev
+/*
+ * Copyright (C) 2015 Toyblocks
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,28 +19,28 @@ package jp.llv.flaggame.util;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.OptionalInt;
+import java.util.OptionalDouble;
 
 /**
  *
  * @author Toyblocks
  * @param <K> the type of keys maintained by this map
  */
-public class IntMap<K> extends HashMap<K, Integer> {
+public class DoubleMap<K> extends HashMap<K, Double> {
     private static final long serialVersionUID = 1L;
 
-    public IntMap(int i, float f) {
+    public DoubleMap(int i, float f) {
         super(i, f);
     }
 
-    public IntMap(int i) {
+    public DoubleMap(int i) {
         super(i);
     }
 
-    public IntMap() {
+    public DoubleMap() {
     }
 
-    public IntMap(Map<? extends K, ? extends Integer> map) {
+    public DoubleMap(Map<? extends K, ? extends Double> map) {
         super(map);
     }
     
@@ -48,8 +48,8 @@ public class IntMap<K> extends HashMap<K, Integer> {
         this.add(key, 1);
     }
     
-    public void add(K key, int num) {
-        Integer v = super.get(key);
+    public void add(K key, double num) {
+        Double v = super.get(key);
         v = v != null ? v+=num : num;
         super.put(key, v);
     }
@@ -58,25 +58,25 @@ public class IntMap<K> extends HashMap<K, Integer> {
         this.subtract(key, 1);
     }
     
-    public void subtract(K key, int num) {
+    public void subtract(K key, double num) {
         this.add(key, -num);
     }
     
-    public int getOr(K key, int def) {
-        Integer i = super.get(key);
+    public double getOr(K key, double def) {
+        Double i = super.get(key);
         return i != null ? i : def;
     }
     
-    public int getOrZero(K key) {
+    public double getOrZero(K key) {
         return this.getOr(key, 0);
     }
     
-    public OptionalInt getOptional(K key) {
-        Integer i = super.get(key);
-        return i != null ? OptionalInt.of(i) : OptionalInt.empty();
+    public OptionalDouble getOptional(K key) {
+        Double i = super.get(key);
+        return i != null ? OptionalDouble.of(i) : OptionalDouble.empty();
     }
     
-    public void putAll(Collection<? extends K> keys, int value) {
+    public void putAll(Collection<? extends K> keys, double value) {
         for (K k : keys) {
             super.put(k, value);
         }

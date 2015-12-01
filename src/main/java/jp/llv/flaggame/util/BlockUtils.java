@@ -14,25 +14,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jp.llv.flaggame.game.basic;
+package jp.llv.flaggame.util;
 
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
+import org.bukkit.DyeColor;
+import org.bukkit.block.Banner;
+import org.bukkit.block.banner.Pattern;
+import org.bukkit.block.banner.PatternType;
 
 /**
  *
  * @author Toyblocks
  */
-public abstract class BGListener implements Listener {
+public final class BlockUtils {
     
-    protected final BasicGame game;
-
-    public BGListener(BasicGame game) {
-        this.game = game;
+    private BlockUtils() {
+        throw new RuntimeException();
     }
     
-    public void unregister() {
-        HandlerList.unregisterAll(this);
+    public static void print(Banner banner) {
+        banner.addPattern(new Pattern(DyeColor.WHITE, PatternType.BASE));
     }
     
 }

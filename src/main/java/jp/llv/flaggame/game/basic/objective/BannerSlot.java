@@ -1,5 +1,5 @@
-/* 
- * Copyright (C) 2015 Toyblocks, SakuraServerDev
+/*
+ * Copyright (C) 2015 Toyblocks
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,25 +14,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jp.llv.flaggame.game.basic;
+package jp.llv.flaggame.game.basic.objective;
 
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
+import org.bukkit.Location;
+import syam.flaggame.enums.TeamColor;
 
 /**
  *
  * @author Toyblocks
  */
-public abstract class BGListener implements Listener {
+public class BannerSlot {
     
-    protected final BasicGame game;
+    private final Location loc;
+    private final TeamColor color;
 
-    public BGListener(BasicGame game) {
-        this.game = game;
+    public BannerSlot(Location loc, TeamColor color) {
+        this.loc = loc;
+        this.color = color;
     }
-    
-    public void unregister() {
-        HandlerList.unregisterAll(this);
+
+    public Location getLocation() {
+        return loc;
+    }
+
+    public TeamColor getColor() {
+        return color;
     }
     
 }
