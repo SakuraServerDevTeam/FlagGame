@@ -110,6 +110,24 @@ public interface PlayerProfile {
         setBrokenFlag(getBrokenFlag()+1);
     }
     
+    void setBrokenNexus(int times);
+    
+    int getBrokenNexus();
+    
+    default void addBrokenNexus() {
+        setBrokenNexus(getBrokenNexus()+1);
+    }
+    
+    /*=====*/
+    
+    void setCapturedBanner(int times);
+    
+    int getCapturedBanner();
+    
+    default void addCapturedBanner() {
+        setCapturedBanner(getCapturedBanner()+1);
+    }
+    
     /*=====*/
     
     void setLastPlayedAt(long epoch);

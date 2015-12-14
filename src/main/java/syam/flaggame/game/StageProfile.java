@@ -28,6 +28,9 @@ public class StageProfile {
     private int death;
     private int placedFlag;
     private int brokenFlag;
+    private int brokenNexus;
+    private int capturedBanner;
+    private int deployedBanner;
 
     public Long getLastPlayedAt() {
         return lastPlayedAt;
@@ -91,6 +94,42 @@ public class StageProfile {
     
     public void addPlayed() {
         this.played++;
+    }
+
+    public int getBrokenNexus() {
+        return brokenNexus;
+    }
+
+    public void setBrokenNexus(int brokenNexus) {
+        this.brokenNexus = brokenNexus;
+    }
+    
+    public void addBrokenNexus() {
+        this.brokenNexus++;
+    }
+
+    public int getCapturedBanner() {
+        return capturedBanner;
+    }
+
+    public void setCapturedBanner(int capturedBanner) {
+        this.capturedBanner = capturedBanner;
+    }
+    
+    public void addCapturedBanner() {
+        this.capturedBanner++;
+    }
+
+    public int getDeployedBanner() {
+        return deployedBanner;
+    }
+
+    public void setDeployedBanner(int deployedBanner) {
+        this.deployedBanner = deployedBanner;
+    }
+    
+    public void addDeployedBanner() {
+        this.deployedBanner++;
     }
     
 }

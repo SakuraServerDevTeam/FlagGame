@@ -17,6 +17,7 @@
 package syam.flaggame.player;
 
 import java.util.Optional;
+import syam.flaggame.enums.TeamColor;
 import syam.flaggame.enums.config.Configables;
 import syam.flaggame.game.Stage;
 
@@ -29,7 +30,9 @@ public class SetupSession {
     private final Stage stage;
     private Configables setting;
     
-    private Byte selectedFlagType = null;
+    private TeamColor color = null;
+    private Double point = null;
+    private Byte hp = null;
     
     /*package*/ SetupSession(Stage stage) {
         if (stage == null) throw new NullPointerException();
@@ -49,14 +52,37 @@ public class SetupSession {
         return this;
     }
     
-    public Optional<Byte> getSelectedFlagType() {
-        if (this.setting != Configables.FLAG) throw new IllegalStateException();
-        return Optional.ofNullable(this.selectedFlagType);
+    public Double getSelectedPoint() {
+        if (this.setting != Configables.FLAG && this.setting != Configables.NEXUS) throw new IllegalStateException();
+        return this.point;
     }
     
-    public void setSelectedFlagType(byte flagType) {
-        if (this.setting != Configables.FLAG) throw new IllegalStateException();
-        this.selectedFlagType = flagType;
+    public SetupSession setSelectedPoint(double point) {
+        if (this.setting != Configables.FLAG && this.setting != Configables.NEXUS) throw new IllegalStateException();
+        this.point = point;
+        return this;
+    }
+
+    public TeamColor getSelectedColor() {
+        if (this.setting != Configables.BANNER_SLOT) throw new IllegalStateException();
+        return color;
+    }
+
+    public SetupSession setSelectedColor(TeamColor color) {
+        if (this.setting != Configables.BANNER_SLOT) throw new IllegalStateException();
+        this.color = color;
+        return this;
+    }
+
+    public Byte getSelectedHp() {
+        if (this.setting != Configables.BANNER_SPAWNER) throw new IllegalStateException();
+        return hp;
+    }
+
+    public SetupSession setHp(Byte hp) {
+        if (this.setting != Configables.BANNER_SPAWNER) throw new IllegalStateException();
+        this.hp = hp;
+        return this;
     }
     
 }

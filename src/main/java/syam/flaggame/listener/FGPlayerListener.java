@@ -19,6 +19,8 @@ package syam.flaggame.listener;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jp.llv.flaggame.game.Game;
+import jp.llv.flaggame.game.basic.objective.BannerSlot;
+import jp.llv.flaggame.game.basic.objective.BannerSpawner;
 import jp.llv.flaggame.reception.GameReception;
 
 import org.bukkit.Bukkit;
@@ -38,7 +40,11 @@ import syam.flaggame.FlagGame;
 import syam.flaggame.enums.TeamColor;
 import syam.flaggame.enums.SignAction;
 import syam.flaggame.enums.config.Configables;
-import syam.flaggame.game.Flag;
+import jp.llv.flaggame.game.basic.objective.Flag;
+import jp.llv.flaggame.game.basic.objective.Nexus;
+import org.bukkit.block.BlockFace;
+import org.bukkit.material.Banner;
+import syam.flaggame.exception.StageReservedException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.player.GamePlayer;
@@ -67,11 +73,11 @@ public class FGPlayerListener implements Listener {
         if (block == null) {
             return;
         }
-        
+
         GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
 
         // 管理モードで権限を持ち、かつ設定したツールでブロックを右クリックした
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK 
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK
                 && gPlayer.getSetupSession().isPresent()
                 && player.getItemInHand().getTypeId() == plugin.getConfigs().getToolID()
                 && Perms.SET.has(player)) {
@@ -95,24 +101,104 @@ public class FGPlayerListener implements Listener {
                 // フラッグモード
                 case FLAG:
                     // 既にフラッグブロックなら解除する
-                    if (stage.isFlag(loc)) {
-                        stage.removeFlag(loc);
+                    if (stage.getFlag(loc).isPresent()) {
+                        try {
+                            stage.removeFlag(loc);
+                        } catch (StageReservedException ex) {
+                            Actions.message(player, "&cステージ" + stage.getName() + "は現在編集不可です!");
+                            return;
+                        }
                         Actions.message(player, "&aステージ'" + stage.getName() + "'のフラッグを削除しました！");
                         return;
                     }
 
                     // フラッグタイプを取得
-                    Byte type = sess.getSelectedFlagType().get();
-                    if (type == null) {
-                        Actions.message(player, "&cフラッグの種類が指定されていません！");
-                        return;
-                    }
+                    Byte type = sess.getSelectedPoint().byteValue();
 
                     // 新規フラッグ登録
-                    stage.addFlag(new Flag(loc, type));
+                    try {
+                        stage.addFlag(new Flag(loc, type));
+                    } catch (StageReservedException ex) {
+                        Actions.message(player, "&cステージ" + stage.getName() + "は現在編集不可です!");
+                        return;
+                    }
                     Actions.message(player, "&aステージ'" + stage.getName() + "'の" + type + "ポイントフラッグを登録しました！");
                     break;
 
+                case NEXUS:
+                    if (stage.getNexus(loc).isPresent()) {
+                        try {
+                            stage.removeNexus(loc);
+                        } catch (StageReservedException ex) {
+                            Actions.message(player, "&cステージ" + stage.getName() + "は現在編集不可です!");
+                            return;
+                        }
+                        Actions.message(player, "&aステージ'" + stage.getName() + "'の目標を削除しました！");
+                        return;
+                    }
+
+                    try {
+                        stage.addNexus(new Nexus(loc, sess.getSelectedColor(), sess.getSelectedPoint()));
+                    } catch (StageReservedException ex) {
+                        Actions.message(player, "&cステージ" + stage.getName() + "は現在編集不可です!");
+                        return;
+                    }
+                    Actions.message(player, "&aステージ'" + stage.getName() + "'の"
+                            + sess.getSelectedColor().getRichName() + "の"
+                            + sess.getSelectedPoint() + "ポイント目標を登録しました！");
+                    break;
+                case BANNER_SLOT:
+                    if (stage.getBannerSlot(loc).isPresent()) {
+                        try {
+                            stage.removeBannerSlot(loc);
+                        } catch (StageReservedException ex) {
+                            Actions.message(player, "&cステージ" + stage.getName() + "は現在編集不可です!");
+                            return;
+                        }
+                        Actions.message(player, "&aステージ'" + stage.getName() + "'のスロットを削除しました！");
+                        return;
+                    }
+
+                    try {
+                        stage.addBannerSlot(new BannerSlot(loc, sess.getSelectedColor()));
+                    } catch (StageReservedException ex) {
+                        Actions.message(player, "&cステージ" + stage.getName() + "は現在編集不可です!");
+                        return;
+                    }
+                    Actions.message(player, "&aステージ'" + stage.getName() + "'の"
+                            + sess.getSelectedColor() == null ? "": sess.getSelectedColor().getRichName() + "の"
+                            + "スロットを登録しました！");
+                    break;
+                case BANNER_SPAWNER:
+                    if (stage.getBannerSpawner(loc).isPresent()) {
+                        try {
+                            stage.removeBannerSpawner(loc);
+                        } catch (StageReservedException ex) {
+                            Actions.message(player, "&cステージ" + stage.getName() + "は現在編集不可です!");
+                            return;
+                        }
+                        Actions.message(player, "&aステージ'" + stage.getName() + "'のバナースポナーを削除しました！");
+                        return;
+                    }
+                    
+                    Block b = loc.getBlock();
+                    if (b.getType() != Material.BANNER && b.getType() != Material.WALL_BANNER) {
+                        Actions.message(player, "&cバナーのスポーン位置にバナーを予め設置してください!");
+                        return;
+                    }
+                    boolean wall = b.getType() == Material.WALL_BANNER;
+                    BlockFace face = ((Banner) b.getState().getData()).getAttachedFace();
+
+                    try {
+                        stage.addBannerSpawner(new BannerSpawner(loc, sess.getSelectedPoint().byteValue(), sess.getSelectedHp(), wall, face));
+                    } catch (StageReservedException ex) {
+                        Actions.message(player, "&cステージ" + stage.getName() + "は現在編集不可です!");
+                        return;
+                    }
+                    Actions.message(player, "&aステージ'" + stage.getName() + "'の"
+                            + sess.getSelectedColor().getRichName() + "の"
+                            + sess.getSelectedPoint() + "ポイント目標を登録しました！");
+                    break;
                 // チェストモード
                 case CHEST:
                     // チェスト、かまど、ディスペンサーのどれかでなければ返す
@@ -121,14 +207,19 @@ public class FGPlayerListener implements Listener {
                         return;
                     }
                     // 既にチェストブロックになっているか判定
-                    if (stage.isChest(loc)) {
-                        // 削除
-                        stage.removeChest(loc);
-                        Actions.message(player, "&aステージ'" + stage.getName() + "'のチェストを削除しました！");
-                    } else {
-                        // 選択
-                        stage.setChest(loc);
-                        Actions.message(player, "&aステージ'" + stage.getName() + "'のチェストを設定しました！");
+                    try {
+                        if (stage.isChest(loc)) {
+                            // 削除
+                            stage.removeChest(loc);
+                            Actions.message(player, "&aステージ'" + stage.getName() + "'のチェストを削除しました！");
+                        } else {
+                            // 選択
+                            stage.setChest(loc);
+                            Actions.message(player, "&aステージ'" + stage.getName() + "'のチェストを設定しました！");
+                        }
+                    } catch (StageReservedException ex) {
+                        Actions.message(player, "&cステージ" + stage.getName() + "は現在編集不可です!");
+                        return;
                     }
                     break;
 
@@ -166,11 +257,11 @@ public class FGPlayerListener implements Listener {
                     String entryFeeMsg = reception.getEntryFee() > 0 ? reception.getEntryFee() + "Coin" : "Free";
                     String awardMsg = reception.getMaxAward() > 0 ? reception.getMaxAward() + "Coin" : "None";
 
-                        Actions.message(player, "&b* ===================================");
-                        Actions.message(player, msgPrefix + "&2フラッグゲーム'&6" + reception.getName() + "&2'の参加受付が行われています！");
-                        Actions.message(player, msgPrefix + "&2 参加料:&6 " + entryFeeMsg + "&2   賞金:&6 " + awardMsg);
-                        Actions.message(player, msgPrefix + "&2 '&6/flag join " + reception.getID() + "&2' コマンドで参加してください！");
-                        Actions.message(player, "&b* ===================================");
+                    Actions.message(player, "&b* ===================================");
+                    Actions.message(player, msgPrefix + "&2フラッグゲーム'&6" + reception.getName() + "&2'の参加受付が行われています！");
+                    Actions.message(player, msgPrefix + "&2 参加料:&6 " + entryFeeMsg + "&2   賞金:&6 " + awardMsg);
+                    Actions.message(player, msgPrefix + "&2 '&6/flag join " + reception.getID() + "&2' コマンドで参加してください！");
+                    Actions.message(player, "&b* ===================================");
 
                 } // 開始中ゲーム
                 else if (reception.getState().toGameState() == Game.State.STARTED) {
@@ -200,7 +291,7 @@ public class FGPlayerListener implements Listener {
             Actions.message(player, "&cThis sign is broken! Please contact server staff!");
             return;
         }
-        
+
         GamePlayer fgp = this.plugin.getPlayers().getPlayer(player);
 
         // 処理を分ける
@@ -208,15 +299,15 @@ public class FGPlayerListener implements Listener {
             // 回復
             case HEAL:
                 if (!"".equals(line3) && !line3.isEmpty()) {//特定チーム限定
-                    TeamColor signTeam = null;
-                    
+                    TeamColor signTeam;
+
                     try {
                         signTeam = TeamColor.valueOf(line3.trim().toUpperCase());
                     } catch (IllegalArgumentException ex) {
                         Actions.message(player, "&cThis sign is broken! Please contact server staff!");
                         return;
                     }
-                    
+
                     if (!fgp.getTeam().isPresent()) {
                         Actions.message(player, "&cこの看板はフラッグゲーム中にのみ使うことができます");
                         return;
@@ -254,7 +345,7 @@ public class FGPlayerListener implements Listener {
             case KILL:
                 if (fgp.getTeam().isPresent()) {
                     Game game = fgp.getGame().get();
-                    GamePlayer.sendMessage(game.getReception(), "&6["+game.getName()+"]&6 '"+fgp.getColoredName()+"&6'が自殺しました。");
+                    GamePlayer.sendMessage(game.getReception(), "&6[" + game.getName() + "]&6 '" + fgp.getColoredName() + "&6'が自殺しました。");
                 }
                 player.setHealth(0);
                 player.setFoodLevel(0);

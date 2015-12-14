@@ -122,5 +122,23 @@ public class FakePlayerProfile implements PlayerProfile {
     public long getLastPlayedAt() {
         return 0;
     }
+
+    @Override
+    public void setBrokenNexus(int times) {
+    }
+
+    @Override
+    public int getBrokenNexus() {
+        return 0;
+    }
+
+    @Override
+    public void setCapturedBanner(int times) {
+    }
+
+    @Override
+    public int getCapturedBanner() {
+        return 0;
+    }
     
 }

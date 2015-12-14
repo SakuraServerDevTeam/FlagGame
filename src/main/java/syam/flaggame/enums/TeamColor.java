@@ -77,7 +77,7 @@ public enum TeamColor {
     }
 
     public String getRichName() {
-        return this.getColor() + this.getTeamName() + "チーム";
+        return this.getColor() + this.getTeamName() + "チーム&r";
     }
 
     public static TeamColor getByColorData(byte data) {

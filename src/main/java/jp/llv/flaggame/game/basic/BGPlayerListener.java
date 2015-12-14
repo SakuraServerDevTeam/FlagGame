@@ -177,6 +177,7 @@ public class BGPlayerListener extends BGListener {
 
         String message;
         game.addDeathCount(gplayer);
+        game.Result
         gplayer.getProfile().addDeath();
         if (gplayer == gkiller || gkiller == null || killerTeam == null) { //自殺
             message = gplayer.getColoredName() + "&6が&b"

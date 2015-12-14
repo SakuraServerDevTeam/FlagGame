@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 import jp.llv.flaggame.events.GameStartEvent;
 import jp.llv.flaggame.game.Game;
-import jp.llv.flaggame.game.basic.objective.Nexus;
 import jp.llv.flaggame.reception.GameReception;
 import jp.llv.flaggame.reception.Team;
 import jp.llv.flaggame.util.IntMap;
@@ -65,13 +64,6 @@ public class BasicGame implements Game {
     private final Stage stage;
     private final Map<TeamColor, Team> teams;
 
-    private final IntMap<GamePlayer> personalKillCount = new IntMap<>();
-    private final IntMap<TeamColor> killCount = new IntMap<>();
-    private final IntMap<GamePlayer> personalDeathCount = new IntMap<>();
-    private final IntMap<TeamColor> deathCount = new IntMap<>();
-
-    private final DoubleMap<GamePlayer> breakNexus = new DoubleMap<>();
-    
     private final Queue<Runnable> onFinishing = new LinkedList<>();
 
     private State state = State.PREPARATION;
@@ -221,7 +213,7 @@ public class BasicGame implements Game {
                 player.setTabName(team.getColor().getColor() + player.getName());
             }
         }
-        
+
         this.stage.getStageArea().getPos1().getWorld().getEntities().stream()
                 .filter(e -> e instanceof Item)
                 .filter(e -> this.stage.getStageArea().isIn(e.getLocation()))
@@ -329,7 +321,7 @@ public class BasicGame implements Game {
 
         this.plugin.getServer().getPluginManager()
                 .callEvent(new jp.llv.flaggame.events.GameFinishedEvent(this));
-        
+
         this.reception.close("The game finished");
     }
 
@@ -356,7 +348,7 @@ public class BasicGame implements Game {
 
         GamePlayer.sendMessage(this.reception.getPlayers(), "&2フラッグゲーム'&6" + this.stage.getName() + "&2'は強制終了されました: "
                 + message);
-        
+
         this.reception.close("The game finished");
     }
 
@@ -366,36 +358,6 @@ public class BasicGame implements Game {
 
     private void notifyRemainTime() {
         GamePlayer.sendMessage(this.getReception().getPlayers(), "&aゲーム終了まであと " + Actions.getTimeString(getRemainTime()) + "です!");
-    }
-
-    /*package*/ void addKillCount(GamePlayer player) {
-        this.killCount.increase(player.getTeam().get().getColor());
-        this.personalKillCount.increase(player);
-    }
-
-    public int getKillCount(TeamColor color) {
-        return this.killCount.getOrZero(color);
-    }
-
-    public int getKillCount(GamePlayer color) {
-        return this.personalKillCount.getOrZero(color);
-    }
-
-    /*package*/ void addDeathCount(GamePlayer player) {
-        this.deathCount.increase(player.getTeam().get().getColor());
-        this.personalDeathCount.increase(player);
-    }
-
-    public int getDeathCount(TeamColor color) {
-        return this.deathCount.getOrZero(color);
-    }
-
-    public int getDeathCount(GamePlayer color) {
-        return this.personalDeathCount.getOrZero(color);
-    }
-    
-    /*package*/ void addBreakNexus(GamePlayer player, Nexus nexus) {
-        this.breakNexus.add(player, nexus.getPoint());
     }
 
     @Override
@@ -425,6 +387,20 @@ public class BasicGame implements Game {
 
     public Team getWonTeam() {
         return this.wonTeam;
+    }
+
+    
+    
+    public class Result {
+
+        private final IntMap<GamePlayer> placedFlags = new IntMap<>(),
+                brokenFlags = new IntMap<>(),
+                brokenNexuses = new IntMap<>(),
+                capturedBanners = new IntMap<>(),
+                deployedBanners = new IntMap<>();
+        private final DoubleMap<GamePlayer> earnedFlagPoints,
+                
+
     }
 
 }

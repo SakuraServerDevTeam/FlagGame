@@ -37,7 +37,6 @@ import org.bukkit.event.block.SignChangeEvent;
 
 import syam.flaggame.FlagGame;
 import syam.flaggame.game.Stage;
-import syam.flaggame.game.StageManager;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.util.Actions;
 

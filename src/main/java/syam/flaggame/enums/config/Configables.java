@@ -30,6 +30,9 @@ public enum Configables {
     SPAWN("スポーン地点", ConfigType.POINT), // 各チームのスポーン地点
     FLAG("フラッグ", ConfigType.MANAGER), // 各チーム拠点の領域設定
     CHEST("チェスト", ConfigType.MANAGER), // 各チーム拠点の領域設定
+    NEXUS("目標", ConfigType.MANAGER),
+    BANNER_SPAWNER("バナー出現ポイント", ConfigType.MANAGER),
+    BANNER_SLOT("バナースロット", ConfigType.MANAGER),
 
     SPECSPAWN("観戦者スポーン地点", ConfigType.POINT), // 観戦時にテレポートする位置 SPECTATE / SPEC /
     // SSPAWN ..etc?

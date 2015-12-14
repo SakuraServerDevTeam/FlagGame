@@ -25,6 +25,7 @@ import syam.flaggame.FlagGame;
 import syam.flaggame.command.queue.Queueable;
 import syam.flaggame.event.StageCreateEvent;
 import syam.flaggame.exception.CommandException;
+import syam.flaggame.exception.StageReservedException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.player.GamePlayer;
@@ -103,7 +104,7 @@ public class StageCommand extends BaseCommand implements Queueable {
             throw new CommandException("&cこのステージ名は使用できません！");
         }
 
-        if(this.plugin.getStages().getStage(args.get(1)).isPresent()) {
+        if (this.plugin.getStages().getStage(args.get(1)).isPresent()) {
             throw new CommandException("&cそのステージ名は既に存在します！");
         }
 
@@ -116,9 +117,14 @@ public class StageCommand extends BaseCommand implements Queueable {
         }
 
         // 新規ゲーム登録
-        stage.setAvailable(false);
+        try {
+            stage.setAvailable(false);
+            stage.setProtected(false);
+        } catch (StageReservedException ex) {
+            throw new RuntimeException("Is illegal opperation executed? Please report this?");
+        }
         this.plugin.getStages().addStage(args.get(1), stage);
-        
+
         GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
         gPlayer.createSetupSession(stage);
 

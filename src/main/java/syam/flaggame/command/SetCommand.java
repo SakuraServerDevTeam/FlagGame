@@ -28,6 +28,7 @@ import syam.flaggame.enums.TeamColor;
 import syam.flaggame.enums.config.ConfigType;
 import syam.flaggame.enums.config.Configables;
 import syam.flaggame.exception.CommandException;
+import syam.flaggame.exception.StageReservedException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.player.GamePlayer;
@@ -62,17 +63,11 @@ public class SetCommand extends BaseCommand {
             sendAvailableConf();
             return;
         }
-        
+
         // ゲーム取得
         GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
         Stage stage = gPlayer.getSetupSession()
                 .orElseThrow(() -> new CommandException("&c先に編集するゲームを選択してください")).getSelectedStage();
-
-        // 開始中でないかチェック
-        if (stage.isReserved()) {
-            Actions.message(sender, "&cこのステージは受付中か開始中のため設定変更できません！");
-            return;
-        }
 
         // 設定可能項目名を回す
         Configables conf;
@@ -92,52 +87,60 @@ public class SetCommand extends BaseCommand {
         }
 
         // 設定項目によって処理を分ける
-        switch (conf) {
-            /* 一般 */
-            case STAGE: // ステージ設定
-                setStage(stage);
-                return;
-            case BASE: // 拠点設定
-                setBase(stage);
-                return;
-            case SPAWN: // スポーン地点設定
-                setSpawn(stage);
-                return;
-            case FLAG: // フラッグ設定
-                setFlag(stage);
-                return;
-            case CHEST: // チェスト設定
-                setChest(stage);
-                return;
-            case SPECSPAWN: // 観戦者スポーン設定
-                setSpecSpawn(stage);
-                return;
+        try {
+            switch (conf) {
+                /* 一般 */
+                case STAGE: // ステージ設定
+                    setStage(stage);
+                    return;
+                case BASE: // 拠点設定
+                    setBase(stage);
+                    return;
+                case SPAWN: // スポーン地点設定
+                    setSpawn(stage);
+                    return;
+                case FLAG: // フラッグ設定
+                    setFlag(stage);
+                    return;
+                case CHEST: // チェスト設定
+                    setChest(stage);
+                    return;
+                case NEXUS:
+                case BANNER_SLOT:
+                case BANNER_SPAWNER:
+                case SPECSPAWN: // 観戦者スポーン設定
+                    setSpecSpawn(stage);
+                    return;
 
-            /* オプション */
-            case GAMETIME: // 制限時間
-                setGameTime(stage);
-                return;
-            case TEAMLIMIT: // チーム人数制限
-                setTeamLimit(stage);
-                return;
-            case PROTECT: // ステージ保護
-                setStageProtect(stage);
-                return;
-            case AVAILABLE: // 有効設定
-                setStageAvailable(stage);
-                return;
+                /* オプション */
+                case GAMETIME: // 制限時間
+                    setGameTime(stage);
+                    return;
+                case TEAMLIMIT: // チーム人数制限
+                    setTeamLimit(stage);
+                    return;
+                case PROTECT: // ステージ保護
+                    setStageProtect(stage);
+                    return;
+                case AVAILABLE: // 有効設定
+                    setStageAvailable(stage);
+                    return;
 
-            // 定義漏れ
-            default:
-                Actions.message(sender, "&c設定項目が不正です 開発者にご連絡ください");
-                log.warning(logPrefix + "Undefined configables! Please report this!");
-                break;
+                // 定義漏れ
+                default:
+                    Actions.message(sender, "&c設定項目が不正です 開発者にご連絡ください");
+                    log.warning(logPrefix + "Undefined configables! Please report this!");
+                    break;
+            }
+        } catch (StageReservedException ex) {
+            Actions.message(player, "&cステージ" + stage.getName() + "は現在編集不可です!");
+            return;
         }
     }
 
     /* ***** ここから各設定関数 ****************************** */
     // 一般
-    private void setStage(Stage game) throws CommandException {
+    private void setStage(Stage game) throws CommandException, StageReservedException {
         // WorldEdit選択領域取得
         Block[] corners = WorldEditHandler.getWorldEditRegion(player);
         // エラー プレイヤーへのメッセージ送信はWorldEditHandlerクラスで処理
@@ -167,7 +170,7 @@ public class SetCommand extends BaseCommand {
      * @return true
      * @throws CommandException
      */
-    private void setBase(Stage game) throws CommandException {
+    private void setBase(Stage game) throws CommandException, StageReservedException {
         // 引数チェック
         if (args.size() < 2) {
             throw new CommandException("&c引数が足りません！設定するチームを指定してください！");
@@ -184,7 +187,7 @@ public class SetCommand extends BaseCommand {
         if (team == null) {
             throw new CommandException("&cチーム'" + args.get(1) + "'が見つかりません！");
         }
-        
+
         if (args.size() >= 3 && args.get(2).equalsIgnoreCase("none")) {
             game.setBase(team, null);
             Actions.message(player, "&a" + team.getTeamName() + "チームの拠点を削除しました！");
@@ -220,7 +223,7 @@ public class SetCommand extends BaseCommand {
      * @return true
      * @throws CommandException
      */
-    private void setSpawn(Stage game) throws CommandException {
+    private void setSpawn(Stage game) throws CommandException, StageReservedException {
         // 引数チェック
         if (args.size() < 2) {
             throw new CommandException("&c引数が足りません！設定するチームを指定してください！");
@@ -237,7 +240,7 @@ public class SetCommand extends BaseCommand {
         if (team == null) {
             throw new CommandException("&cチーム'" + args.get(1) + "'が見つかりません！");
         }
-        
+
         if (args.size() >= 3 && args.get(2).equalsIgnoreCase("none")) {
             game.setSpawn(team, null);
             Actions.message(player, "&a" + team.getTeamName() + "チームのスポーン地点を削除しました！");
@@ -274,9 +277,76 @@ public class SetCommand extends BaseCommand {
 
         // マネージャーセット
         GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
-        gPlayer.createSetupSession(game).setSetting(Configables.FLAG).setSelectedFlagType(type);
+        gPlayer.createSetupSession(game).setSetting(Configables.FLAG).setSelectedPoint(type);
         String tool = Material.getMaterial(plugin.getConfigs().getToolID()).name();
         Actions.message(player, "&aフラッグ管理モードを開始しました。選択ツール: " + tool);
+    }
+
+    private void setNexus(Stage stage) throws CommandException {
+        if (args.size() < 3) {
+            throw new CommandException("&c引数が足りません！目標の得点とチーム色を正しく指定してください!");
+        }
+
+        double point;
+        try {
+            point = Double.parseDouble(args.get(1));
+        } catch (NumberFormatException ex) {
+            throw new CommandException("目標の得点を正しく指定してください!", ex);
+        }
+
+        TeamColor color;
+        try {
+            color = TeamColor.valueOf(args.get(2));
+        } catch (IllegalArgumentException ex) {
+            throw new CommandException("目標のチーム色を正しく指定してください!", ex);
+        }
+
+        GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
+        gPlayer.createSetupSession(stage).setSetting(Configables.NEXUS)
+                .setSelectedPoint(point)
+                .setSelectedColor(color);
+        String tool = Material.getMaterial(plugin.getConfigs().getToolID()).name();
+        Actions.message(player, "&a目標管理モードを開始しました。選択ツール: " + tool);
+    }
+
+    private void setBannerSpawner(Stage stage) throws CommandException {
+        if (args.size() < 3) {
+            throw new CommandException("&c引数が足りません! バナーの得点と耐久度を正しく指定してください!");
+        }
+
+        byte point, hp;
+        try {
+            point = Byte.parseByte(args.get(1));
+            hp = Byte.parseByte(args.get(2));
+        } catch (NumberFormatException ex) {
+            throw new CommandException("&c数値フォーマットが異常です!");
+        }
+
+        GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
+        gPlayer.createSetupSession(stage).setSetting(Configables.BANNER_SPAWNER)
+                .setSelectedPoint(point)
+                .setHp(hp);
+        String tool = Material.getMaterial(plugin.getConfigs().getToolID()).name();
+        Actions.message(player, "&aバナースポナー管理モードを開始しました。選択ツール: " + tool);
+    }
+
+    private void setBannerSlot(Stage stage) throws CommandException {
+        TeamColor color;
+        if (args.size() < 2) {
+            color = null;
+        } else {
+            try {
+                color = TeamColor.valueOf(args.get(1));
+            } catch (IllegalArgumentException ex) {
+                throw new CommandException("目標のチーム色を正しく指定してください!", ex);
+            }
+        }
+
+        GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
+        gPlayer.createSetupSession(stage).setSetting(Configables.BANNER_SLOT)
+                .setSelectedColor(color);
+        String tool = Material.getMaterial(plugin.getConfigs().getToolID()).name();
+        Actions.message(player, "&aスロット管理モードを開始しました。選択ツール: " + tool);
     }
 
     /**
@@ -299,7 +369,7 @@ public class SetCommand extends BaseCommand {
      * @param game 設定対象のゲームイン寸タンス
      * @return
      */
-    private void setSpecSpawn(Stage game) {
+    private void setSpecSpawn(Stage game) throws StageReservedException {
         // 観戦者スポーン地点設定
         game.setSpecSpawn(player.getLocation());
 
@@ -308,7 +378,7 @@ public class SetCommand extends BaseCommand {
     }
 
     // オプション
-    private void setGameTime(Stage game) throws CommandException {
+    private void setGameTime(Stage game) throws CommandException, StageReservedException {
         int num = 60 * 10; // デフォルト10分
         try {
             num = Integer.parseInt(args.get(1));
@@ -328,7 +398,7 @@ public class SetCommand extends BaseCommand {
         Actions.message(sender, "&aステージ'" + game.getName() + "'のゲーム時間は " + sec + " に設定されました！");
     }
 
-    private void setTeamLimit(Stage game) throws CommandException {
+    private void setTeamLimit(Stage game) throws CommandException, StageReservedException {
         int cnt = 8; // デフォルト8人
         try {
             cnt = Integer.parseInt(args.get(1));
@@ -346,7 +416,7 @@ public class SetCommand extends BaseCommand {
         plugin.getDynmap().updateRegion(game);
     }
 
-    private void setStageProtect(Stage stage) throws CommandException {
+    private void setStageProtect(Stage stage) throws CommandException, StageReservedException {
         Boolean protect = true; // デフォルトtrue
         String value = args.get(1).trim();
 
@@ -363,12 +433,12 @@ public class SetCommand extends BaseCommand {
             result = "&c無効";
         }
 
-        stage.setStageProtected(protect);
+        stage.setProtected(protect);
         Actions.message(sender, "&aステージ'" + stage.getName() + "'の保護は " + result + " &aに設定されました！");
         plugin.getDynmap().updateRegion(stage);
     }
 
-    private void setStageAvailable(Stage stage) throws CommandException {
+    private void setStageAvailable(Stage stage) throws CommandException, StageReservedException {
         Boolean available = true; // デフォルトtrue
         String value = args.get(1).trim();
 

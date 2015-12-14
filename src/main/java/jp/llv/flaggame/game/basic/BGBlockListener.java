@@ -17,6 +17,8 @@
 package jp.llv.flaggame.game.basic;
 
 import java.util.Collection;
+import java.util.Optional;
+import jp.llv.flaggame.game.basic.objective.BannerSpawner;
 import jp.llv.flaggame.reception.Team;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -29,7 +31,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import syam.flaggame.FlagGame;
 import syam.flaggame.enums.TeamColor;
-import syam.flaggame.game.Flag;
+import jp.llv.flaggame.game.basic.objective.Flag;
+import jp.llv.flaggame.game.basic.objective.Nexus;
 import syam.flaggame.player.GamePlayer;
 
 /**
@@ -55,37 +58,14 @@ public class BGBlockListener extends BGListener {
             return;
         }
 
-        Flag f = this.game.getStage().getFlag(event.getBlock().getLocation());
-        if (f == null) {
-            event.setCancelled(true);
-            return;
-        }
+        Optional<Flag> of = this.game.getStage().getFlag(event.getBlock().getLocation());
+        Optional<Nexus> on = this.game.getStage().getNexus(event.getBlock().getLocation());
+        Optional<BannerSpawner> ob = this.game.getStage().getBannerSpawner(event.getBlock().getLocation());
 
-        Team placerTeam = gplayer.getTeam().get();
-        @SuppressWarnings("deprecation")
-        TeamColor placedTeamColor = TeamColor.getByColorData(event.getBlock().getData());
-        if (placerTeam.getColor() == placedTeamColor) {
-            gplayer.sendMessage("&c味方チームのフラッグは破壊できません!");
-            event.setCancelled(true);
-            return;
-        }
-
-        event.setCancelled(false);
-
-        GamePlayer.sendMessage(placerTeam,
-                gplayer.getColoredName() + "&aが" + placedTeamColor.getTeamName() + "チームの&6" + f.getTypeName() + "pフラッグ&aを破壊しました!");
-        this.game.getTeams().stream().filter(team -> team.getColor() == placedTeamColor)
-                .forEach(team -> GamePlayer.sendMessage(team,
-                                gplayer.getColoredName() + "&aに&6" + f.getTypeName() + "pフラッグ&aを破壊されました!"));
-
-        gplayer.getProfile().addBrokenFlag();
-        this.game.getStage().getProfile().addBrokenFlag();
-
-        if (plugin.getConfigs().getUseFlagEffects()) {
-            Location loc = event.getBlock().getLocation();
-            loc.getWorld().createExplosion(loc, 0F, false);
-            loc.getWorld().playEffect(loc, Effect.ENDER_SIGNAL, 0, 10);
-        }
+        event.setCancelled(true);
+        of.ifPresent(f -> this.breakFlag(gplayer, f, event));
+        on.ifPresent(n -> this.breakNexus(gplayer, n, event));
+        ob.ifPresent(b -> this.breakBannerSpawner(gplayer, b, event));
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
@@ -96,12 +76,15 @@ public class BGBlockListener extends BGListener {
             return;
         }
 
-        Flag f = this.game.getStage().getFlag(event.getBlock().getLocation());
-        if (f == null) {//フラッグではない
-            event.setCancelled(true);
-            return;
-        }
+        Optional<Flag> of = this.game.getStage().getFlag(event.getBlock().getLocation());
+        Optional<Nexus> on = this.game.getStage().getNexus(event.getBlock().getLocation());
+        Optional<BannerSpawner> ob = this.game.getStage().getBannerSpawner(event.getBlock().getLocation());
 
+        event.setCancelled(true);
+        of.ifPresent(f -> this.placeFlag(gplayer, f, event));
+    }
+
+    private void placeFlag(GamePlayer gplayer, Flag f, BlockPlaceEvent event) {
         Block b = event.getBlockPlaced();
         if (b.getType() != Material.WOOL) {//対象ブロックでない
             event.setCancelled(true);
@@ -133,6 +116,62 @@ public class BGBlockListener extends BGListener {
             loc.getWorld().playEffect(loc, Effect.ENDER_SIGNAL, 0, 10);
             loc.getWorld().playEffect(loc, Effect.SMOKE, 4, 2);
         }
+    }
+
+    private void breakFlag(GamePlayer gplayer, Flag f, BlockBreakEvent event) {
+        Team placerTeam = gplayer.getTeam().get();
+        @SuppressWarnings("deprecation")
+        TeamColor placedTeamColor = TeamColor.getByColorData(event.getBlock().getData());
+        if (placerTeam.getColor() == placedTeamColor) {
+            gplayer.sendMessage("&c味方チームのフラッグは破壊できません!");
+            event.setCancelled(true);
+            return;
+        }
+
+        event.setCancelled(false);
+
+        GamePlayer.sendMessage(placerTeam,
+                gplayer.getColoredName() + "&aが" + placedTeamColor.getTeamName() + "チームの&6" + f.getTypeName() + "pフラッグ&aを破壊しました!");
+        this.game.getTeams().stream().filter(team -> team.getColor() == placedTeamColor)
+                .forEach(team -> GamePlayer.sendMessage(team,
+                                gplayer.getColoredName() + "&aに&6" + f.getTypeName() + "pフラッグ&aを破壊されました!"));
+
+        gplayer.getProfile().addBrokenFlag();
+        this.game.getStage().getProfile().addBrokenFlag();
+
+        if (plugin.getConfigs().getUseFlagEffects()) {
+            Location loc = event.getBlock().getLocation();
+            loc.getWorld().createExplosion(loc, 0F, false);
+            loc.getWorld().playEffect(loc, Effect.ENDER_SIGNAL, 0, 10);
+        }
+    }
+
+    private void breakNexus(GamePlayer gplayer, Nexus f, BlockBreakEvent event) {
+        Team breaker = gplayer.getTeam().get();
+        Team broken = gplayer.getGame().get().getTeam(f.getColor());
+        if (breaker == broken) {
+            gplayer.sendMessage("&c味方チームの目標は破壊できません!");
+            event.setCancelled(true);
+            return;
+        }
+        
+        GamePlayer.sendMessage(breaker,
+                gplayer.getColoredName() + "&aが" + breaker.getColor().getRichName() + "の&6" + f.getPoint() + "p目標&aを破壊しました!");
+        GamePlayer.sendMessage(broken, 
+                gplayer.getColoredName() + "&aに" + f.getPoint() + "p目標&aを破壊されました!");
+        
+        gplayer.getProfile().addBrokenNexus();
+        
+        
+        if (plugin.getConfigs().getUseFlagEffects()) {
+            Location loc = event.getBlock().getLocation();
+            loc.getWorld().createExplosion(loc, 0F, false);
+            loc.getWorld().playEffect(loc, Effect.ENDER_SIGNAL, 0, 10);
+        }
+    }
+
+    private void breakBannerSpawner(GamePlayer gplayer, BannerSpawner s, BlockBreakEvent event) {
+
     }
 
 }

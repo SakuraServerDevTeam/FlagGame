@@ -47,7 +47,7 @@ public class ConfigurationManager {
     private static final List<String> DEFAULT_DISABLED_COMMANDS = Arrays.asList("/spawn", "/home", "/setspawn");
     private static final List<String> DEFAULT_PERMISSIONS = Arrays.asList("vault","superperms","ops");
 
-    private static final double VERSION = 0.3D;
+    private static final double VERSION = 0.4D;
     
     private final JavaPlugin plugin;
     private final File pluginDir;
@@ -77,6 +77,12 @@ public class ConfigurationManager {
     private String detailDirectory = DEFAULT_DETAIL_DIRECTORY;
     /* Permissions Configs */
     private List<String> permissions = new ArrayList<>(DEFAULT_PERMISSIONS);
+    /* Score weight */
+    private double scoreGameJoin, scoreGameExit,
+            scoreCombatKill, scoreCombatDeath,
+            scoreFlagPlace, scoreFlagBreak,
+            scoreBannerDeploy, scoreBannerBreak, scoreBannerKeep,
+            scoreNexusBreak;
 
     /**
      * コンストラクタ

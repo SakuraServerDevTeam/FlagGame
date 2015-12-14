@@ -70,8 +70,28 @@ Permissions:
 - superperms
 - ops
 
+#========================#
+#   Score weight Config   #
+#========================#
+score:
+  game:
+    join: 10.0
+    exit: -10.0
+  combat:
+    kill: 1.0
+    death: -1.0
+  flag:
+    place: 1.0
+    break: 3.0
+  banner:
+    deploy: 5.0
+    break: 3.0
+    keep: 7.5
+  nexus:
+    break: 0.75
+
 #==================#
 #   DO NOT TOUCH   #
 #==================#
 # Do not touch this option! It is a check if you are running the recent configuration version
-Version: 0.3
+Version: 0.4

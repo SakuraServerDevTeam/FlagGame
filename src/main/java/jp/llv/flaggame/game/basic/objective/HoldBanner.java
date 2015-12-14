@@ -16,23 +16,20 @@
  */
 package jp.llv.flaggame.game.basic.objective;
 
-import org.bukkit.DyeColor;
-import static org.bukkit.DyeColor.*;
-
 /**
  *
  * @author Toyblocks
  */
 public class HoldBanner {
 
-    public static DyeColor getDamageColor(int current, int max) {
-        if (current <= 1) {
-            return RED;
-        } else {
-            double p = current * 10 / (double) max;
-            return p > 9 ? GRAY : p > 8 ? BROWN : p > 7 ? MAGENTA : p > 6 ? PURPLE : p > 5 ? BLUE
-                    : p > 4 ? LIGHT_BLUE : p > 3 ? GREEN : p > 2 ? LIME : p > 1 ? YELLOW : ORANGE;
-        }
+    private final BannerSpawner[] spawner;
+
+    public HoldBanner(BannerSpawner ... spawner) {
+        this.spawner = spawner;
+    }
+
+    public BannerSpawner[] getSpawner() {
+        return spawner;
     }
 
 }

@@ -25,12 +25,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.BiFunction;
+import jp.llv.flaggame.game.basic.objective.BannerSlot;
+import jp.llv.flaggame.game.basic.objective.BannerSpawner;
 import jp.llv.flaggame.game.basic.objective.Nexus;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import syam.flaggame.enums.TeamColor;
-import syam.flaggame.game.Flag;
+import jp.llv.flaggame.game.basic.objective.Flag;
+import org.bukkit.block.BlockFace;
+import syam.flaggame.exception.StageReservedException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.game.StageProfile;
 import syam.flaggame.util.Cuboid;
@@ -235,6 +239,54 @@ public final class ConfigUtils {
             }
         }
     }
+    
+    public static void writeBannerSpawner(ConfigurationSection section, String key, BannerSpawner spawner) {
+        if (spawner == null) {
+            section.set(key, null);
+        } else {
+            ConfigurationSection ns = section.createSection(key);
+            writeLocation(ns, "loc", spawner.getLocation());
+            ns.set("point", spawner.getPoint());
+            ns.set("hp", spawner.getHp());
+            ns.set("wall", spawner.isWall());
+            ns.set("face", spawner.getFace().toString());
+        }
+    }
+    
+    public static BannerSpawner readBannerSpawner(ConfigurationSection section, String key) {
+        if (section.getConfigurationSection(key) == null) {
+            return null;
+        } else {
+            ConfigurationSection ns = section.getConfigurationSection(key);
+            Location loc = readLocation(section, "loc");
+            byte point = (byte) section.getInt("point");
+            byte hp = (byte) section.getInt("hp");
+            boolean wall = section.getBoolean("wall");
+            BlockFace face = BlockFace.valueOf(section.getString("face"));
+            return new BannerSpawner(loc, point, hp, wall, face);
+        }
+    }
+    
+    public static void writeBannerSlot(ConfigurationSection section, String key, BannerSlot slot) {
+        if (slot == null) {
+            section.set(key, null);
+        } else {
+            ConfigurationSection ns = section.createSection(key);
+            writeLocation(ns, "loc", slot.getLocation());
+            ns.set("color", slot.getColor().toString());
+        }
+    }
+    
+    public static BannerSlot readBannerSlot(ConfigurationSection section, String key) {
+        if (section.getConfigurationSection(key) == null) {
+            return null;
+        } else {
+            ConfigurationSection ns = section.getConfigurationSection(key);
+            Location loc = readLocation(ns, "loc");
+            TeamColor tc = TeamColor.valueOf(ns.getString("color"));
+            return new BannerSlot(loc, tc);
+        }
+    } 
 
     public static void writeStageProfile(ConfigurationSection section, String key, StageProfile profile) {
         if (profile == null) {
@@ -246,6 +298,9 @@ public final class ConfigUtils {
             ns.set("death", profile.getDeath());
             ns.set("placedflag", profile.getPlacedFlag());
             ns.set("brokenflag", profile.getBrokenFlag());
+            ns.set("brokennexus", profile.getBrokenNexus());
+            ns.set("capturedbanner", profile.getCapturedBanner());
+            ns.set("deployedbanner", profile.getDeployedBanner());
         }
     }
 
@@ -260,6 +315,9 @@ public final class ConfigUtils {
             int death = ns.getInt("death");
             int placedFlag = ns.getInt("placedflag");
             int brokenFlag = ns.getInt("brokenflag");
+            int brokenNexus = ns.getInt("brokennexus");
+            int capturedBanner = ns.getInt("capturedbanner");
+            int deployedBanner = ns.getInt("deployedbanner");
 
             StageProfile profile = new StageProfile();
             profile.setLastPlayedAt(lastPlayed);
@@ -267,6 +325,9 @@ public final class ConfigUtils {
             profile.setDeath(death);
             profile.setPlacedFlag(placedFlag);
             profile.setBrokenFlag(brokenFlag);
+            profile.setBrokenNexus(brokenNexus);
+            profile.setCapturedBanner(capturedBanner);
+            profile.setDeployedBanner(deployedBanner);
             return profile;
         }
     }
@@ -286,6 +347,8 @@ public final class ConfigUtils {
             writeLocation(ns, "specspawn", stage.getSpecSpawn().orElse(null));
             writeList(ns, "flags", stage.getFlags().values(), ConfigUtils::writeFlag);
             writeList(ns, "nexuses", stage.getNexuses().values(), ConfigUtils::writeNexus);
+            writeList(ns, "bannerspawners", stage.getBannerSpawners().values(), ConfigUtils::writeBannerSpawner);
+            writeList(ns, "bannerslots", stage.getBannerSlots().values(), ConfigUtils::writeBannerSlot);
             writeEnumMap(ns, "bases", stage.getBases(), ConfigUtils::writeCuboid);
             writeList(ns, "containers", stage.getChests(), ConfigUtils::writeLocation);
             writeStageProfile(ns, "profile", stage.getProfile());
@@ -307,39 +370,51 @@ public final class ConfigUtils {
             Location specspawn = readLocation(ns, "specspawn");
             List<Flag> flags = readList(ns, "flags", ConfigUtils::readFlag);
             List<Nexus> nexuses = readList(ns, "nexuses", ConfigUtils::readNexus);
+            List<BannerSpawner> spawners = readList(ns, "bannerspawners", ConfigUtils::readBannerSpawner);
+            List<BannerSlot> slots = readList(ns, "bannerslots", ConfigUtils::readBannerSlot);
             EnumMap<TeamColor, Cuboid> bases = readEnumMap(ns, "bases", TeamColor.class, ConfigUtils::readCuboid);
             List<Location> containers = readList(ns, "containers", ConfigUtils::readLocation);
 
             StageProfile profile = readStageProfile(ns, "profile");
             Stage stage = new Stage(name, profile);
-            if (time > 0) {
-                stage.setGameTime(time);
+            try {
+                if (time > 0) {
+                    stage.setGameTime(time);
+                }
+                stage.setTeamLimit(teamlimit);
+                stage.setProtected(protect);
+                stage.setAvailable(available);
+                if (area != null) {
+                    stage.setStageArea(area);
+                }
+                if (spawn != null) {
+                    stage.setSpawns(spawn);
+                }
+                if (specspawn != null) {
+                    stage.setSpecSpawn(specspawn);
+                }
+                if (flags != null) {
+                    stage.setFlags(flags);
+                }
+                if (nexuses != null) {
+                    stage.setNexuses(nexuses);
+                }
+                if (bases != null) {
+                    stage.setBases(bases);
+                }
+                if (containers != null) {
+                    stage.setChests(containers);
+                }
+                if (spawners != null) {
+                    stage.setBannerSpawners(spawners);
+                }
+                if (slots != null) {
+                    stage.setBannerSlots(slots);
+                }
+                return stage;
+            } catch (StageReservedException ex) {
+                throw new RuntimeException("Is illegal operation executed? Report this!");
             }
-            stage.setTeamLimit(teamlimit);
-            stage.setStageProtected(protect);
-            stage.setAvailable(available);
-            if (area != null) {
-                stage.setStageArea(area);
-            }
-            if (spawn != null) {
-                stage.setSpawns(spawn);
-            }
-            if (specspawn != null) {
-                stage.setSpecSpawn(specspawn);
-            }
-            if (flags != null) {
-                stage.setFlags(flags);
-            }
-            if (nexuses != null) {
-                stage.setNexuses(nexuses);
-            }
-            if (bases != null) {
-                stage.setBases(bases);
-            }
-            if (containers != null) {
-                stage.setChests(containers);
-            }
-            return stage;
         }
     }
 
