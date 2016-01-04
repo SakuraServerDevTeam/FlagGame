@@ -74,10 +74,6 @@ public class GamePlayer {
         return player;
     }
 
-    public PlayerProfile getProfile() {
-        return manager.getProfile(this);
-    }
-
     /**
      * Let this join the reception with given arguments.
      *

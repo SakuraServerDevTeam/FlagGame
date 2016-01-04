@@ -108,9 +108,6 @@ public class BGBlockListener extends BGListener {
                 .forEach(team -> GamePlayer.sendMessage(team,
                                 gplayer.getColoredName() + "&aに&6" + f.getTypeName() + "pフラッグ&aを獲得されました!"));
 
-        gplayer.getProfile().addPlacedFlag();
-        this.game.getStage().getProfile().addPlacedFlag();
-
         if (plugin.getConfigs().getUseFlagEffects()) {
             Location loc = b.getLocation();
             loc.getWorld().playEffect(loc, Effect.ENDER_SIGNAL, 0, 10);
@@ -136,9 +133,6 @@ public class BGBlockListener extends BGListener {
                 .forEach(team -> GamePlayer.sendMessage(team,
                                 gplayer.getColoredName() + "&aに&6" + f.getTypeName() + "pフラッグ&aを破壊されました!"));
 
-        gplayer.getProfile().addBrokenFlag();
-        this.game.getStage().getProfile().addBrokenFlag();
-
         if (plugin.getConfigs().getUseFlagEffects()) {
             Location loc = event.getBlock().getLocation();
             loc.getWorld().createExplosion(loc, 0F, false);
@@ -159,8 +153,6 @@ public class BGBlockListener extends BGListener {
                 gplayer.getColoredName() + "&aが" + breaker.getColor().getRichName() + "の&6" + f.getPoint() + "p目標&aを破壊しました!");
         GamePlayer.sendMessage(broken, 
                 gplayer.getColoredName() + "&aに" + f.getPoint() + "p目標&aを破壊されました!");
-        
-        gplayer.getProfile().addBrokenNexus();
         
         
         if (plugin.getConfigs().getUseFlagEffects()) {

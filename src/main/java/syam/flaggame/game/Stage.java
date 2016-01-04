@@ -57,9 +57,6 @@ public class Stage {
     
     public static final Pattern NAME_REGEX = Pattern.compile("^[a-z0-9](?:[a-z0-9_-]*[a-z0-9])?$");
 
-    // ステージ情報
-    private final StageProfile profile;
-
     // 開始中のゲーム
     private GameReception reception;
 
@@ -90,24 +87,9 @@ public class Stage {
      * コンストラクタ
      *
      * @param name
-     * @param profile
      */
-    public Stage(final String name, StageProfile profile) {
-        if (name == null) {
-            throw new NullPointerException();
-        }
-        this.stageName = name;
-        this.fileName = this.stageName + ".yml";
-        
-        this.profile = profile;
-    }
-    
     public Stage(String name) {
-        this(name, new StageProfile());
-    }
-    
-    public StageProfile getProfile() {
-        return this.profile;
+        this.stageName = name;
     }
     
     public void addFlag(Flag flag) throws StageReservedException {

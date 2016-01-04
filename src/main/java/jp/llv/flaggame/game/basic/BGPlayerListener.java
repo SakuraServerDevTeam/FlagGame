@@ -176,17 +176,12 @@ public class BGPlayerListener extends BGListener {
         Team killerTeam = gkiller != null ? gkiller.getTeam().get() : null;
 
         String message;
-        game.addDeathCount(gplayer);
-        game.Result
-        gplayer.getProfile().addDeath();
         if (gplayer == gkiller || gkiller == null || killerTeam == null) { //自殺
             message = gplayer.getColoredName() + "&6が&b"
                     + (weapon != null ? weapon + "&6で" : "&6") + "自殺しました!";
         } else {
             message = gplayer.getColoredName() + "&6が" + gkiller.getColoredName() + "&6に&b"
                     + (weapon != null ? weapon + "&6で" : "&6") + "殺されました!";
-            gkiller.getProfile().addKill();
-            game.addKillCount(gkiller);
         }
         GamePlayer.sendMessage(this.plugin.getPlayers().getPlayersIn(player.getWorld()), message);
     }

@@ -33,7 +33,6 @@ public class Database {
     // Logger
     public static final Logger log = FlagGame.logger;
     private static final String logPrefix = FlagGame.logPrefix;
-    private static final String msgPrefix = FlagGame.msgPrefix;
 
     private static FlagGame plugin;
 

@@ -32,10 +32,8 @@ import jp.llv.flaggame.events.GameStartEvent;
 import jp.llv.flaggame.game.Game;
 import jp.llv.flaggame.reception.GameReception;
 import jp.llv.flaggame.reception.Team;
-import jp.llv.flaggame.util.IntMap;
 import jp.llv.flaggame.util.MapUtils;
 import jp.llv.flaggame.util.ConvertUtils;
-import jp.llv.flaggame.util.DoubleMap;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -160,12 +158,6 @@ public class BasicGame implements Game {
 
         this.expectedFinishAt = System.currentTimeMillis() + this.stage.getGameTime();
 
-        this.stage.getProfile().addPlayed();
-
-        //プレイヤーで初期化: 一度もkill/deathがないとnullが変えるのを抑止
-        personalKillCount.putAll(this.getReception().getPlayers(), 0);
-        personalDeathCount.putAll(this.getReception().getPlayers(), 0);
-
         GamePlayer.sendMessage(this.plugin.getPlayers(),
                 "&2ゲーム'&6" + this.reception.getName() + "&2'が始まりました！",
                 "&2開催ステージ: '&6" + this.stage.getName() + "&2' &f| &2制限時間: " + Actions.getTimeString(this.stage.getGameTime()),
@@ -181,8 +173,6 @@ public class BasicGame implements Game {
         for (Team team : this.getTeams()) {
             Location teamSpawn = this.stage.getSpawn(team.getColor());
             for (GamePlayer player : team) {
-                player.getProfile().addPlayed();
-
                 Player vp = player.getPlayer();
                 if (!player.getPlayer().isOnline()) {
                     continue;
@@ -304,17 +294,17 @@ public class BasicGame implements Game {
 
         for (GamePlayer g : this.getReception().getPlayers()) {
             if (!g.getPlayer().isOnline()) {
-                g.getProfile().addExited();
+                //途中退場
             } else {
                 g.getPlayer().teleport(this.stage.getSpawn(g.getTeam().get().getColor()));
                 g.getPlayer().getInventory().clear();
                 g.resetTabName();
                 if (won == null) {
-                    return;
+                    //引き分け
                 } else if (g.getTeam().get().getColor() == won) {
-                    g.getProfile().addWonGame();
+                    //勝利
                 } else {
-                    g.getProfile().addLostGame();
+                    //敗北
                 }
             }
         }
@@ -338,7 +328,6 @@ public class BasicGame implements Game {
         }
 
         for (GamePlayer g : this.reception.getPlayers()) {
-            g.getProfile().decreasePlayed();
             if (g.getPlayer().isOnline()) {
                 g.getPlayer().teleport(this.stage.getSpawn(g.getTeam().get().getColor()));
                 g.getPlayer().getInventory().clear();
@@ -387,20 +376,6 @@ public class BasicGame implements Game {
 
     public Team getWonTeam() {
         return this.wonTeam;
-    }
-
-    
-    
-    public class Result {
-
-        private final IntMap<GamePlayer> placedFlags = new IntMap<>(),
-                brokenFlags = new IntMap<>(),
-                brokenNexuses = new IntMap<>(),
-                capturedBanners = new IntMap<>(),
-                deployedBanners = new IntMap<>();
-        private final DoubleMap<GamePlayer> earnedFlagPoints,
-                
-
     }
 
 }

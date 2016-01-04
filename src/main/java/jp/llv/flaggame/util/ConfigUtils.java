@@ -36,7 +36,6 @@ import jp.llv.flaggame.game.basic.objective.Flag;
 import org.bukkit.block.BlockFace;
 import syam.flaggame.exception.StageReservedException;
 import syam.flaggame.game.Stage;
-import syam.flaggame.game.StageProfile;
 import syam.flaggame.util.Cuboid;
 
 /**
@@ -286,50 +285,6 @@ public final class ConfigUtils {
             TeamColor tc = TeamColor.valueOf(ns.getString("color"));
             return new BannerSlot(loc, tc);
         }
-    } 
-
-    public static void writeStageProfile(ConfigurationSection section, String key, StageProfile profile) {
-        if (profile == null) {
-            section.set(key, null);
-        } else {
-            ConfigurationSection ns = section.createSection(key);
-            ns.set("lastplayed", profile.getLastPlayedAt());
-            ns.set("kill", profile.getKill());
-            ns.set("death", profile.getDeath());
-            ns.set("placedflag", profile.getPlacedFlag());
-            ns.set("brokenflag", profile.getBrokenFlag());
-            ns.set("brokennexus", profile.getBrokenNexus());
-            ns.set("capturedbanner", profile.getCapturedBanner());
-            ns.set("deployedbanner", profile.getDeployedBanner());
-        }
-    }
-
-    public static StageProfile readStageProfile(ConfigurationSection section, String key) {
-        if (section.getConfigurationSection(key) == null) {
-            return null;
-        } else {
-            ConfigurationSection ns = section.getConfigurationSection(key);
-            Long lastPlayed = ns.getLong("lastplayed", -1);
-            lastPlayed = lastPlayed == -1 ? null : lastPlayed;
-            int kill = ns.getInt("kill");
-            int death = ns.getInt("death");
-            int placedFlag = ns.getInt("placedflag");
-            int brokenFlag = ns.getInt("brokenflag");
-            int brokenNexus = ns.getInt("brokennexus");
-            int capturedBanner = ns.getInt("capturedbanner");
-            int deployedBanner = ns.getInt("deployedbanner");
-
-            StageProfile profile = new StageProfile();
-            profile.setLastPlayedAt(lastPlayed);
-            profile.setKill(kill);
-            profile.setDeath(death);
-            profile.setPlacedFlag(placedFlag);
-            profile.setBrokenFlag(brokenFlag);
-            profile.setBrokenNexus(brokenNexus);
-            profile.setCapturedBanner(capturedBanner);
-            profile.setDeployedBanner(deployedBanner);
-            return profile;
-        }
     }
 
     public static void writeStage(ConfigurationSection section, String key, Stage stage) {
@@ -351,7 +306,6 @@ public final class ConfigUtils {
             writeList(ns, "bannerslots", stage.getBannerSlots().values(), ConfigUtils::writeBannerSlot);
             writeEnumMap(ns, "bases", stage.getBases(), ConfigUtils::writeCuboid);
             writeList(ns, "containers", stage.getChests(), ConfigUtils::writeLocation);
-            writeStageProfile(ns, "profile", stage.getProfile());
         }
     }
 
@@ -375,8 +329,7 @@ public final class ConfigUtils {
             EnumMap<TeamColor, Cuboid> bases = readEnumMap(ns, "bases", TeamColor.class, ConfigUtils::readCuboid);
             List<Location> containers = readList(ns, "containers", ConfigUtils::readLocation);
 
-            StageProfile profile = readStageProfile(ns, "profile");
-            Stage stage = new Stage(name, profile);
+            Stage stage = new Stage(name);
             try {
                 if (time > 0) {
                     stage.setGameTime(time);

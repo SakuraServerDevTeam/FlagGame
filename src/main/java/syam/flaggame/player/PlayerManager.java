@@ -115,56 +115,6 @@ public class PlayerManager implements Iterable<GamePlayer> {
     }
 
     /**
-     * Returns a profile of the given game player.
-     *
-     * @param player
-     * @return a profile of the player
-     * @see syam.flaggame.player.GamePlayer#getProfile()
-     */
-    /*package*/ PlayerProfile getProfile(GamePlayer player) {
-        return new FakePlayerProfile(); //TEMPORARY
-    }
-
-    /**
-     * Returns a profile of the given bukkit player directly, not via
-     * {@link syam.flaggame.player.GamePlayer}.  
-     * This will not create unnecessary {@link syam.flaggame.player.GamePlayer}, so littele lighter than
-     * {@link syam.flaggame.player.PlayerManager#getPlayer(org.bukkit.entity.Player)} and
-     * {@link syam.flaggame.player.GamePlayer#getProfile()}}.
-     * @param op the bukkit player of the game player to retrieve
-     * @return the profile
-     */
-    public PlayerProfile getProfile(OfflinePlayer op) {
-        return new FakePlayerProfile(); //TEMPORARY
-    }
-
-    /**
-     * Returns a profile of the given uuid directly, not via
-     * {@link syam.flaggame.player.GamePlayer}.  
-     * This will not create unnecessary {@link syam.flaggame.player.GamePlayer}, so littele lighter than
-     * {@link syam.flaggame.player.PlayerManager#getPlayer(java.util.UUID)} and
-     * {@link syam.flaggame.player.GamePlayer#getProfile()}}.
-     * @param uuid the uuid of the game player to retrieve
-     * @return the profile
-     */
-    public PlayerProfile getProfile(UUID uuid) {
-        return new FakePlayerProfile(); //TEMPORARY
-    }
-
-    /**
-     * Returns a profile of the name directly, not via
-     * {@link syam.flaggame.player.GamePlayer}.  
-     * This will not create unnecessary {@link syam.flaggame.player.GamePlayer}, so littele lighter than
-     * {@link syam.flaggame.player.PlayerManager#getPlayer(java.lang.String)} and
-     * {@link syam.flaggame.player.GamePlayer#getProfile()}}.
-     * @param name the name of the game player to retrieve
-     * @return the profile
-     */
-    public PlayerProfile getProfile(String name) {
-        return new FakePlayerProfile(); //TEMPORARY
-    }
-
-    /**
      * Returns an iterator of all players.
      *
      * @return an iterator of all players
