@@ -38,7 +38,7 @@ public interface Game extends Iterable<GamePlayer> {
     }
     
     default String getName() {
-         return this.getReception().getID();
+         return this.getReception().getID().toString();
     }
     
     void startNow() throws CommandException;

@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import jp.llv.flaggame.game.Game;
@@ -37,18 +38,18 @@ public class ReceptionManager implements Iterable<GameReception> {
 
     private final FlagGame plugin;
 
-    private final Map<String, TriFunction<FlagGame, String, List<String>, GameReception>> receptionConstructors = new HashMap<>();
-    private final Map<String, GameReception> receptions = new HashMap<>();
+    private final Map<String, TriFunction<FlagGame, UUID, List<String>, GameReception>> receptionConstructors = new HashMap<>();
+    private final Map<UUID, GameReception> receptions = new HashMap<>();
 
     public ReceptionManager(FlagGame plugin) {
         this.plugin = plugin;
     }
 
-    public void addType(String name, TriFunction<FlagGame, String, List<String>, GameReception> constructor) {
+    public void addType(String name, TriFunction<FlagGame, UUID, List<String>, GameReception> constructor) {
         this.receptionConstructors.put(name, constructor);
     }
 
-    public void addType(String name, BiFunction<FlagGame, String, GameReception> constructor) {
+    public void addType(String name, BiFunction<FlagGame, UUID, GameReception> constructor) {
         this.addType(name, (f, i, a) -> constructor.apply(f, i));
     }
 
@@ -70,15 +71,26 @@ public class ReceptionManager implements Iterable<GameReception> {
                 .filter(r -> r.getState().toGameState() == state).collect(Collectors.toSet());
     }
 
+    @Deprecated
     public Optional<GameReception> getReception(String id) {
-        return Optional.ofNullable(this.receptions.get(id));
+        UUID uuid;
+        try {
+            uuid = UUID.fromString(id);
+        } catch(IllegalArgumentException ex) {
+            return Optional.empty();
+        }
+        return getReception(uuid);
+    }
+    
+    public Optional<GameReception> getReception(UUID uuid) {
+        return Optional.ofNullable(this.receptions.get(uuid));
     }
 
-    public GameReception newReception(String receptionType, String id, List<String> args) {
+    public GameReception newReception(String receptionType, UUID id, List<String> args) {
         if (this.receptions.containsKey(id)) {
             throw new IllegalStateException("A reception with the id already exists");
         }
-        TriFunction<FlagGame, String, List<String>, GameReception> constructor = this.receptionConstructors.get(receptionType);
+        TriFunction<FlagGame, UUID, List<String>, GameReception> constructor = this.receptionConstructors.get(receptionType);
         if (constructor == null) {
             throw new IllegalArgumentException("No such registered reception-type");
         }
@@ -88,7 +100,7 @@ public class ReceptionManager implements Iterable<GameReception> {
     }
     
     public GameReception newReception(String receptionType, List<String> args) {
-        String id;
+        UUID id;
         do {
             id = generateNewID();
         } while (this.receptions.containsKey(id));
@@ -96,7 +108,7 @@ public class ReceptionManager implements Iterable<GameReception> {
     }
 
     /*package*/ void remove(GameReception reception) {
-        for (Iterator<Map.Entry<String, GameReception>> it = this.receptions.entrySet().iterator(); it.hasNext();) {
+        for (Iterator<Map.Entry<UUID, GameReception>> it = this.receptions.entrySet().iterator(); it.hasNext();) {
             if (it.next().getValue() == reception) {
                 it.remove();
             }
@@ -104,13 +116,13 @@ public class ReceptionManager implements Iterable<GameReception> {
     }
 
     public void stopAll(String reason) {
-        for (Iterator<Map.Entry<String, GameReception>> it = this.receptions.entrySet().iterator(); it.hasNext();) {
+        for (Iterator<Map.Entry<UUID, GameReception>> it = this.receptions.entrySet().iterator(); it.hasNext();) {
             it.next().getValue().stop(reason);
         }
     }
     
     public void closeAll(String reason) {
-        for (Iterator<Map.Entry<String, GameReception>> it = this.receptions.entrySet().iterator(); it.hasNext();) {
+        for (Iterator<Map.Entry<UUID, GameReception>> it = this.receptions.entrySet().iterator(); it.hasNext();) {
             it.next().getValue().close(reason);
         }
     }
@@ -120,18 +132,8 @@ public class ReceptionManager implements Iterable<GameReception> {
         return this.receptions.values().iterator();
     }
 
-    /**
-     * Generate new id. IDs are 4-digit Base36. For examples, "BGQY", "9RA4", "00I7" and so on.
-     *
-     * @return new id
-     */
-    private static String generateNewID() {
-        StringBuilder sb = new StringBuilder(3);
-        String s = Integer.toString((int) Math.floor(Math.random() * 36 * 36 * 36 * 36), 36).toUpperCase();
-        for (int i = 0; i < 4 - s.length(); i++) {
-            sb.append('0');
-        }
-        return sb.append(s).toString();
+    private static UUID generateNewID() {
+        return UUID.randomUUID();
     }
 
 }

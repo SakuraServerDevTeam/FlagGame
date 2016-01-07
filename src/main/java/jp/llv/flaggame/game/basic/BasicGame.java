@@ -61,6 +61,7 @@ public class BasicGame implements Game {
     private final GameReception reception;
     private final Stage stage;
     private final Map<TeamColor, Team> teams;
+    private final GameProfile profile = new GameProfile();
 
     private final Queue<Runnable> onFinishing = new LinkedList<>();
 
@@ -264,7 +265,8 @@ public class BasicGame implements Game {
             int f = flagPointsMap.get(col).entrySet().stream().mapToInt(e -> e.getKey() * e.getValue()).sum();
             flagPoints.put(col, f);
 
-            int k = this.getKillCount(col);
+            int k = (int) this.profile.kill.entrySet().stream().filter(e -> e.getKey().getTeam().get().getColor() == col)
+                    .mapToDouble(e -> e.getValue()).sum();
             kills.put(col, k);
 
             double p = f;
@@ -279,8 +281,8 @@ public class BasicGame implements Game {
             won = first.getValue().iterator().next();
         }
 
-        Map.Entry<Integer, Set<GamePlayer>> topKill
-                = MapUtils.rank(this.personalKillCount, (i1, i2) -> Integer.compare(i2, i1)).entrySet().iterator().next();
+        Map.Entry<Double, Set<GamePlayer>> topKill
+                = MapUtils.rank(this.profile.kill, (i1, i2) -> Double.compare(i2, i1)).entrySet().iterator().next();
 
         GamePlayer.sendMessage(this.plugin.getPlayers(),
                 "&2フラッグゲーム'&6" + this.stage.getName() + "&2'が終わりました!",

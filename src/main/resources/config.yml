@@ -85,7 +85,7 @@ score:
     break: 3.0
   banner:
     deploy: 5.0
-    break: 3.0
+    get: 3.0
     keep: 7.5
   nexus:
     break: 0.75

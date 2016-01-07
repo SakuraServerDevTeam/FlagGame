@@ -17,10 +17,12 @@
 package syam.flaggame;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -42,7 +44,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import syam.flaggame.command.*;
 import syam.flaggame.command.queue.ConfirmQueue;
-import syam.flaggame.database.Database;
+import syam.flaggame.database.*;
 import syam.flaggame.listener.*;
 import syam.flaggame.game.StageFileManager;
 import syam.flaggame.game.StageManager;
@@ -86,7 +88,7 @@ public class FlagGame extends JavaPlugin {
 
     // ** Variable **
     // プレイヤーデータベース
-    private static Database database;
+    private Database database;
 
     // ** Instance **
     private static FlagGame instance;
@@ -117,8 +119,7 @@ public class FlagGame extends JavaPlugin {
         try {
             config.loadConfig(true);
         } catch (Exception ex) {
-            logger.warning(logPrefix + "an error occured while trying to load the config file.");
-            ex.printStackTrace();
+            this.getLogger().log(Level.WARNING, "an error occured while trying to load the config file.", ex);
         }
 
         // setup Debugger
@@ -152,11 +153,22 @@ public class FlagGame extends JavaPlugin {
         debug.endTimer("commands");
 
         // データベース連携
-        /*debug.startTimer("database");
-         database = new Database(this);
-         database.createStructure();
-         debug.endTimer("database");*/
-        // マネージャ
+        debug.startTimer("database");
+        database = new Database(this.getLogger(),
+                config.getMySQLaddress(),
+                config.getMySQLport(),
+                config.getMySQLdbname(),
+                config.getMySQLtablePrefix(),
+                config.getMySQLusername(),
+                config.getMySQLuserpass());
+        try {
+            database.connect();
+            database.createStructure();
+        } catch (SQLException ex) {
+        }
+        new MySQLReconnect(database).runTaskTimer(this, 600000L, 300000L);
+        debug.endTimer("database");
+
         debug.startTimer("managers");
         gfm = new StageFileManager(this); // 内部でDB使用
 
@@ -268,8 +280,7 @@ public class FlagGame extends JavaPlugin {
             Metrics metrics = new Metrics(this);
             metrics.start();
         } catch (IOException ex) {
-            logger.warning(logPrefix + "Could not send metrics data!");
-            ex.printStackTrace();
+            this.getLogger().log(Level.WARNING, "Could not send metrics data!", ex);
         }
     }
 
@@ -365,8 +376,8 @@ public class FlagGame extends JavaPlugin {
      *
      * @return Database
      */
-    public static Database getDatabases() {
-        return database;
+    public Optional<Database> getDatabases() {
+        return this.database.isConnected() ? Optional.of(this.database) : Optional.empty();
     }
 
     /**

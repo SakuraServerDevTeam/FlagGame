@@ -1,5 +1,5 @@
-/* 
- * Copyright (C) 2015 Syamn, SakuraServerDev
+/*
+ * Copyright (C) 2016 Toyblocks
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,28 +16,30 @@
  */
 package syam.flaggame.database;
 
-import java.sql.SQLException;
-import java.util.Objects;
-import org.bukkit.scheduler.BukkitRunnable;
-
-public class MySQLReconnect extends BukkitRunnable {
-
-    private final Database database;
-
-    public MySQLReconnect(Database database) {
-        Objects.requireNonNull(database);
-        this.database = database;
+/**
+ *
+ * @author Toyblocks
+ */
+public enum RecordType {
+    
+    DEATH((byte) 1),
+    FLAG_PLACE((byte) 2),
+    FLAG_BREAK((byte) 3),
+    NEXUS_BREAK((byte) 4),
+    BANNER_GET((byte) 5),
+    BANNER_KEEP((byte) 6),
+    BANNER_DEPLOY((byte) 7),
+    ;
+    
+    
+    private final byte typeCode;
+    
+    private RecordType(byte typeCode) {
+        this.typeCode = typeCode;
     }
 
-    @Override
-    public void run() {
-        if (!database.isConnected()) {//Something wrong...
-            try {
-                database.connect();
-                //Task is completed!
-            } catch (SQLException ex) {
-                //Retry later...
-            }
-        }
+    public byte getTypeCode() {
+        return typeCode;
     }
+    
 }

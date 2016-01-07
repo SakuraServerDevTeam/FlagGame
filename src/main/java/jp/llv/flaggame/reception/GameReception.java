@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import jp.llv.flaggame.game.Game;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
@@ -57,7 +58,7 @@ public interface GameReception extends Iterable<GamePlayer> {
 
     void stop(String reason) throws IllegalStateException;
 
-    String getID();
+    UUID getID();
 
     String getName();
 

@@ -16,7 +16,9 @@
  */
 package jp.llv.flaggame.util;
 
+import java.nio.ByteBuffer;
 import java.text.DecimalFormat;
+import java.util.UUID;
 
 /**
  *
@@ -37,6 +39,17 @@ public final class ConvertUtils {
     
     public static long toTick(long timeinms) {
         return timeinms / 50;
+    }
+    
+    public static byte[] toByteArray(UUID uuid) {
+        return ByteBuffer.allocate(16)
+                .putLong(uuid.getMostSignificantBits()).putLong(uuid.getLeastSignificantBits())
+                .array();
+    }
+    
+    public static UUID toUUID(byte[] byteArray) {
+        ByteBuffer buf = ByteBuffer.wrap(byteArray);
+        return new UUID(buf.getLong(), buf.getLong());
     }
     
 }

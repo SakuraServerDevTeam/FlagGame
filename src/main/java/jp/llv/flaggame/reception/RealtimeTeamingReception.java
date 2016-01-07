@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import jp.llv.flaggame.game.Game;
 import jp.llv.flaggame.game.basic.BasicGame;
 import syam.flaggame.FlagGame;
@@ -44,14 +45,14 @@ import syam.flaggame.player.GamePlayer;
 public class RealtimeTeamingReception implements GameReception {
 
     private final FlagGame plugin;
-    private final String id;
+    private final UUID id;
     private final Map<TeamColor, Set<GamePlayer>> players = new EnumMap<>(TeamColor.class);
     private final Stage stage;
     private Stage.Reservation stageReservation;
     private BasicGame game;
     private State state = State.READY;
 
-    public RealtimeTeamingReception(FlagGame plugin, String id, List<String> args) {
+    public RealtimeTeamingReception(FlagGame plugin, UUID id, List<String> args) {
         this.plugin = plugin;
         this.id = id;
         if (args.size() < 1) {
@@ -190,7 +191,7 @@ public class RealtimeTeamingReception implements GameReception {
     }
 
     @Override
-    public String getID() {
+    public UUID getID() {
         return this.id;
     }
 
