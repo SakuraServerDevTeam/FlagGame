@@ -24,8 +24,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Database {
@@ -183,4 +185,5 @@ public class Database {
             return false;
         }
     }
+    
 }

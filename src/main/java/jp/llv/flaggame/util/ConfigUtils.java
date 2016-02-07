@@ -238,7 +238,7 @@ public final class ConfigUtils {
             }
         }
     }
-    
+
     public static void writeBannerSpawner(ConfigurationSection section, String key, BannerSpawner spawner) {
         if (spawner == null) {
             section.set(key, null);
@@ -251,7 +251,7 @@ public final class ConfigUtils {
             ns.set("face", spawner.getFace().toString());
         }
     }
-    
+
     public static BannerSpawner readBannerSpawner(ConfigurationSection section, String key) {
         if (section.getConfigurationSection(key) == null) {
             return null;
@@ -265,7 +265,7 @@ public final class ConfigUtils {
             return new BannerSpawner(loc, point, hp, wall, face);
         }
     }
-    
+
     public static void writeBannerSlot(ConfigurationSection section, String key, BannerSlot slot) {
         if (slot == null) {
             section.set(key, null);
@@ -275,7 +275,7 @@ public final class ConfigUtils {
             ns.set("color", slot.getColor().toString());
         }
     }
-    
+
     public static BannerSlot readBannerSlot(ConfigurationSection section, String key) {
         if (section.getConfigurationSection(key) == null) {
             return null;
@@ -297,6 +297,8 @@ public final class ConfigUtils {
             ns.set("teamlimit", stage.getTeamLimit());
             ns.set("protected", stage.isStageProtected());
             ns.set("available", stage.isAvailable());
+            ns.set("kill", stage.getDeathScore());
+            ns.set("death", stage.getKillScore());
             writeCuboid(ns, "area", stage.getStageArea());
             writeEnumMap(ns, "spawn", stage.getSpawns(), ConfigUtils::writeLocation);
             writeLocation(ns, "specspawn", stage.getSpecSpawn().orElse(null));
@@ -319,6 +321,8 @@ public final class ConfigUtils {
             int teamlimit = ns.getInt("teamlimit", Integer.MAX_VALUE);
             boolean protect = ns.getBoolean("protected", true);
             boolean available = ns.getBoolean("available", false);
+            double killScore = ns.getDouble("kill", 0);
+            double deathScore = ns.getDouble("death", 0);
             Cuboid area = readCuboid(ns, "area");
             EnumMap<TeamColor, Location> spawn = readEnumMap(ns, "spawn", TeamColor.class, ConfigUtils::readLocation);
             Location specspawn = readLocation(ns, "specspawn");
@@ -337,6 +341,8 @@ public final class ConfigUtils {
                 stage.setTeamLimit(teamlimit);
                 stage.setProtected(protect);
                 stage.setAvailable(available);
+                stage.setKillScore(killScore);
+                stage.setDeathScore(deathScore);
                 if (area != null) {
                     stage.setStageArea(area);
                 }

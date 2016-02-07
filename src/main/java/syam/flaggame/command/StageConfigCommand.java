@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Toyblocks
+ * Copyright (C) 2016 toyblocks
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,23 +14,33 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jp.llv.flaggame.game.basic;
+package syam.flaggame.command;
 
-import jp.llv.flaggame.util.DoubleMap;
-import syam.flaggame.player.GamePlayer;
+import syam.flaggame.FlagGame;
+import syam.flaggame.exception.CommandException;
 
 /**
  *
- * @author Toyblocks
+ * @author toyblocks
  */
-public class GameProfile {
-    
-    DoubleMap<GamePlayer> kill = new DoubleMap<>();
-    DoubleMap<GamePlayer> death = new DoubleMap<>();
-    DoubleMap<GamePlayer> nexusBreak = new DoubleMap<>();
-    DoubleMap<GamePlayer> bannerGet = new DoubleMap<>();
-    DoubleMap<GamePlayer> bannerDeploy = new DoubleMap<>();
-    
-    GameProfile() {}
+public class StageConfigCommand extends BaseCommand {
+
+    public StageConfigCommand(FlagGame plugin) {
+        super(plugin);
+        bePlayer = false;
+        name = "scfg";
+        argLength = 1;
+        usage = "<stage> [key [value]...]";
+    }
+
+    @Override
+    public void execute() throws CommandException {
+        
+    }
+
+    @Override
+    public boolean permission() {
+        return true;
+    }
     
 }

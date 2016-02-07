@@ -94,7 +94,7 @@ public class FlagGame extends JavaPlugin {
     private static FlagGame instance;
 
     // Hookup plugins
-    private static Economy economy = null;
+    private Economy economy = null;
     private DynmapHandler dynmap = null;
 
     /**
@@ -239,8 +239,6 @@ public class FlagGame extends JavaPlugin {
             RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
             // 経済概念のプラグインがロードされているかチェック
             if (economyProvider == null) {
-                logger.warning(logPrefix + "Economy plugin not Fount. Disabling plugin.");
-                getPluginLoader().disablePlugin(this);
                 return;
             }
 
@@ -248,15 +246,13 @@ public class FlagGame extends JavaPlugin {
                 economy = economyProvider.getProvider();
             } // 例外チェック
             catch (Exception e) {
-                logger.warning(logPrefix + "Could NOT be hook to Vault. Disabling plugin.");
-                getPluginLoader().disablePlugin(this);
+                logger.warning(logPrefix + "Could NOT be hook to Vault.");
                 return;
             }
             logger.info(logPrefix + "Hooked to Vault!");
         } else {
             // Vaultが見つからなかった
-            logger.warning(logPrefix + "Vault was NOT found! Disabling plugin.");
-            getPluginLoader().disablePlugin(this);
+            logger.warning(logPrefix + "Vault was NOT found!");
         }
     }
 
@@ -398,8 +394,8 @@ public class FlagGame extends JavaPlugin {
         return queue;
     }
 
-    public Economy getEconomy() {
-        return economy;
+    public Optional<Economy> getEconomy() {
+        return Optional.ofNullable(economy);
     }
 
     public PlayerManager getPlayers() {

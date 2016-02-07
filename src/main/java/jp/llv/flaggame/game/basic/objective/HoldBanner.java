@@ -16,20 +16,58 @@
  */
 package jp.llv.flaggame.game.basic.objective;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import jp.llv.flaggame.util.BannerUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.DyeColor;
+import org.bukkit.Material;
+import org.bukkit.block.Banner;
+import org.bukkit.inventory.ItemStack;
+
 /**
  *
  * @author Toyblocks
  */
 public class HoldBanner {
 
-    private final BannerSpawner[] spawner;
+    private final Map<BannerSpawner, Byte> spawner;
 
     public HoldBanner(BannerSpawner ... spawner) {
-        this.spawner = spawner;
+        this.spawner = new HashMap<>();
+        for (BannerSpawner bs : spawner) {
+            this.spawner.put(bs, bs.getHp());
+        }
     }
 
-    public BannerSpawner[] getSpawner() {
-        return spawner;
+    public Collection<BannerSpawner> getSpawners() {
+        return Collections.unmodifiableSet(spawner.keySet());
+    }
+    
+    public byte getHp() {
+        return (byte) spawner.keySet().stream().mapToInt(BannerSpawner::getHp).max().orElse(0);
+    }
+    
+    public byte getPoint() {
+        return (byte) spawner.keySet().stream().mapToInt(BannerSpawner::getPoint).sum();
+    }
+    
+    public ItemStack getBanner() {
+        ItemStack is = new ItemStack(Material.BANNER, 1);
+        Banner b = (Banner) Bukkit.getItemFactory().getItemMeta(Material.BANNER);
+        BannerUtils.paintNum(b, getPoint(), DyeColor.WHITE, DyeColor.CYAN);
+    }
+    
+    public boolean isBroken() {
+        return this.spawner.values().stream().allMatch(b -> b<=0);
+    }
+    
+    public Optional<HoldBanner> damage() {
+        this.spawner.entrySet().stream().forEach(e -> e.setValue((byte) (e.getValue()-1)));
     }
 
 }

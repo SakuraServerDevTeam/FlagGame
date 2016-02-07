@@ -37,6 +37,7 @@ import syam.flaggame.util.Util;
 import syam.flaggame.util.WorldEditHandler;
 
 public class SetCommand extends BaseCommand {
+
     /*
      * TODO: 設定によってコンソールから実行可能にする Confiable列挙にbePlayer (boolean)
      * を追加するか、ConfigType.Area
@@ -106,8 +107,14 @@ public class SetCommand extends BaseCommand {
                     setChest(stage);
                     return;
                 case NEXUS:
+                    setNexus(stage);
+                    return;
                 case BANNER_SLOT:
+                    setBannerSlot(stage);
+                    return;
                 case BANNER_SPAWNER:
+                    setBannerSpawner(stage);
+                    return;
                 case SPECSPAWN: // 観戦者スポーン設定
                     setSpecSpawn(stage);
                     return;
@@ -190,7 +197,7 @@ public class SetCommand extends BaseCommand {
 
         if (args.size() >= 3 && args.get(2).equalsIgnoreCase("none")) {
             game.setBase(team, null);
-            Actions.message(player, "&a" + team.getTeamName() + "チームの拠点を削除しました！");
+            Actions.message(player, team.getRichName() + "&aの拠点を削除しました！");
             return;
         }
 
@@ -212,7 +219,7 @@ public class SetCommand extends BaseCommand {
         // 拠点設定
         game.setBase(team, block1.getLocation(), block2.getLocation());
 
-        Actions.message(player, "&a" + team.getTeamName() + "チームの拠点を設定しました！");
+        Actions.message(player, "&a" + team.getTeamName() + "&aチームの拠点を設定しました！");
         plugin.getDynmap().updateRegion(game);
     }
 
@@ -243,14 +250,14 @@ public class SetCommand extends BaseCommand {
 
         if (args.size() >= 3 && args.get(2).equalsIgnoreCase("none")) {
             game.setSpawn(team, null);
-            Actions.message(player, "&a" + team.getTeamName() + "チームのスポーン地点を削除しました！");
+            Actions.message(player, "&a" + team.getTeamName() + "&aチームのスポーン地点を削除しました！");
             return;
         }
 
         // スポーン地点設定
         game.setSpawn(team, player.getLocation());
 
-        Actions.message(player, "&a" + team.getTeamName() + "チームのスポーン地点を設定しました！");
+        Actions.message(player, "&a" + team.getTeamName() + "&aチームのスポーン地点を設定しました！");
         plugin.getDynmap().updateRegion(game);
     }
 
@@ -283,8 +290,8 @@ public class SetCommand extends BaseCommand {
     }
 
     private void setNexus(Stage stage) throws CommandException {
-        if (args.size() < 3) {
-            throw new CommandException("&c引数が足りません！目標の得点とチーム色を正しく指定してください!");
+        if (args.size() < 2) {
+            throw new CommandException("&c引数が足りません！目標の得点を正しく指定してください!");
         }
 
         double point;
@@ -295,10 +302,14 @@ public class SetCommand extends BaseCommand {
         }
 
         TeamColor color;
-        try {
-            color = TeamColor.valueOf(args.get(2));
-        } catch (IllegalArgumentException ex) {
-            throw new CommandException("目標のチーム色を正しく指定してください!", ex);
+        if (args.size() < 3) {
+            color = null;
+        } else {
+            try {
+                color = TeamColor.of(args.get(2));
+            } catch (IllegalArgumentException ex) {
+                throw new CommandException("目標のチーム色を正しく指定してください!", ex);
+            }
         }
 
         GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
@@ -336,7 +347,7 @@ public class SetCommand extends BaseCommand {
             color = null;
         } else {
             try {
-                color = TeamColor.valueOf(args.get(1));
+                color = TeamColor.of(args.get(1));
             } catch (IllegalArgumentException ex) {
                 throw new CommandException("目標のチーム色を正しく指定してください!", ex);
             }

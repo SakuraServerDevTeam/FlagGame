@@ -88,4 +88,9 @@ public enum TeamColor {
         }
         return null;
     }
+    
+    public static TeamColor of(String name) {
+        return valueOf(name.toUpperCase());
+    }
+    
 }

@@ -82,7 +82,8 @@ score:
     death: -1.0
   flag:
     place: 1.0
-    break: 3.0
+    last_place: 5.0
+    break: 1.0
   banner:
     deploy: 5.0
     get: 3.0

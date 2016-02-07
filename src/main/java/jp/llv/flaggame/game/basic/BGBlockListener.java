@@ -18,11 +18,11 @@ package jp.llv.flaggame.game.basic;
 
 import java.util.Collection;
 import java.util.Optional;
+import jp.llv.flaggame.game.basic.objective.BannerSlot;
 import jp.llv.flaggame.game.basic.objective.BannerSpawner;
 import jp.llv.flaggame.reception.Team;
 import org.bukkit.Effect;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -33,6 +33,7 @@ import syam.flaggame.FlagGame;
 import syam.flaggame.enums.TeamColor;
 import jp.llv.flaggame.game.basic.objective.Flag;
 import jp.llv.flaggame.game.basic.objective.Nexus;
+import org.bukkit.Material;
 import syam.flaggame.player.GamePlayer;
 
 /**
@@ -77,16 +78,16 @@ public class BGBlockListener extends BGListener {
         }
 
         Optional<Flag> of = this.game.getStage().getFlag(event.getBlock().getLocation());
-        Optional<Nexus> on = this.game.getStage().getNexus(event.getBlock().getLocation());
-        Optional<BannerSpawner> ob = this.game.getStage().getBannerSpawner(event.getBlock().getLocation());
+        Optional<BannerSlot> os = this.game.getStage().getBannerSlot(event.getBlock().getLocation());
 
         event.setCancelled(true);
         of.ifPresent(f -> this.placeFlag(gplayer, f, event));
+        os.ifPresent(s -> this.placeBanner(gplayer, s, event));
     }
 
     private void placeFlag(GamePlayer gplayer, Flag f, BlockPlaceEvent event) {
         Block b = event.getBlockPlaced();
-        if (b.getType() != Material.WOOL) {//対象ブロックでない
+        if (!Flag.isFlag(b.getType())) {//対象ブロックでない
             event.setCancelled(true);
             return;
         }
@@ -113,6 +114,10 @@ public class BGBlockListener extends BGListener {
             loc.getWorld().playEffect(loc, Effect.ENDER_SIGNAL, 0, 10);
             loc.getWorld().playEffect(loc, Effect.SMOKE, 4, 2);
         }
+    }
+    
+    private void placeBanner(GamePlayer gplayer, BannerSlot s, BlockPlaceEvent event) {
+        
     }
 
     private void breakFlag(GamePlayer gplayer, Flag f, BlockBreakEvent event) {
@@ -145,7 +150,6 @@ public class BGBlockListener extends BGListener {
         Team broken = gplayer.getGame().get().getTeam(f.getColor());
         if (breaker == broken) {
             gplayer.sendMessage("&c味方チームの目標は破壊できません!");
-            event.setCancelled(true);
             return;
         }
         
@@ -163,7 +167,9 @@ public class BGBlockListener extends BGListener {
     }
 
     private void breakBannerSpawner(GamePlayer gplayer, BannerSpawner s, BlockBreakEvent event) {
-
+        //move into
+        event.setCancelled(true);
+        event.getBlock().setType(Material.AIR);
     }
 
 }

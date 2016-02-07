@@ -42,7 +42,11 @@ public enum Perms {
     SAVE("admin.save"), RELOAD("admin.reload"),
 
     /* 特殊系 */
-    IGNORE_PROTECT("ignoreWorldProtect"), IGNORE_INTERACT("ignoreInteractEvent"), SIGN("admin.sign"), ;
+    IGNORE_PROTECT("ignoreWorldProtect"), IGNORE_INTERACT("ignoreInteractEvent"), SIGN("admin.sign"), 
+    
+    //new Configuration
+    GLOBAL_CONFIG_CHECK("config.global.check"), GLOBAL_CONFIG_SET("config.global.set"), STAGE_CONFIG_CHECK("config.stage.check"), STAGE_CONFIG_SET("config.stage.set")
+    ;
 
     // ノードヘッダー
     final String HEADER = "flag.";

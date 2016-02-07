@@ -24,7 +24,7 @@ import syam.flaggame.enums.TeamColor;
 
 public class Flag {
     
-    private static final int[] FLAG_BLOCK_IDS = {35};
+    public static final Material[] FLAG_BLOCK_IDS = {Material.WOOL, Material.STAINED_CLAY, Material.STAINED_GLASS};
     private final Location loc; // フラッグ座標
     private final byte type; // フラッグの種類
 
@@ -89,8 +89,8 @@ public class Flag {
     }
     
     public static boolean isFlag(Material material) {
-        for (int id : FLAG_BLOCK_IDS) {
-            if (material.getId() == id) {
+        for (Material m : FLAG_BLOCK_IDS) {
+            if (material == m) {
                 return true;
             }
         }

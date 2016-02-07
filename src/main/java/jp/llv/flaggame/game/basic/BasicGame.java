@@ -16,6 +16,7 @@
  */
 package jp.llv.flaggame.game.basic;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -45,6 +46,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 import syam.flaggame.FlagGame;
+import syam.flaggame.database.RecordType;
 import syam.flaggame.enums.TeamColor;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
@@ -238,10 +240,10 @@ public class BasicGame implements Game {
                 .filter(t -> t % 60000L == 0);
         LongStream.concat(lessThanAMinute, aMinute).map(t -> this.stage.getGameTime() - t)
                 .map(ConvertUtils::toTick).forEach(t -> {
-                    BukkitTask task = this.plugin.getServer().getScheduler()
+            BukkitTask task = this.plugin.getServer().getScheduler()
                     .runTaskLater(plugin, this::notifyRemainTime, t);
-                    this.onFinishing.offer(task::cancel);
-                });
+            this.onFinishing.offer(task::cancel);
+        });
     }
 
     private void stop() {
@@ -296,17 +298,37 @@ public class BasicGame implements Game {
 
         for (GamePlayer g : this.getReception().getPlayers()) {
             if (!g.getPlayer().isOnline()) {
-                //途中退場
+                this.plugin.getDatabases().ifPresent(db -> {
+                    try {
+                        db.write(RecordType.EXIT, this.reception.getID(), g.getUUID());
+                    } catch (SQLException ex) {
+                    }
+                });
             } else {
                 g.getPlayer().teleport(this.stage.getSpawn(g.getTeam().get().getColor()));
                 g.getPlayer().getInventory().clear();
                 g.resetTabName();
                 if (won == null) {
-                    //引き分け
+                    this.plugin.getDatabases().ifPresent(db -> {
+                        try {
+                            db.write(RecordType.DRAW, this.reception.getID(), g.getUUID());
+                        } catch (SQLException ex) {
+                        }
+                    });
                 } else if (g.getTeam().get().getColor() == won) {
-                    //勝利
+                    this.plugin.getDatabases().ifPresent(db -> {
+                        try {
+                            db.write(RecordType.WIN, this.reception.getID(), g.getUUID());
+                        } catch (SQLException ex) {
+                        }
+                    });
                 } else {
-                    //敗北
+                    this.plugin.getDatabases().ifPresent(db -> {
+                        try {
+                            db.write(RecordType.LOSE, this.reception.getID(), g.getUUID());
+                        } catch (SQLException ex) {
+                        }
+                    });
                 }
             }
         }

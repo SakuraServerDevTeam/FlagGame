@@ -17,6 +17,8 @@ import org.bukkit.block.BlockFace;
  */
 public class BannerSpawner {
 
+    public static final Material[] BANNER_IDS = {Material.BANNER, Material.WALL_BANNER};
+    
     private final Location loc;
     private final byte point;
     private final byte hp;
@@ -42,7 +44,11 @@ public class BannerSpawner {
     }
 
     public byte getHp() {
-        return hp;
+        return (byte) Math.abs(hp);
+    }
+    
+    public boolean isSnatchable() {
+        return this.hp < 0;
     }
 
     public boolean isWall() {
@@ -56,6 +62,7 @@ public class BannerSpawner {
     public void spawnBanner() {
         loc.getBlock().setType(wall ? Material.WALL_BANNER : Material.BANNER);
         Banner b = (Banner) loc.getBlock().getState();
+        b.setBaseColor(DyeColor.CYAN);
         BannerUtils.paintNum(b, point, DyeColor.WHITE, DyeColor.CYAN);
     }
 

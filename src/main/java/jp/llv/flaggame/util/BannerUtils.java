@@ -23,6 +23,7 @@ import org.bukkit.block.Banner;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
 import static org.bukkit.block.banner.PatternType.*;
+import org.bukkit.inventory.meta.BannerMeta;
 
 public final class BannerUtils {
 
@@ -41,6 +42,28 @@ public final class BannerUtils {
     }
 
     public static void paintNum(Banner banner, int number, DyeColor color, DyeColor backgroundColor) {
+        if (number < 0) {
+            throw new IllegalArgumentException("The number must be positive");
+        }
+        char c;
+        if (number <= 9) {
+            c = Character.toChars(number)[0];
+        } else {
+            c = number < 50 ? 'X' : number < 100 ? 'L' : number < 500 ? 'C' : number < 1000 ? 'D' : 'M';
+        }
+        paintChar(banner, c, color, backgroundColor);
+    }
+    public static void paint(BannerMeta banner, BannerChar character, DyeColor color, DyeColor backgroundColor) {
+        for (BannerChar.DyeStep s : character.steps) {
+            banner.addPattern(new Pattern(s.bgcolor ? backgroundColor : color, s.pattern));
+        }
+    }
+
+    public static void paintChar(BannerMeta banner, char character, DyeColor color, DyeColor backgroundColor) throws UnsupportedOperationException {
+        paint(banner, BannerChar.getFromChar(character).orElseThrow(() -> new UnsupportedOperationException("That char is not supported")), color, backgroundColor);
+    }
+
+    public static void paintNum(BannerMeta banner, int number, DyeColor color, DyeColor backgroundColor) {
         if (number < 0) {
             throw new IllegalArgumentException("The number must be positive");
         }

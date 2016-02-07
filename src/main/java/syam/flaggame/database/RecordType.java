@@ -16,12 +16,32 @@
  */
 package syam.flaggame.database;
 
+import jp.llv.flaggame.game.basic.BasicGame;
+
 /**
  *
  * @author Toyblocks
  */
 public enum RecordType {
     
+    /**
+     * player is not online @ {@link BasicGame#stop()}
+     */
+    EXIT((byte) -4),
+    /**
+     * player drew @ {@link BasicGame#stop()}
+     */
+    DRAW((byte) -3),
+    /**
+     * player lost @ {@link BasicGame#stop()}
+     */
+    LOSE((byte) -2),
+    /**
+     * player won @ {@link BasicGame#stop()}
+     */
+    WIN((byte) -1),
+    @Deprecated
+    UNDEFINED((byte) 0),
     DEATH((byte) 1),
     FLAG_PLACE((byte) 2),
     FLAG_BREAK((byte) 3),

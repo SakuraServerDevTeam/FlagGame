@@ -144,8 +144,8 @@ public class FGPlayerListener implements Listener {
                         return;
                     }
                     Actions.message(player, "&aステージ'" + stage.getName() + "'の"
-                            + sess.getSelectedColor().getRichName() + "の"
-                            + sess.getSelectedPoint() + "ポイント目標を登録しました！");
+                            + sess.getSelectedColor() != null ? sess.getSelectedColor().getRichName() : "全チーム" + "&aの"
+                                    + sess.getSelectedPoint() + "ポイント目標を登録しました！");
                     break;
                 case BANNER_SLOT:
                     if (stage.getBannerSlot(loc).isPresent()) {
@@ -166,7 +166,7 @@ public class FGPlayerListener implements Listener {
                         return;
                     }
                     Actions.message(player, "&aステージ'" + stage.getName() + "'の"
-                            + sess.getSelectedColor() == null ? "": sess.getSelectedColor().getRichName() + "の"
+                            + (sess.getSelectedColor() != null ? sess.getSelectedColor().getRichName() : "全チーム") + "&aの"
                             + "スロットを登録しました！");
                     break;
                 case BANNER_SPAWNER:
@@ -180,7 +180,7 @@ public class FGPlayerListener implements Listener {
                         Actions.message(player, "&aステージ'" + stage.getName() + "'のバナースポナーを削除しました！");
                         return;
                     }
-                    
+
                     Block b = loc.getBlock();
                     if (b.getType() != Material.BANNER && b.getType() != Material.WALL_BANNER) {
                         Actions.message(player, "&cバナーのスポーン位置にバナーを予め設置してください!");
@@ -196,7 +196,7 @@ public class FGPlayerListener implements Listener {
                         return;
                     }
                     Actions.message(player, "&aステージ'" + stage.getName() + "'の"
-                            + sess.getSelectedColor().getRichName() + "の"
+                            + (sess.getSelectedColor() != null ? sess.getSelectedColor().getRichName() : "全チーム") + "&aの"
                             + sess.getSelectedPoint() + "ポイント目標を登録しました！");
                     break;
                 // チェストモード

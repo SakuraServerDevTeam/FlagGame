@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.milkbowl.vault.economy.Economy;
 
 import net.milkbowl.vault.economy.EconomyResponse;
 
@@ -342,8 +343,8 @@ public class Actions {
         if (amount < 0) {
             return false; // 負数は許容しない
         }
-        EconomyResponse r = FlagGame.getInstance().getEconomy().depositPlayer(Bukkit.getOfflinePlayer(uuid), amount);
-        return r.transactionSuccess();
+        return FlagGame.getInstance().getEconomy()
+                .map(e -> e.depositPlayer(Bukkit.getOfflinePlayer(uuid), amount).transactionSuccess()).orElse(false);
     }
 
     /**
@@ -357,8 +358,8 @@ public class Actions {
         if (amount < 0) {
             return false; // 負数は許容しない
         }
-        EconomyResponse r = FlagGame.getInstance().getEconomy().withdrawPlayer(Bukkit.getOfflinePlayer(uuid), amount);
-        return r.transactionSuccess();
+        return FlagGame.getInstance().getEconomy()
+                .map(e -> e.withdrawPlayer(Bukkit.getOfflinePlayer(uuid), amount).transactionSuccess()).orElse(false);
     }
 
     /**
@@ -369,7 +370,8 @@ public class Actions {
      * @return 持っていればtrue、無ければfalse
      */
     public static boolean checkMoney(UUID uuid, double amount) {
-        return (FlagGame.getInstance().getEconomy().has(Bukkit.getOfflinePlayer(uuid), amount));
+        return FlagGame.getInstance().getEconomy()
+                .map(e -> e.has(Bukkit.getOfflinePlayer(uuid), amount)).orElse(false);
     }
 
     /* ログ操作系 */

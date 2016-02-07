@@ -17,7 +17,9 @@
 package jp.llv.flaggame.game.basic;
 
 import java.util.Collection;
+import jp.llv.flaggame.game.basic.objective.Flag;
 import jp.llv.flaggame.reception.Team;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -31,11 +33,13 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerExpChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.MaterialData;
 import org.bukkit.material.Openable;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -50,6 +54,8 @@ import syam.flaggame.util.Actions;
  * @author Toyblocks
  */
 public class BGPlayerListener extends BGListener {
+
+    private static final double WOOL_REPAINT_PCT = 0.5;
 
     private final FlagGame plugin;
     private final Collection<GamePlayer> players;
@@ -74,7 +80,6 @@ public class BGPlayerListener extends BGListener {
             return;
         }
 
-
         if (!canUseBlockAt(gplayer, event.getClickedBlock().getLocation())) {
             gplayer.sendMessage("&cここは敵拠点です!");
             event.setCancelled(true);
@@ -93,7 +98,7 @@ public class BGPlayerListener extends BGListener {
         }
 
         TeamColor color = gplayer.getTeam().get().getColor();
-        gplayer.sendMessage("&c[*]&6このゲームはあと &a" +Actions.getTimeString(this.game.getRemainTime()) + "&6 残っています！");
+        gplayer.sendMessage("&c[*]&6このゲームはあと &a" + Actions.getTimeString(this.game.getRemainTime()) + "&6 残っています！");
         Location loc = this.game.getStage().getSpawn(color);
         event.setRespawnLocation(loc);
         player.getInventory().setHelmet(new ItemStack(Material.WOOL, 1, (short) 0, color.getBlockData()));
@@ -121,17 +126,13 @@ public class BGPlayerListener extends BGListener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void on(PlayerDeathEvent event) {
-        Player player = event.getEntity();
-        GamePlayer gplayer = this.plugin.getPlayers().getPlayer(player);
-        if (!this.players.contains(gplayer)) {
+        Player killed = event.getEntity();
+        GamePlayer gkilled = this.plugin.getPlayers().getPlayer(killed);
+        if (!this.players.contains(gkilled)) {
             return;
         }
 
         event.setDeathMessage(null);
-        ItemStack helmet = player.getInventory().getHelmet();
-        if (helmet != null && helmet.getType() == Material.WOOL) {
-            player.getInventory().setHelmet(null);
-        }
 
         Player killer;
         String weapon;
@@ -172,18 +173,23 @@ public class BGPlayerListener extends BGListener {
             gkiller = null;
         }
 
-        Team killedTeam = gplayer.getTeam().get();
+        Team killedTeam = gkilled.getTeam().get();
         Team killerTeam = gkiller != null ? gkiller.getTeam().get() : null;
 
+        //Keep exp level in order to keep score
+        event.setKeepLevel(true);
+
         String message;
-        if (gplayer == gkiller || gkiller == null || killerTeam == null) { //自殺
-            message = gplayer.getColoredName() + "&6が&b"
+        if (gkilled == gkiller || gkiller == null || killerTeam == null) { //自殺
+            message = gkilled.getColoredName() + "&6が&b"
                     + (weapon != null ? weapon + "&6で" : "&6") + "自殺しました!";
         } else {
-            message = gplayer.getColoredName() + "&6が" + gkiller.getColoredName() + "&6に&b"
+            event.getDrops().stream().filter((is) -> (Flag.isFlag(is.getType()) && Math.random() < WOOL_REPAINT_PCT))
+                    .forEach(is -> is.setData(new MaterialData(killerTeam.getColor().getBlockData())));
+            message = gkilled.getColoredName() + "&6が" + gkiller.getColoredName() + "&6に&b"
                     + (weapon != null ? weapon + "&6で" : "&6") + "殺されました!";
         }
-        GamePlayer.sendMessage(this.plugin.getPlayers().getPlayersIn(player.getWorld()), message);
+        GamePlayer.sendMessage(this.plugin.getPlayers().getPlayersIn(killed.getWorld()), message);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
