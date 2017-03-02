@@ -108,6 +108,7 @@ public class BGBlockListener extends BGListener {
         this.game.getTeams().stream().filter(team -> team != placerTeam)
                 .forEach(team -> GamePlayer.sendMessage(team,
                                 gplayer.getColoredName() + "&aに&6" + f.getTypeName() + "pフラッグ&aを獲得されました!"));
+        this.game.getProfile().capture.add(gplayer, f.getFlagPoint());
 
         if (plugin.getConfigs().getUseFlagEffects()) {
             Location loc = b.getLocation();

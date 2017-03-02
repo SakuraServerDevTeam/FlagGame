@@ -27,6 +27,7 @@ public class GameProfile {
     
     DoubleMap<GamePlayer> kill = new DoubleMap<>();
     DoubleMap<GamePlayer> death = new DoubleMap<>();
+    DoubleMap<GamePlayer> capture = new DoubleMap<>();
     DoubleMap<GamePlayer> nexusBreak = new DoubleMap<>();
     DoubleMap<GamePlayer> bannerGet = new DoubleMap<>();
     DoubleMap<GamePlayer> bannerDeploy = new DoubleMap<>();

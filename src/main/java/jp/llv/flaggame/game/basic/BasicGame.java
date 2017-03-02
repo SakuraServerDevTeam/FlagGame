@@ -294,6 +294,8 @@ public class BasicGame implements Game {
                 = MapUtils.rank(this.profile.kill, (i1, i2) -> Double.compare(i2, i1)).entrySet().iterator().next();
         Map.Entry<Double, Set<GamePlayer>> topDeath
                 = MapUtils.rank(this.profile.death, (i1, i2) -> Double.compare(i2, i1)).entrySet().iterator().next();
+        Map.Entry<Double, Set<GamePlayer>> topCapture
+                = MapUtils.rank(this.profile.capture, (i1, i2) -> Double.compare(i2, i1)).entrySet().iterator().next();
 
         GamePlayer.sendMessage(this.plugin.getPlayers(),
                 "&2フラッグゲーム'&6" + this.stage.getName() + "&2'が終わりました!",
@@ -304,7 +306,9 @@ public class BasicGame implements Game {
                 "&6トップキル: " + (topKill != null ? (topKill.getValue().stream().map(GamePlayer::getColoredName)
                         .collect(Collectors.joining("&f, ")) + "&f (&6" + topKill.getKey() + "Kills&f)") : "&fNone"),
                 "&6トップデス: " + (topDeath != null ? (topDeath.getValue().stream().map(GamePlayer::getColoredName)
-                        .collect(Collectors.joining("&f, ")) + "&f (&6" + topDeath.getKey() + "Deaths&f)") : "&fNone")
+                        .collect(Collectors.joining("&f, ")) + "&f (&6" + topDeath.getKey() + "Deaths&f)") : "&fNone"),
+                "&6トップキャプチャ: " + (topCapture != null ? (topCapture.getValue().stream().map(GamePlayer::getColoredName)
+                        .collect(Collectors.joining("&f, ")) + "&f (&6" + topCapture.getKey() + "Points&f)") : "&fNone")
         );
 
         for (GamePlayer g : this.getReception().getPlayers()) {
