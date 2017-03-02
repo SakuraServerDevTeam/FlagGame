@@ -35,9 +35,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
 import syam.flaggame.FlagGame;
-import syam.flaggame.command.BaseCommand;
 import syam.flaggame.enums.TeamColor;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.exception.StageReservedException;
@@ -99,7 +97,7 @@ public class RealtimeTeamingReception implements GameReception {
         }
         this.state = State.OPENED;
         GamePlayer.sendMessage(this.plugin.getPlayers(), "&2フラッグゲーム'&6" + this.getName() + "&2'の参加受付が開始されました！");
-        BaseComponent[] message = new ComponentBuilder("ここをクリック").color(ChatColor.GOLD)
+        BaseComponent[] message = new ComponentBuilder("ここをクリック").bold(true).color(ChatColor.GOLD).bold(false)
                 .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("クリックして参加申し込みします").color(ChatColor.GOLD).create()))
                 .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/flag join "+this.getID()))
                 .append("して参加してください！").color(ChatColor.DARK_GREEN).create();
