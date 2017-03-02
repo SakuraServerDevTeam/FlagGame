@@ -292,6 +292,8 @@ public class BasicGame implements Game {
 
         Map.Entry<Double, Set<GamePlayer>> topKill
                 = MapUtils.rank(this.profile.kill, (i1, i2) -> Double.compare(i2, i1)).entrySet().iterator().next();
+        Map.Entry<Double, Set<GamePlayer>> topDeath
+                = MapUtils.rank(this.profile.death, (i1, i2) -> Double.compare(i2, i1)).entrySet().iterator().next();
 
         GamePlayer.sendMessage(this.plugin.getPlayers(),
                 "&2フラッグゲーム'&6" + this.stage.getName() + "&2'が終わりました!",
@@ -300,7 +302,9 @@ public class BasicGame implements Game {
                         ? won.getColor() + won.getTeamName() + "チームの勝利です!"
                         : "このゲームは引き分けです!",
                 "&6トップキル: " + (topKill != null ? (topKill.getValue().stream().map(GamePlayer::getColoredName)
-                        .collect(Collectors.joining("&f, ")) + "&f (&6" + topKill.getKey() + "Kills&f)") : "&fNone")
+                        .collect(Collectors.joining("&f, ")) + "&f (&6" + topKill.getKey() + "Kills&f)") : "&fNone"),
+                "&6トップデス: " + (topDeath != null ? (topDeath.getValue().stream().map(GamePlayer::getColoredName)
+                        .collect(Collectors.joining("&f, ")) + "&f (&6" + topDeath.getKey() + "Deaths&f)") : "&fNone")
         );
 
         for (GamePlayer g : this.getReception().getPlayers()) {

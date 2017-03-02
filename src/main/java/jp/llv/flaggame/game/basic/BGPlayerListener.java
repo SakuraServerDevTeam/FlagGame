@@ -189,6 +189,7 @@ public class BGPlayerListener extends BGListener {
                     + (weapon != null ? weapon + "&6で" : "&6") + "殺されました!";
             this.game.getProfile().kill.increase(gkiller);
         }
+        this.game.getProfile().death.increase(gkilled);
         GamePlayer.sendMessage(this.plugin.getPlayers().getPlayersIn(killed.getWorld()), message);
     }
 
