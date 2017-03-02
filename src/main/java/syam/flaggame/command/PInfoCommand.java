@@ -25,7 +25,7 @@ public class PInfoCommand extends BaseCommand {
     @Override
     public void execute() throws CommandException {
         GamePlayer gp = this.plugin.getPlayers().getPlayer(player);
-        gp.sendMessage("&2あなたは現在ゲーム&6"+gp.getEntry().map(e -> e.getName()+"&2("+e.getID()+")に参加しています。").orElse("&2に参加していません"));
+        gp.sendMessage("&2あなたは現在ゲーム&6"+gp.getEntry().map(e -> e.getName()+"&2("+e.getName()+")に参加しています。").orElse("&2に参加していません"));
     }
 
     @Override
