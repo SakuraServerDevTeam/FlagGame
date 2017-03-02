@@ -99,7 +99,7 @@ public class RealtimeTeamingReception implements GameReception {
         GamePlayer.sendMessage(this.plugin.getPlayers(), "&2フラッグゲーム'&6" + this.getName() + "&2'の参加受付が開始されました！");
         BaseComponent[] message = new ComponentBuilder("ここをクリック").bold(true).color(ChatColor.GOLD).bold(false)
                 .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("クリックして参加申し込みします").color(ChatColor.GOLD).create()))
-                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/flag join "+this.getID()))
+                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/flag join " + this.getID()))
                 .append("して参加してください！").color(ChatColor.DARK_GREEN).create();
         GamePlayer.sendMessage(this.plugin.getPlayers(), message);
     }
@@ -149,8 +149,9 @@ public class RealtimeTeamingReception implements GameReception {
 
         this.players.get(color).add(player);
         player.join(this, args);
-        GamePlayer.sendMessage(this.plugin.getPlayers(), color.getColor() + player.getName() + "&aが'&6" 
-                + this.getName()+ "'で開催予定のゲームにエントリーしました(&6"+this.players.size()+"人目&a)");
+        int count = this.players.entrySet().stream().map(Map.Entry::getValue).mapToInt(Set::size).sum();
+        GamePlayer.sendMessage(this.plugin.getPlayers(), color.getColor() + player.getName() + "&aが'&6"
+                + this.getName() + "'で開催予定のゲームにエントリーしました(&6" + count + "人目&a)");
     }
 
     @Override
@@ -163,7 +164,7 @@ public class RealtimeTeamingReception implements GameReception {
             if (team.contains(player)) {
                 team.remove(player);
                 player.leave(this);
-                GamePlayer.sendMessage(this.plugin.getPlayers(), player.getColoredName() + "&aが'" + this.getName()+ "'で開催予定のゲームへのエントリーを取り消しました");
+                GamePlayer.sendMessage(this.plugin.getPlayers(), player.getColoredName() + "&aが'" + this.getName() + "'で開催予定のゲームへのエントリーを取り消しました");
                 return;
             }
         }
