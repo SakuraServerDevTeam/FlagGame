@@ -16,6 +16,8 @@
  */
 package syam.flaggame.enums;
 
+import org.bukkit.boss.BarColor;
+
 /**
  * ゲームチーム
  *
@@ -23,21 +25,22 @@ package syam.flaggame.enums;
  */
 public enum TeamColor {
 
-    RED("赤", 0xE, 'c'),
-    BLUE("青", 0xB, '9'),
-    GREEN("緑", 0x5, 'a'),
-    ORANGE("橙", 0x1, '6'),
-    PINK("桃", 0x6, 'd'),
-    SKYBLUE("水", 0x3, 'b'),
-    YELLOW("黄", 0x4, 'e'),
-    PURPLE("紫", 0x2, '5');
+    RED("赤", 0xE, 'c', BarColor.RED),
+    BLUE("青", 0xB, '9', BarColor.BLUE),
+    GREEN("緑", 0x5, 'a', BarColor.GREEN),
+    ORANGE("橙", 0x1, '6', BarColor.YELLOW),
+    PINK("桃", 0x6, 'd', BarColor.PINK),
+    SKYBLUE("水", 0x3, 'b', BarColor.WHITE),
+    YELLOW("黄", 0x4, 'e', BarColor.YELLOW),
+    PURPLE("紫", 0x2, '5', BarColor.PURPLE);
 
     private static final char COLOR_PREFIX = '\u00A7';
     private final String teamName;
     private final byte blockData;
     private final char colorTag;
+    private final BarColor barColor;
 
-    private TeamColor(String teamName, int blockData, char colorTag) {
+    private TeamColor(String teamName, int blockData, char colorTag, BarColor barColor) {
         this.teamName = teamName;
 
         if (blockData < Byte.MIN_VALUE || blockData > Byte.MAX_VALUE) {
@@ -47,6 +50,7 @@ public enum TeamColor {
         this.blockData = (byte) blockData;
 
         this.colorTag = colorTag;
+        this.barColor = barColor;
     }
 
     /**
@@ -74,6 +78,10 @@ public enum TeamColor {
      */
     public String getColor() {
         return new StringBuilder().append(COLOR_PREFIX).append(this.colorTag).toString();
+    }
+
+    public BarColor getBarColor() {
+        return barColor;
     }
 
     public String getRichName() {

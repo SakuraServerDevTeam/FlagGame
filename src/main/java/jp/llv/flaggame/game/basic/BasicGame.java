@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,10 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarFlag;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -72,6 +77,7 @@ public class BasicGame implements Game {
     private final GameProfile profile = new GameProfile();
 
     private final Queue<Runnable> onFinishing = new LinkedList<>();
+    private final Set<BossBar> bossbars = new HashSet<>();
 
     private State state = State.PREPARATION;
     private long expectedFinishAt = 0;
@@ -237,9 +243,22 @@ public class BasicGame implements Game {
         this.plugin.getServer().getPluginManager().registerEvents(entityListener, this.plugin);
         this.onFinishing.offer(entityListener::unregister);
 
+        this.getTeams().stream().forEach(team -> {
+            BossBar bossbar = this.plugin.getServer().createBossBar(this.getName(), team.getColor().getBarColor(), BarStyle.SEGMENTED_20, new BarFlag[0]);
+            this.bossbars.add(bossbar);
+            for (GamePlayer player : team) {
+                bossbar.addPlayer(player.getPlayer());
+            }
+            bossbar.setVisible(true);
+        });
+
         BukkitTask stopTask = this.plugin.getServer().getScheduler()
                 .runTaskLater(plugin, this::stop, ConvertUtils.toTick(this.stage.getGameTime()));
         this.onFinishing.offer(stopTask::cancel);
+        
+        BukkitTask updateTask = this.plugin.getServer().getScheduler()
+                .runTaskTimer(plugin, this::updateRemainTime, 20L, 20L);
+        this.onFinishing.offer(updateTask::cancel);
 
         LongStream lessThanAMinute = LongStream//1~10秒,30秒
                 .of(1000L, 2000L, 3000L, 4000L, 5000L, 6000L, 7000L, 8000L, 9000L, 10000L, 30000L)
@@ -284,6 +303,8 @@ public class BasicGame implements Game {
             msg.add(col.getColor() + col.getTeamName() + "チーム得点: &6" + p + col.getColor() + "点&f(フラッグ: " + f + "点)");
         }
 
+        this.bossbars.stream().forEach(BossBar::removeAll);
+        
         TeamColor won = null;
         Map<Double, Set<TeamColor>> rPoints = MapUtils.rank(points, (d1, d2) -> Double.compare(d2, d1));
         Map.Entry<Double, Set<TeamColor>> first = rPoints.entrySet().iterator().next();
@@ -388,6 +409,11 @@ public class BasicGame implements Game {
     private void notifyRemainTime() {
         GamePlayer.sendMessage(this.getReception().getPlayers(), "&aゲーム終了まであと " + Actions.getTimeString(getRemainTime()) + "です!");
         GamePlayer.playSound(this.getReception().getPlayers(), Sound.BLOCK_NOTE_PLING);
+    }
+    
+    private void updateRemainTime() {
+        double progress = ((double) this.getRemainTime()) / this.stage.getGameTime();
+        this.bossbars.forEach(b -> b.setProgress(progress));
     }
 
     @Override
