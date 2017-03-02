@@ -122,7 +122,7 @@ public class RealtimeTeamingReception implements GameReception {
     @Override
     public void join(GamePlayer player, List<String> args) throws CommandException {
         if (this.getState() != State.OPENED) {
-            throw new CommandException("&cこの募集は既に開始されました!");
+            throw new CommandException("&cこの募集は既に終了しました!");
         }
 
         //人数でチームをマッピング
@@ -165,6 +165,7 @@ public class RealtimeTeamingReception implements GameReception {
         if (this.getState() != State.OPENED) {
             throw new IllegalStateException();
         }
+        this.state = State.STARTING;
         //Build teams
         Set<Team> teams = new HashSet<>();
         for (Map.Entry<TeamColor, Set<GamePlayer>> e : this.players.entrySet()) {

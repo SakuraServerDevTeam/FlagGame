@@ -82,6 +82,7 @@ public interface GameReception extends Iterable<GamePlayer> {
     public static enum State {
         READY(Game.State.PREPARATION),
         OPENED(Game.State.PREPARATION),
+        STARTING(Game.State.PREPARATION),
         STARTED(Game.State.STARTED),
         FINISHED(Game.State.FINISHED),
         CLOSED(Game.State.FINISHED),
