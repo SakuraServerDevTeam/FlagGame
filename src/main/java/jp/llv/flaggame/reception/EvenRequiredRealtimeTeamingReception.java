@@ -64,12 +64,12 @@ public class EvenRequiredRealtimeTeamingReception extends RealtimeTeamingRecepti
                 p.join(this, args);
                 int count = this.players.entrySet().stream().map(Map.Entry::getValue).mapToInt(Set::size).sum();
                 GamePlayer.sendMessage(this.plugin.getPlayers(), color.getColor() + p.getName() + "&aが'&6"
-                        + this.getName() + "'で開催予定のゲームに参加しました(&6" + count + "人目&a)");
+                        + this.getName() + "&a'で開催予定のゲームに参加しました(&6" + count + "人目&a)");
             }
         } else {
             int remain = super.stage.getTeams().size() - waiting.size();
             GamePlayer.sendMessage(this.plugin.getPlayers(), player.getName() + "&aが'&6"
-                    + this.getName() + "'で開催予定のゲームにエントリーしました(&6あと" + remain + "人で参加&a)");
+                    + this.getName() + "&a'で開催予定のゲームにエントリーしました(&6あと" + remain + "人で参加&a)");
         }
     }
 
