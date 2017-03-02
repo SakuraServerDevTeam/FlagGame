@@ -18,6 +18,7 @@ package jp.llv.flaggame.reception;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,7 +34,7 @@ import syam.flaggame.player.GamePlayer;
  */
 public class EvenRequiredRealtimeTeamingReception extends RealtimeTeamingReception {
 
-    private Set<GamePlayer> waiting;
+    private Set<GamePlayer> waiting = new HashSet<>();
 
     public EvenRequiredRealtimeTeamingReception(FlagGame plugin, UUID id, List<String> args) {
         super(plugin, id, args);
