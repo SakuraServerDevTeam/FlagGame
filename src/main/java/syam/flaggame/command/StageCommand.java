@@ -30,7 +30,6 @@ import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.player.GamePlayer;
 import syam.flaggame.util.Actions;
-import syam.flaggame.util.Util;
 
 /**
  * StageCommand (StageCommand.java)
@@ -188,7 +187,7 @@ public class StageCommand extends BaseCommand implements Queueable {
     }
 
     /* ***** ここまで ********************************************** */
-    /*
+ /*
      * キュー実行処理
      */
     @Override
@@ -271,7 +270,7 @@ public class StageCommand extends BaseCommand implements Queueable {
             col.add(action.name());
         }
         Actions.message(sender, "&cそのアクションは存在しません！");
-        Actions.message(sender, "&6 " + Util.join(col, "/").toLowerCase());
+        Actions.message(sender, "&6 " + String.join("/", col).toLowerCase());
     }
 
     @Override

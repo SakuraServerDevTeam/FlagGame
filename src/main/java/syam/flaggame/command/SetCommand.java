@@ -33,7 +33,6 @@ import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.player.GamePlayer;
 import syam.flaggame.util.Actions;
-import syam.flaggame.util.Util;
 import syam.flaggame.util.WorldEditHandler;
 
 public class SetCommand extends BaseCommand {
@@ -485,7 +484,7 @@ public class SetCommand extends BaseCommand {
             col.add(conf.name());
         }
 
-        Actions.message(sender, "&6 " + Util.join(col, "/").toLowerCase());
+        Actions.message(sender, "&6 " + String.join("/", col).toLowerCase());
         // Actions.message(sender,
         // "&6 stage / base / spawn / flag / chest / gametime / teamlimit / award / entryfee / protect");
     }
