@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -283,8 +284,8 @@ public class BasicGame implements Game {
             won = first.getValue().iterator().next();
         }
 
-        Map.Entry<Double, Set<GamePlayer>> topKill
-                = MapUtils.rank(this.profile.kill, (i1, i2) -> Double.compare(i2, i1)).entrySet().iterator().next();
+        Iterator<Map.Entry<Double, Set<GamePlayer>>> it = MapUtils.rank(this.profile.kill, (i1, i2) -> Double.compare(i2, i1)).entrySet().iterator();
+        Map.Entry<Double, Set<GamePlayer>> topKill = it.hasNext() ? it.next() : null;
 
         GamePlayer.sendMessage(this.plugin.getPlayers(),
                 "&2フラッグゲーム'&6" + this.stage.getName() + "&2'が終わりました!",
@@ -292,8 +293,8 @@ public class BasicGame implements Game {
                 won != null
                         ? won.getColor() + won.getTeamName() + "チームの勝利です!"
                         : "このゲームは引き分けです!",
-                "&6トップキル: " + topKill.getValue().stream().map(GamePlayer::getColoredName)
-                .collect(Collectors.joining("&f, ")) + "&f (&6" + topKill.getKey() + "Kills&f)"
+                "&6トップキル: " + (topKill != null ? (topKill.getValue().stream().map(GamePlayer::getColoredName)
+                .collect(Collectors.joining("&f, ")) + "&f (&6" + topKill.getKey() + "Kills&f)") : "&fNone")
         );
 
         for (GamePlayer g : this.getReception().getPlayers()) {

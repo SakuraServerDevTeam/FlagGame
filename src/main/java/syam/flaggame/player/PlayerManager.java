@@ -111,7 +111,7 @@ public class PlayerManager implements Iterable<GamePlayer> {
      * @return the player if the player is online, otherwise {@code null}.
      */
     public GamePlayer getPlayer(Player player) {
-        return this.getPlayer(player.getUniqueId());
+        return player == null ? null : this.getPlayer(player.getUniqueId());
     }
 
     /**

@@ -167,7 +167,7 @@ public class BGPlayerListener extends BGListener {
         }
 
         GamePlayer gkiller = this.plugin.getPlayers().getPlayer(killer);
-        if (!gkiller.getGame().isPresent() || gkiller.getGame().get() != this.game) {
+        if (gkiller != null && (!gkiller.getGame().isPresent() || gkiller.getGame().get() != this.game)) {
             gkiller = null;
         }
 

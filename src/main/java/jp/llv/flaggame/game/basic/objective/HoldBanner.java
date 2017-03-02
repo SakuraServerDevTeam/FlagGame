@@ -16,7 +16,6 @@
  */
 package jp.llv.flaggame.game.basic.objective;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -28,6 +27,7 @@ import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.block.Banner;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BlockStateMeta;
 
 /**
  *
@@ -37,7 +37,7 @@ public class HoldBanner {
 
     private final Map<BannerSpawner, Byte> spawner;
 
-    public HoldBanner(BannerSpawner ... spawner) {
+    public HoldBanner(BannerSpawner... spawner) {
         this.spawner = new HashMap<>();
         for (BannerSpawner bs : spawner) {
             this.spawner.put(bs, bs.getHp());
@@ -47,27 +47,34 @@ public class HoldBanner {
     public Collection<BannerSpawner> getSpawners() {
         return Collections.unmodifiableSet(spawner.keySet());
     }
-    
+
     public byte getHp() {
         return (byte) spawner.keySet().stream().mapToInt(BannerSpawner::getHp).max().orElse(0);
     }
-    
+
     public byte getPoint() {
         return (byte) spawner.keySet().stream().mapToInt(BannerSpawner::getPoint).sum();
     }
-    
+
     public ItemStack getBanner() {
         ItemStack is = new ItemStack(Material.BANNER, 1);
-        Banner b = (Banner) Bukkit.getItemFactory().getItemMeta(Material.BANNER);
+        BlockStateMeta bs = (BlockStateMeta) Bukkit.getItemFactory().getItemMeta(Material.BANNER);
+        Banner b = (Banner) bs.getBlockState();
         BannerUtils.paintNum(b, getPoint(), DyeColor.WHITE, DyeColor.CYAN);
+        bs.setBlockState(b);
+        is.setItemMeta(bs);
+        return is;
     }
-    
+
     public boolean isBroken() {
-        return this.spawner.values().stream().allMatch(b -> b<=0);
+        return this.spawner.values().stream().allMatch(b -> b <= 0);
     }
-    
+
     public Optional<HoldBanner> damage() {
-        this.spawner.entrySet().stream().forEach(e -> e.setValue((byte) (e.getValue()-1)));
+        this.spawner.entrySet().stream()
+                .filter(e -> e.getValue() > 0)
+                .forEach(e -> e.setValue((byte) (e.getValue() - 1)));
+        return isBroken() ? Optional.empty() : Optional.of(this);
     }
 
 }
