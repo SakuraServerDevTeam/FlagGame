@@ -162,7 +162,7 @@ public class RealtimeTeamingReception implements GameReception {
             if (team.contains(player)) {
                 team.remove(player);
                 player.leave(this);
-                GamePlayer.sendMessage(this.plugin.getPlayers(), player.getColoredName() + "&aが'" + this.getID() + "'へのエントリーを取り消しました");
+                GamePlayer.sendMessage(this.plugin.getPlayers(), player.getColoredName() + "&aが'" + this.getName()+ "'で開催予定のゲームへのエントリーを取り消しました");
                 return;
             }
         }
