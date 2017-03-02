@@ -43,6 +43,7 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -386,6 +387,7 @@ public class BasicGame implements Game {
 
     private void notifyRemainTime() {
         GamePlayer.sendMessage(this.getReception().getPlayers(), "&aゲーム終了まであと " + Actions.getTimeString(getRemainTime()) + "です!");
+        GamePlayer.playSound(this.getReception().getPlayers(), Sound.BLOCK_NOTE_PLING);
     }
 
     @Override

@@ -30,6 +30,7 @@ import jp.llv.flaggame.reception.Team;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import syam.flaggame.enums.TeamColor;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
@@ -219,6 +220,10 @@ public class GamePlayer {
         Player p = this.getPlayer();
         Actions.sendPrefixedMessage(p, message);
     }
+    
+    public void playSound(Sound sound) {
+        this.getPlayer().playSound(this.getPlayer().getLocation(), sound, 1f, 1f);
+    }
 
     public static void sendMessage(Iterable<? extends GamePlayer> players, String... messages) {
         for (GamePlayer p : players) {
@@ -235,6 +240,15 @@ public class GamePlayer {
                 continue;
             }
             p.sendMessage(message);
+        }
+    }
+    
+    public static void playSound(Iterable<? extends GamePlayer> players, Sound sound) {
+        for (GamePlayer p : players) {
+            if (p == null) {
+                continue;
+            }
+            p.playSound(sound);
         }
     }
 
