@@ -149,7 +149,8 @@ public class RealtimeTeamingReception implements GameReception {
 
         this.players.get(color).add(player);
         player.join(this, args);
-        GamePlayer.sendMessage(this.plugin.getPlayers(), color.getColor() + player.getName() + "&aが'" + this.getName()+ "'で開催予定のゲームにエントリーしました");
+        GamePlayer.sendMessage(this.plugin.getPlayers(), color.getColor() + player.getName() + "&aが'&6" 
+                + this.getName()+ "'で開催予定のゲームにエントリーしました(&6"+this.players.size()+"人目&a)");
     }
 
     @Override
