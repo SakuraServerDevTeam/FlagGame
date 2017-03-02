@@ -69,7 +69,7 @@ public class GamePlayer {
     }
 
     public UUID getUUID() {
-        return this.getPlayer().getUniqueId();
+        return this.player;
     }
 
     public Player getPlayer() {
@@ -78,6 +78,10 @@ public class GamePlayer {
             throw new IllegalStateException("The player is offline");
         }
         return p;
+    }
+    
+    public boolean isOnline() {
+        return Bukkit.getPlayer(this.player) != null;
     }
 
     /**
@@ -199,20 +203,20 @@ public class GamePlayer {
     }
 
     public void sendMessage(String... messages) {
-        Player p = this.getPlayer();
-        if (p == null || !p.isOnline()) {
+        if (!this.isOnline()) {
             return;
         }
+        Player p = this.getPlayer();
         for (String message : messages) {
             Actions.sendPrefixedMessage(p, message);
         }
     }
 
     public void sendMessage(BaseComponent... message) {
-        Player p = this.getPlayer();
-        if (p == null || !p.isOnline()) {
+        if (!this.isOnline()) {
             return;
         }
+        Player p = this.getPlayer();
         Actions.sendPrefixedMessage(p, message);
     }
 
