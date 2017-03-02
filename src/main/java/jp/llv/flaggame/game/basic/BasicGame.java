@@ -175,7 +175,7 @@ public class BasicGame implements Game {
         this.stage.getSpecSpawn().ifPresent(l -> {
             BaseComponent[] message = new ComponentBuilder("ここをクリック").bold(true).color(ChatColor.GOLD).bold(false)
                     .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("クリックして観戦します").color(ChatColor.GOLD).create()))
-                    .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/flag join " + this.reception.getID()))
+                    .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/flag watch " + this.reception.getID()))
                     .append("して観戦することができます！").color(ChatColor.DARK_GREEN).create();
             GamePlayer.sendMessage(this.plugin.getPlayers(), message);
         });
