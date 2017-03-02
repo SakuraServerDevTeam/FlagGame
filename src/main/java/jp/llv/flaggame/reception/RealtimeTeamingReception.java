@@ -49,10 +49,10 @@ import syam.flaggame.player.GamePlayer;
 @ReceptionFor(BasicGame.class)
 public class RealtimeTeamingReception implements GameReception {
 
-    private final FlagGame plugin;
+    protected final FlagGame plugin;
     private final UUID id;
-    private final Map<TeamColor, Set<GamePlayer>> players = new EnumMap<>(TeamColor.class);
-    private final Stage stage;
+    protected final Map<TeamColor, Set<GamePlayer>> players = new EnumMap<>(TeamColor.class);
+    protected final Stage stage;
     private Stage.Reservation stageReservation;
     private BasicGame game;
     private State state = State.READY;
@@ -151,7 +151,7 @@ public class RealtimeTeamingReception implements GameReception {
         player.join(this, args);
         int count = this.players.entrySet().stream().map(Map.Entry::getValue).mapToInt(Set::size).sum();
         GamePlayer.sendMessage(this.plugin.getPlayers(), color.getColor() + player.getName() + "&aが'&6"
-                + this.getName() + "'で開催予定のゲームにエントリーしました(&6" + count + "人目&a)");
+                + this.getName() + "'で開催予定のゲームに参加しました(&6" + count + "人目&a)");
     }
 
     @Override

@@ -28,6 +28,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 import jp.llv.flaggame.game.GameManager;
+import jp.llv.flaggame.reception.EvenRequiredRealtimeTeamingReception;
 import jp.llv.flaggame.reception.RealtimeTeamingReception;
 import jp.llv.flaggame.reception.ReceptionManager;
 
@@ -175,6 +176,7 @@ public class FlagGame extends JavaPlugin {
         pm = new PlayerManager(this);
         rm = new ReceptionManager(this);
         rm.addType("rt", RealtimeTeamingReception::new);
+        rm.addType("ert", EvenRequiredRealtimeTeamingReception::new);
         gm = new GameManager(this);
         sm = new StageManager();
         debug.endTimer("managers");
