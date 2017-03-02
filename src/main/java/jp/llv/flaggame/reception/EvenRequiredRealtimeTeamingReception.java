@@ -57,6 +57,7 @@ public class EvenRequiredRealtimeTeamingReception extends RealtimeTeamingRecepti
         int min = m.keySet().stream().mapToInt(i -> i).min()
                 .orElseThrow(() -> new CommandException("&c参加可能チームがありません!"));
 
+        this.waiting.add(player);
         if (waiting.size() == super.stage.getTeams().size()) {
             for (GamePlayer p : this.waiting) {
                 List<TeamColor> can = m.get(min);
@@ -67,8 +68,8 @@ public class EvenRequiredRealtimeTeamingReception extends RealtimeTeamingRecepti
                 GamePlayer.sendMessage(this.plugin.getPlayers(), color.getColor() + p.getName() + "&aが'&6"
                         + this.getName() + "&a'で開催予定のゲームに参加しました(&6" + count + "人目&a)");
             }
+            this.waiting.clear();
         } else {
-            this.waiting.add(player);
             int remain = super.stage.getTeams().size() - waiting.size();
             GamePlayer.sendMessage(this.plugin.getPlayers(), player.getName() + "&aが'&6"
                     + this.getName() + "&a'で開催予定のゲームにエントリーしました(&6あと" + remain + "人で参加&a)");
