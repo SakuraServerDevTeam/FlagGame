@@ -209,6 +209,30 @@ public class BGPlayerListener extends BGListener {
         GamePlayer.sendMessage(this.plugin.getPlayers().getPlayersIn(player.getWorld()), message);
     }
 
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onPlayerDamage(EntityDamageByEntityEvent event) {
+        if (!(event.getEntity() instanceof Player)) {
+            return;
+        }
+        Player player = (Player) event.getEntity();
+        GamePlayer gplayer = this.plugin.getPlayers().getPlayer(player);
+        if (!this.players.contains(gplayer)
+                || !this.game.getStage().getBase(gplayer.getTeam().get().getColor()).isIn(player.getLocation())) {
+            return;
+        }
+        event.setCancelled(true);
+
+        Player damager;
+        if (event.getDamager() instanceof Player) {
+            damager = (Player) event.getDamager();
+        } else if (event.getDamager() instanceof Projectile && ((Projectile) event.getDamager()).getShooter() instanceof Player) {
+            damager = (Player) ((Projectile) event.getDamager()).getShooter();
+        } else {
+            return;
+        }
+        damager.damage(event.getDamage(), player);
+    }
+
     private static boolean canUseBlockAt(GamePlayer player, Location loc) {
         if (!player.getStage().isPresent()) {
             return false;
