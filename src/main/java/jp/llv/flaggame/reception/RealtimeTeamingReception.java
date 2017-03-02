@@ -30,7 +30,14 @@ import java.util.Set;
 import java.util.UUID;
 import jp.llv.flaggame.game.Game;
 import jp.llv.flaggame.game.basic.BasicGame;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import syam.flaggame.FlagGame;
+import syam.flaggame.command.BaseCommand;
 import syam.flaggame.enums.TeamColor;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.exception.StageReservedException;
@@ -92,7 +99,11 @@ public class RealtimeTeamingReception implements GameReception {
         }
         this.state = State.OPENED;
         GamePlayer.sendMessage(this.plugin.getPlayers(), "&2フラッグゲーム'&6" + this.getName() + "&2'の参加受付が開始されました！");
-        GamePlayer.sendMessage(this.plugin.getPlayers(), "&2 '&6/flag join " + this.getID() + "&2' コマンドで参加してください！");
+        BaseComponent[] message = new ComponentBuilder("ここをクリック").color(ChatColor.GOLD)
+                .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("クリックして参加申し込みします").color(ChatColor.GOLD).create()))
+                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/flag join "+this.getID()))
+                .append("して参加してください！").color(ChatColor.DARK_GREEN).create();
+        GamePlayer.sendMessage(this.plugin.getPlayers(), message);
     }
 
     @Override
@@ -140,7 +151,7 @@ public class RealtimeTeamingReception implements GameReception {
 
         this.players.get(color).add(player);
         player.join(this, args);
-        GamePlayer.sendMessage(this.plugin.getPlayers(), color.getColor() + player.getName() + "&aが'" + this.getID() + "'へエントリーしました");
+        GamePlayer.sendMessage(this.plugin.getPlayers(), color.getColor() + player.getName() + "&aが'" + this.getName()+ "'で開催予定のゲームにエントリーしました");
     }
 
     @Override

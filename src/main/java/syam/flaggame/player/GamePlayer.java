@@ -27,6 +27,7 @@ import org.bukkit.entity.Player;
 
 import jp.llv.flaggame.game.Game;
 import jp.llv.flaggame.reception.Team;
+import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Location;
 import syam.flaggame.enums.TeamColor;
 import syam.flaggame.exception.CommandException;
@@ -202,12 +203,29 @@ public class GamePlayer {
         }
     }
 
+    public void sendMessage(BaseComponent... message) {
+        Player p = this.getPlayer();
+        if (p == null || !p.isOnline()) {
+            return;
+        }
+        Actions.sendPrefixedMessage(p, message);
+    }
+
     public static void sendMessage(Iterable<? extends GamePlayer> players, String... messages) {
         for (GamePlayer p : players) {
             if (p == null) {
                 continue;
             }
             p.sendMessage(messages);
+        }
+    }
+
+    public static void sendMessage(Iterable<? extends GamePlayer> players, BaseComponent... message) {
+        for (GamePlayer p : players) {
+            if (p == null) {
+                continue;
+            }
+            p.sendMessage(message);
         }
     }
 

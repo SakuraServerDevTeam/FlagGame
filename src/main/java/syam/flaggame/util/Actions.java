@@ -23,6 +23,8 @@ import java.util.Date;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.milkbowl.vault.economy.Economy;
 
 import net.milkbowl.vault.economy.EconomyResponse;
@@ -44,7 +46,6 @@ import syam.flaggame.FlagGame;
 public class Actions {
 
     // Logger
-
     public static final Logger log = FlagGame.logger;
     public static final String MESSAGE_PREFIX = FlagGame.msgPrefix;
 
@@ -65,15 +66,26 @@ public class Actions {
         }
     }
 
-    public static void message(Player player, String message) {
-        if (message != null && player != null) {
-            message = message.replaceAll("&([0-9a-fk-or])", "\u00A7$1");
-            player.sendMessage(message);
+    public static void message(CommandSender sender, BaseComponent... message) {
+        if (message != null && sender != null) {
+            if (sender instanceof Player) {
+                ((Player) sender).spigot().sendMessage(message);
+            } else {
+                sender.sendMessage(BaseComponent.toLegacyText(message));
+            }
         }
     }
-    
+
     public static void sendPrefixedMessage(CommandSender sender, String message) {
         message(sender, MESSAGE_PREFIX + "\u00A7r" + message);
+    }
+
+    public static void sendPrefixedMessage(CommandSender sender, BaseComponent... message) {
+        BaseComponent[] prefix = TextComponent.fromLegacyText(MESSAGE_PREFIX.replaceAll("&([0-9a-fk-or])", "\u00A7$1"));
+        BaseComponent[] concat = new BaseComponent[prefix.length + message.length];
+        System.arraycopy(prefix, 0, concat, 0, prefix.length);
+        System.arraycopy(message, 0, concat, prefix.length, message.length);
+        message(sender, concat);
     }
 
     /**
@@ -112,7 +124,7 @@ public class Actions {
      * @param message メッセージ
      */
     public static void permcastMessage(String permission, String message) {
-        int  i = Bukkit.getServer().getOnlinePlayers().stream()
+        int i = Bukkit.getServer().getOnlinePlayers().stream()
                 .filter(player -> player.hasPermission(permission))
                 .map(player -> {
                     Actions.message(player, message);
@@ -320,7 +332,7 @@ public class Actions {
         int s = sec % 60;
         return m + "分" + s + "秒";
     }
-    
+
     public static String getTimeString(long sec) {
         return getTimeString(((int) sec / 1000));
     }
@@ -354,7 +366,7 @@ public class Actions {
      * @param amount 金額
      * @return 成功ならtrue、失敗ならfalse
      */
-    public static boolean takeMoney(UUID uuid,  double amount) {
+    public static boolean takeMoney(UUID uuid, double amount) {
         if (amount < 0) {
             return false; // 負数は許容しない
         }
@@ -375,7 +387,7 @@ public class Actions {
     }
 
     /* ログ操作系 */
-    /*
+ /*
      * ログファイルに書き込み
      *
      * @param file ログファイル名
