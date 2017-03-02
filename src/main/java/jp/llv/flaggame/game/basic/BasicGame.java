@@ -45,7 +45,6 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarFlag;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
@@ -244,7 +243,8 @@ public class BasicGame implements Game {
         this.onFinishing.offer(entityListener::unregister);
 
         this.getTeams().stream().forEach(team -> {
-            BossBar bossbar = this.plugin.getServer().createBossBar(this.getName(), team.getColor().getBarColor(), BarStyle.SEGMENTED_20, new BarFlag[0]);
+            String title = "\u00A76FlagGame ~\u00A7b" + this.stage.getName() + "\u00A76";
+            BossBar bossbar = this.plugin.getServer().createBossBar(title, team.getColor().getBarColor(), BarStyle.SEGMENTED_20, new BarFlag[0]);
             this.bossbars.add(bossbar);
             for (GamePlayer player : team) {
                 bossbar.addPlayer(player.getPlayer());
@@ -255,7 +255,7 @@ public class BasicGame implements Game {
         BukkitTask stopTask = this.plugin.getServer().getScheduler()
                 .runTaskLater(plugin, this::stop, ConvertUtils.toTick(this.stage.getGameTime()));
         this.onFinishing.offer(stopTask::cancel);
-        
+
         BukkitTask updateTask = this.plugin.getServer().getScheduler()
                 .runTaskTimer(plugin, this::updateRemainTime, 20L, 20L);
         this.onFinishing.offer(updateTask::cancel);
@@ -304,7 +304,7 @@ public class BasicGame implements Game {
         }
 
         this.bossbars.stream().forEach(BossBar::removeAll);
-        
+
         TeamColor won = null;
         Map<Double, Set<TeamColor>> rPoints = MapUtils.rank(points, (d1, d2) -> Double.compare(d2, d1));
         Map.Entry<Double, Set<TeamColor>> first = rPoints.entrySet().iterator().next();
@@ -410,7 +410,7 @@ public class BasicGame implements Game {
         GamePlayer.sendMessage(this.getReception().getPlayers(), "&aゲーム終了まであと " + Actions.getTimeString(getRemainTime()) + "です!");
         GamePlayer.playSound(this.getReception().getPlayers(), Sound.BLOCK_NOTE_PLING);
     }
-    
+
     private void updateRemainTime() {
         double progress = ((double) this.getRemainTime()) / this.stage.getGameTime();
         this.bossbars.forEach(b -> b.setProgress(progress));
