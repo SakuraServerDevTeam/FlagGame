@@ -32,6 +32,8 @@ public class StringUtil {
         for (int i = 0; i < result.length; i++) {
             if (front) {
                 result[i] = Character.toUpperCase(result[i]);
+            } else {
+                result[i] = Character.toLowerCase(result[i]);
             }
             front = !Character.isAlphabetic(result[i]);
         }
