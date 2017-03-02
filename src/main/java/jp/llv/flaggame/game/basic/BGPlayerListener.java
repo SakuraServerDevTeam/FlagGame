@@ -46,7 +46,7 @@ import syam.flaggame.enums.TeamColor;
 import syam.flaggame.game.Stage;
 import syam.flaggame.player.GamePlayer;
 import syam.flaggame.util.Actions;
-import syam.flaggame.util.StringUtil;
+import jp.llv.flaggame.util.StringUtil;
 
 /**
  *

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2015 Toyblocks, SakuraServerDev
+ * Copyright (C) 2015 Syamn, SakuraServerDev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,33 +17,30 @@
 package jp.llv.flaggame.util;
 
 import java.nio.ByteBuffer;
-import java.text.DecimalFormat;
 import java.util.UUID;
 
 /**
  *
  * @author Toyblocks
  */
-public final class ConvertUtils {
+public final class UUIDUtil {
     
-    private static final DecimalFormat TIME_FORMAT= new DecimalFormat("###0.0");
-    
-    private  ConvertUtils() {
+    private UUIDUtil() {
         throw new RuntimeException();
     }
     
-    public static String format(long timeinms) {
-        double d = timeinms / 1000;
-        return TIME_FORMAT.format(d);
+    public static UUID getUUIDFromBytes(byte[] bytes) {
+        ByteBuffer buf = ByteBuffer.wrap(bytes);
+        return new UUID(buf.getLong(), buf.getLong());
     }
     
-    public static long toTick(long timeinms) {
-        return timeinms / 50;
-    }
-    
-    public static byte[] toByteArray(UUID uuid) {
+    public static byte[] getBytesFromUUID(UUID uuid) {
+        if (uuid == null) {
+            throw new NullPointerException();
+        }
         return ByteBuffer.allocate(16)
-                .putLong(uuid.getMostSignificantBits()).putLong(uuid.getLeastSignificantBits())
+                .putLong(uuid.getMostSignificantBits())
+                .putLong(uuid.getLeastSignificantBits())
                 .array();
     }
     
