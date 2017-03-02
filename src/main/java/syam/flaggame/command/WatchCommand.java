@@ -50,7 +50,9 @@ public class WatchCommand extends BaseCommand {
         } // 引数がなければ自動補完
         else {
             Collection<Game> startingGames = this.plugin.getGames().getGames(Game.State.STARTED);
-            if (startingGames.isEmpty()) {
+            if (gPlayer.getStage().isPresent()) {
+                stage = gPlayer.getStage().get();
+            } else if (startingGames.isEmpty()) {
                 Actions.message(player, "&c現在、始まっているゲームはありません！");
                 return;
             } else if (startingGames.size() >= 2) {
