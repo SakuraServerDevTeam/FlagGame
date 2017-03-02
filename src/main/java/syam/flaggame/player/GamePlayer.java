@@ -28,6 +28,7 @@ import org.bukkit.entity.Player;
 import jp.llv.flaggame.game.Game;
 import jp.llv.flaggame.reception.Team;
 import net.md_5.bungee.api.chat.BaseComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import syam.flaggame.enums.TeamColor;
 import syam.flaggame.exception.CommandException;
@@ -37,7 +38,7 @@ import syam.flaggame.util.Actions;
 public class GamePlayer {
 
     // プレイヤーデータ
-    private final Player player;
+    private final UUID player;
     private final PlayerManager manager;
 
     private SetupSession session;
@@ -56,11 +57,11 @@ public class GamePlayer {
             throw new NullPointerException();
         }
         this.manager = manager;
-        this.player = player;
+        this.player = player.getUniqueId();
     }
 
     public String getName() {
-        return this.player.getName();
+        return this.getPlayer().getName();
     }
 
     public String getColoredName() {
@@ -68,11 +69,15 @@ public class GamePlayer {
     }
 
     public UUID getUUID() {
-        return this.player.getUniqueId();
+        return this.getPlayer().getUniqueId();
     }
 
     public Player getPlayer() {
-        return player;
+        Player p = Bukkit.getPlayer(this.player);
+        if (p == null) {
+            throw new IllegalStateException("The player is offline");
+        }
+        return p;
     }
 
     /**
@@ -178,7 +183,7 @@ public class GamePlayer {
 
     @Override
     public int hashCode() {
-        return this.player.getUniqueId().hashCode();
+        return this.player.hashCode();
     }
 
     @Override
@@ -190,7 +195,7 @@ public class GamePlayer {
             return false;
         }
         final GamePlayer other = (GamePlayer) obj;
-        return Objects.equals(this.player.getUniqueId(), other.player.getUniqueId());
+        return Objects.equals(this.player, other.player);
     }
 
     public void sendMessage(String... messages) {
