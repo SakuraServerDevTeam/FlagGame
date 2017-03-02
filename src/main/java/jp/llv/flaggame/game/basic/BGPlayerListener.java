@@ -46,6 +46,7 @@ import syam.flaggame.enums.TeamColor;
 import syam.flaggame.game.Stage;
 import syam.flaggame.player.GamePlayer;
 import syam.flaggame.util.Actions;
+import syam.flaggame.util.StringUtil;
 
 /**
  *
@@ -146,10 +147,10 @@ public class BGPlayerListener extends BGListener {
             Entity killerEnt = ((EntityDamageByEntityEvent) cause).getDamager();
             if (killerEnt instanceof Player) {
                 killer = (Player) killerEnt;
-                ItemStack is = killer.getItemInHand();
+                ItemStack is = killer.getInventory().getItemInMainHand();
                 weapon = is == null ? null
                         : is.getItemMeta().hasDisplayName()
-                                ? is.getItemMeta().getDisplayName() : is.getType().name();
+                                ? is.getItemMeta().getDisplayName() : StringUtil.capitalize(is.getType().name());
             } else if (killerEnt instanceof Projectile) {
                 Projectile p = (Projectile) killerEnt;
                 weapon = p.getCustomName();
@@ -186,6 +187,7 @@ public class BGPlayerListener extends BGListener {
                     .forEach(is -> is.setData(new MaterialData(killerTeam.getColor().getBlockData())));
             message = gkilled.getColoredName() + "&6が" + gkiller.getColoredName() + "&6に&b"
                     + (weapon != null ? weapon + "&6で" : "&6") + "殺されました!";
+            this.game.getProfile().kill.increase(gkiller);
         }
         GamePlayer.sendMessage(this.plugin.getPlayers().getPlayersIn(killed.getWorld()), message);
     }
