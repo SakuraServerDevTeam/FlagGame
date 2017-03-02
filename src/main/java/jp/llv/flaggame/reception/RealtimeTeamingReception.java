@@ -166,6 +166,7 @@ public class RealtimeTeamingReception implements GameReception {
             throw new IllegalStateException();
         }
         this.state = State.STARTING;
+        GamePlayer.sendMessage(this.plugin.getPlayers(), "&2フラッグゲーム'&6" + this.getName() + "&2'の参加受付が終了しました！");
         //Build teams
         Set<Team> teams = new HashSet<>();
         for (Map.Entry<TeamColor, Set<GamePlayer>> e : this.players.entrySet()) {
