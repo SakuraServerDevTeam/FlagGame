@@ -519,6 +519,7 @@ public class Stage {
     public void initialize() {
         this.rollbackChests();
         this.rollbackFlags();
+        this.rollbackBanners();
     }
 
     /* ロールバックメソッド */
@@ -583,6 +584,12 @@ public class Stage {
                 log.log(Level.WARNING, "Invalid inventory@{0}", toBlock.getLocation());
                 log.log(Level.WARNING, ex.getMessage());
             }
+        }
+    }
+    
+    private void rollbackBanners() {
+        for (BannerSpawner spawner : bannerSpawners.values()) {
+            spawner.spawnBanner();
         }
     }
     
