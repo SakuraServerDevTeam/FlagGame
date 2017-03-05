@@ -229,6 +229,9 @@ public class GamePlayer {
     }
     
     public void playSound(Sound sound) {
+        if (!this.isOnline()) {
+            return;
+        }
         this.getPlayer().playSound(this.getPlayer().getLocation(), sound, 1f, 1f);
     }
 
