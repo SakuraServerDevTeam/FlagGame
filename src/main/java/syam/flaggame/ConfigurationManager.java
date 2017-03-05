@@ -80,7 +80,7 @@ public class ConfigurationManager {
     /* Score weight */
     private double scoreGameJoin, scoreGameExit,
             scoreCombatKill, scoreCombatDeath,
-            scoreFlagPlace, scoreFlagBreak,
+            scoreFlagPlace, scoreFlagBreak, scoreFlagLastPlace,
             scoreBannerDeploy, scoreBannerBreak, scoreBannerKeep,
             scoreNexusBreak;
 
@@ -145,6 +145,18 @@ public class ConfigurationManager {
         } else {
             permissions = DEFAULT_PERMISSIONS;
         }
+        /* Score weight configs */
+        scoreGameJoin = plugin.getConfig().getDouble("score.game.join", 10.0);
+        scoreGameExit = plugin.getConfig().getDouble("score.game.exit", -10.0);
+        scoreCombatKill = plugin.getConfig().getDouble("score.combat.kill", 1.0);
+        scoreCombatDeath = plugin.getConfig().getDouble("score.combat.death", -1.0);
+        scoreFlagPlace = plugin.getConfig().getDouble("score.flag.place", 1.0);
+        scoreFlagBreak = plugin.getConfig().getDouble("score.flag.break", 1.0);
+        scoreFlagLastPlace = plugin.getConfig().getDouble("score.flag.last_place", 5.0);
+        scoreBannerDeploy = plugin.getConfig().getDouble("score.banner.deploy", 5.0);
+        scoreBannerKeep = plugin.getConfig().getDouble("score.banner.get", 3.0);
+        scoreBannerBreak = plugin.getConfig().getDouble("score.banner.keep", 7.5);
+        scoreNexusBreak = plugin.getConfig().getDouble("score.nexus.break", 0.75);
 
         // ワールドチェック 見つからなければプラグイン無効化
         if (Bukkit.getWorld(gameWorld) == null) {
@@ -241,6 +253,50 @@ public class ConfigurationManager {
     /* Permissions Configs */
     public List<String> getPermissions() {
         return this.permissions;
+    }
+
+    public double getScoreGameJoin() {
+        return scoreGameJoin;
+    }
+
+    public double getScoreGameExit() {
+        return scoreGameExit;
+    }
+
+    public double getScoreCombatKill() {
+        return scoreCombatKill;
+    }
+
+    public double getScoreCombatDeath() {
+        return scoreCombatDeath;
+    }
+
+    public double getScoreFlagPlace() {
+        return scoreFlagPlace;
+    }
+
+    public double getScoreFlagBreak() {
+        return scoreFlagBreak;
+    }
+
+    public double getScoreFlagLastPlace() {
+        return scoreFlagLastPlace;
+    }
+
+    public double getScoreBannerDeploy() {
+        return scoreBannerDeploy;
+    }
+
+    public double getScoreBannerBreak() {
+        return scoreBannerBreak;
+    }
+
+    public double getScoreBannerKeep() {
+        return scoreBannerKeep;
+    }
+
+    public double getScoreNexusBreak() {
+        return scoreNexusBreak;
     }
 
     // 設定 getter ここまで

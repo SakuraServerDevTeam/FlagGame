@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 import jp.llv.flaggame.events.GameStartEvent;
 import jp.llv.flaggame.game.Game;
+import jp.llv.flaggame.profile.GameProfile;
 import jp.llv.flaggame.reception.GameReception;
 import jp.llv.flaggame.reception.Team;
 import jp.llv.flaggame.util.MapUtils;
@@ -73,7 +74,7 @@ public class BasicGame implements Game {
     private final GameReception reception;
     private final Stage stage;
     private final Map<TeamColor, Team> teams;
-    private final GameProfile profile = new GameProfile();
+    private final GameProfile profile;
 
     private final Queue<Runnable> onFinishing = new LinkedList<>();
     private final Set<BossBar> bossbars = new HashSet<>();
@@ -99,6 +100,7 @@ public class BasicGame implements Game {
         ts.forEach(t -> {
             this.teams.put(t.getColor(), t);
         });
+        this.profile = new GameProfile(reception.getID(), stage.getName());
     }
 
     public BasicGame(FlagGame plugin, GameReception reception, Stage stage, Team... teams) {

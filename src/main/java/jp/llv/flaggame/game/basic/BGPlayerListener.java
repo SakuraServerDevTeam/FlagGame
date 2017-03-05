@@ -187,9 +187,7 @@ public class BGPlayerListener extends BGListener {
                     .forEach(is -> is.setData(new MaterialData(killerTeam.getColor().getBlockData())));
             message = gkilled.getColoredName() + "&6が" + gkiller.getColoredName() + "&6に&b"
                     + (weapon != null ? weapon + "&6で" : "&6") + "殺されました!";
-            this.game.getProfile().kill.increase(gkiller);
         }
-        this.game.getProfile().death.increase(gkilled);
         GamePlayer.sendMessage(this.plugin.getPlayers().getPlayersIn(killed.getWorld()), message);
     }
 

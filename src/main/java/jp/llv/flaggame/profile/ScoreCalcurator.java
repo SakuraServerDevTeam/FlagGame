@@ -1,5 +1,5 @@
-/* 
- * Copyright (C) 2017 Toyblocks, SakuraServerDev
+/*
+ * Copyright (C) 2017 toyblocks
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,41 +16,22 @@
  */
 package jp.llv.flaggame.profile;
 
-import java.util.LinkedList;
-import jp.llv.flaggame.profile.record.GameRecord;
-import java.util.Queue;
 import java.util.UUID;
-import java.util.stream.Stream;
+import jp.llv.flaggame.profile.record.*;
+import syam.flaggame.ConfigurationManager;
 
 /**
  *
  * @author toyblocks
  */
-public class GameProfile {
+public class ScoreCalcurator {
     
-    private final UUID id;
-    private final String stage;
-    private final Queue<GameRecord> records = new LinkedList<>();
+    private final ConfigurationManager config;
+    private final GameProfile profile;
 
-    public GameProfile(UUID id, String stage) {
-        this.id = id;
-        this.stage = stage;
-    }
-
-    public UUID getID() {
-        return id;
-    }
-
-    public String getStage() {
-        return stage;
-    }
-
-    public Queue<GameRecord> getRecords() {
-        return records;
-    }
-    
-    public Stream<GameRecord> stream() {
-        return records.stream();
+    public ScoreCalcurator(ConfigurationManager config, GameProfile profile) {
+        this.config = config;
+        this.profile = profile;
     }
     
 }

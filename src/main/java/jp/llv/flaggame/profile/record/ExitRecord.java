@@ -1,5 +1,5 @@
-/* 
- * Copyright (C) 2017 Toyblocks, SakuraServerDev
+/*
+ * Copyright (C) 2017 toyblocks
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,24 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jp.llv.flaggame.game.basic;
+package jp.llv.flaggame.profile.record;
 
-import jp.llv.flaggame.util.DoubleMap;
-import syam.flaggame.player.GamePlayer;
+import java.util.UUID;
 
 /**
  *
- * @author Toyblocks
+ * @author toyblocks
  */
-public class GameProfile {
+public class ExitRecord extends PlayerRecord {
     
-    DoubleMap<GamePlayer> kill = new DoubleMap<>();
-    DoubleMap<GamePlayer> death = new DoubleMap<>();
-    DoubleMap<GamePlayer> capture = new DoubleMap<>();
-    DoubleMap<GamePlayer> nexusBreak = new DoubleMap<>();
-    DoubleMap<GamePlayer> bannerGet = new DoubleMap<>();
-    DoubleMap<GamePlayer> bannerDeploy = new DoubleMap<>();
-    
-    GameProfile() {}
+    public ExitRecord(long timestamp, UUID player) {
+        super(timestamp, player);
+    }
     
 }
