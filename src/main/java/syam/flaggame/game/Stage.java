@@ -72,22 +72,6 @@ public class Stage {
     //キルデススコア
     private double killScore = 0, deathScore = 0;
 
-    public double getKillScore() {
-        return killScore;
-    }
-
-    public void setKillScore(double killScore) {
-        this.killScore = killScore;
-    }
-
-    public double getDeathScore() {
-        return deathScore;
-    }
-
-    public void setDeathScore(double deathScore) {
-        this.deathScore = deathScore;
-    }
-
     // フラッグ・チェスト
     private final Map<Location, Flag> flags = Collections.synchronizedMap(new HashMap<>());
     private final Map<Location, Nexus> nexuses = Collections.synchronizedMap(new HashMap<>());
@@ -475,6 +459,22 @@ public class Stage {
      */
     public int getTeamLimit() {
         return teamPlayerLimit;
+    }
+
+    public double getKillScore() {
+        return killScore;
+    }
+
+    public void setKillScore(double killScore) {
+        this.killScore = killScore;
+    }
+
+    public double getDeathScore() {
+        return deathScore;
+    }
+
+    public void setDeathScore(double deathScore) {
+        this.deathScore = deathScore;
     }
 
     /**

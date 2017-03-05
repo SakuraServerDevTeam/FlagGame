@@ -131,6 +131,12 @@ public class SetCommand extends BaseCommand {
                 case AVAILABLE: // 有効設定
                     setStageAvailable(stage);
                     return;
+                case KILLSCORE:
+                    setKillScore(stage);
+                    return;
+                case DEATHSCORE:
+                    setDeathScore(stage);
+                    return;
 
                 // 定義漏れ
                 default:
@@ -472,6 +478,32 @@ public class SetCommand extends BaseCommand {
 
         stage.setAvailable(available);
         Actions.message(sender, "&aステージ'" + stage.getName() + "'は使用" + result + "&aに設定されました！");
+    }
+    
+    private void setKillScore(Stage stage) throws CommandException, StageReservedException {
+        double point;
+        try {
+            point = Double.parseDouble(args.get(1));
+        } catch (NumberFormatException ex) {
+            throw new CommandException("&cオプションの値が数ではありません！");
+        }
+
+        stage.setKillScore(point);
+
+        Actions.message(sender, "&aステージ'" + stage.getName() + "'のキル得点は " + point + "点 に設定されました！");
+    }
+    
+    private void setDeathScore(Stage stage) throws CommandException, StageReservedException {
+        double point;
+        try {
+            point = Double.parseDouble(args.get(1));
+        } catch (NumberFormatException ex) {
+            throw new CommandException("&cオプションの値が数ではありません！");
+        }
+
+        stage.setDeathScore(point);
+
+        Actions.message(sender, "&aステージ'" + stage.getName() + "'のデス得点は " + point + "点 に設定されました！");
     }
 
     /* ***** ここまで **************************************** */
