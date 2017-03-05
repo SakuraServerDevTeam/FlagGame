@@ -41,6 +41,7 @@ public class GamePlayer {
 
     // プレイヤーデータ
     private final UUID player;
+    private final String name;
     private final PlayerManager manager;
 
     private SetupSession session;
@@ -60,10 +61,11 @@ public class GamePlayer {
         }
         this.manager = manager;
         this.player = player.getUniqueId();
+        this.name = player.getName();
     }
 
     public String getName() {
-        return this.getPlayer().getName();
+        return this.name;
     }
 
     public String getColoredName() {
