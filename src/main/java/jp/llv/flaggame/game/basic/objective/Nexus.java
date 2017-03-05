@@ -17,7 +17,7 @@
 package jp.llv.flaggame.game.basic.objective;
 
 import org.bukkit.Location;
-import syam.flaggame.enums.TeamColor;
+import jp.llv.flaggame.reception.TeamColor;
 
 /**
  *

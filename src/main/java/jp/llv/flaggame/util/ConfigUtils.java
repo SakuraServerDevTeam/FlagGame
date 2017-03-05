@@ -31,7 +31,7 @@ import jp.llv.flaggame.game.basic.objective.Nexus;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
-import syam.flaggame.enums.TeamColor;
+import jp.llv.flaggame.reception.TeamColor;
 import jp.llv.flaggame.game.basic.objective.Flag;
 import org.bukkit.block.BlockFace;
 import syam.flaggame.exception.StageReservedException;

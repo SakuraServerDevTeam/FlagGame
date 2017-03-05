@@ -30,7 +30,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import syam.flaggame.FlagGame;
-import syam.flaggame.enums.TeamColor;
+import jp.llv.flaggame.reception.TeamColor;
 import jp.llv.flaggame.game.basic.objective.Flag;
 import jp.llv.flaggame.game.basic.objective.Nexus;
 import org.bukkit.Material;

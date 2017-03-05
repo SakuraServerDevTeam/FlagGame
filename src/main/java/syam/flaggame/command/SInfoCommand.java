@@ -21,7 +21,7 @@ import jp.llv.flaggame.reception.GameReception;
 import jp.llv.flaggame.reception.Team;
 import syam.flaggame.FlagGame;
 
-import syam.flaggame.enums.TeamColor;
+import jp.llv.flaggame.reception.TeamColor;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;

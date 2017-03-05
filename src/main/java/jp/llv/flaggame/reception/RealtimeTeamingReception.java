@@ -36,7 +36,6 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import syam.flaggame.FlagGame;
-import syam.flaggame.enums.TeamColor;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.exception.StageReservedException;
 import syam.flaggame.game.Stage;

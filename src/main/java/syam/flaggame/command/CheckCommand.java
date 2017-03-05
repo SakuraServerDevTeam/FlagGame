@@ -26,7 +26,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.InventoryHolder;
 import syam.flaggame.FlagGame;
-import syam.flaggame.enums.TeamColor;
+import jp.llv.flaggame.reception.TeamColor;
 
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;

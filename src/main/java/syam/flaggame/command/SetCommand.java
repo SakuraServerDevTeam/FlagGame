@@ -24,9 +24,9 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import syam.flaggame.FlagGame;
 
-import syam.flaggame.enums.TeamColor;
-import syam.flaggame.enums.config.ConfigType;
-import syam.flaggame.enums.config.Configables;
+import jp.llv.flaggame.reception.TeamColor;
+import syam.flaggame.game.ConfigType;
+import syam.flaggame.game.Configables;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.exception.StageReservedException;
 import syam.flaggame.game.Stage;

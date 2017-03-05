@@ -22,17 +22,17 @@ import java.util.Set;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import syam.flaggame.enums.GameResult;
-import syam.flaggame.enums.TeamColor;
+import jp.llv.flaggame.reception.TeamColor;
 import syam.flaggame.game.Stage;
 import syam.flaggame.player.GamePlayer;
 
 /**
  * GameFinishedEvent (GameFinishedEvent.java)
- * 
+ *
  * @author syam(syamn)
  */
 public class GameFinishedEvent extends Event {
+
     private static final HandlerList handlers = new HandlerList();
 
     private Stage stage;
@@ -43,7 +43,7 @@ public class GameFinishedEvent extends Event {
 
     /**
      * コンストラクタ
-     * 
+     *
      * @param stage
      * @param result
      * @param winTeam
@@ -91,4 +91,9 @@ public class GameFinishedEvent extends Event {
     public static HandlerList getHandlerList() {
         return handlers;
     }
+
+    public enum GameResult {
+        TEAM_WIN, DRAW, STOP,;
+    }
+
 }

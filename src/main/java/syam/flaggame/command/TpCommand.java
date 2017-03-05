@@ -19,7 +19,7 @@ package syam.flaggame.command;
 import org.bukkit.Location;
 import syam.flaggame.FlagGame;
 
-import syam.flaggame.enums.TeamColor;
+import jp.llv.flaggame.reception.TeamColor;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;

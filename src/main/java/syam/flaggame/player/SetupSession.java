@@ -16,9 +16,8 @@
  */
 package syam.flaggame.player;
 
-import java.util.Optional;
-import syam.flaggame.enums.TeamColor;
-import syam.flaggame.enums.config.Configables;
+import jp.llv.flaggame.reception.TeamColor;
+import syam.flaggame.game.Configables;
 import syam.flaggame.game.Stage;
 
 /**

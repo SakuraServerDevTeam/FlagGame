@@ -39,7 +39,7 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import syam.flaggame.FlagGame;
-import syam.flaggame.enums.TeamColor;
+import jp.llv.flaggame.reception.TeamColor;
 import syam.flaggame.exception.StageReservedException;
 import syam.flaggame.util.Actions;
 import syam.flaggame.util.Cuboid;

@@ -16,7 +16,6 @@
  */
 package syam.flaggame.listener;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import jp.llv.flaggame.game.Game;
 import jp.llv.flaggame.game.basic.objective.BannerSlot;
@@ -37,9 +36,8 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.*;
 
 import syam.flaggame.FlagGame;
-import syam.flaggame.enums.TeamColor;
-import syam.flaggame.enums.SignAction;
-import syam.flaggame.enums.config.Configables;
+import jp.llv.flaggame.reception.TeamColor;
+import syam.flaggame.game.Configables;
 import jp.llv.flaggame.game.basic.objective.Flag;
 import jp.llv.flaggame.game.basic.objective.Nexus;
 import org.bukkit.block.BlockFace;
@@ -284,20 +282,12 @@ public class FGPlayerListener implements Listener {
         String line2 = sign.getLine(1); // 2行目
         String line3 = sign.getLine(2); // 3行目
 
-        SignAction action;
-        try {
-            action = SignAction.valueOf(line2.trim().toUpperCase());
-        } catch (IllegalArgumentException ex) {
-            Actions.message(player, "&cThis sign is broken! Please contact server staff!");
-            return;
-        }
-
         GamePlayer fgp = this.plugin.getPlayers().getPlayer(player);
 
         // 処理を分ける
-        switch (action) {
+        switch (line2.trim()) {
             // 回復
-            case HEAL:
+            case "heal":
                 if (!"".equals(line3) && !line3.isEmpty()) {//特定チーム限定
                     TeamColor signTeam;
 
@@ -342,7 +332,7 @@ public class FGPlayerListener implements Listener {
                 break;
 
             // 自殺
-            case KILL:
+            case "kill":
                 if (fgp.getTeam().isPresent()) {
                     Game game = fgp.getGame().get();
                     GamePlayer.sendMessage(game.getReception(), "&6[" + game.getName() + "]&6 '" + fgp.getColoredName() + "&6'が自殺しました。");
@@ -352,8 +342,7 @@ public class FGPlayerListener implements Listener {
                 break;
 
             default:
-                Actions.message(player, msgPrefix + "&cSorry I forgot this sign-action. Please contact server staff!");
-                log.log(Level.WARNING, logPrefix + "{0}: Sorry I forgot this sign-action. Please contact server staff!", player.getName());
+                Actions.sendPrefixedMessage(player, "&cThis sign is broken! Please contact server staff!");
         }
 
     }

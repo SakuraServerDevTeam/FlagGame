@@ -26,7 +26,6 @@ import jp.llv.flaggame.events.TeamJoinedEvent;
 import jp.llv.flaggame.events.TeamLeftEvent;
 import jp.llv.flaggame.game.Game;
 import org.bukkit.Bukkit;
-import syam.flaggame.enums.TeamColor;
 import syam.flaggame.player.GamePlayer;
 
 /**

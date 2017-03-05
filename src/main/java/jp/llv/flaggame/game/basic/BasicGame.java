@@ -57,7 +57,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 import syam.flaggame.FlagGame;
 import syam.flaggame.database.RecordType;
-import syam.flaggame.enums.TeamColor;
+import jp.llv.flaggame.reception.TeamColor;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.player.GamePlayer;

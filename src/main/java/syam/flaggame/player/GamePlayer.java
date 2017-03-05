@@ -27,11 +27,12 @@ import org.bukkit.entity.Player;
 
 import jp.llv.flaggame.game.Game;
 import jp.llv.flaggame.reception.Team;
+import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
-import syam.flaggame.enums.TeamColor;
+import jp.llv.flaggame.reception.TeamColor;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.util.Actions;
@@ -213,12 +214,16 @@ public class GamePlayer {
         }
     }
 
-    public void sendMessage(BaseComponent... message) {
+    public void sendMessage(ChatMessageType type, BaseComponent... message) {
         if (!this.isOnline()) {
             return;
         }
         Player p = this.getPlayer();
-        Actions.sendPrefixedMessage(p, message);
+        Actions.sendPrefixedMessage(p, type, message);
+    }
+
+    public void sendMessage(BaseComponent... message) {
+        sendMessage(ChatMessageType.CHAT, message);
     }
     
     public void playSound(Sound sound) {
@@ -234,13 +239,17 @@ public class GamePlayer {
         }
     }
 
-    public static void sendMessage(Iterable<? extends GamePlayer> players, BaseComponent... message) {
+    public static void sendMessage(Iterable<? extends GamePlayer> players, ChatMessageType type, BaseComponent... message) {
         for (GamePlayer p : players) {
             if (p == null) {
                 continue;
             }
-            p.sendMessage(message);
+            p.sendMessage(type, message);
         }
+    }
+
+    public static void sendMessage(Iterable<? extends GamePlayer> players, BaseComponent... message) {
+        sendMessage(players, ChatMessageType.CHAT, message);
     }
     
     public static void playSound(Iterable<? extends GamePlayer> players, Sound sound) {
