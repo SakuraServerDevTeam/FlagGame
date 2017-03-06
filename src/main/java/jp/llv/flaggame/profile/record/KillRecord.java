@@ -17,6 +17,8 @@
 package jp.llv.flaggame.profile.record;
 
 import java.util.UUID;
+import org.bson.Document;
+import org.bukkit.entity.Player;
 
 /**
  *
@@ -24,20 +26,19 @@ import java.util.UUID;
  */
 public class KillRecord extends PlayerRecord {
 
-    private final UUID killed;
-    private final String weapon;
-
-    public KillRecord(long timestamp, UUID player, UUID killed, String weapon) {
-        super(timestamp, player);
-        this.killed = killed;
-        this.weapon = weapon;
-    }
+    private static final String FIELD_WEAPON = "weapon";
     
-    public UUID getKilled() {
-        return killed;
+    public KillRecord(UUID game, double x, double y, double z, UUID player, String weapon) {
+        super(game, x, y, z, player);
+        super.put(FIELD_WEAPON, weapon);
     }
 
-    public String getWeapon() {
-        return weapon;
+    public KillRecord(UUID game, Player player, String weapon) {
+        super(game, player);
+        super.put(FIELD_WEAPON, weapon);
+    }
+
+    public KillRecord(Document base) {
+        super(base);
     }
 }

@@ -17,15 +17,25 @@
 package jp.llv.flaggame.profile.record;
 
 import java.util.UUID;
+import org.bson.Document;
+import org.bukkit.entity.Player;
 
 /**
  *
  * @author toyblocks
  */
 public class EnterRecord extends PlayerRecord {
-    
-    public EnterRecord(long timestamp, UUID player) {
-        super(timestamp, player);
+
+    public EnterRecord(UUID game, double x, double y, double z, UUID player) {
+        super(game, x, y, z, player);
+    }
+
+    public EnterRecord(UUID game, Player player) {
+        super(game, player);
+    }
+
+    public EnterRecord(Document base) {
+        super(base);
     }
     
 }

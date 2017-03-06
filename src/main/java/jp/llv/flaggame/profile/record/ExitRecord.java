@@ -17,15 +17,25 @@
 package jp.llv.flaggame.profile.record;
 
 import java.util.UUID;
+import org.bson.Document;
+import org.bukkit.entity.Player;
 
 /**
  *
  * @author toyblocks
  */
 public class ExitRecord extends PlayerRecord {
-    
-    public ExitRecord(long timestamp, UUID player) {
-        super(timestamp, player);
+
+    public ExitRecord(UUID game, double x, double y, double z, UUID player) {
+        super(game, x, y, z, player);
+    }
+
+    public ExitRecord(UUID game, Player player) {
+        super(game, player);
+    }
+
+    public ExitRecord(Document base) {
+        super(base);
     }
     
 }

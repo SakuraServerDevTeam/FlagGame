@@ -17,22 +17,25 @@
 package jp.llv.flaggame.profile.record;
 
 import java.util.UUID;
+import org.bson.Document;
+import org.bukkit.entity.Player;
 
 /**
  *
  * @author Toyblocks, SakuraServerDev
  */
-public class NexusBreakRecord extends PlayerRecord {
+public class NexusBreakRecord extends ScoreRecord {
 
-    private final double point;
-
-    public NexusBreakRecord(long timestamp, UUID player, double point) {
-        super(timestamp, player);
-        this.point = point;
+    public NexusBreakRecord(UUID game, double x, double y, double z, UUID player, double score) {
+        super(game, x, y, z, player, score);
     }
 
-    public double getPoint() {
-        return point;
+    public NexusBreakRecord(UUID game, Player player, double score) {
+        super(game, player, score);
+    }
+
+    public NexusBreakRecord(Document base) {
+        super(base);
     }
 
 }

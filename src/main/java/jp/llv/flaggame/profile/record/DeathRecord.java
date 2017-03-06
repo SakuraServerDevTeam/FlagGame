@@ -17,6 +17,8 @@
 package jp.llv.flaggame.profile.record;
 
 import java.util.UUID;
+import org.bson.Document;
+import org.bukkit.entity.Player;
 
 /**
  *
@@ -24,14 +26,15 @@ import java.util.UUID;
  */
 public class DeathRecord extends PlayerRecord {
 
-    private final String cause;
-
-    public DeathRecord(long timestamp, UUID player, String cause) {
-        super(timestamp, player);
-        this.cause = cause;
+    public DeathRecord(UUID game, double x, double y, double z, UUID player) {
+        super(game, x, y, z, player);
     }
 
-    public String getCause() {
-        return cause;
+    public DeathRecord(UUID game, Player player) {
+        super(game, player);
+    }
+
+    public DeathRecord(Document base) {
+        super(base);
     }
 }

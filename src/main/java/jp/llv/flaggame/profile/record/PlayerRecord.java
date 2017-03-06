@@ -17,22 +17,33 @@
 package jp.llv.flaggame.profile.record;
 
 import java.util.UUID;
+import org.bson.Document;
+import org.bukkit.entity.Player;
 
 /**
  *
  * @author toyblocks
  */
-public abstract class PlayerRecord extends GameRecord {
+public abstract class PlayerRecord extends LocationRecord {
     
-    private final UUID player;
-
-    public PlayerRecord(long timestamp, UUID player) {
-        super(timestamp);
-        this.player = player;
+    private static final String FIELD_PLAYER = "player";
+    
+    public PlayerRecord(UUID game, double x, double y, double z, UUID player) {
+        super(game, x, y, z);
+        super.put(FIELD_PLAYER, player);
     }
 
+    public PlayerRecord(UUID game, Player player) {
+        super(game, player.getLocation());
+        super.put(FIELD_PLAYER, player.getUniqueId());
+    }
+
+    public PlayerRecord(Document base) {
+        super(base);
+    }
+    
     public UUID getPlayer() {
-        return player;
+        return (UUID) super.get(FIELD_PLAYER);
     }
     
 }

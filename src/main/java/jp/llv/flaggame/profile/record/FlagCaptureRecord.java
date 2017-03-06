@@ -17,22 +17,25 @@
 package jp.llv.flaggame.profile.record;
 
 import java.util.UUID;
+import org.bson.Document;
+import org.bukkit.entity.Player;
 
 /**
  *
  * @author Toyblocks, SakuraServerDev
  */
-public class FlagCaptureRecord extends PlayerRecord {
-    
-    private final double point;
+public class FlagCaptureRecord extends ScoreRecord {
 
-    public FlagCaptureRecord(long timestamp, UUID player, double point) {
-        super(timestamp, player);
-        this.point = point;
+    public FlagCaptureRecord(UUID game, double x, double y, double z, UUID player, double score) {
+        super(game, x, y, z, player, score);
     }
 
-    public double getPoint() {
-        return point;
+    public FlagCaptureRecord(UUID game, Player player, double score) {
+        super(game, player, score);
+    }
+
+    public FlagCaptureRecord(Document base) {
+        super(base);
     }
     
 }
