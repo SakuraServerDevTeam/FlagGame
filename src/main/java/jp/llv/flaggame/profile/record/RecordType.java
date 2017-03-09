@@ -42,7 +42,8 @@ public enum RecordType {
     FLAG_SCORE(FlagScoreRecord::new),
     BANNER_HOLD(BannerHoldRecord::new),
     BANNER_DEPLOY(BannerDeployRecord::new),
-    NEXUS_BREAK(NexusBreakRecord::new),;
+    NEXUS_BREAK(NexusBreakRecord::new),
+    STAGE_RATE(StageRateRecord::new),;
     
     public static final String FIELD_TYPE = "type";
     

@@ -24,18 +24,23 @@ import org.bukkit.entity.Player;
  *
  * @author toyblocks
  */
-public class EnterRecord extends PlayerRecord {
+public class StageRateRecord extends ScoreRecord {
 
-    public EnterRecord(UUID game, double x, double y, double z, UUID player) {
-        super(game, x, y, z, player);
+    public StageRateRecord(UUID game, double x, double y, double z, UUID player, double score) {
+        super(game, x, y, z, player, score);
     }
 
-    public EnterRecord(UUID game, Player player) {
-        super(game, player);
+    public StageRateRecord(UUID game, Player player, double score) {
+        super(game, player, score);
     }
 
-    public EnterRecord(Document base) {
+    public StageRateRecord(Document base) {
         super(base);
+    }
+
+    @Override
+    public RecordType getType() {
+        return RecordType.STAGE_RATE;
     }
     
 }
