@@ -25,12 +25,19 @@ import org.bson.Document;
  */
 public class GameStartRecord extends GameRecord {
 
-    public GameStartRecord(UUID game) {
+    public static final String FIELD_STAGE = "stage";
+    
+    public GameStartRecord(UUID game, String stage) {
         super(game);
+        super.put(FIELD_STAGE, stage);
     }
 
     /*package*/ GameStartRecord(Document base) {
         super(base);
+    }
+    
+    public String getStage() {
+        return super.getString(FIELD_STAGE);
     }
 
     @Override
