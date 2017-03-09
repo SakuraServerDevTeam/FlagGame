@@ -30,6 +30,10 @@ import java.util.Set;
 import java.util.UUID;
 import jp.llv.flaggame.game.Game;
 import jp.llv.flaggame.game.basic.BasicGame;
+import jp.llv.flaggame.profile.GameRecordStream;
+import jp.llv.flaggame.profile.RecordStream;
+import jp.llv.flaggame.profile.record.ReceptionCloseRecord;
+import jp.llv.flaggame.profile.record.ReceptionOpenRecord;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -55,6 +59,7 @@ public class RealtimeTeamingReception implements GameReception {
     private Stage.Reservation stageReservation;
     private BasicGame game;
     private State state = State.READY;
+    private final RecordStream records;
 
     public RealtimeTeamingReception(FlagGame plugin, UUID id, List<String> args) {
         this.plugin = plugin;
@@ -64,6 +69,7 @@ public class RealtimeTeamingReception implements GameReception {
         }
         this.stage = plugin.getStages().getStage(args.get(0))
                 .orElseThrow(() -> new IllegalArgumentException("No such stage"));
+        this.records = new GameRecordStream(id);
     }
 
     @Override
@@ -95,6 +101,7 @@ public class RealtimeTeamingReception implements GameReception {
             this.players.put(color, new HashSet<>());
         }
         this.state = State.OPENED;
+        this.records.push(new ReceptionOpenRecord(this.id));
         GamePlayer.sendMessage(this.plugin.getPlayers(), "&2フラッグゲーム'&6" + this.getName() + "&2'の参加受付が開始されました！");
         BaseComponent[] message = new ComponentBuilder("ここをクリック").bold(true).color(ChatColor.GOLD).bold(false)
                 .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("クリックして参加申し込みします").color(ChatColor.GOLD).create()))
@@ -125,6 +132,7 @@ public class RealtimeTeamingReception implements GameReception {
 
         this.plugin.getReceptions().remove(this);
         this.state = State.CLOSED;
+        this.records.push(new ReceptionCloseRecord(this.id));
     }
 
     @Override
@@ -238,6 +246,11 @@ public class RealtimeTeamingReception implements GameReception {
     @Override
     public Iterator<GamePlayer> iterator() {
         return this.getPlayers().iterator();
+    }
+
+    @Override
+    public RecordStream getRecordStream() {
+        return this.records;
     }
 
 }

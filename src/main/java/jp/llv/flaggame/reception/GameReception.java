@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import jp.llv.flaggame.game.Game;
+import jp.llv.flaggame.profile.RecordStream;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.player.GamePlayer;
@@ -78,6 +79,8 @@ public interface GameReception extends Iterable<GamePlayer> {
     public default Iterator<GamePlayer> iterator() {
         return this.getPlayers().iterator();
     }
+    
+    RecordStream getRecordStream();
 
     public static enum State {
         READY(Game.State.PREPARATION),
