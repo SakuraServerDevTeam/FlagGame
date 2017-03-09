@@ -34,8 +34,13 @@ public class FlagCaptureRecord extends ScoreRecord {
         super(game, player, score);
     }
 
-    public FlagCaptureRecord(Document base) {
+    /*package*/ FlagCaptureRecord(Document base) {
         super(base);
+    }
+
+    @Override
+    public RecordType getType() {
+        return RecordType.FLAG_CAPTURE;
     }
     
 }

@@ -1,4 +1,4 @@
-/*
+/* 
  * Copyright (C) 2017 Toyblocks, SakuraServerDev
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,25 +22,39 @@ import org.bukkit.entity.Player;
 
 /**
  *
- * @author Toyblocks, SakuraServerDev
+ * @author toyblocks
  */
-public class FlagBreakRecord extends ScoreRecord {
+public class PlayerKillRecord extends ScoreRecord {
 
-    public FlagBreakRecord(UUID game, double x, double y, double z, UUID player, double score) {
+    private static final String FIELD_KILLED = "killed";
+    private static final String FIELD_WEAPON = "weapon";
+    
+    public PlayerKillRecord(UUID game, double x, double y, double z, UUID player, double score, UUID killed, String weapon) {
         super(game, x, y, z, player, score);
+        super.put(FIELD_WEAPON, weapon);
+        super.put(FIELD_KILLED, killed);
     }
 
-    public FlagBreakRecord(UUID game, Player player, double score) {
+    public PlayerKillRecord(UUID game, Player player, double score, UUID killed, String weapon) {
         super(game, player, score);
+        super.put(FIELD_WEAPON, weapon);
+        super.put(FIELD_KILLED, killed);
     }
 
-    /*package*/ FlagBreakRecord(Document base) {
+    /*package*/ PlayerKillRecord(Document base) {
         super(base);
+    }
+    
+    public String getWeapon() {
+        return super.getString(FIELD_WEAPON);
+    }
+    
+    public UUID getKilled() {
+        return super.get(FIELD_KILLED, UUID.class);
     }
 
     @Override
     public RecordType getType() {
-        return RecordType.FLAG_BREAK;
+        return RecordType.PLAYER_KILL;
     }
-
 }

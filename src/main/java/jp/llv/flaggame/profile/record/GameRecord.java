@@ -18,7 +18,6 @@ package jp.llv.flaggame.profile.record;
 
 import java.util.Date;
 import java.util.UUID;
-import org.bson.BSONObject;
 import org.bson.Document;
 
 /**
@@ -26,30 +25,27 @@ import org.bson.Document;
  * @author toyblocks
  */
 public abstract class GameRecord extends Document {
-    
+
     private static final String FIELD_TIME = "time";
     private static final String FIELD_GAME = "game";
-    
+
     public GameRecord(UUID game) {
         super.put(FIELD_TIME, new Date());
         super.put(FIELD_GAME, game);
     }
-    
-    public GameRecord(Document base) {
+
+    /*package*/ GameRecord(Document base) {
         super.putAll(base);
     }
-    
+
     public Date getTime() {
         return super.getDate(FIELD_TIME);
     }
-    
+
     public UUID getGame() {
         return (UUID) super.get(FIELD_GAME);
     }
-    
-    public String getType() {
-        String name = this.getClass().getSimpleName();
-        return name.substring(4, name.length() - 1);
-    }
-    
+
+    public abstract RecordType getType();
+
 }

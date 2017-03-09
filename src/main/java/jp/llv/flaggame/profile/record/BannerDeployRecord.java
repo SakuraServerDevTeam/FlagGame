@@ -34,8 +34,13 @@ public class BannerDeployRecord extends ScoreRecord {
         super(game, player, score);
     }
 
-    public BannerDeployRecord(Document base) {
+    /*package*/ BannerDeployRecord(Document base) {
         super(base);
+    }
+
+    @Override
+    public RecordType getType() {
+        return RecordType.BANNER_DEPLOY;
     }
 
 }

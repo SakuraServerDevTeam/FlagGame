@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2017 toyblocks
+/* 
+ * Copyright (C) 2017 Toyblocks, SakuraServerDev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,26 +24,23 @@ import org.bukkit.entity.Player;
  *
  * @author toyblocks
  */
-public abstract class ScoreRecord extends PlayerRecord {
-    
-    private static final String FIELD_SCORE = "score";
-    
-    public ScoreRecord(UUID game, double x, double y, double z, UUID player, double score) {
-        super(game, x, y, z, player);
-        super.put(FIELD_SCORE, score);
+public class PlayerDeathRecord extends ScoreRecord {
+
+    public PlayerDeathRecord(UUID game, double x, double y, double z, UUID player, double score) {
+        super(game, x, y, z, player, score);
     }
 
-    public ScoreRecord(UUID game, Player player, double score) {
-        super(game, player);
-        super.put(FIELD_SCORE, score);
+    public PlayerDeathRecord(UUID game, Player player, double score) {
+        super(game, player, score);
     }
 
-    /*package*/ ScoreRecord(Document base) {
+    /*package*/ PlayerDeathRecord(Document base) {
         super(base);
     }
-    
-    public double getScore() {
-        return super.getDouble(FIELD_SCORE);
+
+    @Override
+    public RecordType getType() {
+        return RecordType.PLAYER_DEATH;
     }
     
 }

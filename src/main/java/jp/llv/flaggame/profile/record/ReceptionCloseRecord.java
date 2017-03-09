@@ -18,32 +18,24 @@ package jp.llv.flaggame.profile.record;
 
 import java.util.UUID;
 import org.bson.Document;
-import org.bukkit.entity.Player;
 
 /**
  *
  * @author toyblocks
  */
-public abstract class ScoreRecord extends PlayerRecord {
-    
-    private static final String FIELD_SCORE = "score";
-    
-    public ScoreRecord(UUID game, double x, double y, double z, UUID player, double score) {
-        super(game, x, y, z, player);
-        super.put(FIELD_SCORE, score);
+public class ReceptionCloseRecord extends GameRecord {
+
+    public ReceptionCloseRecord(UUID game) {
+        super(game);
     }
 
-    public ScoreRecord(UUID game, Player player, double score) {
-        super(game, player);
-        super.put(FIELD_SCORE, score);
-    }
-
-    /*package*/ ScoreRecord(Document base) {
+    /*package*/ ReceptionCloseRecord(Document base) {
         super(base);
     }
-    
-    public double getScore() {
-        return super.getDouble(FIELD_SCORE);
+
+    @Override
+    public RecordType getType() {
+        return RecordType.RECEPTION_CLOSE;
     }
     
 }

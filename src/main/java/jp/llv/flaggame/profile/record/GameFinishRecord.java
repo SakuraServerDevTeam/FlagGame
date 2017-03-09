@@ -17,33 +17,34 @@
 package jp.llv.flaggame.profile.record;
 
 import java.util.UUID;
+import jp.llv.flaggame.reception.TeamColor;
 import org.bson.Document;
-import org.bukkit.entity.Player;
 
 /**
  *
  * @author toyblocks
  */
-public abstract class ScoreRecord extends PlayerRecord {
+public class GameFinishRecord extends GameRecord {
+
+    private static final String FIELD_TEAM_WON = "won";
     
-    private static final String FIELD_SCORE = "score";
-    
-    public ScoreRecord(UUID game, double x, double y, double z, UUID player, double score) {
-        super(game, x, y, z, player);
-        super.put(FIELD_SCORE, score);
+    public GameFinishRecord(UUID game, TeamColor color) {
+        super(game);
+        super.put(FIELD_TEAM_WON, color == null ? null : color.toString().toLowerCase());
     }
 
-    public ScoreRecord(UUID game, Player player, double score) {
-        super(game, player);
-        super.put(FIELD_SCORE, score);
-    }
-
-    /*package*/ ScoreRecord(Document base) {
+    /*package*/ GameFinishRecord(Document base) {
         super(base);
     }
     
-    public double getScore() {
-        return super.getDouble(FIELD_SCORE);
+    public TeamColor getTeamWon() {
+        String color = super.getString(FIELD_TEAM_WON);
+        return color == null ? null : TeamColor.of(color);
+    }
+
+    @Override
+    public RecordType getType() {
+        return RecordType.GAME_FINISH;
     }
     
 }

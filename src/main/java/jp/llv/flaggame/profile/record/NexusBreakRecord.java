@@ -34,8 +34,13 @@ public class NexusBreakRecord extends ScoreRecord {
         super(game, player, score);
     }
 
-    public NexusBreakRecord(Document base) {
+    /*package*/ NexusBreakRecord(Document base) {
         super(base);
+    }
+
+    @Override
+    public RecordType getType() {
+        return RecordType.NEXUS_BREAK;
     }
 
 }

@@ -42,7 +42,7 @@ public abstract class LocationRecord extends GameRecord {
         this(game, loc.getX(), loc.getY(), loc.getZ());
     }
 
-    public LocationRecord(Document base) {
+    /*package*/ LocationRecord(Document base) {
         super(base);
     }
     

@@ -34,8 +34,13 @@ public class FlagScoreRecord extends ScoreRecord {
         super(game, player, score);
     }
 
-    public FlagScoreRecord(Document base) {
+    /*package*/ FlagScoreRecord(Document base) {
         super(base);
+    }
+
+    @Override
+    public RecordType getType() {
+        return RecordType.FLAG_SCORE;
     }
     
 }

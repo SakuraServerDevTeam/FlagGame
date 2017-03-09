@@ -24,26 +24,23 @@ import org.bukkit.entity.Player;
  *
  * @author toyblocks
  */
-public abstract class ScoreRecord extends PlayerRecord {
-    
-    private static final String FIELD_SCORE = "score";
-    
-    public ScoreRecord(UUID game, double x, double y, double z, UUID player, double score) {
-        super(game, x, y, z, player);
-        super.put(FIELD_SCORE, score);
+public class PlayerLoseRecord extends ScoreRecord {
+
+    public PlayerLoseRecord(UUID game, double x, double y, double z, UUID player, double score) {
+        super(game, x, y, z, player, score);
     }
 
-    public ScoreRecord(UUID game, Player player, double score) {
-        super(game, player);
-        super.put(FIELD_SCORE, score);
+    public PlayerLoseRecord(UUID game, Player player, double score) {
+        super(game, player, score);
     }
 
-    /*package*/ ScoreRecord(Document base) {
+    /*package*/ PlayerLoseRecord(Document base) {
         super(base);
     }
-    
-    public double getScore() {
-        return super.getDouble(FIELD_SCORE);
+
+    @Override
+    public RecordType getType() {
+        return RecordType.PLAYER_LOSE;
     }
     
 }
