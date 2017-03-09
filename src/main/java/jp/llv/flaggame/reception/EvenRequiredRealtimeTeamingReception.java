@@ -37,6 +37,7 @@ public class EvenRequiredRealtimeTeamingReception extends RealtimeTeamingRecepti
                 && super.getPlayers().size() % super.getStage().get().getTeams().size() != 0) {
             throw new CommandException("参加人数が均等ではありません！");
         }
+        super.start(args);
     }
 
 }
