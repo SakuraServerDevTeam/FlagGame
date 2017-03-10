@@ -40,7 +40,7 @@ public class PlayerEntryRecord extends PlayerRecord {
 
     @Override
     public RecordType getType() {
-        return RecordType.PLAYER_ENTRY;
+        return RecordType.ENTRY;
     }
     
 }

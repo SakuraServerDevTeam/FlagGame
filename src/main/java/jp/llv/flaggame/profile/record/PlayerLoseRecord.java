@@ -40,7 +40,7 @@ public class PlayerLoseRecord extends ScoreRecord {
 
     @Override
     public RecordType getType() {
-        return RecordType.PLAYER_LOSE;
+        return RecordType.LOSE;
     }
     
 }

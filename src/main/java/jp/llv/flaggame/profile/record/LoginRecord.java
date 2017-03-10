@@ -40,7 +40,7 @@ public class LoginRecord extends PlayerRecord {
 
     @Override
     public RecordType getType() {
-        return RecordType.PLAYER_LOGIN;
+        return RecordType.LOGIN;
     }
     
 }

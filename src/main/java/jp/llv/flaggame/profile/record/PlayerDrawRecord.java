@@ -40,7 +40,7 @@ public class PlayerDrawRecord extends ScoreRecord {
 
     @Override
     public RecordType getType() {
-        return RecordType.PLAYER_DRAW;
+        return RecordType.DRAW;
     }
     
 }

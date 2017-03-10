@@ -40,7 +40,7 @@ public class LogoutRecord extends PlayerRecord {
 
     @Override
     public RecordType getType() {
-        return RecordType.PLAYER_LOGOUT;
+        return RecordType.LOGOUT;
     }
     
 }

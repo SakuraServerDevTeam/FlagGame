@@ -40,7 +40,7 @@ public class PlayerLeaveRecord extends PlayerRecord {
 
     @Override
     public RecordType getType() {
-        return RecordType.PLAYER_LEAVE;
+        return RecordType.LEAVE;
     }
     
 }

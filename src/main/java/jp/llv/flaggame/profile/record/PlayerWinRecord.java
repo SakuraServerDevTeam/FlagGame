@@ -40,7 +40,7 @@ public class PlayerWinRecord extends ScoreRecord {
 
     @Override
     public RecordType getType() {
-        return RecordType.PLAYER_WIN;
+        return RecordType.WIN;
     }
     
 }

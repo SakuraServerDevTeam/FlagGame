@@ -18,29 +18,34 @@ package jp.llv.flaggame.profile.record;
 
 import java.util.UUID;
 import org.bson.Document;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 /**
  *
  * @author toyblocks
  */
-public class StageRateRecord extends ScoreRecord {
+public class BannerScoreRecord extends ScoreRecord {
 
-    public StageRateRecord(UUID game, double x, double y, double z, UUID player, double score) {
+    public BannerScoreRecord(UUID game, double x, double y, double z, UUID player, double score) {
         super(game, x, y, z, player, score);
     }
 
-    public StageRateRecord(UUID game, Player player, double score) {
+    public BannerScoreRecord(UUID game, UUID player, Location location, double score) {
+        super(game, player, location, score);
+    }
+
+    public BannerScoreRecord(UUID game, Player player, double score) {
         super(game, player, score);
     }
 
-    public StageRateRecord(Document base) {
+    public BannerScoreRecord(Document base) {
         super(base);
     }
 
     @Override
     public RecordType getType() {
-        return RecordType.RATE;
+        return RecordType.BANNER_SCORE;
     }
     
 }

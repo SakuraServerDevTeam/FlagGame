@@ -40,7 +40,7 @@ public class PlayerDeathRecord extends ScoreRecord {
 
     @Override
     public RecordType getType() {
-        return RecordType.PLAYER_DEATH;
+        return RecordType.DEATH;
     }
     
 }

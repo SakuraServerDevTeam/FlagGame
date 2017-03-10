@@ -55,6 +55,6 @@ public class PlayerKillRecord extends ScoreRecord {
 
     @Override
     public RecordType getType() {
-        return RecordType.PLAYER_KILL;
+        return RecordType.KILL;
     }
 }

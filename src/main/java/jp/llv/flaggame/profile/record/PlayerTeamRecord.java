@@ -17,6 +17,7 @@
 package jp.llv.flaggame.profile.record;
 
 import java.util.UUID;
+import jp.llv.flaggame.reception.TeamColor;
 import org.bson.Document;
 import org.bukkit.entity.Player;
 
@@ -24,23 +25,31 @@ import org.bukkit.entity.Player;
  *
  * @author toyblocks
  */
-public class StageRateRecord extends ScoreRecord {
+public class PlayerTeamRecord extends PlayerRecord {
+    
+    public static final String FIELD_TEAM = "team";
 
-    public StageRateRecord(UUID game, double x, double y, double z, UUID player, double score) {
-        super(game, x, y, z, player, score);
+    public PlayerTeamRecord(UUID game, double x, double y, double z, UUID player, TeamColor team) {
+        super(game, x, y, z, player);
+        super.put(FIELD_TEAM, team.toString().toLowerCase());
     }
 
-    public StageRateRecord(UUID game, Player player, double score) {
-        super(game, player, score);
+    public PlayerTeamRecord(UUID game, Player player, TeamColor team) {
+        super(game, player);
+        super.put(FIELD_TEAM, team.toString().toLowerCase());
     }
 
-    public StageRateRecord(Document base) {
+    /*package*/ PlayerTeamRecord(Document base) {
         super(base);
+    }
+    
+    public TeamColor getTeam() {
+        return TeamColor.of(super.getString(FIELD_TEAM));
     }
 
     @Override
     public RecordType getType() {
-        return RecordType.RATE;
+        return RecordType.TEAM;
     }
     
 }

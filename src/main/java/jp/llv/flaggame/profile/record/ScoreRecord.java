@@ -18,6 +18,7 @@ package jp.llv.flaggame.profile.record;
 
 import java.util.UUID;
 import org.bson.Document;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 /**
@@ -30,6 +31,11 @@ public abstract class ScoreRecord extends PlayerRecord {
     
     public ScoreRecord(UUID game, double x, double y, double z, UUID player, double score) {
         super(game, x, y, z, player);
+        super.put(FIELD_SCORE, score);
+    }
+
+    public ScoreRecord(UUID game, UUID player, Location location, double score) {
+        super(game, player, location);
         super.put(FIELD_SCORE, score);
     }
 

@@ -18,6 +18,7 @@ package jp.llv.flaggame.profile.record;
 
 import java.util.UUID;
 import org.bson.Document;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import syam.flaggame.ConfigurationManager;
 
@@ -31,6 +32,11 @@ public abstract class PlayerRecord extends LocationRecord {
     
     public PlayerRecord(UUID game, double x, double y, double z, UUID player) {
         super(game, x, y, z);
+        super.put(FIELD_PLAYER, player);
+    }
+
+    public PlayerRecord(UUID game, UUID player, Location location) {
+        super(game, location);
         super.put(FIELD_PLAYER, player);
     }
 
