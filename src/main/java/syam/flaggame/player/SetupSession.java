@@ -25,63 +25,83 @@ import syam.flaggame.game.Stage;
  * @author Toyblocks
  */
 public class SetupSession {
-    
+
     private final Stage stage;
     private Configables setting;
-    
+
     private TeamColor color = null;
     private Double point = null;
     private Byte hp = null;
-    
+
     /*package*/ SetupSession(Stage stage) {
-        if (stage == null) throw new NullPointerException();
+        if (stage == null) {
+            throw new NullPointerException();
+        }
         this.stage = stage;
     }
-    
+
     public Stage getSelectedStage() {
         return this.stage;
     }
-    
+
     public Configables getSetting() {
         return this.setting;
     }
-    
+
     public SetupSession setSetting(Configables setting) {
+        if (this.setting == setting) {
+            return this;
+        }
         this.setting = setting;
+        this.color = null;
+        this.point = null;
+        this.hp = null;
         return this;
     }
-    
+
     public Double getSelectedPoint() {
-        if (this.setting != Configables.FLAG && this.setting != Configables.NEXUS) throw new IllegalStateException();
+        if (this.setting != Configables.FLAG && this.setting != Configables.NEXUS && this.setting != Configables.BANNER_SPAWNER) {
+            throw new IllegalStateException();
+        }
         return this.point;
     }
-    
+
     public SetupSession setSelectedPoint(double point) {
-        if (this.setting != Configables.FLAG && this.setting != Configables.NEXUS) throw new IllegalStateException();
+        if (this.setting != Configables.FLAG && this.setting != Configables.NEXUS && this.setting != Configables.BANNER_SPAWNER) {
+            throw new IllegalStateException();
+        }
         this.point = point;
         return this;
     }
 
     public TeamColor getSelectedColor() {
-        if (this.setting != Configables.BANNER_SLOT) throw new IllegalStateException();
+        if (this.setting != Configables.BANNER_SLOT && this.setting != Configables.NEXUS) {
+            throw new IllegalStateException();
+        }
         return color;
     }
 
     public SetupSession setSelectedColor(TeamColor color) {
-        if (this.setting != Configables.BANNER_SLOT) throw new IllegalStateException();
+        if (this.setting != Configables.BANNER_SLOT && this.setting != Configables.NEXUS) {
+            throw new IllegalStateException();
+        }
         this.color = color;
         return this;
     }
 
     public Byte getSelectedHp() {
-        if (this.setting != Configables.BANNER_SPAWNER) throw new IllegalStateException();
+        if (this.setting != Configables.BANNER_SPAWNER) {
+            throw new IllegalStateException();
+        }
         return hp;
     }
 
     public SetupSession setHp(Byte hp) {
-        if (this.setting != Configables.BANNER_SPAWNER) throw new IllegalStateException();
+        if (this.setting != Configables.BANNER_SPAWNER) {
+            throw new IllegalStateException();
+        }
         this.hp = hp;
         return this;
     }
-    
+
 }
