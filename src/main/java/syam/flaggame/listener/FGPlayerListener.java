@@ -144,7 +144,7 @@ public class FGPlayerListener implements Listener {
                         return;
                     }
                     Actions.message(player, "&aステージ'" + stage.getName() + "'の"
-                            + sess.getSelectedColor() != null ? sess.getSelectedColor().getRichName() : "全チーム" + "&aの"
+                            + (sess.getSelectedColor() != null ? sess.getSelectedColor().getRichName() : "全チーム") + "&aの"
                                     + sess.getSelectedPoint() + "ポイント目標を登録しました！");
                     break;
                 case BANNER_SLOT:
@@ -197,7 +197,7 @@ public class FGPlayerListener implements Listener {
                     }
                     Actions.message(player, "&aステージ'" + stage.getName() + "'の"
                             + (sess.getSelectedColor() != null ? sess.getSelectedColor().getRichName() : "全チーム") + "&aの"
-                            + sess.getSelectedPoint() + "ポイント目標を登録しました！");
+                            + sess.getSelectedPoint() + "ポイントバナースポナーを登録しました！");
                     break;
                 // チェストモード
                 case CHEST:
