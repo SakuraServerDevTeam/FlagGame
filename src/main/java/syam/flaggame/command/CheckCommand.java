@@ -132,10 +132,10 @@ public class CheckCommand extends BaseCommand {
         }
 
         // 観戦者スポーン
-        if (stage.getSpecSpawn() == null) {
-            Actions.message(sender, msgPrefix + "&6   &b観戦者スポーン地点: &c未設定");
-        } else {
+        if (stage.getSpecSpawn().isPresent()) {
             Actions.message(sender, msgPrefix + "&6   &b観戦者スポーン地点: &6設定済み");
+        } else {
+            Actions.message(sender, msgPrefix + "&6   &b観戦者スポーン地点: &c未設定");
         }
 
         Actions.message(sender, "&a ===========================================");
