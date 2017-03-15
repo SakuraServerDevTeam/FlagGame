@@ -207,7 +207,7 @@ public final class ConfigUtils {
         } else {
             ConfigurationSection ns = section.getConfigurationSection(key);
             Location loc = readLocation(ns, "loc");
-            byte p = (byte) ns.getInt("point");
+            double p = ns.getDouble("point");
             return new Flag(loc, p);
         }
     }

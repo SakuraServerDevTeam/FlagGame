@@ -26,14 +26,14 @@ public class Flag {
     
     public static final Material[] FLAG_BLOCK_IDS = {Material.WOOL, Material.STAINED_CLAY, Material.STAINED_GLASS};
     private final Location loc; // フラッグ座標
-    private final byte type; // フラッグの種類
+    private final double type; // フラッグの種類
 
     /*
      * コンストラクタ
      * 
      * @param plugin
      */
-    public Flag(final Location loc, final byte type) {
+    public Flag(final Location loc, final double type) {
         if (loc == null) throw new NullPointerException();
 
         // フラッグデータ登録
@@ -68,12 +68,12 @@ public class Flag {
      * 
      * @return フラッグの点数
      */
-    public byte getFlagPoint() {
+    public double getFlagPoint() {
         return type;
     }
 
     public String getTypeName() {
-        return Byte.toString(type);
+        return Double.toString(type);
     }
 
     public Location getLocation() {

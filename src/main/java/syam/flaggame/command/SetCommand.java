@@ -280,9 +280,9 @@ public class SetCommand extends BaseCommand {
         }
 
         // フラッグタイプチェック
-        byte type;
+        double type;
         try {
-            type = Byte.parseByte(args.get(1));
+            type = Double.parseDouble(args.get(1));
         } catch (NumberFormatException ex) {
             throw new CommandException("フラッグの得点を正しく指定してください!", ex);
         }
