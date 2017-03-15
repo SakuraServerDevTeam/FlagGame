@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2017 Toyblocks, SakuraServerDev
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,40 +18,41 @@ package jp.llv.flaggame.profile.record;
 
 import java.util.UUID;
 import org.bson.Document;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import syam.flaggame.ConfigurationManager;
 
 /**
  *
- * @author toyblocks
+ * @author Toyblocks, SakuraServerDev
  */
-public class PlayerDeathRecord extends ScoreRecord {
+public class BannerGetRecord extends ScoreRecord {
 
-    public PlayerDeathRecord(UUID game, double x, double y, double z, UUID player, double score) {
+    public BannerGetRecord(UUID game, double x, double y, double z, UUID player, double score) {
         super(game, x, y, z, player, score);
     }
 
-    public PlayerDeathRecord(UUID game, Player player, double score) {
+    public BannerGetRecord(UUID game, UUID player, Location location, double score) {
+        super(game, player, location, score);
+    }
+
+    @Deprecated
+    public BannerGetRecord(UUID game, Player player, double score) {
         super(game, player, score);
     }
 
-    /*package*/ PlayerDeathRecord(Document base) {
+    /*package*/ BannerGetRecord(Document base) {
         super(base);
     }
 
     @Override
     public RecordType getType() {
-        return RecordType.DEATH;
-    }
-
-    @Override
-    public double getGamePoint() {
-        return getScore();
+        return RecordType.BANNER_HOLD;
     }
 
     @Override
     public double getExp(ConfigurationManager config) {
-        return getScore() * config.getScoreCombatDeath();
+        return getScore() * config.getScoreBannerBreak();
     }
-    
+
 }

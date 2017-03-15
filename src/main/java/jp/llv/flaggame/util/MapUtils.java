@@ -16,12 +16,16 @@
  */
 package jp.llv.flaggame.util;
 
+import java.util.AbstractMap;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Function;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -51,7 +55,7 @@ public final class MapUtils {
         }
         return result;
     }
-    
+
     public static <K, V> LinkedHashMap<V, Set<K>> rank(Map<? extends K, ? extends V> map, Comparator<? super V> comparator) {
         TreeSet<V> sorted = new TreeSet<>(comparator);
         sorted.addAll(map.values());
@@ -60,6 +64,23 @@ public final class MapUtils {
             result.put(v, getKeyByValue(map, v));
         }
         return result;
+    }
+
+    public static <K1, K2, A, V1, V2>
+            Map<K2, V2> remap(Map<K1, V1> source,
+                              Function<? super K1, ? extends K2> keyMapper,
+                              Collector<V1, A, V2> collector) {
+        return source.entrySet().stream().collect(Collectors.groupingBy(
+                e -> keyMapper.apply(e.getKey()),
+                Collectors.mapping(
+                        Map.Entry::getValue,
+                        collector
+                )
+        ));
+    }
+
+    public static <K, V> Map.Entry<K, V> tuple(K key, V value) {
+        return new AbstractMap.SimpleImmutableEntry<>(key, value);
     }
 
 }

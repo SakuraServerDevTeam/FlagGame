@@ -20,37 +20,27 @@ import java.util.LinkedList;
 import jp.llv.flaggame.profile.record.GameRecord;
 import java.util.Queue;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 /**
  *
  * @author toyblocks
  */
-public class GameProfile {
+public class GameRecordStream implements RecordStream {
     
-    private final UUID id;
-    private final String stage;
+    private final UUID game;
     private final Queue<GameRecord> records = new LinkedList<>();
 
-    public GameProfile(UUID id, String stage) {
-        this.id = id;
-        this.stage = stage;
+    public GameRecordStream(UUID id) {
+        this.game = id;
     }
 
     public UUID getID() {
-        return id;
+        return game;
     }
 
-    public String getStage() {
-        return stage;
-    }
-
+    @Override
     public Queue<GameRecord> getRecords() {
         return records;
-    }
-    
-    public Stream<GameRecord> stream() {
-        return records.stream();
     }
     
 }

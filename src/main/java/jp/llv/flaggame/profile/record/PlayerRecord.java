@@ -53,7 +53,11 @@ public abstract class PlayerRecord extends LocationRecord {
         return (UUID) super.get(FIELD_PLAYER);
     }
 
-    public double getScore(ConfigurationManager config) {
+    public double getExp(ConfigurationManager config) {
+        return 0D;
+    }
+    
+    public double getGamePoint() {
         return 0D;
     }
     

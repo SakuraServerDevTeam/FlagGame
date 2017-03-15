@@ -1,5 +1,5 @@
-/* 
- * Copyright (C) 2017 Syamn, SakuraServerDev
+/*
+ * Copyright (C) 2017 toyblocks
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,4 +14,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package syam.flaggame.database;
+package jp.llv.flaggame.database;
+
+/**
+ *
+ * @author toyblocks
+ */
+public class DatabaseException extends Exception {
+
+    public DatabaseException() {
+    }
+
+    public DatabaseException(String message) {
+        super(message);
+    }
+
+    public DatabaseException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public DatabaseException(Throwable cause) {
+        super(cause);
+    }
+    
+}

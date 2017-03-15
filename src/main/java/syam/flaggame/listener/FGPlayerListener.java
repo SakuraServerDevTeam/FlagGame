@@ -41,6 +41,7 @@ import syam.flaggame.game.Configables;
 import jp.llv.flaggame.game.basic.objective.Flag;
 import jp.llv.flaggame.game.basic.objective.Nexus;
 import org.bukkit.block.BlockFace;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.material.Banner;
 import syam.flaggame.exception.StageReservedException;
 import syam.flaggame.game.Stage;
@@ -73,11 +74,12 @@ public class FGPlayerListener implements Listener {
         }
 
         GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
-
+        
         // 管理モードで権限を持ち、かつ設定したツールでブロックを右クリックした
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK
                 && gPlayer.getSetupSession().isPresent()
-                && player.getItemInHand().getTypeId() == plugin.getConfigs().getToolID()
+                && event.getHand() == EquipmentSlot.HAND
+                && player.getInventory().getItemInMainHand().getTypeId() == plugin.getConfigs().getToolID()
                 && Perms.SET.has(player)) {
             SetupSession sess = gPlayer.getSetupSession().get();
             Configables conf = sess.getSetting();
@@ -285,7 +287,7 @@ public class FGPlayerListener implements Listener {
         GamePlayer fgp = this.plugin.getPlayers().getPlayer(player);
 
         // 処理を分ける
-        switch (line2.trim()) {
+        switch (line2.trim().toLowerCase()) {
             // 回復
             case "heal":
                 if (!"".equals(line3) && !line3.isEmpty()) {//特定チーム限定

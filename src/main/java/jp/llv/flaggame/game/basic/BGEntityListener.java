@@ -66,6 +66,14 @@ public class BGEntityListener extends BGListener {
             return;
         }
 
+        if (this.game.getStage().getBase(gp.getTeam().get().getColor()).isIn(player.getLocation())) {
+            event.setCancelled(true);
+            if (!this.game.getStage().getBase(gd.getTeam().get().getColor()).isIn(damager.getLocation())) {
+                damager.damage(event.getDamage(), player);
+            }
+            return;
+        }
+
         if (!plugin.getConfigs().getDisableTeamPVP()) {
             return;
         }

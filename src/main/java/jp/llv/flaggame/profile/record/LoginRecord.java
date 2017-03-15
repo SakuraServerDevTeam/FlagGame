@@ -19,6 +19,7 @@ package jp.llv.flaggame.profile.record;
 import java.util.UUID;
 import org.bson.Document;
 import org.bukkit.entity.Player;
+import syam.flaggame.ConfigurationManager;
 
 /**
  *
@@ -41,6 +42,11 @@ public class LoginRecord extends PlayerRecord {
     @Override
     public RecordType getType() {
         return RecordType.LOGIN;
+    }
+
+    @Override
+    public double getExp(ConfigurationManager config) {
+        return config.getScoreGameJoin();
     }
     
 }

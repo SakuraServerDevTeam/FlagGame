@@ -14,24 +14,36 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jp.llv.flaggame.profile;
+package jp.llv.flaggame.database;
 
+import java.util.Collection;
 import java.util.UUID;
-import jp.llv.flaggame.profile.record.*;
-import syam.flaggame.ConfigurationManager;
+import jp.llv.flaggame.profile.GameRecordStream;
 
 /**
  *
  * @author toyblocks
  */
-public class ScoreCalcurator {
-    
-    private final ConfigurationManager config;
-    private final GameProfile profile;
+public interface Database extends AutoCloseable {
 
-    public ScoreCalcurator(ConfigurationManager config, GameProfile profile) {
-        this.config = config;
-        this.profile = profile;
+    void connect() throws DatabaseException;
+
+    default void tryConnect() {
+        try {
+            this.connect();
+        } catch (DatabaseException ex) {
+        }
     }
     
+    boolean isConnected();
+    
+    GameRecordStream getGameProgile(UUID game) throws DatabaseException;
+    
+    void saveGameProfile(GameRecordStream profile) throws DatabaseException;
+    
+    Collection<UUID> getGames() throws DatabaseException;
+
+    @Override
+    public void close() throws DatabaseException;
+
 }

@@ -43,17 +43,14 @@ DisableCommands:
 - /fm
 
 #==================#
-#   MySQL Config   #
+#  MongoDB Config  #
 #==================#
-MySQL:
-  Server:
-    Address: localhost
-    Port: 3306
-  Database:
-    Name: DatabaseName
-    User_Name: UserName
-    User_Password: UserPassword
-    TablePrefix: flaggame_
+Database:
+  Address: localhost
+  Port: 27017
+  Name: flaggame
+  User_Name: null
+  User_Password: null
 
 #====================#
 #   Logging Config   #
@@ -78,21 +75,23 @@ score:
     join: 10.0
     exit: -10.0
   combat:
-    kill: 1.0
-    death: -1.0
+    kill: 0.5
+    death: 0.0
   flag:
     place: 1.0
     last_place: 5.0
     break: 1.0
   banner:
-    deploy: 5.0
-    get: 3.0
-    keep: 7.5
+    deploy: 3.0
+    get: 0.1
+    keep: 3.0
+    steal: 0.25
   nexus:
-    break: 0.75
+    break: 1.0
+  rate: 5.0
 
 #==================#
 #   DO NOT TOUCH   #
 #==================#
 # Do not touch this option! It is a check if you are running the recent configuration version
-Version: 0.4
+Version: 0.5

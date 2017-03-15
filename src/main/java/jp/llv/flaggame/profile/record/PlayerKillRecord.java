@@ -19,6 +19,7 @@ package jp.llv.flaggame.profile.record;
 import java.util.UUID;
 import org.bson.Document;
 import org.bukkit.entity.Player;
+import syam.flaggame.ConfigurationManager;
 
 /**
  *
@@ -56,5 +57,15 @@ public class PlayerKillRecord extends ScoreRecord {
     @Override
     public RecordType getType() {
         return RecordType.KILL;
+    }
+
+    @Override
+    public double getGamePoint() {
+        return getScore();
+    }
+
+    @Override
+    public double getExp(ConfigurationManager config) {
+        return getScore() * config.getScoreCombatKill();
     }
 }

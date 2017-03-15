@@ -17,7 +17,6 @@
 package syam.flaggame;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -27,6 +26,9 @@ import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
+import jp.llv.flaggame.database.Database;
+import jp.llv.flaggame.database.DatabaseException;
+import jp.llv.flaggame.database.MongoDB;
 import jp.llv.flaggame.game.GameManager;
 import jp.llv.flaggame.reception.EvenRequiredRealtimeTeamingReception;
 import jp.llv.flaggame.reception.RealtimeTeamingReception;
@@ -45,7 +47,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import syam.flaggame.command.*;
 import syam.flaggame.command.queue.ConfirmQueue;
-import syam.flaggame.database.*;
 import syam.flaggame.listener.*;
 import syam.flaggame.game.StageFileManager;
 import syam.flaggame.game.StageManager;
@@ -154,24 +155,17 @@ public class FlagGame extends JavaPlugin {
         debug.endTimer("commands");
 
         // データベース連携
-        debug.startTimer("database");
-        database = new Database(this.getLogger(),
-                config.getMySQLaddress(),
-                config.getMySQLport(),
-                config.getMySQLdbname(),
-                config.getMySQLtablePrefix(),
-                config.getMySQLusername(),
-                config.getMySQLuserpass());
+        /*debug.startTimer("database");
+        database = new MongoDB(this.config);
         try {
             database.connect();
-            database.createStructure();
-        } catch (SQLException ex) {
+        } catch (DatabaseException ex) {
         }
-        new MySQLReconnect(database).runTaskTimer(this, 600000L, 300000L);
-        debug.endTimer("database");
+        this.getServer().getScheduler().runTaskTimer(this, database::tryConnect, 600000L, 300000L);
+        debug.endTimer("database");*/
 
         debug.startTimer("managers");
-        gfm = new StageFileManager(this); // 内部でDB使用
+        gfm = new StageFileManager(this);
 
         pm = new PlayerManager(this);
         rm = new ReceptionManager(this);
@@ -230,6 +224,11 @@ public class FlagGame extends JavaPlugin {
         // メッセージ表示
         PluginDescriptionFile pdfFile = this.getDescription();
         logger.log(Level.INFO, "[{0}] version {1} is disabled!", new Object[]{pdfFile.getName(), pdfFile.getVersion()});
+        
+        try {
+            this.database.close();
+        } catch (DatabaseException ex) {
+        }
     }
 
     /**

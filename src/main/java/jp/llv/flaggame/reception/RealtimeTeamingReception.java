@@ -32,6 +32,9 @@ import jp.llv.flaggame.game.Game;
 import jp.llv.flaggame.game.basic.BasicGame;
 import jp.llv.flaggame.profile.GameRecordStream;
 import jp.llv.flaggame.profile.RecordStream;
+import jp.llv.flaggame.profile.record.PlayerEntryRecord;
+import jp.llv.flaggame.profile.record.PlayerLeaveRecord;
+import jp.llv.flaggame.profile.record.PlayerTeamRecord;
 import jp.llv.flaggame.profile.record.ReceptionCloseRecord;
 import jp.llv.flaggame.profile.record.ReceptionOpenRecord;
 import net.md_5.bungee.api.ChatColor;
@@ -156,6 +159,8 @@ public class RealtimeTeamingReception implements GameReception {
 
         this.players.get(color).add(player);
         player.join(this, args);
+        this.records.push(new PlayerEntryRecord(id, player.getPlayer()));
+        this.records.push(new PlayerTeamRecord(id, player.getPlayer(), color));
         int count = this.players.entrySet().stream().map(Map.Entry::getValue).mapToInt(Set::size).sum();
         GamePlayer.sendMessage(this.plugin.getPlayers(), color.getColor() + player.getName() + "&aが'&6"
                 + this.getName() + "&a'で開催予定のゲームに参加しました(&6" + count + "人目&a)");
@@ -171,6 +176,7 @@ public class RealtimeTeamingReception implements GameReception {
             if (team.contains(player)) {
                 team.remove(player);
                 player.leave(this);
+                this.records.push(new PlayerLeaveRecord(id, player.getPlayer()));
                 GamePlayer.sendMessage(this.plugin.getPlayers(), player.getColoredName() + "&aが'" + this.getName() + "'で開催予定のゲームへのエントリーを取り消しました");
                 return;
             }

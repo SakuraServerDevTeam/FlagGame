@@ -70,6 +70,10 @@ public interface GameReception extends Iterable<GamePlayer> {
     double getMaxAward();
 
     Collection<GamePlayer> getPlayers();
+    
+    default int size() {
+        return this.getPlayers().size();
+    }
 
     default Optional<Class<? extends Game>> getGameType() {
         return  Optional.ofNullable(this.getClass().getAnnotation(ReceptionFor.class)).map(ReceptionFor::value);

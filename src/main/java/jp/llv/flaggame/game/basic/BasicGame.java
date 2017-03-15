@@ -16,23 +16,29 @@
  */
 package jp.llv.flaggame.game.basic;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.OptionalDouble;
+import java.util.OptionalLong;
 import java.util.Queue;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 import jp.llv.flaggame.events.GameStartEvent;
 import jp.llv.flaggame.game.Game;
-import jp.llv.flaggame.profile.GameProfile;
+import jp.llv.flaggame.profile.DeviationBasedExpCalcurator;
+import jp.llv.flaggame.profile.RecordStream;
+import jp.llv.flaggame.profile.record.FlagCaptureRecord;
+import jp.llv.flaggame.profile.record.FlagScoreRecord;
+import jp.llv.flaggame.profile.record.GameStartRecord;
+import jp.llv.flaggame.profile.record.PlayerKillRecord;
+import jp.llv.flaggame.profile.record.PlayerRecord;
 import jp.llv.flaggame.reception.GameReception;
 import jp.llv.flaggame.reception.Team;
 import jp.llv.flaggame.util.MapUtils;
@@ -57,12 +63,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 import syam.flaggame.FlagGame;
-import syam.flaggame.database.RecordType;
 import jp.llv.flaggame.reception.TeamColor;
+import jp.llv.flaggame.util.StreamUtil;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.player.GamePlayer;
 import syam.flaggame.util.Actions;
+import jp.llv.flaggame.profile.ExpCalcurator;
 
 /**
  *
@@ -74,7 +81,6 @@ public class BasicGame implements Game {
     private final GameReception reception;
     private final Stage stage;
     private final Map<TeamColor, Team> teams;
-    private final GameProfile profile;
 
     private final Queue<Runnable> onFinishing = new LinkedList<>();
     private final Set<BossBar> bossbars = new HashSet<>();
@@ -82,7 +88,7 @@ public class BasicGame implements Game {
     private State state = State.PREPARATION;
     private long expectedFinishAt = 0;
 
-    private Team wonTeam = null;
+    private final ExpCalcurator expCalcurator = new DeviationBasedExpCalcurator();
 
     public BasicGame(FlagGame plugin, GameReception reception, Stage stage, Collection<Team> ts) {
         if (plugin == null || reception == null) {
@@ -100,11 +106,14 @@ public class BasicGame implements Game {
         ts.forEach(t -> {
             this.teams.put(t.getColor(), t);
         });
-        this.profile = new GameProfile(reception.getID(), stage.getName());
     }
 
     public BasicGame(FlagGame plugin, GameReception reception, Stage stage, Team... teams) {
         this(plugin, reception, stage, Arrays.asList(teams));
+    }
+
+    public UUID getID() {
+        return this.reception.getID();
     }
 
     @Override
@@ -166,9 +175,11 @@ public class BasicGame implements Game {
     }
 
     private void start() {
-        if (this.state == State.PREPARATION) {
-            this.state = State.STARTED;
+        if (this.state != State.PREPARATION) {
+            throw new IllegalStateException();
         }
+        this.state = State.STARTED;
+        this.getRecordStream().push(new GameStartRecord(this.getID(), this.stage.getName()));
 
         stage.initialize();
 
@@ -279,102 +290,117 @@ public class BasicGame implements Game {
         if (this.state != State.STARTED) {
             throw new IllegalStateException();
         }
-
         this.state = State.FINISHED;
-
         while (!this.onFinishing.isEmpty()) {
             this.onFinishing.poll().run();
         }
 
-        Map<TeamColor, Double> points = new EnumMap<>(TeamColor.class);
-        Map<TeamColor, Integer> flagPoints = new EnumMap<>(TeamColor.class);
-        Map<TeamColor, Integer> kills = new EnumMap<>(TeamColor.class);
-        List<String> msg = new ArrayList<>();
+        // calcurate flag score
+        this.stage.getFlags().entrySet().stream()
+                .filter(e -> e.getValue().getOwner() != null)
+                .map(e -> new FlagScoreRecord(
+                        this.getID(),
+                        this.getRecordStream().stream(FlagCaptureRecord.class).filter(StreamUtil.isLocatedIn(e.getKey())).reduce(StreamUtil.toLastElement()).get().getPlayer(),
+                        e.getValue().getLocation(),
+                        e.getValue().getFlagPoint()
+                )).forEach(this.getRecordStream()::push);
 
-        Map<TeamColor, Map<Byte, Integer>> flagPointsMap = stage.checkFlag();
-        for (TeamColor col : this.stage.getSpawns().keySet()) {
-            int f = flagPointsMap.get(col).entrySet().stream().mapToInt(e -> e.getKey() * e.getValue()).sum();
-            flagPoints.put(col, f);
+        // game point (a player)
+        Map<GamePlayer, Double> points = this.getRecordStream().groupingBy(
+                PlayerRecord.class, r -> getPlayer(r.getPlayer()),
+                Collectors.summingDouble(t -> t.getGamePoint())
+        );
+        OptionalDouble maxPoint = points.entrySet().stream().mapToDouble(Map.Entry::getValue).max();
+        Set<GamePlayer> maxPointers = MapUtils.getKeyByValue(points, maxPoint.orElse(Double.NaN));
+        // game point (a team)
+        Map<TeamColor, Double> teamPoints = MapUtils.remap(points,
+                p -> p.getTeam().get().getColor(),
+                Collectors.summingDouble(d -> d)
+        );
+        OptionalDouble maxTeamPoint = teamPoints.entrySet().stream().mapToDouble(Map.Entry::getValue).max();
+        Set<TeamColor> winnerTeams = MapUtils.getKeyByValue(teamPoints, maxTeamPoint.orElse(Double.NaN));
+        Set<GamePlayer> winnerPlayers = winnerTeams.stream()
+                .flatMap(c -> getTeam(c).getPlayers().stream())
+                .collect(Collectors.toSet());
+        // condition point
+        Map<GamePlayer, Double> conditions = this.getRecordStream().groupingBy(
+                PlayerRecord.class, r -> getPlayer(r.getPlayer()),
+                Collectors.summingDouble(t -> t.getExp(plugin.getConfigs()))
+        ).entrySet().stream()
+                .collect(StreamUtil.deviation(Map.Entry::getValue, (e, v) -> MapUtils.tuple(e.getKey(), v)))
+                .collect(StreamUtil.toMap());
+        // experience point
+        Map<GamePlayer, Double> exps = conditions.entrySet().stream()
+                .map(expCalcurator.calcurate(winnerPlayers, this.stage.getGameTime(), this.reception.size()))
+                .collect(StreamUtil.toMap());
+        OptionalDouble maxExp = exps.entrySet().stream().mapToDouble(Map.Entry::getValue).max();
+        // kill point
+        Map<GamePlayer, Long> kills = this.getRecordStream().groupingBy(
+                PlayerKillRecord.class, r -> getPlayer(r.getPlayer()),
+                Collectors.counting()
+        );
+        OptionalLong maxKills = kills.entrySet().stream().mapToLong(Map.Entry::getValue).max();
+        Set<GamePlayer> maxKillers = MapUtils.getKeyByValue(kills, maxKills.orElse(Long.MIN_VALUE));
+        // capture point
+        Map<GamePlayer, Double> captures = this.getRecordStream().groupingBy(
+                FlagCaptureRecord.class, r -> getPlayer(r.getPlayer()),
+                Collectors.summingDouble(t -> t.getExp(plugin.getConfigs()))
+        );
+        OptionalDouble maxCaptures = captures.entrySet().stream().mapToDouble(Map.Entry::getValue).max();
+        Set<GamePlayer> maxCapturers = MapUtils.getKeyByValue(captures, maxCaptures.orElse(Double.NaN));
 
-            int k = (int) this.profile.kill.entrySet().stream().filter(e -> e.getKey().getTeam().get().getColor() == col)
-                    .mapToDouble(e -> e.getValue()).sum();
-            kills.put(col, k);
-
-            double p = f;
-            points.put(col, p);
-            msg.add(col.getColor() + col.getTeamName() + "チーム得点: &6" + p + col.getColor() + "点&f(フラッグ: " + f + "点)");
+        GamePlayer.sendMessage(this.plugin.getPlayers(), "&2フラッグゲーム'&6" + this.stage.getName() + "&2'が終わりました!");
+        GamePlayer.sendMessage(this.plugin.getPlayers(), teamPoints.entrySet().stream()
+                .map(e -> e.getKey().getRichName() + "得点: &6" + e.getValue() + e.getKey().getColor() + "点")
+                .collect(Collectors.joining(", "))
+        );
+        if (winnerTeams.isEmpty()) {
+            GamePlayer.sendMessage(this.plugin.getPlayers(), "このゲームは引き分けです!");
+        } else {
+            GamePlayer.sendMessage(this.plugin.getPlayers(), winnerTeams.stream()
+                    .map(TeamColor::getRichName)
+                    .collect(Collectors.joining(", ")) + "の勝利です！"
+            );
         }
+
+        if (!maxKillers.isEmpty()) {
+            GamePlayer.sendMessage(this.plugin.getPlayers(),
+                    "&6戦闘狂: "
+                    + maxKillers.stream().map(GamePlayer::getColoredName).collect(Collectors.joining(", "))
+                    + "(&6" + maxKills.getAsLong()+ "kills&f)"
+            );
+        }
+        if (!maxCapturers.isEmpty()) {
+            GamePlayer.sendMessage(this.plugin.getPlayers(),
+                    "&6戦略家: "
+                    + maxCapturers.stream().map(GamePlayer::getColoredName).collect(Collectors.joining(", "))
+                    + "(&6" + maxCaptures.getAsDouble() + "exp&f)"
+            );
+        }
+        if (!maxPointers.isEmpty()) {
+            GamePlayer.sendMessage(this.plugin.getPlayers(),
+                    "&6稼ぎ頭: "
+                    + maxPointers.stream().map(GamePlayer::getColoredName).collect(Collectors.joining(", "))
+                    + "(&6" + maxPoint.getAsDouble() + "points&f)"
+            );
+        }
+
+        points.entrySet().forEach(e -> e.getKey().sendMessage("&aあなたの獲得得点(β): &6" + e.getValue()));
+        exps.entrySet().forEach(e -> e.getKey().sendMessage("&aあなたの経験値(β): &6" + e.getValue()));
 
         this.bossbars.stream().forEach(BossBar::removeAll);
-
-        TeamColor won = null;
-        Map<Double, Set<TeamColor>> rPoints = MapUtils.rank(points, (d1, d2) -> Double.compare(d2, d1));
-        Map.Entry<Double, Set<TeamColor>> first = rPoints.entrySet().iterator().next();
-        if (first.getValue().size() == 1) {
-            won = first.getValue().iterator().next();
-        }
-
-        Map.Entry<Double, Set<GamePlayer>> topKill
-                = MapUtils.rank(this.profile.kill, (i1, i2) -> Double.compare(i2, i1)).entrySet().iterator().next();
-        Map.Entry<Double, Set<GamePlayer>> topDeath
-                = MapUtils.rank(this.profile.death, (i1, i2) -> Double.compare(i2, i1)).entrySet().iterator().next();
-        Map.Entry<Double, Set<GamePlayer>> topCapture
-                = MapUtils.rank(this.profile.capture, (i1, i2) -> Double.compare(i2, i1)).entrySet().iterator().next();
-
-        GamePlayer.sendMessage(this.plugin.getPlayers(),
-                "&2フラッグゲーム'&6" + this.stage.getName() + "&2'が終わりました!",
-                String.join("&f, ", msg),
-                won != null
-                        ? won.getColor() + won.getTeamName() + "チームの勝利です!"
-                        : "このゲームは引き分けです!",
-                "&6トップキル: " + (topKill != null ? (topKill.getValue().stream().map(GamePlayer::getColoredName)
-                        .collect(Collectors.joining("&f, ")) + "&f (&6" + topKill.getKey() + "Kills&f)") : "&fNone"),
-                "&6トップデス: " + (topDeath != null ? (topDeath.getValue().stream().map(GamePlayer::getColoredName)
-                        .collect(Collectors.joining("&f, ")) + "&f (&6" + topDeath.getKey() + "Deaths&f)") : "&fNone"),
-                "&6トップキャプチャ: " + (topCapture != null ? (topCapture.getValue().stream().map(GamePlayer::getColoredName)
-                        .collect(Collectors.joining("&f, ")) + "&f (&6" + topCapture.getKey() + "Points&f)") : "&fNone")
-        );
-
-        for (GamePlayer g : this.getReception().getPlayers()) {
-            if (!g.getPlayer().isOnline()) {
-                this.plugin.getDatabases().ifPresent(db -> {
-                    try {
-                        db.write(RecordType.EXIT, this.reception.getID(), g.getUUID());
-                    } catch (SQLException ex) {
-                    }
-                });
-            } else {
-                g.getPlayer().teleport(this.stage.getSpawn(g.getTeam().get().getColor()));
-                g.getPlayer().getInventory().clear();
-                g.resetTabName();
-                if (won == null) {
-                    this.plugin.getDatabases().ifPresent(db -> {
-                        try {
-                            db.write(RecordType.DRAW, this.reception.getID(), g.getUUID());
-                        } catch (SQLException ex) {
-                        }
-                    });
-                } else if (g.getTeam().get().getColor() == won) {
-                    this.plugin.getDatabases().ifPresent(db -> {
-                        try {
-                            db.write(RecordType.WIN, this.reception.getID(), g.getUUID());
-                        } catch (SQLException ex) {
-                        }
-                    });
-                } else {
-                    this.plugin.getDatabases().ifPresent(db -> {
-                        try {
-                            db.write(RecordType.LOSE, this.reception.getID(), g.getUUID());
-                        } catch (SQLException ex) {
-                        }
-                    });
-                }
-            }
-        }
 
         this.plugin.getServer().getPluginManager()
                 .callEvent(new jp.llv.flaggame.events.GameFinishedEvent(this));
 
+
+        for (GamePlayer g : this.reception.getPlayers()) {
+            if (g.getPlayer().isOnline()) {
+                g.getPlayer().teleport(this.stage.getSpawn(g.getTeam().get().getColor()));
+                g.getPlayer().getInventory().clear();
+                g.resetTabName();
+            }
+        }
         this.reception.close("The game finished");
     }
 
@@ -399,7 +425,7 @@ public class BasicGame implements Game {
         }
 
         GamePlayer.sendMessage(this.reception.getPlayers(), "&2フラッグゲーム'&6" + this.stage.getName() + "&2'は強制終了されました: "
-                + message);
+                                                            + message);
 
         this.reception.close("The game finished");
     }
@@ -443,12 +469,12 @@ public class BasicGame implements Game {
         return this.state;
     }
 
-    public Team getWonTeam() {
-        return this.wonTeam;
+    public RecordStream getRecordStream() {
+        return this.reception.getRecordStream();
     }
 
-    protected GameProfile getProfile() {
-        return profile;
+    private GamePlayer getPlayer(UUID uuid) {
+        return this.plugin.getPlayers().getPlayer(uuid);
     }
 
 }

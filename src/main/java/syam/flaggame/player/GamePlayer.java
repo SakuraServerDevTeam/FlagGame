@@ -69,7 +69,7 @@ public class GamePlayer {
     }
 
     public String getColoredName() {
-        return this.getTeam().map(Team::getColor).map(TeamColor::getColor).orElse("&f") + this.getName();
+        return this.getTeam().map(Team::getColor).map(TeamColor::getColor).orElse("&f") + this.getName() + "&r";
     }
 
     public UUID getUUID() {

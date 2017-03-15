@@ -47,7 +47,7 @@ public class ConfigurationManager {
     private static final List<String> DEFAULT_DISABLED_COMMANDS = Arrays.asList("/spawn", "/home", "/setspawn");
     private static final List<String> DEFAULT_PERMISSIONS = Arrays.asList("vault","superperms","ops");
 
-    private static final double VERSION = 0.4D;
+    private static final double VERSION = 0.5D;
     
     private final JavaPlugin plugin;
     private final File pluginDir;
@@ -67,12 +67,11 @@ public class ConfigurationManager {
     private int godModeTime = 4;
     private List<String> disableCommands = new ArrayList<>(DEFAULT_DISABLED_COMMANDS);
     /* MySQL Configs */
-    private String mysqlAddress = "localhost";
-    private int mysqlPort = 3306;
-    private String mysqlDBName = "DatabaseName";
-    private String mysqlUserName = "UserName";
-    private String mysqlUserPass = "UserPassword";
-    private String mysqlTablePrefix = "flaggame_";
+    private String dbAddress = "localhost";
+    private int dbPort = 3306;
+    private String dbDatabaseName = "DatabaseName";
+    private String dbUserName = "UserName";
+    private String dbUserPassword = "UserPassword";
     /* Logging Configs */
     private String detailDirectory = DEFAULT_DETAIL_DIRECTORY;
     /* Permissions Configs */
@@ -81,8 +80,9 @@ public class ConfigurationManager {
     private double scoreGameJoin, scoreGameExit,
             scoreCombatKill, scoreCombatDeath,
             scoreFlagPlace, scoreFlagBreak, scoreFlagLastPlace,
-            scoreBannerDeploy, scoreBannerBreak, scoreBannerKeep,
-            scoreNexusBreak;
+            scoreBannerDeploy, scoreBannerBreak, scoreBannerSteal, scoreBannerKeep,
+            scoreNexusBreak,
+            scoreRate;
 
     /**
      * コンストラクタ
@@ -131,12 +131,11 @@ public class ConfigurationManager {
         godModeTime = plugin.getConfig().getInt("RespawnGodModeTime", 4);
         disableCommands = plugin.getConfig().getStringList("DisableCommands");
         /* MySQL Configs */
-        mysqlAddress = plugin.getConfig().getString("MySQL.Server.Address", "localhost");
-        mysqlPort = plugin.getConfig().getInt("MySQL.Server.Port", 3306);
-        mysqlDBName = plugin.getConfig().getString("MySQL.Database.Name", "DatabaseName");
-        mysqlUserName = plugin.getConfig().getString("MySQL.Database.User_Name", "Username");
-        mysqlUserPass = plugin.getConfig().getString("MySQL.Database.User_Password", "UserPassword");
-        mysqlTablePrefix = plugin.getConfig().getString("MySQL.Database.TablePrefix", "flaggame_");
+        dbAddress = plugin.getConfig().getString("Database.Address", "localhost");
+        dbPort = plugin.getConfig().getInt("Database.Port", 27017);
+        dbDatabaseName = plugin.getConfig().getString("Database.Name", "flaggame");
+        dbUserName = plugin.getConfig().getString("Database.User_Name", null);
+        dbUserPassword = plugin.getConfig().getString("Database.User_Password", null);
         /* Logging Configs */
         detailDirectory = plugin.getConfig().getString("DetailDirectory", DEFAULT_DETAIL_DIRECTORY);
         /* Permissions Configs */
@@ -148,15 +147,17 @@ public class ConfigurationManager {
         /* Score weight configs */
         scoreGameJoin = plugin.getConfig().getDouble("score.game.join", 10.0);
         scoreGameExit = plugin.getConfig().getDouble("score.game.exit", -10.0);
-        scoreCombatKill = plugin.getConfig().getDouble("score.combat.kill", 1.0);
-        scoreCombatDeath = plugin.getConfig().getDouble("score.combat.death", -1.0);
+        scoreCombatKill = plugin.getConfig().getDouble("score.combat.kill", 0.5);
+        scoreCombatDeath = plugin.getConfig().getDouble("score.combat.death", 0.0);
         scoreFlagPlace = plugin.getConfig().getDouble("score.flag.place", 1.0);
         scoreFlagBreak = plugin.getConfig().getDouble("score.flag.break", 1.0);
         scoreFlagLastPlace = plugin.getConfig().getDouble("score.flag.last_place", 5.0);
-        scoreBannerDeploy = plugin.getConfig().getDouble("score.banner.deploy", 5.0);
-        scoreBannerKeep = plugin.getConfig().getDouble("score.banner.get", 3.0);
-        scoreBannerBreak = plugin.getConfig().getDouble("score.banner.keep", 7.5);
-        scoreNexusBreak = plugin.getConfig().getDouble("score.nexus.break", 0.75);
+        scoreBannerDeploy = plugin.getConfig().getDouble("score.banner.deploy", 3.0);
+        scoreBannerKeep = plugin.getConfig().getDouble("score.banner.get", 0.1);
+        scoreBannerSteal = plugin.getConfig().getDouble("score.banner.steal", 0.25);
+        scoreBannerBreak = plugin.getConfig().getDouble("score.banner.keep", 3.0);
+        scoreNexusBreak = plugin.getConfig().getDouble("score.nexus.break", 1.0);
+        scoreRate = plugin.getConfig().getDouble("score.rate", 5.0);
 
         // ワールドチェック 見つからなければプラグイン無効化
         if (Bukkit.getWorld(gameWorld) == null) {
@@ -221,28 +222,24 @@ public class ConfigurationManager {
     }
 
     /* MySQL Configs */
-    public String getMySQLaddress() {
-        return this.mysqlAddress;
+    public String getDatabaseAddress() {
+        return this.dbAddress;
     }
 
-    public int getMySQLport() {
-        return this.mysqlPort;
+    public int getDatabasePort() {
+        return this.dbPort;
     }
 
-    public String getMySQLdbname() {
-        return this.mysqlDBName;
+    public String getDatabaseDbname() {
+        return this.dbDatabaseName;
     }
 
-    public String getMySQLusername() {
-        return this.mysqlUserName;
+    public String getDatabaseUsername() {
+        return this.dbUserName;
     }
 
-    public String getMySQLuserpass() {
-        return this.mysqlUserPass;
-    }
-
-    public String getMySQLtablePrefix() {
-        return this.mysqlTablePrefix;
+    public String getDatabaseUserpass() {
+        return this.dbUserPassword;
     }
 
     /* Logging Configs */
@@ -295,8 +292,16 @@ public class ConfigurationManager {
         return scoreBannerKeep;
     }
 
+    public double getScoreBannerSteal() {
+        return scoreBannerSteal;
+    }
+
     public double getScoreNexusBreak() {
         return scoreNexusBreak;
+    }
+
+    public double getScoreRate() {
+        return scoreRate;
     }
 
     // 設定 getter ここまで

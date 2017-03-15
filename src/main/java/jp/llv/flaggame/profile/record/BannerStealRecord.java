@@ -20,32 +20,38 @@ import java.util.UUID;
 import org.bson.Document;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import syam.flaggame.ConfigurationManager;
 
 /**
  *
  * @author toyblocks
  */
-public class BannerScoreRecord extends ScoreRecord {
+public class BannerStealRecord extends ScoreRecord {
 
-    public BannerScoreRecord(UUID game, double x, double y, double z, UUID player, double score) {
+    public BannerStealRecord(UUID game, double x, double y, double z, UUID player, double score) {
         super(game, x, y, z, player, score);
     }
 
-    public BannerScoreRecord(UUID game, UUID player, Location location, double score) {
+    public BannerStealRecord(UUID game, UUID player, Location location, double score) {
         super(game, player, location, score);
     }
 
-    public BannerScoreRecord(UUID game, Player player, double score) {
+    public BannerStealRecord(UUID game, Player player, double score) {
         super(game, player, score);
     }
 
-    public BannerScoreRecord(Document base) {
+    public BannerStealRecord(Document base) {
         super(base);
     }
 
     @Override
     public RecordType getType() {
-        return RecordType.BANNER_SCORE;
+        return RecordType.BANNER_STEAL;
+    }
+
+    @Override
+    public double getExp(ConfigurationManager config) {
+        return getScore() * config.getScoreBannerSteal();
     }
     
 }

@@ -18,7 +18,9 @@ package jp.llv.flaggame.profile.record;
 
 import java.util.UUID;
 import org.bson.Document;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import syam.flaggame.ConfigurationManager;
 
 /**
  *
@@ -30,6 +32,11 @@ public class NexusBreakRecord extends ScoreRecord {
         super(game, x, y, z, player, score);
     }
 
+    public NexusBreakRecord(UUID game, UUID player, Location location, double score) {
+        super(game, player, location, score);
+    }
+
+    @Deprecated
     public NexusBreakRecord(UUID game, Player player, double score) {
         super(game, player, score);
     }
@@ -41,6 +48,16 @@ public class NexusBreakRecord extends ScoreRecord {
     @Override
     public RecordType getType() {
         return RecordType.NEXUS_BREAK;
+    }
+
+    @Override
+    public double getGamePoint() {
+        return getScore();
+    }
+
+    @Override
+    public double getExp(ConfigurationManager config) {
+        return getScore() * config.getScoreNexusBreak();
     }
 
 }

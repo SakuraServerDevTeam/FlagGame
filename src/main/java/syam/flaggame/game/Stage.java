@@ -191,30 +191,6 @@ public class Stage {
         slots.forEach(s -> this.bannerSlots.put(s.getLocation(), s));
     }
 
-    /**
-     * すべてのフラッグの状態をチェックする
-     *
-     * @return {@code Map<FlagState, HashMap<FlagType, Integer>>}
-     */
-    public Map<TeamColor, Map<Byte, Integer>> checkFlag() {
-        // 各チームのポイントを格納する
-        Map<TeamColor, Map<Byte, Integer>> ret = new EnumMap<>(TeamColor.class);
-        for (TeamColor c : this.getSpawns().keySet()) {
-            ret.put(c, new HashMap<>());
-        }
-        // 全フラッグを回す
-        flags.values().forEach(flag -> {
-            TeamColor state = flag.getOwner(); // フラッグの現在状態
-            if (state == null) {
-                return;
-            }
-            Map<Byte, Integer> score = ret.get(state);
-            Integer count = score.get(flag.getFlagPoint());
-            score.put(flag.getFlagPoint(), count != null ? count + 1 : 1);
-        });
-        return ret;
-    }
-
     /* ***** チェスト関係 ***** */
     /**
      * チェストを設定する

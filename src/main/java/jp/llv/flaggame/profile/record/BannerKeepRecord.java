@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Toyblocks, SakuraServerDev
+ * Copyright (C) 2017 toyblocks
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,29 +18,45 @@ package jp.llv.flaggame.profile.record;
 
 import java.util.UUID;
 import org.bson.Document;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import syam.flaggame.ConfigurationManager;
 
 /**
  *
- * @author Toyblocks, SakuraServerDev
+ * @author toyblocks
  */
-public class BannerHoldRecord extends ScoreRecord {
+public class BannerKeepRecord extends ScoreRecord {
 
-    public BannerHoldRecord(UUID game, double x, double y, double z, UUID player, double score) {
+    public BannerKeepRecord(UUID game, double x, double y, double z, UUID player, double score) {
         super(game, x, y, z, player, score);
     }
 
-    public BannerHoldRecord(UUID game, Player player, double score) {
+    public BannerKeepRecord(UUID game, UUID player, Location location, double score) {
+        super(game, player, location, score);
+    }
+
+    public BannerKeepRecord(UUID game, Player player, double score) {
         super(game, player, score);
     }
 
-    /*package*/ BannerHoldRecord(Document base) {
+    public BannerKeepRecord(Document base) {
         super(base);
     }
 
     @Override
     public RecordType getType() {
-        return RecordType.BANNER_HOLD;
+        return RecordType.BANNER_KEEP;
     }
 
+    @Override
+    public double getGamePoint() {
+        return getScore();
+    }
+
+    @Override
+    public double getExp(ConfigurationManager config) {
+        return getScore() * config.getScoreBannerKeep();
+    }
+    
 }

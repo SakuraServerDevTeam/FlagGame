@@ -33,6 +33,9 @@ import syam.flaggame.FlagGame;
 import jp.llv.flaggame.reception.TeamColor;
 import jp.llv.flaggame.game.basic.objective.Flag;
 import jp.llv.flaggame.game.basic.objective.Nexus;
+import jp.llv.flaggame.profile.record.FlagBreakRecord;
+import jp.llv.flaggame.profile.record.FlagCaptureRecord;
+import jp.llv.flaggame.profile.record.NexusBreakRecord;
 import org.bukkit.Material;
 import syam.flaggame.player.GamePlayer;
 
@@ -107,7 +110,13 @@ public class BGBlockListener extends BGListener {
         GamePlayer.sendMessage(placerTeam, gplayer.getColoredName() + "&aが&6" + f.getTypeName() + "pフラッグ&aを獲得しました!");
         this.game.getTeams().stream().filter(team -> team != placerTeam)
                 .forEach(team -> GamePlayer.sendMessage(team,
-                                gplayer.getColoredName() + "&aに&6" + f.getTypeName() + "pフラッグ&aを獲得されました!"));
+                        gplayer.getColoredName() + "&aに&6" + f.getTypeName() + "pフラッグ&aを獲得されました!"));
+        game.getRecordStream().push(new FlagCaptureRecord(
+                game.getID(),
+                event.getPlayer().getUniqueId(),
+                event.getBlock().getLocation(),
+                f.getFlagPoint()
+        ));
 
         if (plugin.getConfigs().getUseFlagEffects()) {
             Location loc = b.getLocation();
@@ -115,9 +124,9 @@ public class BGBlockListener extends BGListener {
             loc.getWorld().playEffect(loc, Effect.SMOKE, 4, 2);
         }
     }
-    
+
     private void placeBanner(GamePlayer gplayer, BannerSlot s, BlockPlaceEvent event) {
-        
+
     }
 
     private void breakFlag(GamePlayer gplayer, Flag f, BlockBreakEvent event) {
@@ -136,7 +145,13 @@ public class BGBlockListener extends BGListener {
                 gplayer.getColoredName() + "&aが" + placedTeamColor.getTeamName() + "チームの&6" + f.getTypeName() + "pフラッグ&aを破壊しました!");
         this.game.getTeams().stream().filter(team -> team.getColor() == placedTeamColor)
                 .forEach(team -> GamePlayer.sendMessage(team,
-                                gplayer.getColoredName() + "&aに&6" + f.getTypeName() + "pフラッグ&aを破壊されました!"));
+                        gplayer.getColoredName() + "&aに&6" + f.getTypeName() + "pフラッグ&aを破壊されました!"));
+        game.getRecordStream().push(new FlagBreakRecord(
+                game.getID(),
+                event.getPlayer().getUniqueId(),
+                event.getBlock().getLocation(),
+                f.getFlagPoint()
+        ));
 
         if (plugin.getConfigs().getUseFlagEffects()) {
             Location loc = event.getBlock().getLocation();
@@ -147,18 +162,29 @@ public class BGBlockListener extends BGListener {
 
     private void breakNexus(GamePlayer gplayer, Nexus f, BlockBreakEvent event) {
         Team breaker = gplayer.getTeam().get();
-        Team broken = gplayer.getGame().get().getTeam(f.getColor());
+        Team broken = null;
+        if (f.getColor() != null) {
+            broken = gplayer.getGame().get().getTeam(f.getColor());
+        }
+
         if (breaker == broken) {
             gplayer.sendMessage("&c味方チームの目標は破壊できません!");
             return;
         }
-        
+
         GamePlayer.sendMessage(breaker,
                 gplayer.getColoredName() + "&aが" + breaker.getColor().getRichName() + "の&6" + f.getPoint() + "p目標&aを破壊しました!");
-        GamePlayer.sendMessage(broken, 
-                gplayer.getColoredName() + "&aに" + f.getPoint() + "p目標&aを破壊されました!");
-        
-        
+        if (f.getColor() != null) {
+            GamePlayer.sendMessage(broken,
+                    gplayer.getColoredName() + "&aに" + f.getPoint() + "p目標&aを破壊されました!");
+        }
+        game.getRecordStream().push(new NexusBreakRecord(
+                game.getID(), 
+                event.getPlayer().getUniqueId(), 
+                event.getBlock().getLocation(), 
+                f.getPoint()
+        ));
+
         if (plugin.getConfigs().getUseFlagEffects()) {
             Location loc = event.getBlock().getLocation();
             loc.getWorld().createExplosion(loc, 0F, false);

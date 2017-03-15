@@ -20,6 +20,7 @@ import java.util.UUID;
 import org.bson.Document;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import syam.flaggame.ConfigurationManager;
 
 /**
  *
@@ -46,6 +47,16 @@ public class FlagScoreRecord extends ScoreRecord {
     @Override
     public RecordType getType() {
         return RecordType.FLAG_SCORE;
+    }
+
+    @Override
+    public double getGamePoint() {
+        return getScore();
+    }
+
+    @Override
+    public double getExp(ConfigurationManager config) {
+        return getScore() * config.getScoreFlagLastPlace();
     }
     
 }

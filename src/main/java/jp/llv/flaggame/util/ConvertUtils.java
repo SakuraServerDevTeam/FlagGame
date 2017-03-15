@@ -16,9 +16,7 @@
  */
 package jp.llv.flaggame.util;
 
-import java.nio.ByteBuffer;
 import java.text.DecimalFormat;
-import java.util.UUID;
 
 /**
  *
@@ -41,10 +39,22 @@ public final class ConvertUtils {
         return timeinms / 50;
     }
     
-    public static byte[] toByteArray(UUID uuid) {
-        return ByteBuffer.allocate(16)
-                .putLong(uuid.getMostSignificantBits()).putLong(uuid.getLeastSignificantBits())
-                .array();
+    public static String smartRound(double value) {
+        char[] chars = Double.toString(value).toCharArray();
+        StringBuilder result = new StringBuilder();
+        int count = -1;
+        for (char c : chars) {
+            if (c== '.' || (count >= 0 && c == '0')) {
+                count++;
+            } else if (count >= 0) {
+                count = 0;
+            }
+            if (count == 2) {
+                break;
+            }
+            result.append(c);
+        }
+        return result.toString();
     }
     
 }

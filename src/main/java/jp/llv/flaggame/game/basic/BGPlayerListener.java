@@ -18,6 +18,10 @@ package jp.llv.flaggame.game.basic;
 
 import java.util.Collection;
 import jp.llv.flaggame.game.basic.objective.Flag;
+import jp.llv.flaggame.profile.record.LoginRecord;
+import jp.llv.flaggame.profile.record.PlayerDeathRecord;
+import jp.llv.flaggame.profile.record.PlayerKillRecord;
+import jp.llv.flaggame.profile.record.PlayerLeaveRecord;
 import jp.llv.flaggame.reception.Team;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -47,6 +51,7 @@ import syam.flaggame.game.Stage;
 import syam.flaggame.player.GamePlayer;
 import syam.flaggame.util.Actions;
 import jp.llv.flaggame.util.StringUtil;
+import org.bukkit.event.player.PlayerJoinEvent;
 
 /**
  *
@@ -75,7 +80,7 @@ public class BGPlayerListener extends BGListener {
 
         Block block = event.getClickedBlock();
         if (!(block.getState() instanceof InventoryHolder)
-                && !(block.getState().getData() instanceof Openable)) {
+            && !(block.getState().getData() instanceof Openable)) {
             return;
         }
 
@@ -172,7 +177,6 @@ public class BGPlayerListener extends BGListener {
             gkiller = null;
         }
 
-        Team killedTeam = gkilled.getTeam().get();
         Team killerTeam = gkiller != null ? gkiller.getTeam().get() : null;
 
         //Keep exp level in order to keep score
@@ -181,14 +185,26 @@ public class BGPlayerListener extends BGListener {
         String message;
         if (gkilled == gkiller || gkiller == null || killerTeam == null) { //自殺
             message = gkilled.getColoredName() + "&6が&b"
-                    + (weapon != null ? weapon + "&6で" : "&6") + "自殺しました!";
+                      + (weapon != null ? weapon + "&6で" : "&6") + "自殺しました!";
         } else {
             event.getDrops().stream().filter((is) -> (Flag.isFlag(is.getType()) && Math.random() < WOOL_REPAINT_PCT))
                     .forEach(is -> is.setData(new MaterialData(killerTeam.getColor().getBlockData())));
             message = gkilled.getColoredName() + "&6が" + gkiller.getColoredName() + "&6に&b"
-                    + (weapon != null ? weapon + "&6で" : "&6") + "殺されました!";
+                      + (weapon != null ? weapon + "&6で" : "&6") + "殺されました!";
+            game.getRecordStream().push(new PlayerKillRecord(game.getID(), killer, game.getStage().getKillScore(), killed.getUniqueId(), weapon));
         }
+        game.getRecordStream().push(new PlayerDeathRecord(game.getID(), killed, game.getStage().getDeathScore()));
         GamePlayer.sendMessage(this.plugin.getPlayers().getPlayersIn(killed.getWorld()), message);
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onPlayerJoin(final PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+        GamePlayer gplayer = this.plugin.getPlayers().getPlayer(player);
+        if (!this.players.contains(gplayer)) {
+            return;
+        }
+        game.getRecordStream().push(new LoginRecord(game.getID(), player));
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -198,37 +214,13 @@ public class BGPlayerListener extends BGListener {
         if (!this.players.contains(gplayer)) {
             return;
         }
-
+        game.getRecordStream().push(new PlayerLeaveRecord(game.getID(), player));
         if (!plugin.getConfigs().getDeathWhenLogout()) {
             return;
         }
-
+        player.setHealth(0D);
         String message = gplayer.getColoredName() + "&6がログアウトしたため死亡しました";
         GamePlayer.sendMessage(this.plugin.getPlayers().getPlayersIn(player.getWorld()), message);
-    }
-
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onPlayerDamage(EntityDamageByEntityEvent event) {
-        if (!(event.getEntity() instanceof Player)) {
-            return;
-        }
-        Player player = (Player) event.getEntity();
-        GamePlayer gplayer = this.plugin.getPlayers().getPlayer(player);
-        if (!this.players.contains(gplayer)
-                || !this.game.getStage().getBase(gplayer.getTeam().get().getColor()).isIn(player.getLocation())) {
-            return;
-        }
-        event.setCancelled(true);
-
-        Player damager;
-        if (event.getDamager() instanceof Player) {
-            damager = (Player) event.getDamager();
-        } else if (event.getDamager() instanceof Projectile && ((Projectile) event.getDamager()).getShooter() instanceof Player) {
-            damager = (Player) ((Projectile) event.getDamager()).getShooter();
-        } else {
-            return;
-        }
-        damager.damage(event.getDamage(), player);
     }
 
     private static boolean canUseBlockAt(GamePlayer player, Location loc) {

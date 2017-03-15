@@ -1,5 +1,5 @@
-/* 
- * Copyright (C) 2017 Toyblocks, SakuraServerDev
+/*
+ * Copyright (C) 2017 toyblocks
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,23 +16,19 @@
  */
 package jp.llv.flaggame.util;
 
-import org.bukkit.DyeColor;
-import org.bukkit.block.Banner;
-import org.bukkit.block.banner.Pattern;
-import org.bukkit.block.banner.PatternType;
 
 /**
+ * Represents a function that accepts two arguments including double
+ * value and produces a result. 
+ * This is the three-arity specialization of {@link java.util.function.Function}.
  *
  * @author Toyblocks
+ * @param <T> the type of the first argument to the function
+ * @param <R> the type of the result of the function
  */
-public final class BlockUtils {
+@FunctionalInterface
+public interface BiDoubleFunction<T, R> {
     
-    private BlockUtils() {
-        throw new RuntimeException();
-    }
-    
-    public static void print(Banner banner) {
-        banner.addPattern(new Pattern(DyeColor.WHITE, PatternType.BASE));
-    }
+    R apply(T t1, double t2);
     
 }
