@@ -196,7 +196,6 @@ public class FGPlayerListener implements Listener {
                         return;
                     }
                     Actions.message(player, "&aステージ'" + stage.getName() + "'の"
-                            + (sess.getSelectedColor() != null ? sess.getSelectedColor().getRichName() : "全チーム") + "&aの"
                             + sess.getSelectedPoint() + "ポイントバナースポナーを登録しました！");
                     break;
                 // チェストモード
