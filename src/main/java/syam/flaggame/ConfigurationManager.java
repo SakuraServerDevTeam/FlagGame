@@ -162,7 +162,7 @@ public class ConfigurationManager {
         // ワールドチェック 見つからなければプラグイン無効化
         if (Bukkit.getWorld(gameWorld) == null) {
             logger.log(Level.WARNING,LOG_PREFIX + "World {0} is Not Found! Disabling plugin..", gameWorld);
-            throw new IllegalStateException();
+            throw new IllegalStateException("Game world not found; configuration required");
         }
 
         // 詳細ログ用ディレクトリ作成
