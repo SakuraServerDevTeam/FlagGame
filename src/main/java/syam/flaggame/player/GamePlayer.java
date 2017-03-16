@@ -206,14 +206,18 @@ public class GamePlayer {
         return Objects.equals(this.player, other.player);
     }
 
-    public void sendMessage(String... messages) {
+    public void sendMessage(ChatMessageType type, String ... messages) {
         if (!this.isOnline()) {
             return;
         }
         Player p = this.getPlayer();
         for (String message : messages) {
-            Actions.sendPrefixedMessage(p, message);
+            Actions.sendPrefixedMessage(p, type, message);
         }
+    }
+    
+    public void sendMessage(String... messages) {
+        sendMessage(ChatMessageType.CHAT, messages);
     }
 
     public void sendMessage(ChatMessageType type, BaseComponent... message) {

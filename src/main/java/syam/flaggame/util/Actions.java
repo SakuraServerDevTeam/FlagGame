@@ -62,16 +62,35 @@ public class Actions {
         }
     }
 
+    public static void message(CommandSender sender, ChatMessageType type, String message) {
+        if (message != null && sender != null) {
+            message = message.replaceAll("&([0-9a-fk-or])", "\u00A7$1");
+            if (sender instanceof Player) {
+                ((Player) sender).spigot().sendMessage(type, TextComponent.fromLegacyText(message));
+            } else {
+                sender.sendMessage(message);
+            }
+        }
+    }
+
     public static void sendPrefixedMessage(CommandSender sender, String message) {
         message(sender, MESSAGE_PREFIX + "\u00A7r" + message);
     }
 
     public static void sendPrefixedMessage(CommandSender sender, ChatMessageType type, BaseComponent... message) {
-        BaseComponent[] prefix = TextComponent.fromLegacyText(MESSAGE_PREFIX.replaceAll("&([0-9a-fk-or])", "\u00A7$1"));
-        BaseComponent[] concat = new BaseComponent[prefix.length + message.length];
-        System.arraycopy(prefix, 0, concat, 0, prefix.length);
-        System.arraycopy(message, 0, concat, prefix.length, message.length);
-        message(sender, type, concat);
+        if (type == ChatMessageType.CHAT) {
+            BaseComponent[] prefix = TextComponent.fromLegacyText(MESSAGE_PREFIX.replaceAll("&([0-9a-fk-or])", "\u00A7$1"));
+            BaseComponent[] concat = new BaseComponent[prefix.length + message.length];
+            System.arraycopy(prefix, 0, concat, 0, prefix.length);
+            System.arraycopy(message, 0, concat, prefix.length, message.length);
+            message(sender, type, concat);
+        } else {
+            message(sender, type, message);
+        }
+    }
+    
+    public static void sendPrefixedMessage(CommandSender sender, ChatMessageType type, String message) {
+        sendPrefixedMessage(sender, type, TextComponent.fromLegacyText(message));
     }
 
     // ユーティリティ
