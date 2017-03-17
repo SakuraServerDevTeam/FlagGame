@@ -73,6 +73,7 @@ import syam.flaggame.game.Stage;
 import syam.flaggame.player.GamePlayer;
 import syam.flaggame.util.Actions;
 import jp.llv.flaggame.profile.ExpCalcurator;
+import jp.llv.flaggame.profile.record.BannerKeepRecord;
 
 /**
  *
@@ -308,6 +309,11 @@ public class BasicGame implements Game {
                         e.getValue().getLocation(),
                         e.getValue().getFlagPoint()
                 )).forEach(this.getRecordStream()::push);
+        // calcurate banner score
+        if (stage.getBannerSlots().isEmpty()) {
+            heldBanners.entrySet().stream().forEach(e -> getRecordStream().push(
+                    new BannerKeepRecord(getID(), e.getKey().getPlayer(), e.getValue().getPoint())));
+        }
 
         // game point (a player)
         Map<GamePlayer, Double> points = this.getRecordStream().groupingBy(
@@ -463,7 +469,7 @@ public class BasicGame implements Game {
         }
         this.heldBanners.put(player, banner);
     }
-    
+
     public Optional<HeldBanner> getBannerHeld(GamePlayer player) {
         if (this.heldBanners.containsKey(player)) {
             return Optional.of(heldBanners.get(player));
@@ -471,7 +477,7 @@ public class BasicGame implements Game {
             return Optional.empty();
         }
     }
-    
+
     public void clearBannerHeld(GamePlayer player) {
         this.heldBanners.remove(player);
     }
