@@ -103,16 +103,17 @@ public class BGBlockListener extends BGListener {
         TeamColor placedTeamColor = TeamColor.getByColorData(b.getData());
 
         if (placedTeamColor != placerTeam.getColor()) {
-            gplayer.sendMessage("&c味方チーム以外のフラッグは設置できません!");
+            gplayer.sendMessage(ChatMessageType.ACTION_BAR, "&c味方チーム以外のフラッグは設置できません!");
             event.setCancelled(true);
             return;
         }
 
         event.setCancelled(false);
 
-        GamePlayer.sendMessage(placerTeam, gplayer.getColoredName() + "&aが&6" + f.getTypeName() + "pフラッグ&aを獲得しました!");
+        GamePlayer.sendMessage(placerTeam, ChatMessageType.ACTION_BAR,
+                gplayer.getColoredName() + "&aが&6" + f.getTypeName() + "pフラッグ&aを獲得しました!");
         this.game.getTeams().stream().filter(team -> team != placerTeam)
-                .forEach(team -> GamePlayer.sendMessage(team,
+                .forEach(team -> GamePlayer.sendMessage(team, ChatMessageType.ACTION_BAR,
                         gplayer.getColoredName() + "&aに&6" + f.getTypeName() + "pフラッグ&aを獲得されました!"));
         game.getRecordStream().push(new FlagCaptureRecord(
                 game.getID(),
@@ -147,7 +148,7 @@ public class BGBlockListener extends BGListener {
         GamePlayer.sendMessage(game.getPlayersNotIn(gplayer.getTeam().get()), ChatMessageType.ACTION_BAR,
                 gplayer.getColoredName() + "&aに&6"
                 + banner.getPoint() + "pバナー&aを設置されました！");
-        
+
         banner.destroy().forEach(BannerSpawner::spawnBanner);
         game.clearBannerHeld(gplayer);
         game.getRecordStream().push(new BannerDeployRecord(
@@ -168,17 +169,17 @@ public class BGBlockListener extends BGListener {
         @SuppressWarnings("deprecation")
         TeamColor placedTeamColor = TeamColor.getByColorData(event.getBlock().getData());
         if (placerTeam.getColor() == placedTeamColor) {
-            gplayer.sendMessage("&c味方チームのフラッグは破壊できません!");
+            gplayer.sendMessage(ChatMessageType.ACTION_BAR, "&c味方チームのフラッグは破壊できません!");
             event.setCancelled(true);
             return;
         }
 
         event.setCancelled(false);
 
-        GamePlayer.sendMessage(placerTeam,
+        GamePlayer.sendMessage(placerTeam, ChatMessageType.ACTION_BAR,
                 gplayer.getColoredName() + "&aが" + placedTeamColor.getTeamName() + "チームの&6" + f.getTypeName() + "pフラッグ&aを破壊しました!");
         this.game.getTeams().stream().filter(team -> team.getColor() == placedTeamColor)
-                .forEach(team -> GamePlayer.sendMessage(team,
+                .forEach(team -> GamePlayer.sendMessage(team, ChatMessageType.ACTION_BAR,
                         gplayer.getColoredName() + "&aに&6" + f.getTypeName() + "pフラッグ&aを破壊されました!"));
         game.getRecordStream().push(new FlagBreakRecord(
                 game.getID(),
@@ -202,14 +203,14 @@ public class BGBlockListener extends BGListener {
         }
 
         if (breaker == broken) {
-            gplayer.sendMessage("&c味方チームの目標は破壊できません!");
+            gplayer.sendMessage(ChatMessageType.ACTION_BAR, "&c味方チームの目標は破壊できません!");
             return;
         }
 
-        GamePlayer.sendMessage(breaker,
+        GamePlayer.sendMessage(breaker, ChatMessageType.ACTION_BAR,
                 gplayer.getColoredName() + "&aが" + breaker.getColor().getRichName() + "の&6" + f.getPoint() + "p目標&aを破壊しました!");
         if (f.getColor() != null) {
-            GamePlayer.sendMessage(broken,
+            GamePlayer.sendMessage(broken, ChatMessageType.ACTION_BAR,
                     gplayer.getColoredName() + "&aに" + f.getPoint() + "p目標&aを破壊されました!");
         }
         game.getRecordStream().push(new NexusBreakRecord(

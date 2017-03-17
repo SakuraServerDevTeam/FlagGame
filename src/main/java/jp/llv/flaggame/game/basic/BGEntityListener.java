@@ -167,7 +167,7 @@ public class BGEntityListener extends BGListener {
             game.getRecordStream().push(new PlayerKillRecord(game.getID(), killer, game.getStage().getKillScore(), killed.getUniqueId(), weapon));
         }
         game.getRecordStream().push(new PlayerDeathRecord(game.getID(), killed, game.getStage().getDeathScore()));
-        GamePlayer.sendMessage(this.plugin.getPlayers().getPlayersIn(killed.getWorld()), message);
+        GamePlayer.sendMessage(this.plugin.getPlayers().getPlayersIn(killed.getWorld()), ChatMessageType.ACTION_BAR, message);
 
         // Banner check
         Optional<HeldBanner> bannerHeld = game.getBannerHeld(gkilled);
