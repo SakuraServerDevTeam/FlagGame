@@ -517,8 +517,6 @@ public class SetCommand extends BaseCommand {
         }
 
         Actions.message(sender, "&6 " + String.join("/", col).toLowerCase());
-        // Actions.message(sender,
-        // "&6 stage / base / spawn / flag / chest / gametime / teamlimit / award / entryfee / protect");
     }
 
     @Override

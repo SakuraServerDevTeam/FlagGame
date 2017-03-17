@@ -103,8 +103,10 @@ public class CheckCommand extends BaseCommand {
             }
         }
 
-        // フラッグ
-        Actions.message(sender, msgPrefix + "&6[*]&bフラッグ: &6" + stage.getFlags().size() + "個");
+        Actions.message(sender, msgPrefix + "&6   &bフラッグ: &6" + stage.getFlags().size() + "個");
+        Actions.message(sender, msgPrefix + "&6   &bバナースポナー: &6" + stage.getBannerSpawners().size() + "個");
+        Actions.message(sender, msgPrefix + "&6   &bバナースロット: &6" + stage.getBannerSlots().size() + "個");
+        Actions.message(sender, msgPrefix + "&6   &bコア: &6" + stage.getNexuses().size() + "個");
 
         // チェスト
         if (stage.getChests().size() > 0) {

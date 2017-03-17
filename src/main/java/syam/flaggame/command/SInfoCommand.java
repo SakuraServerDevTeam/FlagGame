@@ -100,10 +100,15 @@ public class SInfoCommand extends BaseCommand {
             }
 
             String s1 = "&6 " + stage.getName() + "&7(" + stage.getFileName() + ")"
-                    + "&b: 状態=&f" + status
-                    + "&b 制限時間=&6" + Actions.getTimeString(stage.getGameTimeInSec())
-                    + "&b フラッグ数=&6" + stage.getFlags().size();
+                        + "&b: 状態=&f" + status
+                        + "&b 制限時間=&6" + Actions.getTimeString(stage.getGameTimeInSec())
+                        + "&b フラッグ数=&6" + stage.getFlags().size();
             String s3 = "&b チーム毎人数制限=&6" + stage.getTeamLimit() + "&b 赤チームスポーン=" + chksp_red + "&b 青チームスポーン=" + chksp_blue;
+            String s5 = "&b キル得点=&6" + stage.getKillScore() + "&b デス得点=&6" + stage.getDeathScore();
+            String s6 = "&b フラッグ数=&6" + stage.getFlags().size()
+                        + "&b バナースポナー数=&6" + stage.getBannerSpawners().size()
+                        + "&b バナースロット数=&6" + stage.getBannerSlots().size()
+                        + "&b コア数=&6" + stage.getNexuses().size();
             String s4 = "&b プレイヤーリスト&7(" + cnt_players + "人)&b: " + players;
 
             // メッセージ送信
