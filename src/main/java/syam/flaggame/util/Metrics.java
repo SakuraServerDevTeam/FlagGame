@@ -1,19 +1,3 @@
-/* 
- * Copyright (C) 2017 Syamn, SakuraServerDev
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 package syam.flaggame.util;
 
 /*
@@ -78,9 +62,9 @@ import org.bukkit.plugin.PluginDescriptionFile;
  * Public methods provided by this class:
  * </p>
  * <code>
- * Graph createGraph(String name); <br/>
- * void addCustomData(Metrics.Plotter plotter); <br/>
- * void start(); <br/>
+ * Graph createGraph(String name); <br>
+ * void addCustomData(Metrics.Plotter plotter); <br>
+ * void start(); <br>
  * </code>
  */
 public class Metrics {
@@ -291,7 +275,7 @@ public class Metrics {
     /**
      * Has the server owner denied plugin metrics?
      * 
-     * @return
+     * @return whether the server owner denied plugin metrics
      */
     public boolean isOptOut() {
         synchronized (optOutLock) {
@@ -524,7 +508,7 @@ public class Metrics {
         /**
          * Gets the graph's name
          * 
-         * @return
+         * @return the graph's name
          */
         public String getName() {
             return name;
@@ -551,7 +535,7 @@ public class Metrics {
         /**
          * Gets an <b>unmodifiable</b> set of the plotter objects in the graph
          * 
-         * @return
+         * @return an unmofigiable set of the plotter objects in the graph
          */
         public Set<Plotter> getPlotters() {
             return Collections.unmodifiableSet(plotters);
@@ -608,7 +592,7 @@ public class Metrics {
         /**
          * Get the current value for the plotted point
          * 
-         * @return
+         * @return the current value for the plotted point
          */
         public abstract int getValue();
 

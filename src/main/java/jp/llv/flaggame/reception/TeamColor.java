@@ -59,7 +59,7 @@ public enum TeamColor {
     /**
      * このチームの名前を返す
      *
-     * @return
+     * @return name of the team
      */
     public String getTeamName() {
         return teamName;
@@ -68,7 +68,7 @@ public enum TeamColor {
     /**
      * このチームのブロックデータ値を返す
      *
-     * @return
+     * @return data value corresponding to the team
      */
     public byte getBlockData() {
         return blockData;
@@ -77,7 +77,7 @@ public enum TeamColor {
     /**
      * チームの色タグ "&(char)" を返す
      *
-     * @return
+     * @return color code corresponding to the team
      */
     public String getColor() {
         return new StringBuilder().append(COLOR_PREFIX).append(this.colorTag).toString();

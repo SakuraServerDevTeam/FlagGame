@@ -25,7 +25,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 
-import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -39,8 +38,7 @@ import syam.flaggame.exception.CommandException;
 
 /**
  * A {@link PlayerManager} provides ways of getting
- * {@link syam.flaggame.player.GamePlayer} or
- * {@link syam.flaggame.player.PlayerProfile} instance.
+ * {@link syam.flaggame.player.GamePlayer} instance.
  *
  * @author Syamn, Toyblocks
  */

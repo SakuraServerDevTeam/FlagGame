@@ -127,7 +127,7 @@ public class Cuboid {
     /**
      * ワールドを返す
      *
-     * @return
+     * @return world, where the location is
      */
     public World getWorld() {
         return min.getWorld();

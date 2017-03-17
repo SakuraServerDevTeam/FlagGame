@@ -369,7 +369,7 @@ public class Stage {
     /**
      * ファイル名を取得
      *
-     * @return
+     * @return name of the stage configuration file
      */
     public String getFileName() {
         return fileName;
@@ -405,7 +405,7 @@ public class Stage {
     /**
      * このゲームの制限時間(秒)を返す
      *
-     * @return
+     * @return gametime in seconds
      */
     @Deprecated
     public int getGameTimeInSec() {
