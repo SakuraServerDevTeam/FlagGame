@@ -19,10 +19,12 @@ package jp.llv.flaggame.game.basic;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.Queue;
@@ -32,6 +34,7 @@ import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 import jp.llv.flaggame.events.GameStartEvent;
 import jp.llv.flaggame.game.Game;
+import jp.llv.flaggame.game.basic.objective.HeldBanner;
 import jp.llv.flaggame.profile.DeviationBasedExpCalcurator;
 import jp.llv.flaggame.profile.RecordStream;
 import jp.llv.flaggame.profile.record.FlagCaptureRecord;
@@ -81,6 +84,7 @@ public class BasicGame implements Game {
     private final GameReception reception;
     private final Stage stage;
     private final Map<TeamColor, Team> teams;
+    private final Map<GamePlayer, HeldBanner> heldBanners = new HashMap<>();
 
     private final Queue<Runnable> onFinishing = new LinkedList<>();
     private final Set<BossBar> bossbars = new HashSet<>();
@@ -367,7 +371,7 @@ public class BasicGame implements Game {
             GamePlayer.sendMessage(this.plugin.getPlayers(),
                     "&6戦闘狂: "
                     + maxKillers.stream().map(GamePlayer::getColoredName).collect(Collectors.joining(", "))
-                    + "(&6" + maxKills.getAsLong()+ "kills&f)"
+                    + "(&6" + maxKills.getAsLong() + "kills&f)"
             );
         }
         if (!maxCapturers.isEmpty()) {
@@ -392,7 +396,6 @@ public class BasicGame implements Game {
 
         this.plugin.getServer().getPluginManager()
                 .callEvent(new jp.llv.flaggame.events.GameFinishedEvent(this));
-
 
         for (GamePlayer g : this.reception.getPlayers()) {
             if (g.getPlayer().isOnline()) {
@@ -452,6 +455,25 @@ public class BasicGame implements Game {
     @Override
     public Team getTeam(TeamColor color) {
         return this.teams.get(color);
+    }
+
+    public void setBannerHeld(GamePlayer player, HeldBanner banner) {
+        if (this.heldBanners.containsKey(player)) {
+            throw new IllegalStateException("Held banner duplication");
+        }
+        this.heldBanners.put(player, banner);
+    }
+    
+    public Optional<HeldBanner> getBannerHeld(GamePlayer player) {
+        if (this.heldBanners.containsKey(player)) {
+            return Optional.of(heldBanners.get(player));
+        } else {
+            return Optional.empty();
+        }
+    }
+    
+    public void clearBannerHeld(GamePlayer player) {
+        this.heldBanners.remove(player);
     }
 
     @Override

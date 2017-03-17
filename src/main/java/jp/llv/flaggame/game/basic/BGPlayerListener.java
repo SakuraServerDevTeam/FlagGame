@@ -17,40 +17,30 @@
 package jp.llv.flaggame.game.basic;
 
 import java.util.Collection;
-import jp.llv.flaggame.game.basic.objective.Flag;
 import jp.llv.flaggame.profile.record.LoginRecord;
-import jp.llv.flaggame.profile.record.PlayerDeathRecord;
-import jp.llv.flaggame.profile.record.PlayerKillRecord;
 import jp.llv.flaggame.profile.record.PlayerLeaveRecord;
 import jp.llv.flaggame.reception.Team;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.event.Event;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.MaterialData;
 import org.bukkit.material.Openable;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import syam.flaggame.FlagGame;
 import jp.llv.flaggame.reception.TeamColor;
+import org.bukkit.event.EventHandler;
 import syam.flaggame.game.Stage;
 import syam.flaggame.player.GamePlayer;
 import syam.flaggame.util.Actions;
-import jp.llv.flaggame.util.StringUtil;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 /**
@@ -58,8 +48,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
  * @author Toyblocks
  */
 public class BGPlayerListener extends BGListener {
-
-    private static final double WOOL_REPAINT_PCT = 0.5;
 
     private final FlagGame plugin;
     private final Collection<GamePlayer> players;
@@ -126,75 +114,6 @@ public class BGPlayerListener extends BGListener {
                 return;
             }
         }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void on(PlayerDeathEvent event) {
-        Player killed = event.getEntity();
-        GamePlayer gkilled = this.plugin.getPlayers().getPlayer(killed);
-        if (!this.players.contains(gkilled)) {
-            return;
-        }
-
-        event.setDeathMessage(null);
-
-        Player killer;
-        String weapon;
-
-        EntityDamageEvent cause = event.getEntity().getLastDamageCause();
-        if (cause == null) {
-            killer = null;
-            weapon = "呪い";
-        } else if (!(cause instanceof EntityDamageByEntityEvent)) {
-            killer = null;
-            weapon = cause.getCause().toString();
-        } else {
-            Entity killerEnt = ((EntityDamageByEntityEvent) cause).getDamager();
-            if (killerEnt instanceof Player) {
-                killer = (Player) killerEnt;
-                ItemStack is = killer.getInventory().getItemInMainHand();
-                weapon = is == null ? null
-                        : is.getItemMeta().hasDisplayName()
-                                ? is.getItemMeta().getDisplayName() : StringUtil.capitalize(is.getType().name());
-            } else if (killerEnt instanceof Projectile) {
-                Projectile p = (Projectile) killerEnt;
-                weapon = p.getCustomName();
-                weapon = weapon != null ? weapon : p.getName();
-                if (p.getShooter() instanceof Player) {
-                    killer = (Player) p.getShooter();
-                } else {
-                    killer = null;
-                }
-            } else {
-                killer = null;
-                weapon = killerEnt.getCustomName();
-                weapon = weapon != null ? weapon : killerEnt.getName();
-            }
-        }
-
-        GamePlayer gkiller = this.plugin.getPlayers().getPlayer(killer);
-        if (gkiller != null && (!gkiller.getGame().isPresent() || gkiller.getGame().get() != this.game)) {
-            gkiller = null;
-        }
-
-        Team killerTeam = gkiller != null ? gkiller.getTeam().get() : null;
-
-        //Keep exp level in order to keep score
-        event.setKeepLevel(true);
-
-        String message;
-        if (gkilled == gkiller || gkiller == null || killerTeam == null) { //自殺
-            message = gkilled.getColoredName() + "&6が&b"
-                      + (weapon != null ? weapon + "&6で" : "&6") + "自殺しました!";
-        } else {
-            event.getDrops().stream().filter((is) -> (Flag.isFlag(is.getType()) && Math.random() < WOOL_REPAINT_PCT))
-                    .forEach(is -> is.setData(new MaterialData(killerTeam.getColor().getBlockData())));
-            message = gkilled.getColoredName() + "&6が" + gkiller.getColoredName() + "&6に&b"
-                      + (weapon != null ? weapon + "&6で" : "&6") + "殺されました!";
-            game.getRecordStream().push(new PlayerKillRecord(game.getID(), killer, game.getStage().getKillScore(), killed.getUniqueId(), weapon));
-        }
-        game.getRecordStream().push(new PlayerDeathRecord(game.getID(), killed, game.getStage().getDeathScore()));
-        GamePlayer.sendMessage(this.plugin.getPlayers().getPlayersIn(killed.getWorld()), message);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)

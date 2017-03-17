@@ -17,19 +17,40 @@
 package jp.llv.flaggame.game.basic;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.Set;
+import jp.llv.flaggame.game.basic.objective.BannerSpawner;
+import jp.llv.flaggame.game.basic.objective.Flag;
+import jp.llv.flaggame.game.basic.objective.HeldBanner;
+import jp.llv.flaggame.profile.record.BannerStealRecord;
+import jp.llv.flaggame.profile.record.PlayerDeathRecord;
+import jp.llv.flaggame.profile.record.PlayerKillRecord;
+import jp.llv.flaggame.reception.Team;
+import jp.llv.flaggame.util.StringUtil;
+import net.md_5.bungee.api.ChatMessageType;
+import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.MaterialData;
 import syam.flaggame.FlagGame;
 import syam.flaggame.player.GamePlayer;
 
 /**
+ * PvP handling listener.
  *
  * @author Toyblocks
  */
 public class BGEntityListener extends BGListener {
+
+    private static final double WOOL_REPAINT_PCT = 0.5;
 
     private final FlagGame plugin;
     private final Collection<GamePlayer> players;
@@ -46,26 +67,34 @@ public class BGEntityListener extends BGListener {
             return;
         }
 
-        Player damager = null;
-        if (event.getDamager() instanceof Player) {
-            damager = (Player) event.getDamager();
-        } else if (event.getDamager() instanceof Projectile) {
-            Object shooter = ((Projectile) event.getDamager()).getShooter();
-            if (shooter instanceof Player) {
-                damager = (Player) shooter;
-            }
-        }
-        if (damager == null) {
-            return;
-        }
+        EntityDamageCause cause = getDamagerAndCause(event);
+        Player damager = cause.attacker;
+        boolean remoteDamage = cause.remote;
 
         Player player = (Player) event.getEntity();
         GamePlayer gp = this.plugin.getPlayers().getPlayer(player);
         GamePlayer gd = this.plugin.getPlayers().getPlayer(damager);
+
+        // Banner check (drop)
+        Optional<HeldBanner> bannerHeld = game.getBannerHeld(gp);
+        if (bannerHeld.map(HeldBanner::isBroken).orElse(false)) {
+            game.clearBannerHeld(gp);
+        }
+        Set<BannerSpawner> bannerDestroyed = bannerHeld.map(b -> b.damage()).orElse(Collections.emptySet());
+        if (damager == null || remoteDamage) {
+            bannerDestroyed.forEach(b -> {
+                b.spawnBanner();
+                GamePlayer.sendMessage(game, ChatMessageType.ACTION_BAR,
+                        gp.getColoredName() + "&aが&6" + b.getPoint() + "pバナー&aを落としました！");
+            });
+            return;
+        }
+
         if (!this.players.contains(gp) || !this.players.contains(gd)) {
             return;
         }
 
+        // Disallow damage in basements
         if (this.game.getStage().getBase(gp.getTeam().get().getColor()).isIn(player.getLocation())) {
             event.setCancelled(true);
             if (!this.game.getStage().getBase(gd.getTeam().get().getColor()).isIn(damager.getLocation())) {
@@ -74,17 +103,152 @@ public class BGEntityListener extends BGListener {
             return;
         }
 
-        if (!plugin.getConfigs().getDisableTeamPVP()) {
-            return;
-        }
-
-        if (!gp.getTeam().isPresent() || !gd.getTeam().isPresent()) {
-            return;
-        }
-
-        if (gp.getTeam().get() == gd.getTeam().get()) {
+        // Disallow friendly fire
+        if (plugin.getConfigs().getDisableTeamPVP()
+            && gp.getTeam().get() == gd.getTeam().get()) {
             event.setDamage(0D);
             event.setCancelled(true);
+            return;
+        }
+
+        // Banner check (steal)
+        if (!bannerDestroyed.isEmpty() && !remoteDamage) {
+            HeldBanner bannerItem = game.getBannerHeld(gd)
+                    .map(b -> b.append(bannerDestroyed))
+                    .orElseGet(() -> {
+                        HeldBanner b = new HeldBanner(bannerDestroyed);
+                        game.setBannerHeld(gd, b);
+                        return b;
+                    });
+            gd.getPlayer().getInventory().setHelmet(bannerItem.getBanner(gd.getTeam().get().getColor()));
+            game.getRecordStream().push(new BannerStealRecord(game.getID(), damager, bannerItem.getPoint()));
+            GamePlayer.sendMessage(gp.getTeam().get(), ChatMessageType.ACTION_BAR,
+                    gd.getColoredName() + "&aに" + gp.getColoredName() + "&aの&6"
+                    + bannerItem.getPoint() + "pバナー&aを奪われました！");
+            GamePlayer.sendMessage(game.getPlayersNotIn(gp.getTeam().get()), ChatMessageType.ACTION_BAR,
+                    gd.getColoredName() + "&aが" + gp.getColoredName() + "&aの&6"
+                    + bannerItem.getPoint() + "pバナー&aを奪いました！");
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void on(PlayerDeathEvent event) {
+        Player killed = event.getEntity();
+        GamePlayer gkilled = this.plugin.getPlayers().getPlayer(killed);
+        if (!this.players.contains(gkilled)) {
+            return;
+        }
+
+        event.setDeathMessage(null);
+
+        EntityDamageCause cause = getDamagerAndCause(killed.getLastDamageCause());
+        Player killer = cause.attacker;
+        String weapon = cause.cause;
+
+        GamePlayer gkiller = this.plugin.getPlayers().getPlayer(killer);
+        if (gkiller != null && (!gkiller.getGame().isPresent() || gkiller.getGame().get() != this.game)) {
+            return;
+        }
+
+        Team killerTeam = gkiller != null ? gkiller.getTeam().get() : null;
+
+        //Keep exp level in order to keep score
+        event.setKeepLevel(true);
+
+        String message;
+        if (gkilled == gkiller || gkiller == null || killerTeam == null) { //自殺
+            message = gkilled.getColoredName() + "&6が&b"
+                      + (weapon != null ? weapon + "&6で" : "&6") + "自殺しました!";
+        } else {
+            event.getDrops().stream().filter((is) -> (Flag.isFlag(is.getType()) && Math.random() < WOOL_REPAINT_PCT))
+                    .forEach(is -> is.setData(new MaterialData(killerTeam.getColor().getBlockData())));
+            message = gkilled.getColoredName() + "&6が" + gkiller.getColoredName() + "&6に&b"
+                      + (weapon != null ? weapon + "&6で" : "&6") + "殺されました!";
+            game.getRecordStream().push(new PlayerKillRecord(game.getID(), killer, game.getStage().getKillScore(), killed.getUniqueId(), weapon));
+        }
+        game.getRecordStream().push(new PlayerDeathRecord(game.getID(), killed, game.getStage().getDeathScore()));
+        GamePlayer.sendMessage(this.plugin.getPlayers().getPlayersIn(killed.getWorld()), message);
+
+        // Banner check
+        Optional<HeldBanner> bannerHeld = game.getBannerHeld(gkilled);
+        if (bannerHeld.isPresent()) {
+            game.clearBannerHeld(gkilled);
+            Set<BannerSpawner> bannerDestroyed = bannerHeld.map(b -> b.destroy()).orElse(null);
+            killed.getInventory().setHelmet(new ItemStack(Material.AIR));
+            if (gkiller == null || cause.remote) {
+                bannerDestroyed.forEach(b -> {
+                    b.spawnBanner();
+                    GamePlayer.sendMessage(game, ChatMessageType.ACTION_BAR,
+                            gkilled.getColoredName() + "&aが&6" + b.getPoint() + "pバナー&aを落としました！");
+                });
+            } else {
+                HeldBanner banner = game.getBannerHeld(gkiller)
+                        .map(b -> b.append(bannerDestroyed))
+                        .orElseGet(() -> {
+                            HeldBanner b = new HeldBanner(bannerDestroyed);
+                            game.setBannerHeld(gkiller, b);
+                            return b;
+                        });
+                killer.getInventory().setHelmet(banner.getBanner(gkiller.getTeam().get().getColor()));
+                game.getRecordStream().push(new BannerStealRecord(game.getID(), killer, banner.getPoint()));
+                GamePlayer.sendMessage(gkilled.getTeam().get(), ChatMessageType.ACTION_BAR,
+                        gkiller.getColoredName() + "&aに" + gkilled.getColoredName() + "&aの&6"
+                        + banner.getPoint() + "pバナー&aを奪われました！");
+                GamePlayer.sendMessage(game.getPlayersNotIn(gkilled.getTeam().get()), ChatMessageType.ACTION_BAR,
+                        gkiller.getColoredName() + "&aが" + gkiller.getColoredName() + "&aの&6"
+                        + banner.getPoint() + "pバナー&aを奪いました！");
+
+            }
+        }
+    }
+
+    private static EntityDamageCause getDamagerAndCause(EntityDamageEvent cause) {
+        Player killer;
+        String weapon;
+        boolean remote = false;
+        if (cause == null) { // unknown
+            killer = null;
+            weapon = "Unknown";
+        } else if (!(cause instanceof EntityDamageByEntityEvent)) { // not killed
+            killer = null;
+            weapon = StringUtil.capitalize(cause.getCause().toString());
+        } else {
+            Entity killerEnt = ((EntityDamageByEntityEvent) cause).getDamager();
+            if (killerEnt instanceof Player) { // killed by a player
+                killer = (Player) killerEnt;
+                ItemStack is = killer.getInventory().getItemInMainHand();
+                weapon = is == null ? null
+                        : is.getItemMeta().hasDisplayName()
+                                ? is.getItemMeta().getDisplayName() : StringUtil.capitalize(is.getType().name());
+            } else if (killerEnt instanceof Projectile) { // killed by projectile
+                Projectile p = (Projectile) killerEnt;
+                weapon = p.getCustomName();
+                weapon = weapon != null ? weapon : p.getName();
+                if (p.getShooter() instanceof Player) {
+                    killer = (Player) p.getShooter();
+                } else {
+                    killer = null;
+                }
+                remote = true;
+            } else { // killed by entity
+                killer = null;
+                weapon = killerEnt.getCustomName();
+                weapon = weapon != null ? weapon : killerEnt.getName();
+            }
+        }
+        return new EntityDamageCause(killer, weapon, remote);
+    }
+
+    private static class EntityDamageCause {
+
+        private final Player attacker;
+        private final String cause;
+        private final boolean remote;
+
+        public EntityDamageCause(Player attacker, String cause, boolean remote) {
+            this.attacker = attacker;
+            this.cause = cause;
+            this.remote = remote;
         }
     }
 

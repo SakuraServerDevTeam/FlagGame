@@ -239,13 +239,17 @@ public class GamePlayer {
         this.getPlayer().playSound(this.getPlayer().getLocation(), sound, 1f, 1f);
     }
 
-    public static void sendMessage(Iterable<? extends GamePlayer> players, String... messages) {
+    public static void sendMessage(Iterable<? extends GamePlayer> players, ChatMessageType type, String... messages) {
         for (GamePlayer p : players) {
             if (p == null) {
                 continue;
             }
-            p.sendMessage(messages);
+            p.sendMessage(type, messages);
         }
+    }
+
+    public static void sendMessage(Iterable<? extends GamePlayer> players, String... messages) {
+        sendMessage(players, ChatMessageType.CHAT, messages);
     }
 
     public static void sendMessage(Iterable<? extends GamePlayer> players, ChatMessageType type, BaseComponent... message) {

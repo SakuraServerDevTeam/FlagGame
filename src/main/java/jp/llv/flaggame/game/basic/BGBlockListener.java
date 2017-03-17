@@ -32,10 +32,13 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import syam.flaggame.FlagGame;
 import jp.llv.flaggame.reception.TeamColor;
 import jp.llv.flaggame.game.basic.objective.Flag;
+import jp.llv.flaggame.game.basic.objective.HeldBanner;
 import jp.llv.flaggame.game.basic.objective.Nexus;
+import jp.llv.flaggame.profile.record.BannerDeployRecord;
 import jp.llv.flaggame.profile.record.FlagBreakRecord;
 import jp.llv.flaggame.profile.record.FlagCaptureRecord;
 import jp.llv.flaggame.profile.record.NexusBreakRecord;
+import net.md_5.bungee.api.ChatMessageType;
 import org.bukkit.Material;
 import syam.flaggame.player.GamePlayer;
 
@@ -126,7 +129,38 @@ public class BGBlockListener extends BGListener {
     }
 
     private void placeBanner(GamePlayer gplayer, BannerSlot s, BlockPlaceEvent event) {
+        event.setCancelled(true);
 
+        if (!game.getBannerHeld(gplayer).isPresent()) {
+            gplayer.sendMessage(ChatMessageType.ACTION_BAR, "&cバナーを回収してから設置してください！");
+            return;
+        }
+        HeldBanner banner = game.getBannerHeld(gplayer).get();
+        if (s.getColor() != gplayer.getTeam().get().getColor()) {
+            gplayer.sendMessage(ChatMessageType.ACTION_BAR, "&c敵チームのスロットにバナーを設置することはできません！");
+            return;
+        }
+
+        GamePlayer.sendMessage(gplayer.getTeam().get(), ChatMessageType.ACTION_BAR,
+                gplayer.getColoredName() + "&aが&6"
+                + banner.getPoint() + "pバナー&aを設置しました！");
+        GamePlayer.sendMessage(game.getPlayersNotIn(gplayer.getTeam().get()), ChatMessageType.ACTION_BAR,
+                gplayer.getColoredName() + "&aに&6"
+                + banner.getPoint() + "pバナー&aを設置されました！");
+        
+        banner.destroy().forEach(BannerSpawner::spawnBanner);
+        game.clearBannerHeld(gplayer);
+        game.getRecordStream().push(new BannerDeployRecord(
+                game.getID(),
+                event.getPlayer().getUniqueId(),
+                event.getBlock().getLocation(),
+                banner.getPoint()
+        ));
+        if (plugin.getConfigs().getUseFlagEffects()) {
+            Location loc = s.getLocation();
+            loc.getWorld().playEffect(loc, Effect.ENDER_SIGNAL, 0, 10);
+            loc.getWorld().playEffect(loc, Effect.SMOKE, 4, 2);
+        }
     }
 
     private void breakFlag(GamePlayer gplayer, Flag f, BlockBreakEvent event) {
@@ -179,9 +213,9 @@ public class BGBlockListener extends BGListener {
                     gplayer.getColoredName() + "&aに" + f.getPoint() + "p目標&aを破壊されました!");
         }
         game.getRecordStream().push(new NexusBreakRecord(
-                game.getID(), 
-                event.getPlayer().getUniqueId(), 
-                event.getBlock().getLocation(), 
+                game.getID(),
+                event.getPlayer().getUniqueId(),
+                event.getBlock().getLocation(),
                 f.getPoint()
         ));
 
@@ -193,9 +227,27 @@ public class BGBlockListener extends BGListener {
     }
 
     private void breakBannerSpawner(GamePlayer gplayer, BannerSpawner s, BlockBreakEvent event) {
-        //move into
         event.setCancelled(true);
         event.getBlock().setType(Material.AIR);
+        HeldBanner banner = game.getBannerHeld(gplayer)
+                .map(b -> b.append(s))
+                .orElseGet(() -> {
+                    HeldBanner b = new HeldBanner(s);
+                    game.setBannerHeld(gplayer, b);
+                    return b;
+                });
+        gplayer.getPlayer().getInventory().setHelmet(banner.getBanner(gplayer.getTeam().get().getColor()));
+        GamePlayer.sendMessage(gplayer.getTeam().get(), ChatMessageType.ACTION_BAR,
+                gplayer.getColoredName() + "&aが&6"
+                + s.getPoint() + "pバナー&aを回収しました！");
+        GamePlayer.sendMessage(game.getPlayersNotIn(gplayer.getTeam().get()), ChatMessageType.ACTION_BAR,
+                gplayer.getColoredName() + "&aに&6"
+                + s.getPoint() + "pバナー&aを回収されました！");
+        if (plugin.getConfigs().getUseFlagEffects()) {
+            Location loc = event.getBlock().getLocation();
+            loc.getWorld().createExplosion(loc, 0F, false);
+            loc.getWorld().playEffect(loc, Effect.ENDER_SIGNAL, 0, 10);
+        }
     }
 
 }

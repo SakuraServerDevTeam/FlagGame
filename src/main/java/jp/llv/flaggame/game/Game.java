@@ -16,8 +16,11 @@
  */
 package jp.llv.flaggame.game;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.stream.Collectors;
 import jp.llv.flaggame.reception.GameReception;
 import jp.llv.flaggame.reception.Team;
 import jp.llv.flaggame.reception.TeamColor;
@@ -36,32 +39,44 @@ public interface Game extends Iterable<GamePlayer> {
         PREPARATION, STARTED, FINISHED,;
 
     }
-    
+
     default String getName() {
-         return this.getReception().getID().toString();
+        return this.getReception().getID().toString();
     }
-    
+
     void startNow() throws CommandException;
-    
+
     void startLater(long ms) throws CommandException;
-    
+
     void stopForcibly(String message);
 
     GameReception getReception();
-    
+
     Team getTeam(TeamColor color);
-    
+
     Collection<Team> getTeams();
-    
+
     Stage getStage();
-    
+
     State getState();
 
     @Override
     default Iterator<GamePlayer> iterator() {
         return this.getReception().iterator();
     }
-    
-    
+
+    default Collection<GamePlayer> getPlayers() {
+        return getReception().getPlayers();
+    }
+
+    static Collection<GamePlayer> getPlayersIn(Team... teams) {
+        return Arrays.stream(teams).flatMap(t -> t.getPlayers().stream()).collect(Collectors.toSet());
+    }
+
+    default Collection<GamePlayer> getPlayersNotIn(Team... teams) {
+        Collection<GamePlayer> result = new HashSet<>(getPlayers());
+        result.removeAll(getPlayersIn(teams));
+        return result;
+    }
 
 }

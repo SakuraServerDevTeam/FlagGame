@@ -16,6 +16,7 @@
  */
 package jp.llv.flaggame.reception;
 
+import org.bukkit.DyeColor;
 import org.bukkit.boss.BarColor;
 
 /**
@@ -25,22 +26,23 @@ import org.bukkit.boss.BarColor;
  */
 public enum TeamColor {
 
-    RED("赤", 0xE, 'c', BarColor.RED),
-    BLUE("青", 0xB, '9', BarColor.BLUE),
-    GREEN("緑", 0x5, 'a', BarColor.GREEN),
-    ORANGE("橙", 0x1, '6', BarColor.YELLOW),
-    PINK("桃", 0x6, 'd', BarColor.PINK),
-    SKYBLUE("水", 0x3, 'b', BarColor.WHITE),
-    YELLOW("黄", 0x4, 'e', BarColor.YELLOW),
-    PURPLE("紫", 0x2, '5', BarColor.PURPLE);
+    RED("赤", 0xE, 'c', DyeColor.RED, BarColor.RED),
+    BLUE("青", 0xB, '9', DyeColor.BLUE, BarColor.BLUE),
+    GREEN("緑", 0x5, 'a', DyeColor.GREEN, BarColor.GREEN),
+    ORANGE("橙", 0x1, '6', DyeColor.ORANGE, BarColor.YELLOW),
+    PINK("桃", 0x6, 'd', DyeColor.PINK, BarColor.PINK),
+    SKYBLUE("水", 0x3, 'b', DyeColor.LIGHT_BLUE, BarColor.WHITE),
+    YELLOW("黄", 0x4, 'e', DyeColor.YELLOW, BarColor.YELLOW),
+    PURPLE("紫", 0x2, '5', DyeColor.PURPLE, BarColor.PURPLE);
 
     private static final char COLOR_PREFIX = '\u00A7';
     private final String teamName;
     private final byte blockData;
     private final char colorTag;
+    private final DyeColor dyeColor;
     private final BarColor barColor;
 
-    private TeamColor(String teamName, int blockData, char colorTag, BarColor barColor) {
+    private TeamColor(String teamName, int blockData, char colorTag, DyeColor dyeColor, BarColor barColor) {
         this.teamName = teamName;
 
         if (blockData < Byte.MIN_VALUE || blockData > Byte.MAX_VALUE) {
@@ -50,6 +52,7 @@ public enum TeamColor {
         this.blockData = (byte) blockData;
 
         this.colorTag = colorTag;
+        this.dyeColor = dyeColor;
         this.barColor = barColor;
     }
 
@@ -80,6 +83,10 @@ public enum TeamColor {
         return new StringBuilder().append(COLOR_PREFIX).append(this.colorTag).toString();
     }
 
+    public DyeColor getDyeColor() {
+        return dyeColor;
+    }
+
     public BarColor getBarColor() {
         return barColor;
     }
@@ -96,9 +103,9 @@ public enum TeamColor {
         }
         return null;
     }
-    
+
     public static TeamColor of(String name) {
         return valueOf(name.toUpperCase());
     }
-    
+
 }
