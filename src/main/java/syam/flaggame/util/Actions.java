@@ -90,7 +90,7 @@ public class Actions {
     }
     
     public static void sendPrefixedMessage(CommandSender sender, ChatMessageType type, String message) {
-        sendPrefixedMessage(sender, type, TextComponent.fromLegacyText(message));
+        sendPrefixedMessage(sender, type, new TextComponent(message.replaceAll("&([0-9a-fk-or])", "\u00A7$1")));
     }
 
     // ユーティリティ
