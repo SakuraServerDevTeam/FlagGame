@@ -46,19 +46,19 @@ public class FileRollbacker implements StructureRollbacker {
     
     
     @Override
-    public void serialize(Stage stage, Cuboid area, Path path) throws RollbackException {
+    public byte[] serialize(Stage stage, Cuboid area) throws RollbackException {
         try {
-            STRUCTURE.save(api, area.serialize(), true).write(path, true);
+            return STRUCTURE.save(api, area.serialize(), true).write(true);
         } catch(IncompatiblePlatformException | IOException ex) {
             throw new RollbackException(ex);
         }
     }
 
     @Override
-    public void deserialize(Stage stage, Cuboid area, Path path) throws RollbackException {
+    public void deserialize(Stage stage, Cuboid area, byte[] source) throws RollbackException {
         try {
             TagCompound data = new TagCompound();
-            data.read(path, true);
+            data.read(source, true);
             STRUCTURE.load(api, data, new LocationSerializable(area.getPos1()), options);
         } catch(IncompatiblePlatformException | IOException ex) {
             throw new RollbackException(ex);

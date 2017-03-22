@@ -16,7 +16,6 @@
  */
 package jp.llv.flaggame.rollback;
 
-import java.nio.file.Path;
 import syam.flaggame.game.Stage;
 import syam.flaggame.util.Cuboid;
 
@@ -26,8 +25,8 @@ import syam.flaggame.util.Cuboid;
  */
 public interface StructureRollbacker {
     
-    void serialize(Stage stage, Cuboid area, Path path) throws RollbackException;
+    byte[] serialize(Stage stage, Cuboid area) throws RollbackException;
     
-    void deserialize(Stage stage, Cuboid area, Path path) throws RollbackException;
+    void deserialize(Stage stage, Cuboid area, byte[] source) throws RollbackException;
     
 }

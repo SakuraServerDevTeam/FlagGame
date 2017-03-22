@@ -16,7 +16,6 @@
  */
 package jp.llv.flaggame.rollback;
 
-import java.nio.file.Path;
 import jp.llv.flaggame.game.basic.objective.BannerSpawner;
 import jp.llv.flaggame.game.basic.objective.Flag;
 import org.bukkit.Location;
@@ -34,20 +33,21 @@ import syam.flaggame.util.Cuboid;
 public class LegacyRollbacker implements StructureRollbacker {
 
     @Override
-    public void serialize(Stage stage, Cuboid area, Path path) {
+    public byte[] serialize(Stage stage, Cuboid area) {
+        return new byte[0];
     }
 
     @Override
-    public void deserialize(Stage stage, Cuboid area, Path path) throws RollbackException {
+    public void deserialize(Stage stage, Cuboid area, byte[] source) throws RollbackException {
         stage.getFlags().values().stream()
-                .filter(f -> area.isIn(f.getLocation()))
+                .filter(f -> area.contains(f.getLocation()))
                 .forEach(Flag::rollback);
         stage.getBannerSpawners().values().stream()
-                .filter(b -> area.isIn(b.getLocation()))
+                .filter(b -> area.contains(b.getLocation()))
                 .forEach(BannerSpawner::spawnBanner);
         
         for (Location loc : stage.getChests()) {
-            if (!area.isIn(loc)) {
+            if (!area.contains(loc)) {
                 continue;
             }
             Block toBlock = loc.getBlock();

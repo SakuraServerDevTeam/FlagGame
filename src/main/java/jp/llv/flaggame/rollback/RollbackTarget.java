@@ -46,13 +46,13 @@ public enum RollbackTarget implements StructureRollbacker {
     }
 
     @Override
-    public void serialize(Stage stage, Cuboid area, Path path) throws RollbackException {
-        serializer.serialize(stage, area, path);
+    public byte[] serialize(Stage stage, Cuboid area) throws RollbackException {
+        return serializer.serialize(stage, area);
     }
 
     @Override
-    public void deserialize(Stage stage, Cuboid area, Path path) throws RollbackException {
-        serializer.deserialize(stage, area, path);
+    public void deserialize(Stage stage, Cuboid area, byte[] source) throws RollbackException {
+        serializer.deserialize(stage, area, source);
     }
 
 }
