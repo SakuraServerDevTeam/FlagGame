@@ -151,7 +151,7 @@ public class BGPlayerListener extends BGListener {
             if (player.getTeam().map(t -> (t == team)).orElse(Boolean.FALSE)) {
                 continue;
             }
-            if (stage.getBase(team.getColor()).isIn(loc)) {
+            if (stage.getBase(team.getColor()).contains(loc)) {
                 return false;
             }
         }

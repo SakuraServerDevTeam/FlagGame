@@ -95,9 +95,9 @@ public class BGEntityListener extends BGListener {
         }
 
         // Disallow damage in basements
-        if (this.game.getStage().getBase(gp.getTeam().get().getColor()).isIn(player.getLocation())) {
+        if (this.game.getStage().getBase(gp.getTeam().get().getColor()).contains(player.getLocation())) {
             event.setCancelled(true);
-            if (!this.game.getStage().getBase(gd.getTeam().get().getColor()).isIn(damager.getLocation())) {
+            if (!this.game.getStage().getBase(gd.getTeam().get().getColor()).contains(damager.getLocation())) {
                 damager.damage(event.getDamage(), player);
             }
             return;

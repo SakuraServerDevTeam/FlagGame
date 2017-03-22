@@ -55,7 +55,7 @@ public class Cuboid {
         this.min = new Location(point1.getWorld(), xMin, yMin, zMin);
         this.max = new Location(point1.getWorld(), xMax, yMax, zMax);
     }
-    
+
     public Cuboid(CuboidSerializable cuboid) {
         this(cuboid.getOrigin().toLocation(), cuboid.getCorner().toLocation());
     }
@@ -66,11 +66,20 @@ public class Cuboid {
      * @param loc チェックする座標
      * @return 領域内ならtrue 違えばfalse
      */
-    public boolean isIn(Location loc) {
+    public boolean contains(Location loc) {
         return this.getWorld().equals(loc.getWorld())
-                && min.getX() <= loc.getX() && loc.getX() <= max.getX()
-                && min.getY() <= loc.getY() && loc.getY() <= max.getY()
-                && min.getZ() <= loc.getZ() && loc.getZ() <= max.getZ();
+               && min.getX() <= loc.getX() && loc.getX() <= max.getX()
+               && min.getY() <= loc.getY() && loc.getY() <= max.getY()
+               && min.getZ() <= loc.getZ() && loc.getZ() <= max.getZ();
+    }
+
+    public boolean contains(Cuboid other) {
+        return min.getX() <= other.getPos1().getX()
+               && min.getY() <= other.getPos1().getY()
+               && min.getZ() <= other.getPos1().getZ()
+               && other.getPos2().getX() <= max.getX()
+               && other.getPos2().getY() <= max.getY()
+               && other.getPos2().getZ() <= max.getZ();
     }
 
     /**
@@ -156,9 +165,9 @@ public class Cuboid {
     public Location getPos2() {
         return max;
     }
-    
+
     public CuboidSerializable serialize() {
         return new CuboidSerializable(new LocationSerializable(min), new LocationSerializable(max));
     }
-    
+
 }

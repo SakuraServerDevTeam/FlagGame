@@ -1,5 +1,5 @@
-/* 
- * Copyright (C) 2017 Syamn, SakuraServerDev
+/*
+ * Copyright (C) 2017 toyblocks
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,21 +16,12 @@
  */
 package syam.flaggame.game;
 
-import syam.flaggame.FlagGame;
-
-public class StageFileManager {
-
-    private final FlagGame plugin;
-
-    public StageFileManager(final FlagGame plugin) {
-        this.plugin = plugin;
-    }
-
-    public void saveStages() {
-        throw new UnsupportedOperationException("WIP");
-    }
-
-    public void loadStages() {
-        throw new UnsupportedOperationException("WIP");
-    }
+/**
+ *
+ * @author toyblocks
+ */
+public enum Protection {
+    
+    BLOCK
+    
 }

@@ -90,7 +90,7 @@ public class FGBlockListener implements Listener {
         Block b = event.getBlock();
         Location loc = b.getLocation();
         for (Stage stage : plugin.getStages()) {
-            if (stage.hasStageArea() && stage.getStageArea().isIn(loc) && stage.isStageProtected()) {
+            if (stage.hasStageArea() && stage.getStageArea().contains(loc) && stage.isStageProtected()) {
                 return true;
             }
         }

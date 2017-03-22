@@ -26,22 +26,15 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import jp.llv.flaggame.game.basic.objective.*;
 import jp.llv.flaggame.reception.GameReception;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.inventory.ItemStack;
 
-import syam.flaggame.FlagGame;
 import jp.llv.flaggame.reception.TeamColor;
 import syam.flaggame.exception.StageReservedException;
-import syam.flaggame.util.Actions;
 import syam.flaggame.util.Cuboid;
 
 /**
@@ -50,10 +43,6 @@ import syam.flaggame.util.Cuboid;
  * @author syam(syamn)
  */
 public class Stage {
-
-    // Logger
-    public static final Logger log = FlagGame.logger;
-    private static final String logPrefix = FlagGame.logPrefix;
     
     public static final Pattern NAME_REGEX = Pattern.compile("^[a-z0-9](?:[a-z0-9_-]*[a-z0-9])?$");
 
@@ -83,7 +72,7 @@ public class Stage {
     private Cuboid stageArea = null;
     private boolean stageProtect = true;
     private final Map<TeamColor, Location> spawnMap = Collections.synchronizedMap(new EnumMap<>(TeamColor.class));
-    private final Map<TeamColor, Cuboid> baseMap = Collections.synchronizedMap(new EnumMap<>(TeamColor.class));
+    private final AreaSet areas = new AreaSet();
     private Location specSpawn = null;
 
     /**
@@ -329,41 +318,9 @@ public class Stage {
     public boolean isStageProtected() {
         return this.stageProtect;
     }
-
-    // 拠点
-    public void setBase(TeamColor team, Location pos1, Location pos2) throws StageReservedException {
-        checkEditable();
-        baseMap.put(team, new Cuboid(pos1, pos2));
-    }
-    
-    public void setBase(TeamColor team, Cuboid cuboid) throws StageReservedException {
-        checkEditable();
-        if (cuboid == null) {
-            baseMap.remove(team);
-        } else {
-            baseMap.put(team, cuboid);
-        }
-    }
-    
-    public Cuboid getBase(TeamColor team) {
-        if (team == null || !baseMap.containsKey(team)) {
-            return null;
-        }
-        return baseMap.get(team);
-    }
-    
-    public Map<TeamColor, Cuboid> getBases() {
-        return baseMap;
-    }
-    
-    public void setBases(Map<TeamColor, Cuboid> bases) throws StageReservedException {
-        checkEditable();
-        this.baseMap.clear();
-        this.baseMap.putAll(bases);
-    }
     
     public Set<TeamColor> getTeams() {
-        return Collections.unmodifiableSet(this.getBases().keySet());
+        return Collections.unmodifiableSet(this.getSpawns().keySet());
     }
 
     /**
@@ -498,9 +455,7 @@ public class Stage {
     
     public void validate() throws NullPointerException {
         Objects.requireNonNull(stageArea);
-        if (!available || spawnMap.isEmpty() || baseMap.isEmpty()) {
-            throw new NullPointerException();
-        } else if (!Objects.equals(spawnMap.keySet(), baseMap.keySet())) {
+        if (!available || spawnMap.isEmpty()) {
             throw new NullPointerException();
         }
     }

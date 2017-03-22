@@ -240,7 +240,7 @@ public class BasicGame implements Game {
 
         this.stage.getStageArea().getPos1().getWorld().getEntities().stream()
                 .filter(e -> e instanceof Item)
-                .filter(e -> this.stage.getStageArea().isIn(e.getLocation()))
+                .filter(e -> this.stage.getStageArea().contains(e.getLocation()))
                 .forEach(Entity::remove);
 
         //各種処理系開始
