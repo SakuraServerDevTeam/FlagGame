@@ -493,85 +493,12 @@ public class Stage {
     }
     
     public void initialize() {
-        this.rollbackChests();
-        this.rollbackFlags();
-        this.rollbackBanners();
-    }
-
-    /* ロールバックメソッド */
-    /**
-     * このゲームの全ブロックをロールバックする
-     *
-     * @return
-     */
-    private void rollbackFlags() {
-        for (Flag flag : flags.values()) {
-            flag.rollback();
-        }
-    }
-
-    /*
-     * コンテナブロックを2ブロック下の同じコンテナから要素をコピーする
-     */
-    private void rollbackChests() {
-        for (Location loc : chests) {
-            Block toBlock = loc.getBlock();
-            Block fromBlock = toBlock.getRelative(BlockFace.DOWN, 2);
-
-            // インベントリインターフェースを持たないブロックはスキップ
-            if (!(toBlock.getState() instanceof InventoryHolder)) {
-                log.log(Level.WARNING, logPrefix + "Block is not InventoryHolder!Rollback skipping.. Block: {0}", Actions.getBlockLocationString(toBlock.getLocation()));
-                continue;
-            }
-            // 2ブロック下とブロックIDが違えばスキップ
-            if (toBlock.getType() != fromBlock.getType()) {
-                log.log(Level.WARNING, logPrefix + "BlockID unmatched!Rollback skipping.. Block: {0}", Actions.getBlockLocationString(toBlock.getLocation()));
-                continue;
-            }
-
-            // 各チェストがインベントリホルダにキャスト出来ない場合例外にならないようtryで囲う
-            InventoryHolder toContainer;
-            InventoryHolder fromContainer; // チェストでなければここで例外 修正予定 →
-            // 7/22修正済み
-            try {
-                toContainer = (InventoryHolder) toBlock.getState();
-                fromContainer = (InventoryHolder) fromBlock.getState();
-            } catch (ClassCastException ex) {
-                log.log(Level.WARNING, logPrefix + "Container can''t cast to InventoryHolder! Rollback skipping.. Block: {0}", Actions.getBlockLocationString(toBlock.getLocation()));
-                continue;
-            }
-
-            // チェスト内容コピー
-            try {
-                ItemStack[] oldIs = fromContainer.getInventory().getContents().clone();
-                ItemStack[] newIs = new ItemStack[oldIs.length];
-                for (int i = 0; i < oldIs.length; i++) {
-                    if (oldIs[i] == null) {
-                        continue;
-                    }
-                    // newIs[i] = oldIs[i].clone(); // ItemStackシャローコピー不可
-                    newIs[i] = new ItemStack(oldIs[i]); // ディープコピー
-                }
-                
-                toContainer.getInventory().setContents(newIs);
-            } catch (NullPointerException npe) {
-                npe.printStackTrace();
-            } catch (Exception ex) {
-                log.log(Level.WARNING, "Invalid inventory@{0}", toBlock.getLocation());
-                log.log(Level.WARNING, ex.getMessage());
-            }
-        }
-    }
-    
-    private void rollbackBanners() {
-        for (BannerSpawner spawner : bannerSpawners.values()) {
-            spawner.spawnBanner();
-        }
+        throw new UnsupportedOperationException("WIP");
     }
     
     public void validate() throws NullPointerException {
         Objects.requireNonNull(stageArea);
-        if (!available || !stageProtect || spawnMap.isEmpty() || baseMap.isEmpty()) {
+        if (!available || spawnMap.isEmpty() || baseMap.isEmpty()) {
             throw new NullPointerException();
         } else if (!Objects.equals(spawnMap.keySet(), baseMap.keySet())) {
             throw new NullPointerException();

@@ -19,6 +19,8 @@ package syam.flaggame.util;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import jp.llv.nbt.CuboidSerializable;
+import jp.llv.nbt.LocationSerializable;
 
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -52,6 +54,10 @@ public class Cuboid {
         int zMax = Math.max(point1.getBlockZ(), point2.getBlockZ());
         this.min = new Location(point1.getWorld(), xMin, yMin, zMin);
         this.max = new Location(point1.getWorld(), xMax, yMax, zMax);
+    }
+    
+    public Cuboid(CuboidSerializable cuboid) {
+        this(cuboid.getOrigin().toLocation(), cuboid.getCorner().toLocation());
     }
 
     /**
@@ -150,4 +156,9 @@ public class Cuboid {
     public Location getPos2() {
         return max;
     }
+    
+    public CuboidSerializable serialize() {
+        return new CuboidSerializable(new LocationSerializable(min), new LocationSerializable(max));
+    }
+    
 }
