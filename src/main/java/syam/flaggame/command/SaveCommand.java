@@ -33,7 +33,7 @@ public class SaveCommand extends BaseCommand {
     @Override
     public void execute() {
         // データ保存
-        plugin.getFileManager().saveStages();
+        plugin.getStages().saveStages();
 
         Actions.message(sender, "&aStages Saved!");
     }

@@ -173,17 +173,17 @@ public class StageBsonConverter {
 
     private static void writeAreaInfo(BsonDocument bson, String key, AreaInfo value) {
         BsonDocument section = new BsonDocument();
-        writeMap(section, "rollbacks", value.getRollbacks(), this::writeRollback);
-        writeEnumMap(section, "godmode", value.getGodmodeMap(), this::writeEnum);
-        writeEnumMap(section, "regeneration", value.getRegenerationMap(), this::writeEnum);
-        writeEnumMap(section, "protection", value.getProtectionMap(), this::writeEnum);
+        writeMap(section, "rollbacks", value.getRollbacks(), StageBsonConverter::writeRollback);
+        writeEnumMap(section, "godmode", value.getGodmodeMap(), StageBsonConverter::writeEnum);
+        writeEnumMap(section, "regeneration", value.getRegenerationMap(), StageBsonConverter::writeEnum);
+        writeEnumMap(section, "protection", value.getProtectionMap(), StageBsonConverter::writeEnum);
         bson.append(key, section);
     }
 
     private static AreaInfo readAreaInfo(BsonDocument bson, String key) {
         BsonDocument section = bson.getDocument(key);
         AreaInfo result = new AreaInfo();
-        result.setRollbacks(readMap(section, "rolbacks", this::readRollback));
+        result.setRollbacks(readMap(section, "rolbacks", StageBsonConverter::readRollback));
         result.setGodmodeMap(readEnumMap(section, "godmode", TeamColor.class, (b, k) -> readEnum(b, k, AreaInfo.State.class)));
         result.setRegenerationMap(readEnumMap(section, "regeneration", TeamColor.class, (b, k) -> readEnum(b, k, AreaInfo.State.class)));
         result.setProtectionMap(readEnumMap(section, "protection", Protection.class, (b, k) -> readEnum(b, k, AreaInfo.State.class)));
@@ -192,16 +192,16 @@ public class StageBsonConverter {
 
     private static void writeAreaSet(BsonDocument bson, String key, AreaSet value) {
         BsonDocument section = new BsonDocument();
-        writeMap(section, "areas", value.getAreaMap(), this::writeCuboid);
-        writeMap(section, "info", value.getAreaInfoMap(), this::writeAreaInfo);
+        writeMap(section, "areas", value.getAreaMap(), StageBsonConverter::writeCuboid);
+        writeMap(section, "info", value.getAreaInfoMap(), StageBsonConverter::writeAreaInfo);
         section.append(key, section);
     }
 
     private static AreaSet readAreaSet(BsonDocument bson, String key) {
         BsonDocument section = bson.getDocument(key);
         AreaSet result = new AreaSet();
-        result.setAreaMap(readMap(section, "areas", this::readCuboid));
-        result.setAreaInfoMap(readMap(section, "info", this::readAreaInfo));
+        result.setAreaMap(readMap(section, "areas", StageBsonConverter::readCuboid));
+        result.setAreaInfoMap(readMap(section, "info", StageBsonConverter::readAreaInfo));
         return result;
     }
 
@@ -282,13 +282,13 @@ public class StageBsonConverter {
         section.append("available", new BsonBoolean(value.isAvailable()));
         section.append("kill", new BsonDouble(value.getKillScore()));
         section.append("death", new BsonDouble(value.getDeathScore()));
-        writeEnumMap(section, "spawn", value.getSpawns(), this::writeLocation);
+        writeEnumMap(section, "spawn", value.getSpawns(), StageBsonConverter::writeLocation);
         writeLocation(section, "specspawn", value.getSpecSpawn().orElse(null));
-        writeList(section, "flags", value.getFlags().values(), this::writeFlag);
-        writeList(section, "nexuses", value.getNexuses().values(), this::writeNexus);
-        writeList(section, "banner-spawners", value.getBannerSlots().values(), this::writeBannerSlot);
-        writeList(section, "banner-slots", value.getBannerSpawners().values(), this::writeBannerSpawner);
-        writeList(section, "containers", value.getChests(), this::writeLocation);
+        writeList(section, "flags", value.getFlags().values(), StageBsonConverter::writeFlag);
+        writeList(section, "nexuses", value.getNexuses().values(), StageBsonConverter::writeNexus);
+        writeList(section, "banner-spawners", value.getBannerSlots().values(), StageBsonConverter::writeBannerSlot);
+        writeList(section, "banner-slots", value.getBannerSpawners().values(), StageBsonConverter::writeBannerSpawner);
+        writeList(section, "containers", value.getChests(), StageBsonConverter::writeLocation);
         writeAreaSet(section, "areas", value.getAreas());
         return section;
     }
@@ -302,13 +302,13 @@ public class StageBsonConverter {
             stage.setAvailable(bson.getBoolean("available").getValue());
             stage.setKillScore(bson.getDouble("kill").getValue());
             stage.setDeathScore(bson.getDouble("death").getValue());
-            stage.setSpawns(readEnumMap(bson, "spawn", TeamColor.class, this::readLocation));
+            stage.setSpawns(readEnumMap(bson, "spawn", TeamColor.class, StageBsonConverter::readLocation));
             stage.setSpecSpawn(readLocation(bson, "specspawn"));
-            stage.setFlags(readList(bson, "flags", this::readFlag));
-            stage.setNexuses(readList(bson, "nexuses", this::readNexus));
-            stage.setBannerSpawners(readList(bson, "banner-spawners", this::readBannerSpawner));
-            stage.setBannerSlots(readList(bson, "banner-slots", this::readBannerSlot));
-            stage.setChests(readList(bson, "containers", this::readLocation));
+            stage.setFlags(readList(bson, "flags", StageBsonConverter::readFlag));
+            stage.setNexuses(readList(bson, "nexuses", StageBsonConverter::readNexus));
+            stage.setBannerSpawners(readList(bson, "banner-spawners", StageBsonConverter::readBannerSpawner));
+            stage.setBannerSlots(readList(bson, "banner-slots", StageBsonConverter::readBannerSlot));
+            stage.setChests(readList(bson, "containers", StageBsonConverter::readLocation));
             stage.setAreas(readAreaSet(bson, "areas"));
             return stage;
         } catch (StageReservedException ex) {

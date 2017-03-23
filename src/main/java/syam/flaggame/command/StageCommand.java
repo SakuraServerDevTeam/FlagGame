@@ -128,7 +128,7 @@ public class StageCommand extends BaseCommand implements Queueable {
 
         // update dynmap, save stage
         plugin.getDynmap().updateRegions();
-        plugin.getFileManager().saveStages();
+        plugin.getStages().saveStages();
 
         Actions.message(sender, "&a新規ステージ'" + stage.getName() + "'を登録して選択しました！");
     }
