@@ -114,7 +114,7 @@ public class StageBsonConverter {
     }
 
     private static void writeLocation(BsonDocument bson, String key, Location value) {
-        if (key == null) {
+        if (value == null) {
             return;
         }
         BsonDocument section = new BsonDocument();
