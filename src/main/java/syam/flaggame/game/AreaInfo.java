@@ -33,6 +33,7 @@ public class AreaInfo {
     private final Map<String, RollbackData> rollbacks = new HashMap<>();
     private final Map<TeamColor, State> godmode = new EnumMap<>(TeamColor.class);
     private final Map<Protection, State> protection = new EnumMap<>(Protection.class);
+    private final Map<TeamColor, State> regeneration = new EnumMap<>(TeamColor.class);
     
     public RollbackData addRollback(String id) {
         if (rollbacks.containsKey(id)) {
@@ -41,6 +42,10 @@ public class AreaInfo {
         RollbackData data = new RollbackData();
         rollbacks.put(id, data);
         return data;
+    }
+    
+    /*package*/ void addRollback(String name, RollbackData data) {
+        rollbacks.put(name, data);
     }
     
     public void removeRollback(String id) {
@@ -53,6 +58,10 @@ public class AreaInfo {
     
     public Map<String, RollbackData> getRollbacks() {
         return Collections.unmodifiableMap(rollbacks);
+    }
+    
+    /*package*/ void setRollbacks(Map<String, RollbackData> map) {
+        rollbacks.putAll(map);
     }
     
     public void removeRollbacks() {
@@ -68,6 +77,31 @@ public class AreaInfo {
         godmode.put(color, state);
     }
     
+    /*package*/ Map<TeamColor, State> getGodmodeMap() {
+        return Collections.unmodifiableMap(godmode);
+    }
+    
+    /*package*/ void setGodmodeMap(Map<TeamColor, State> map) {
+        godmode.putAll(map);
+    }
+    
+    public State isRegeneratable(TeamColor color) {
+        State state = regeneration.get(color);
+        return state == null ? State.DEFAULT : state;
+    }
+    
+    public void setRegeneratable(TeamColor color, State state) {
+        regeneration.put(color, state);
+    }
+    
+    /*package*/ Map<TeamColor, State> getRegenerationMap() {
+        return Collections.unmodifiableMap(regeneration);
+    }
+    
+    /*package*/ void setRegenerationMap(Map<TeamColor, State> map) {
+        regeneration.putAll(map);
+    }
+    
     public State isProtected(Protection type) {
         State state = protection.get(type);
         return state == null ? State.DEFAULT : state;
@@ -75,6 +109,14 @@ public class AreaInfo {
     
     public void setProtected(Protection type, State state) {
         protection.put(type, state);
+    }
+    
+    /*package*/ Map<Protection, State> getProtectionMap() {
+        return Collections.unmodifiableMap(protection);
+    }
+    
+    /*package*/ void setProtectionMap(Map<Protection, State> map) {
+        protection.putAll(map);
     }
     
     public enum State {
@@ -112,7 +154,7 @@ public class AreaInfo {
         private RollbackTarget target = RollbackTarget.NONE;
         private byte[] data = {};
 
-        private RollbackData() {
+        /*package*/ RollbackData() {
         }
         
         public RollbackTarget getTarget() {

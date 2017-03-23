@@ -128,4 +128,20 @@ public class AreaSet {
         return AreaInfo.State.DEFAULT.isPositive();
     }
     
+    /*package*/ Map<String, Cuboid> getAreaMap() {
+        return areas;
+    }
+    
+    /*package*/ void setAreaMap(Map<String, Cuboid> map) {
+        areas.putAll(map);
+    }
+    
+    /*package*/ Map<String, AreaInfo> getAreaInfoMap() {
+        return information;
+    }
+    
+    /*package*/ void setAreaInfoMap(Map<String, AreaInfo> map) {
+        information.putAll(map);
+    }
+    
 }

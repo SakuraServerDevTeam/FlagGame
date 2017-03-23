@@ -67,9 +67,9 @@ public class Stage {
     private final Set<Location> chests = Collections.newSetFromMap(new ConcurrentHashMap<Location, Boolean>());
 
     // 地点・エリア
-    private boolean stageProtect = true;
+    private boolean protect = true;
     private final Map<TeamColor, Location> spawnMap = Collections.synchronizedMap(new EnumMap<>(TeamColor.class));
-    private final AreaSet areas = new AreaSet();
+    private AreaSet areas = new AreaSet();
     private Location specSpawn = null;
 
     /**
@@ -291,13 +291,17 @@ public class Stage {
         return areas;
     }
     
-    public void setProtected(boolean protect) throws StageReservedException {
-        checkEditable();
-        this.stageProtect = protect;
+    /*package*/ void setAreas(AreaSet areas) {
+        this.areas = areas;
     }
     
-    public boolean isStageProtected() {
-        return this.stageProtect;
+    public void setProtected(boolean protect) throws StageReservedException {
+        checkEditable();
+        this.protect = protect;
+    }
+    
+    public boolean isProtected() {
+        return this.protect;
     }
     
     public Set<TeamColor> getTeams() {
