@@ -65,6 +65,7 @@ public class MongoDB implements Database {
                             config.getDatabaseUserpass().toCharArray()
                     );
             client = credential == null ? new MongoClient(addr) : new MongoClient(addr, Arrays.asList(credential));
+            database = client.getDatabase(config.getDatabaseDbname());
         }
     }
 
