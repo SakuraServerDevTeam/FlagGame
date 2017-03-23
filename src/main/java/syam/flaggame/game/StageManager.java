@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import jp.llv.flaggame.database.DatabaseException;
 import syam.flaggame.FlagGame;
 
 /**
@@ -122,12 +123,21 @@ public class StageManager implements Iterable<Stage> {
         return this.getStages().values().iterator();
     }
 
-    public void saveStages() {
-        throw new UnsupportedOperationException("WIP");
+    public void saveStages() throws DatabaseException {
+        if (!plugin.getDatabases().isPresent()) {
+            throw new DatabaseException("Not connected");
+        }
+        plugin.getDatabases().get().saveStages(stages.values());
     }
 
-    public void loadStages() {
-        throw new UnsupportedOperationException("WIP");
+    public void loadStages() throws DatabaseException {
+        if (!plugin.getDatabases().isPresent()) {
+            throw new DatabaseException("Not connected");
+        }
+        stages.clear();
+        for (Stage stage : plugin.getDatabases().get().loadStages()) {
+            stages.put(stage.getName(), stage);
+        }
     }
 
 }
