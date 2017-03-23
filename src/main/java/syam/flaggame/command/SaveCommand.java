@@ -16,7 +16,10 @@
  */
 package syam.flaggame.command;
 
+import java.util.logging.Level;
+import jp.llv.flaggame.database.DatabaseException;
 import syam.flaggame.FlagGame;
+import syam.flaggame.exception.CommandException;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.util.Actions;
 
@@ -31,9 +34,14 @@ public class SaveCommand extends BaseCommand {
     }
 
     @Override
-    public void execute() {
+    public void execute() throws CommandException {
         // データ保存
-        plugin.getStages().saveStages();
+        try {
+            plugin.getStages().saveStages();
+        } catch (DatabaseException ex) {
+            plugin.getLogger().log(Level.WARNING, "Failed to connect database!", ex);
+            throw new CommandException("&cデータベースへの保存に失敗しました！");
+        }
 
         Actions.message(sender, "&aStages Saved!");
     }

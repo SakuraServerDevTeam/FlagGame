@@ -20,6 +20,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+import jp.llv.flaggame.database.DatabaseException;
 import syam.flaggame.FlagGame;
 
 import syam.flaggame.command.queue.Queueable;
@@ -128,7 +129,12 @@ public class StageCommand extends BaseCommand implements Queueable {
 
         // update dynmap, save stage
         plugin.getDynmap().updateRegions();
-        plugin.getStages().saveStages();
+        try {
+            plugin.getStages().saveStages();
+        } catch (DatabaseException ex) {
+            plugin.getLogger().log(Level.WARNING, "Failed to connect database!", ex);
+            throw new CommandException("&cデータベースへの保存に失敗しました！");
+        }
 
         Actions.message(sender, "&a新規ステージ'" + stage.getName() + "'を登録して選択しました！");
     }
