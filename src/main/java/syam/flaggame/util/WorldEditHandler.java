@@ -139,7 +139,11 @@ public class WorldEditHandler {
         LocalSession session = we.getWorldEdit().getSessionManager().get(
                 new BukkitPlayer(we, we.getServerInterface(), player)
         );
-        if (!(session.getRegionSelector(session.getSelectionWorld()) instanceof CuboidRegionSelector)) {
+        com.sk89q.worldedit.world.World world = session.getSelectionWorld();
+        if (world == null) {
+            throw new IllegalStateException("Selection not found");
+        }
+        if (!(session.getRegionSelector(world) instanceof CuboidRegionSelector)) {
             throw new IllegalStateException("Cuboid regions are not supported");
         }
         CuboidRegionSelector selector = (CuboidRegionSelector) session.getRegionSelector(session.getSelectionWorld());
