@@ -194,7 +194,7 @@ public class StageBsonConverter {
         BsonDocument section = new BsonDocument();
         writeMap(section, "areas", value.getAreaMap(), StageBsonConverter::writeCuboid);
         writeMap(section, "info", value.getAreaInfoMap(), StageBsonConverter::writeAreaInfo);
-        section.append(key, section);
+        bson.append(key, section);
     }
 
     private static AreaSet readAreaSet(BsonDocument bson, String key) {
