@@ -41,34 +41,19 @@ import org.bson.BsonString;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
-import syam.flaggame.FlagGame;
 import syam.flaggame.exception.StageReservedException;
 import syam.flaggame.util.Cuboid;
 
-public class StageFileManager {
+public class StageBsonConverter {
 
-    private final FlagGame plugin;
-
-    public StageFileManager(final FlagGame plugin) {
-        this.plugin = plugin;
-    }
-
-    public void saveStages() {
-        throw new UnsupportedOperationException("WIP");
-    }
-
-    public void loadStages() {
-        throw new UnsupportedOperationException("WIP");
-    }
-
-    private <E extends Enum<E>> void writeEnum(BsonDocument bson, String key, E value) {
+    private static <E extends Enum<E>> void writeEnum(BsonDocument bson, String key, E value) {
         if (value == null) {
             return;
         }
         bson.append(key, new BsonString(value.toString()));
     }
 
-    private <E extends Enum<E>> E readEnum(BsonDocument bson, String key, Class<E> clazz) {
+    private static <E extends Enum<E>> E readEnum(BsonDocument bson, String key, Class<E> clazz) {
         try {
             return Enum.valueOf(clazz, bson.getString(key).getValue());
         } catch (BsonInvalidOperationException ex) {
@@ -76,7 +61,7 @@ public class StageFileManager {
         }
     }
 
-    private <K extends Enum<K>, V> void writeEnumMap(BsonDocument bson, String key, Map<K, ? extends V> value, TriConsumer<BsonDocument, String, V> writer) {
+    private static <K extends Enum<K>, V> void writeEnumMap(BsonDocument bson, String key, Map<K, ? extends V> value, TriConsumer<BsonDocument, String, V> writer) {
         BsonDocument section = new BsonDocument();
         for (Map.Entry<K, ? extends V> entry : value.entrySet()) {
             writer.accept(section, entry.getKey().toString(), entry.getValue());
@@ -84,7 +69,7 @@ public class StageFileManager {
         bson.append(key, section);
     }
 
-    private <K extends Enum<K>, V> EnumMap<K, V> readEnumMap(BsonDocument bson, String key, Class<K> clazz, BiFunction<BsonDocument, String, ? extends V> reader) {
+    private static <K extends Enum<K>, V> EnumMap<K, V> readEnumMap(BsonDocument bson, String key, Class<K> clazz, BiFunction<BsonDocument, String, ? extends V> reader) {
         BsonDocument section = bson.getDocument(key);
         EnumMap<K, V> result = new EnumMap<>(clazz);
         for (String k : section.keySet()) {
@@ -93,7 +78,7 @@ public class StageFileManager {
         return result;
     }
 
-    public <V> void writeMap(BsonDocument bson, String key, Map<String, ? extends V> value, TriConsumer<BsonDocument, String, V> writer) {
+    private static <V> void writeMap(BsonDocument bson, String key, Map<String, ? extends V> value, TriConsumer<BsonDocument, String, V> writer) {
         BsonDocument section = new BsonDocument();
         for (Map.Entry<String, ? extends V> entry : value.entrySet()) {
             writer.accept(section, entry.getKey(), entry.getValue());
@@ -101,7 +86,7 @@ public class StageFileManager {
         bson.append(key, section);
     }
 
-    public <V> Map<String, V> readMap(BsonDocument bson, String key, BiFunction<BsonDocument, String, ? extends V> reader) {
+    private static <V> Map<String, V> readMap(BsonDocument bson, String key, BiFunction<BsonDocument, String, ? extends V> reader) {
         BsonDocument section = bson.getDocument(key);
         Map<String, V> result = new HashMap<>();
         for (String k : section.keySet()) {
@@ -110,7 +95,7 @@ public class StageFileManager {
         return result;
     }
 
-    public static <T> void writeList(BsonDocument bson, String key, Collection<? extends T> value, TriConsumer<BsonDocument, String, T> writer) {
+    private static <T> void writeList(BsonDocument bson, String key, Collection<? extends T> value, TriConsumer<BsonDocument, String, T> writer) {
         BsonDocument section = new BsonDocument();
         int i = 0;
         for (T t : value) {
@@ -119,7 +104,7 @@ public class StageFileManager {
         bson.append(key, section);
     }
 
-    public static <T> List<T> readList(BsonDocument bson, String key, BiFunction<BsonDocument, String, ? extends T> reader) {
+    private static <T> List<T> readList(BsonDocument bson, String key, BiFunction<BsonDocument, String, ? extends T> reader) {
         BsonDocument section = bson.getDocument(key);
         List<T> result = new ArrayList<>();
         for (String k : section.keySet()) {
@@ -128,7 +113,7 @@ public class StageFileManager {
         return result;
     }
 
-    private void writeLocation(BsonDocument bson, String key, Location value) {
+    private static void writeLocation(BsonDocument bson, String key, Location value) {
         if (key == null) {
             return;
         }
@@ -142,7 +127,7 @@ public class StageFileManager {
         bson.append(key, section);
     }
 
-    private Location readLocation(BsonDocument bson, String key) {
+    private static Location readLocation(BsonDocument bson, String key) {
         try {
             BsonDocument section = bson.getDocument(key);
             String world = section.getString("world").getValue();
@@ -157,19 +142,19 @@ public class StageFileManager {
         }
     }
 
-    private void writeCuboid(BsonDocument bson, String key, Cuboid value) {
+    private static void writeCuboid(BsonDocument bson, String key, Cuboid value) {
         BsonDocument section = new BsonDocument();
         writeLocation(section, "pos1", value.getPos1());
         writeLocation(section, "pos2", value.getPos2());
         bson.append(key, section);
     }
 
-    private Cuboid readCuboid(BsonDocument bson, String key) {
+    private static Cuboid readCuboid(BsonDocument bson, String key) {
         BsonDocument section = bson.getDocument(key);
         return new Cuboid(readLocation(section, "pos1"), readLocation(section, "pos2"));
     }
 
-    private void writeRollback(BsonDocument bson, String key, AreaInfo.RollbackData value) {
+    private static void writeRollback(BsonDocument bson, String key, AreaInfo.RollbackData value) {
         BsonDocument section = new BsonDocument();
         section.append("timing", new BsonInt64(value.getTiming()));
         writeEnum(section, "target", value.getTarget());
@@ -177,7 +162,7 @@ public class StageFileManager {
         bson.append(key, section);
     }
 
-    private AreaInfo.RollbackData readRollback(BsonDocument bson, String key) {
+    private static AreaInfo.RollbackData readRollback(BsonDocument bson, String key) {
         BsonDocument section = bson.getDocument(key);
         AreaInfo.RollbackData result = new AreaInfo.RollbackData();
         result.setTiming(section.getInt64("timing").getValue());
@@ -186,7 +171,7 @@ public class StageFileManager {
         return result;
     }
 
-    private void writeAreaInfo(BsonDocument bson, String key, AreaInfo value) {
+    private static void writeAreaInfo(BsonDocument bson, String key, AreaInfo value) {
         BsonDocument section = new BsonDocument();
         writeMap(section, "rollbacks", value.getRollbacks(), this::writeRollback);
         writeEnumMap(section, "godmode", value.getGodmodeMap(), this::writeEnum);
@@ -195,7 +180,7 @@ public class StageFileManager {
         bson.append(key, section);
     }
 
-    private AreaInfo readAreaInfo(BsonDocument bson, String key) {
+    private static AreaInfo readAreaInfo(BsonDocument bson, String key) {
         BsonDocument section = bson.getDocument(key);
         AreaInfo result = new AreaInfo();
         result.setRollbacks(readMap(section, "rolbacks", this::readRollback));
@@ -205,14 +190,14 @@ public class StageFileManager {
         return result;
     }
 
-    private void writeAreaSet(BsonDocument bson, String key, AreaSet value) {
+    private static void writeAreaSet(BsonDocument bson, String key, AreaSet value) {
         BsonDocument section = new BsonDocument();
         writeMap(section, "areas", value.getAreaMap(), this::writeCuboid);
         writeMap(section, "info", value.getAreaInfoMap(), this::writeAreaInfo);
         section.append(key, section);
     }
 
-    private AreaSet readAreaSet(BsonDocument bson, String key) {
+    private static AreaSet readAreaSet(BsonDocument bson, String key) {
         BsonDocument section = bson.getDocument(key);
         AreaSet result = new AreaSet();
         result.setAreaMap(readMap(section, "areas", this::readCuboid));
@@ -220,7 +205,7 @@ public class StageFileManager {
         return result;
     }
 
-    private void writeFlag(BsonDocument bson, String key, Flag value) {
+    private static void writeFlag(BsonDocument bson, String key, Flag value) {
         BsonDocument section = new BsonDocument();
         writeLocation(section, "loc", value.getLocation());
         section.append("point", new BsonDouble(value.getFlagPoint()));
@@ -228,7 +213,7 @@ public class StageFileManager {
         bson.append(key, section);
     }
 
-    private Flag readFlag(BsonDocument bson, String key) {
+    private static Flag readFlag(BsonDocument bson, String key) {
         BsonDocument section = bson.getDocument(key);
         Location loc = readLocation(section, "loc");
         double point = section.getDouble("point").getValue();
@@ -236,7 +221,7 @@ public class StageFileManager {
         return new Flag(loc, point, producing);
     }
 
-    private void writeNexus(BsonDocument bson, String key, Nexus value) {
+    private static void writeNexus(BsonDocument bson, String key, Nexus value) {
         BsonDocument section = new BsonDocument();
         writeLocation(section, "loc", value.getLocation());
         writeEnum(section, "color", value.getColor());
@@ -244,7 +229,7 @@ public class StageFileManager {
         bson.append(key, section);
     }
 
-    private Nexus readNexus(BsonDocument bson, String key) {
+    private static Nexus readNexus(BsonDocument bson, String key) {
         BsonDocument section = bson.getDocument(key);
         Location loc = readLocation(section, "loc");
         TeamColor color = readEnum(section, "color", TeamColor.class);
@@ -252,21 +237,21 @@ public class StageFileManager {
         return new Nexus(loc, color, point);
     }
 
-    private void writeBannerSlot(BsonDocument bson, String key, BannerSlot value) {
+    private static void writeBannerSlot(BsonDocument bson, String key, BannerSlot value) {
         BsonDocument section = new BsonDocument();
         writeLocation(section, "loc", value.getLocation());
         writeEnum(section, "color", value.getColor());
         bson.append(key, section);
     }
 
-    private BannerSlot readBannerSlot(BsonDocument bson, String key) {
+    private static BannerSlot readBannerSlot(BsonDocument bson, String key) {
         BsonDocument section = bson.getDocument(key);
         Location loc = readLocation(section, "loc");
         TeamColor color = readEnum(section, "color", TeamColor.class);
         return new BannerSlot(loc, color);
     }
 
-    private void writeBannerSpawner(BsonDocument bson, String key, BannerSpawner value) {
+    private static void writeBannerSpawner(BsonDocument bson, String key, BannerSpawner value) {
         BsonDocument section = new BsonDocument();
         writeLocation(section, "loc", value.getLocation());
         section.append("point", new BsonInt32(value.getPoint()));
@@ -277,7 +262,7 @@ public class StageFileManager {
         bson.append(key, section);
     }
 
-    private BannerSpawner readBannerSpawner(BsonDocument bson, String key) {
+    private static BannerSpawner readBannerSpawner(BsonDocument bson, String key) {
         BsonDocument section = bson.getDocument(key);
         Location loc = readLocation(section, "loc");
         byte point = (byte) section.getInt32("point").getValue();
@@ -288,7 +273,7 @@ public class StageFileManager {
         return new BannerSpawner(loc, point, hp, producing, wall, face);
     }
 
-    private BsonDocument writeStage(Stage value) {
+    public static BsonDocument writeStage(Stage value) {
         BsonDocument section = new BsonDocument();
         section.append("name", new BsonString(value.getName()));
         section.append("time", new BsonInt64(value.getGameTime()));
@@ -308,7 +293,7 @@ public class StageFileManager {
         return section;
     }
 
-    private Stage readStage(BsonDocument bson) {
+    public static Stage readStage(BsonDocument bson) {
         try {
             Stage stage = new Stage(bson.getString("name").getValue());
             stage.setGameTime(bson.getInt64("time").getValue());

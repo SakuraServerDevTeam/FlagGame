@@ -23,18 +23,25 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import syam.flaggame.FlagGame;
 
 /**
  * StageManager (StageManager.java)
- * 
+ *
  * @author syam(syamn)
  */
 public class StageManager implements Iterable<Stage> {
+
+    private final FlagGame plugin;
     private final HashMap<String, Stage> stages = new HashMap<>();
+
+    public StageManager(FlagGame plugin) {
+        this.plugin = plugin;
+    }
 
     /**
      * 全ステージのマップを返す
-     * 
+     *
      * @return {@code HashMap<String, Stage>}
      */
     public Map<String, Stage> getStages() {
@@ -43,11 +50,9 @@ public class StageManager implements Iterable<Stage> {
 
     /**
      * ステージとステージ名を紐付けでマッピングする
-     * 
-     * @param stageName
-     *            ステージ名
-     * @param stage
-     *            ステージインスタンス
+     *
+     * @param stageName ステージ名
+     * @param stage ステージインスタンス
      */
     public void addStage(String stageName, Stage stage) {
         stages.put(stageName, stage);
@@ -55,9 +60,8 @@ public class StageManager implements Iterable<Stage> {
 
     /**
      * 指定したステージをマップから削除する
-     * 
-     * @param stageName
-     *            削除するステージ名
+     *
+     * @param stageName 削除するステージ名
      */
     public void removeStage(String stageName) {
         stages.remove(stageName);
@@ -72,7 +76,7 @@ public class StageManager implements Iterable<Stage> {
 
     /**
      * 実行可能なステージリストを返す
-     * 
+     *
      * @return {@code List<Stage>}
      */
     public ArrayList<Stage> getAvailableStages() {
@@ -89,21 +93,23 @@ public class StageManager implements Iterable<Stage> {
 
     /**
      * 実行可能なステージからランダムで1つ抽出する
-     * 
+     *
      * @return Stage
      */
     public Stage getRandomAvailableStage() {
         Random rnd = new Random();
         ArrayList<Stage> availables = getAvailableStages();
 
-        if (availables.size() <= 0) { return null; }
+        if (availables.size() <= 0) {
+            return null;
+        }
 
         return availables.get(rnd.nextInt(availables.size()));
     }
 
     /**
      * ステージ名からステージを返す
-     * 
+     *
      * @param stageName
      * @return Game
      */
@@ -115,4 +121,13 @@ public class StageManager implements Iterable<Stage> {
     public Iterator<Stage> iterator() {
         return this.getStages().values().iterator();
     }
+
+    public void saveStages() {
+        throw new UnsupportedOperationException("WIP");
+    }
+
+    public void loadStages() {
+        throw new UnsupportedOperationException("WIP");
+    }
+
 }

@@ -19,6 +19,7 @@ package jp.llv.flaggame.database;
 import java.util.Collection;
 import java.util.UUID;
 import jp.llv.flaggame.profile.GameRecordStream;
+import syam.flaggame.game.Stage;
 
 /**
  *
@@ -42,6 +43,10 @@ public interface Database extends AutoCloseable {
     void saveGameProfile(GameRecordStream profile) throws DatabaseException;
     
     Collection<UUID> getGames() throws DatabaseException;
+    
+    Collection<Stage> loadStages() throws DatabaseException;
+    
+    void saveStages(Collection<Stage> stages) throws DatabaseException;
 
     @Override
     public void close() throws DatabaseException;
