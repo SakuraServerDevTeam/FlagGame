@@ -159,6 +159,9 @@ public class FlagGame extends JavaPlugin {
         try {
             database.connect();
         } catch (DatabaseException ex) {
+            getLogger().log(Level.WARNING, "Failed to connect database!", ex);
+            getServer().getPluginManager().disablePlugin(this);
+            return;
         }
         this.getServer().getScheduler().runTaskTimer(this, database::tryConnect, 600000L, 300000L);
         debug.endTimer("database");
@@ -174,7 +177,13 @@ public class FlagGame extends JavaPlugin {
 
         // ゲームデータ読み込み
         debug.startTimer("load games");
-        stages.loadStages();
+        try {
+            stages.loadStages();
+        } catch (DatabaseException ex) {
+            getLogger().log(Level.WARNING, "Failed to connect database!", ex);
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
         debug.endTimer("load games");
 
         // dynmapフック
@@ -207,7 +216,12 @@ public class FlagGame extends JavaPlugin {
 
         // ゲームデータを保存
         if (stages != null) {
-            stages.saveStages();
+            try {
+                stages.saveStages();
+            } catch (DatabaseException ex) {
+                getLogger().log(Level.WARNING, "Failed to save stages!", ex);
+                return;
+            }
         }
 
         // タスクをすべて止める
@@ -221,7 +235,7 @@ public class FlagGame extends JavaPlugin {
         // メッセージ表示
         PluginDescriptionFile pdfFile = this.getDescription();
         logger.log(Level.INFO, "[{0}] version {1} is disabled!", new Object[]{pdfFile.getName(), pdfFile.getVersion()});
-        
+
         try {
             this.database.close();
         } catch (DatabaseException ex) {
@@ -329,17 +343,15 @@ public class FlagGame extends JavaPlugin {
             }
 
             outer:
-            for (BaseCommand command : commands.toArray(new BaseCommand[0])) {
+            for (BaseCommand command : commands) {
                 String[] cmds = command.getName().split(" ");
                 for (int i = 0; i < cmds.length; i++) {
                     if (i >= args.length || !cmds[i].equalsIgnoreCase(args[i])) {
                         continue outer;
                     }
-                    // 実行
-                    return command.run(sender, args, commandLabel);
                 }
+                return command.run(sender, args, commandLabel);
             }
-            // 有効コマンドなし ヘルプ表示
             new HelpCommand(this).run(sender, args, commandLabel);
             return true;
         }
