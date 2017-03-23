@@ -63,12 +63,11 @@ public class SelectCommand extends BaseCommand {
     }
 
     private boolean selectRegion(final Stage stage) {
-        if (!stage.hasStageArea() || !WorldEditHandler.isAvailable()) {
+        if (!stage.getAreas().hasStageArea() || !WorldEditHandler.isAvailable()) {
             return false;
         }
-
-        Cuboid stageArea = stage.getStageArea();
-        return WorldEditHandler.selectWorldEditRegion(player, stageArea.getPos1(), stageArea.getPos2());
+        Cuboid stageArea = stage.getAreas().getStageArea();
+        return WorldEditHandler.setSelectedArea(player, stageArea);
     }
 
     @Override

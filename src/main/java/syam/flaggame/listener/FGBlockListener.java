@@ -16,8 +16,6 @@
  */
 package syam.flaggame.listener;
 
-import java.util.logging.Logger;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -41,8 +39,6 @@ import syam.flaggame.permission.Perms;
 import syam.flaggame.util.Actions;
 
 public class FGBlockListener implements Listener {
-
-    public static final Logger log = FlagGame.logger;
 
     private final FlagGame plugin;
 
@@ -90,7 +86,7 @@ public class FGBlockListener implements Listener {
         Block b = event.getBlock();
         Location loc = b.getLocation();
         for (Stage stage : plugin.getStages()) {
-            if (stage.hasStageArea() && stage.getStageArea().contains(loc) && stage.isStageProtected()) {
+            if (stage.getAreas().hasStageArea() && stage.getAreas().getStageArea().contains(loc) && stage.isStageProtected()) {
                 return true;
             }
         }

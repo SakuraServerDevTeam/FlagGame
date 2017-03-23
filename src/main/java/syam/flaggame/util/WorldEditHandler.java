@@ -36,11 +36,12 @@ import java.util.logging.Level;
 
 /**
  * WorldEditの選択領域を取得するためのWorldEditハンドラ
- * 
+ *
  * @author syam
- * 
+ *
  */
 public class WorldEditHandler {
+
     // Logger
     public static final Logger log = FlagGame.logger;
     private static final String logPrefix = FlagGame.logPrefix;
@@ -48,9 +49,8 @@ public class WorldEditHandler {
 
     /**
      * WorldEditプラグインインスタンスを返す
-     * 
-     * @param bPlayer
-     *            BukkitPlayer
+     *
+     * @param bPlayer BukkitPlayer
      * @return WorldEditPlugin or null
      */
     private static WorldEditPlugin getWorldEdit(final Player bPlayer) {
@@ -59,7 +59,9 @@ public class WorldEditHandler {
 
         // プラグインが見つからない
         if (plugin == null) {
-            if (bPlayer != null && bPlayer.isOnline()) Actions.message(bPlayer, msgPrefix + "&cWorldEdit is not loaded!");
+            if (bPlayer != null && bPlayer.isOnline()) {
+                Actions.message(bPlayer, msgPrefix + "&cWorldEdit is not loaded!");
+            }
             return null;
         }
 
@@ -68,7 +70,7 @@ public class WorldEditHandler {
 
     /**
      * WorldEditがインストールされ使用可能かどうかチェックする
-     * 
+     *
      * @return 使用可能ならtrue, 違えばfalse
      */
     public static boolean isAvailable() {
@@ -82,15 +84,16 @@ public class WorldEditHandler {
 
     /**
      * 指定したプレイヤーが選択中のWorldEdit領域を取得する
-     * 
-     * @param bPlayer
-     *            WorldEditで領域を指定しているプレイヤー
+     *
+     * @param bPlayer WorldEditで領域を指定しているプレイヤー
      * @return 選択された領域の両端のブロック配列[2] エラーならnull
      */
-    @SuppressWarnings("deprecation")
+    @Deprecated
     public static Block[] getWorldEditRegion(final Player bPlayer) {
         WorldEditPlugin we = getWorldEdit(bPlayer);
-        if (we == null) return null;
+        if (we == null) {
+            return null;
+        }
 
         BukkitPlayer player = new BukkitPlayer(we, we.getServerInterface(), bPlayer);
         LocalSession session = we.getWorldEdit().getSessionManager().get(player);
@@ -122,30 +125,57 @@ public class WorldEditHandler {
             Actions.message(bPlayer, msgPrefix + "&cWorldEdit region is not fully selected!");
         } catch (Exception ex) {
             // その他一般例外
-            log.log(Level.WARNING,logPrefix + "Error while retreiving WorldEdit region: {0}", ex.getMessage());
+            log.log(Level.WARNING, logPrefix + "Error while retreiving WorldEdit region: {0}", ex.getMessage());
             ex.printStackTrace();
         }
         return null;
     }
 
+    public static Cuboid getSelectedArea(Player player) throws IllegalStateException {
+        WorldEditPlugin we = getWorldEdit(player);
+        if (we == null) {
+            return null;
+        }
+        LocalSession session = we.getWorldEdit().getSessionManager().get(
+                new BukkitPlayer(we, we.getServerInterface(), player)
+        );
+        if (!(session.getRegionSelector(session.getSelectionWorld()) instanceof CuboidRegionSelector)) {
+            throw new IllegalStateException("Cuboid regions are not supported");
+        }
+        CuboidRegionSelector selector = (CuboidRegionSelector) session.getRegionSelector(session.getSelectionWorld());
+        try {
+            Vector v1 = selector.getRegion().getPos1();
+            Vector v2 = selector.getRegion().getPos2();
+            return new Cuboid(
+                    new Location(player.getWorld(), v1.getBlockX(), v1.getBlockY(), v1.getBlockZ()),
+                    new Location(player.getWorld(), v2.getBlockX(), v2.getBlockY(), v2.getBlockZ())
+            );
+        } catch (IncompleteRegionException ex) {
+            throw new IllegalStateException("WorldEdit region is not fully selected");
+        }
+    }
+
     /**
      * 指定したプレイヤーでWorldEditの領域を設定する
-     * 
-     * @param bPlayer
-     *            BukkitPlayer
-     * @param pos1
-     *            Location Pos1
-     * @param pos2
-     *            Location Pos2
+     *
+     * @param bPlayer BukkitPlayer
+     * @param pos1 Location Pos1
+     * @param pos2 Location Pos2
      * @return 成功すればtrue, 失敗すればfalse
      */
     public static boolean selectWorldEditRegion(final Player bPlayer, final Location pos1, final Location pos2) {
         // 不正な引数
-        if (bPlayer == null || pos1 == null || pos2 == null) { return false; }
-        if (!pos1.getWorld().equals(pos2.getWorld()) || !pos1.getWorld().equals(bPlayer.getWorld())) { return false; }
+        if (bPlayer == null || pos1 == null || pos2 == null) {
+            return false;
+        }
+        if (!pos1.getWorld().equals(pos2.getWorld()) || !pos1.getWorld().equals(bPlayer.getWorld())) {
+            return false;
+        }
 
         WorldEditPlugin we = getWorldEdit(bPlayer);
-        if (we == null) return false;
+        if (we == null) {
+            return false;
+        }
 
         BukkitPlayer player = new BukkitPlayer(we, we.getServerInterface(), bPlayer);
         com.sk89q.worldedit.world.World world = player.getWorld();
@@ -161,7 +191,7 @@ public class WorldEditHandler {
             session.dispatchCUISelection(player);
         } catch (Exception ex) {
             // 一般例外
-            log.log(Level.WARNING,logPrefix + "Error while selecting WorldEdit region: {0}", ex.getMessage());
+            log.log(Level.WARNING, logPrefix + "Error while selecting WorldEdit region: {0}", ex.getMessage());
             ex.printStackTrace();
             return false;
         }
@@ -171,17 +201,21 @@ public class WorldEditHandler {
 
     /**
      * 指定したプレイヤーでWorldEditの領域を設定する
-     * 
-     * @param bPlayer
-     *            BukkitPlayer
-     * @param pos1
-     *            Block pos1
-     * @param pos2
-     *            Block Pos2
+     *
+     * @param bPlayer BukkitPlayer
+     * @param pos1 Block pos1
+     * @param pos2 Block Pos2
      * @return 成功すればtrue, 失敗すればfalse
      */
     public static boolean selectWorldEditRegion(final Player bPlayer, final Block pos1, final Block pos2) {
-        if (pos1 == null || pos2 == null) return false;
+        if (pos1 == null || pos2 == null) {
+            return false;
+        }
         return selectWorldEditRegion(bPlayer, pos1.getLocation(), pos2.getLocation());
     }
+    
+    public static boolean setSelectedArea(Player player, Cuboid area) {
+        return selectWorldEditRegion(player, area.getPos1(), area.getPos2());
+    }
+    
 }

@@ -16,11 +16,13 @@
  */
 package syam.flaggame.game;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import jp.llv.flaggame.util.ValueSortedMap;
@@ -46,10 +48,16 @@ public class AreaSet {
     public void setArea(String name, Cuboid area) {
         Objects.requireNonNull(area);
         this.areas.put(name, area);
+        getAreaInfo(name).removeRollbacks();
     }
     
     public void setStageArea(Cuboid area) {
         setArea(STAGE_AREA_NAME, area);
+    }
+    
+    public void removeArea(String name) {
+        areas.remove(name);
+        information.remove(name);
     }
     
     public Cuboid getArea(String name) {
@@ -58,6 +66,10 @@ public class AreaSet {
     
     public Cuboid getStageArea() {
         return areas.get(STAGE_AREA_NAME);
+    }
+    
+    public boolean hasStageArea() {
+        return getStageArea() != null;
     }
     
     public void setAreaInfo(String name, AreaInfo info) {
@@ -70,11 +82,21 @@ public class AreaSet {
     }
     
     public AreaInfo getAreaInfo(String name) {
+        if (!areas.containsKey(name)) {
+            return null;
+        }
+        if (!information.containsKey(name)) {
+            information.put(name, new AreaInfo());
+        }
         return information.get(name);
     }
     
     public AreaInfo getStageAreaInfo() {
         return getAreaInfo(STAGE_AREA_NAME);
+    }
+    
+    public Set<String> getAreas() {
+        return Collections.unmodifiableSet(areas.keySet());
     }
     
     public List<String> getAreas(Location loc) {
@@ -92,7 +114,7 @@ public class AreaSet {
     public List<AreaInfo> getAreaInfo(Location loc) {
         return areas.entrySet().stream()
                 .filter(e -> e.getValue().contains(loc))
-                .map(e -> information.get(e.getKey()))
+                .map(e -> getAreaInfo(e.getKey()))
                 .collect(Collectors.toList());
     }
     

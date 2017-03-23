@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import jp.llv.flaggame.reception.TeamColor;
 import jp.llv.flaggame.rollback.RollbackTarget;
+import org.bukkit.ChatColor;
 
 /**
  *
@@ -29,20 +30,33 @@ import jp.llv.flaggame.rollback.RollbackTarget;
  */
 public class AreaInfo {
 
-    private final Map<Long, RollbackTarget> rollbacks = new HashMap<>();
+    private final Map<String, RollbackData> rollbacks = new HashMap<>();
     private final Map<TeamColor, State> godmode = new EnumMap<>(TeamColor.class);
     private final Map<Protection, State> protection = new EnumMap<>(Protection.class);
     
-    public Map<Long, RollbackTarget> getRollbacks() {
+    public RollbackData addRollback(String id) {
+        if (rollbacks.containsKey(id)) {
+            throw new IllegalStateException("ID duplication");
+        }
+        RollbackData data = new RollbackData();
+        rollbacks.put(id, data);
+        return data;
+    }
+    
+    public void removeRollback(String id) {
+        rollbacks.remove(id);
+    }
+    
+    public RollbackData getRollback(String id) {
+        return rollbacks.get(id);
+    }
+    
+    public Map<String, RollbackData> getRollbacks() {
         return Collections.unmodifiableMap(rollbacks);
     }
     
-    public void removeRollback(long timing) {
-        rollbacks.remove(timing);
-    }
-    
-    public void addRollback(long timing, RollbackTarget target) {
-        rollbacks.put(timing, target);
+    public void removeRollbacks() {
+        rollbacks.clear();
     }
     
     public State isGodmode(TeamColor color) {
@@ -64,16 +78,18 @@ public class AreaInfo {
     }
     
     public enum State {
-        TRUE(true, true),
-        FALSE(false, true),
-        DEFAULT(false, false),;
+        TRUE(true, true, ChatColor.GREEN),
+        FALSE(false, true, ChatColor.RED),
+        DEFAULT(false, false, ChatColor.GOLD),;
 
+        private final ChatColor color;
         private final boolean positive;
         private final boolean forceful;
 
-        private State(boolean positive, boolean forceful) {
+        private State(boolean positive, boolean forceful, ChatColor color) {
             this.positive = positive;
             this.forceful = forceful;
+            this.color = color;
         }
 
         public boolean isPositive() {
@@ -83,7 +99,49 @@ public class AreaInfo {
         public boolean isForceful() {
             return forceful;
         }
+        
+        public String format() {
+            return color + toString().toLowerCase();
+        }
 
+    }
+    
+    public static class RollbackData {
+        
+        private long timing = 0L;
+        private RollbackTarget target = RollbackTarget.NONE;
+        private byte[] data = {};
+
+        private RollbackData() {
+        }
+        
+        public RollbackTarget getTarget() {
+            return target;
+        }
+        
+        public void setTarget(RollbackTarget target) {
+            this.target = target;
+        }
+        
+        public long getTiming() {
+            return timing;
+        }
+        
+        public void setTiming(long timing) {
+            if (timing < 0) {
+                throw new IllegalArgumentException("Negative timing is not allowed");
+            }
+            this.timing = timing;
+        }
+        
+        public byte[] getData() {
+            return data;
+        }
+        
+        public void setData(byte[] data) {
+            this.data = data;
+        }
+        
     }
 
 }

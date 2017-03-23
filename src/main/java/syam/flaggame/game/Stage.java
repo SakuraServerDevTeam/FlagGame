@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,7 +34,6 @@ import org.bukkit.block.Block;
 
 import jp.llv.flaggame.reception.TeamColor;
 import syam.flaggame.exception.StageReservedException;
-import syam.flaggame.util.Cuboid;
 
 /**
  * Stage (Stage.java)
@@ -69,7 +67,6 @@ public class Stage {
     private final Set<Location> chests = Collections.newSetFromMap(new ConcurrentHashMap<Location, Boolean>());
 
     // 地点・エリア
-    private Cuboid stageArea = null;
     private boolean stageProtect = true;
     private final Map<TeamColor, Location> spawnMap = Collections.synchronizedMap(new EnumMap<>(TeamColor.class));
     private final AreaSet areas = new AreaSet();
@@ -290,24 +287,8 @@ public class Stage {
         this.specSpawn = loc != null ? loc.clone() : null;
     }
 
-    /* ***** エリア関係 ***** */
-    // ステージ
-    public void setStageArea(Location pos1, Location pos2) throws StageReservedException {
-        checkEditable();
-        this.setStageArea(new Cuboid(pos1, pos2));
-    }
-    
-    public void setStageArea(Cuboid cuboid) throws StageReservedException {
-        checkEditable();
-        this.stageArea = cuboid;
-    }
-    
-    public Cuboid getStageArea() {
-        return this.stageArea;
-    }
-    
-    public boolean hasStageArea() {
-        return this.stageArea != null;
+    public AreaSet getAreas() {
+        return areas;
     }
     
     public void setProtected(boolean protect) throws StageReservedException {
@@ -454,7 +435,6 @@ public class Stage {
     }
     
     public void validate() throws NullPointerException {
-        Objects.requireNonNull(stageArea);
         if (!available || spawnMap.isEmpty()) {
             throw new NullPointerException();
         }

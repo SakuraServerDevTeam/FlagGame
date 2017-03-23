@@ -19,9 +19,7 @@ package syam.flaggame.command;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import syam.flaggame.FlagGame;
 
 import jp.llv.flaggame.reception.TeamColor;
@@ -33,7 +31,6 @@ import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.player.GamePlayer;
 import syam.flaggame.util.Actions;
-import syam.flaggame.util.WorldEditHandler;
 
 public class SetCommand extends BaseCommand {
 
@@ -90,12 +87,6 @@ public class SetCommand extends BaseCommand {
         try {
             switch (conf) {
                 /* 一般 */
-                case STAGE: // ステージ設定
-                    setStage(stage);
-                    return;
-                case BASE: // 拠点設定
-                    setBase(stage);
-                    return;
                 case SPAWN: // スポーン地点設定
                     setSpawn(stage);
                     return;
@@ -125,9 +116,6 @@ public class SetCommand extends BaseCommand {
                 case TEAMLIMIT: // チーム人数制限
                     setTeamLimit(stage);
                     return;
-                case PROTECT: // ステージ保護
-                    setStageProtect(stage);
-                    return;
                 case AVAILABLE: // 有効設定
                     setStageAvailable(stage);
                     return;
@@ -146,87 +134,11 @@ public class SetCommand extends BaseCommand {
             }
         } catch (StageReservedException ex) {
             Actions.message(player, "&cステージ" + stage.getName() + "は現在編集不可です!");
-            return;
         }
     }
 
     /* ***** ここから各設定関数 ****************************** */
     // 一般
-    private void setStage(Stage game) throws CommandException, StageReservedException {
-        // WorldEdit選択領域取得
-        Block[] corners = WorldEditHandler.getWorldEditRegion(player);
-        // エラー プレイヤーへのメッセージ送信はWorldEditHandlerクラスで処理
-        if (corners == null || corners.length != 2) {
-            return;
-        }
-
-        Block block1 = corners[0];
-        Block block2 = corners[1];
-
-        // ワールドチェック
-        if (block1.getWorld() != Bukkit.getWorld(plugin.getConfigs().getGameWorld())) {
-            throw new CommandException("&c指定しているエリアはゲームワールドではありません！");
-        }
-
-        // ステージ設定
-        game.setStageArea(block1.getLocation(), block2.getLocation());
-
-        Actions.message(player, "&aステージ'" + game.getName() + "'のエリアを設定しました！");
-        plugin.getDynmap().updateRegion(game);
-    }
-
-    /**
-     * 拠点エリア設定
-     *
-     * @param game
-     * @return true
-     * @throws CommandException
-     */
-    private void setBase(Stage game) throws CommandException, StageReservedException {
-        // 引数チェック
-        if (args.size() < 2) {
-            throw new CommandException("&c引数が足りません！設定するチームを指定してください！");
-        }
-
-        // チーム取得
-        TeamColor team = null;
-        for (TeamColor tm : TeamColor.values()) {
-            if (tm.name().toLowerCase().equalsIgnoreCase(args.get(1))) {
-                team = tm;
-                break;
-            }
-        }
-        if (team == null) {
-            throw new CommandException("&cチーム'" + args.get(1) + "'が見つかりません！");
-        }
-
-        if (args.size() >= 3 && args.get(2).equalsIgnoreCase("none")) {
-            game.setBase(team, null);
-            Actions.message(player, team.getRichName() + "&aの拠点を削除しました！");
-            return;
-        }
-
-        // WorldEdit選択領域取得
-        Block[] corners = WorldEditHandler.getWorldEditRegion(player);
-        // エラー プレイヤーへのメッセージ送信はWorldEditHandlerクラスで処理
-        if (corners == null || corners.length != 2) {
-            return;
-        }
-
-        Block block1 = corners[0];
-        Block block2 = corners[1];
-
-        // ワールドチェック
-        if (block1.getWorld() != Bukkit.getWorld(plugin.getConfigs().getGameWorld())) {
-            throw new CommandException("&c指定しているエリアはゲームワールドではありません！");
-        }
-
-        // 拠点設定
-        game.setBase(team, block1.getLocation(), block2.getLocation());
-
-        Actions.message(player, "&a" + team.getTeamName() + "&aチームの拠点を設定しました！");
-        plugin.getDynmap().updateRegion(game);
-    }
 
     /**
      * スポーン地点設定
@@ -430,28 +342,6 @@ public class SetCommand extends BaseCommand {
 
         Actions.message(sender, "&aステージ'" + game.getName() + "'のチーム毎人数上限値は " + cnt + "人 に設定されました！");
         plugin.getDynmap().updateRegion(game);
-    }
-
-    private void setStageProtect(Stage stage) throws CommandException, StageReservedException {
-        Boolean protect = true; // デフォルトtrue
-        String value = args.get(1).trim();
-
-        if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("yes")) {
-            protect = true;
-        } else if (value.equalsIgnoreCase("false") || value.equalsIgnoreCase("no")) {
-            protect = false;
-        } else {
-            throw new CommandException("&c値が不正です！true または false を指定してください！");
-        }
-
-        String result = "&a有効";
-        if (!protect) {
-            result = "&c無効";
-        }
-
-        stage.setProtected(protect);
-        Actions.message(sender, "&aステージ'" + stage.getName() + "'の保護は " + result + " &aに設定されました！");
-        plugin.getDynmap().updateRegion(stage);
     }
 
     private void setStageAvailable(Stage stage) throws CommandException, StageReservedException {
