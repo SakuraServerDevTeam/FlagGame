@@ -313,7 +313,7 @@ public class FlagGame extends JavaPlugin {
                 SaveCommand::new,
                 ReloadCommand::new,
                 AreaDeleteCommand::new,
-                AreaGodCommand::new,
+                AreaPermitCommand::new,
                 AreaListCommand::new,
                 AreaLoadCommand::new,
                 AreaProtectCommand::new,

@@ -128,6 +128,20 @@ public class SetCommand extends BaseCommand {
                 case DEATHSCORE:
                     setDeathScore(stage);
                     return;
+                case COOLDOWN:
+                    setCooldown(stage);
+                    return;
+                
+                /* stage description */
+                case AUTHOR:
+                    setAuthor(stage);
+                    return;
+                case DESCRIPTION:
+                    setDescription(stage);
+                    return;
+                case GUIDE:
+                    setGuide(stage);
+                    return;
 
                 // 定義漏れ
                 default:
@@ -328,6 +342,25 @@ public class SetCommand extends BaseCommand {
         }
         Actions.message(sender, "&aステージ'" + game.getName() + "'のゲーム時間は " + sec + " に設定されました！");
     }
+    private void setCooldown(Stage game) throws CommandException, StageReservedException {
+        int num = 0; // デフォルト0秒
+        try {
+            num = Integer.parseInt(args.get(1));
+        } catch (NumberFormatException ex) {
+            throw new CommandException("&cオプションの値が整数ではありません！");
+        }
+
+        if (num <= 0) {
+            throw new CommandException("&c値が不正です！正数を入力してください！");
+        }
+        game.setCooldown(num * 20L);
+
+        String sec = num + "秒";
+        if (num >= 60) {
+            sec = sec + "(" + Actions.getTimeString(num) + ")";
+        }
+        Actions.message(sender, "&aステージ'" + game.getName() + "'のゲーム時間は " + sec + " に設定されました！");
+    }
 
     private void setTeamLimit(Stage game) throws CommandException, StageReservedException {
         int cnt = 8; // デフォルト8人
@@ -419,6 +452,22 @@ public class SetCommand extends BaseCommand {
         stage.setDeathScore(point);
 
         Actions.message(sender, "&aステージ'" + stage.getName() + "'のデス得点は " + point + "点 に設定されました！");
+    }
+    
+    // stage description
+    private void setDescription(Stage stage) throws CommandException, StageReservedException {
+        stage.setDescription(args.get(1));
+        Actions.message(sender, "&aステージ'" + stage.getName() + "'の説明は '" + args.get(1) + "' に設定されました！");
+    }
+    
+    private void setAuthor(Stage stage) throws CommandException, StageReservedException {
+        stage.setAuthor(args.get(1));
+        Actions.message(sender, "&aステージ'" + stage.getName() + "'の製作者は '" + args.get(1) + "' に設定されました！");
+    }
+    
+    private void setGuide(Stage stage) throws CommandException, StageReservedException {
+        stage.setGuide(args.get(1));
+        Actions.message(sender, "&aステージ'" + stage.getName() + "'の概要は '" + args.get(1) + "' に設定されました！");
     }
 
     /* ***** ここまで **************************************** */

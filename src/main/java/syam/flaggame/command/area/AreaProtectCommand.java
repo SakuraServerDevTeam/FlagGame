@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import syam.flaggame.FlagGame;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.AreaInfo;
+import syam.flaggame.game.AreaState;
 import syam.flaggame.game.Protection;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
@@ -63,11 +64,11 @@ public class AreaProtectCommand extends AreaCommand {
                     .collect(Collectors.joining("/"));
             throw new CommandException("&cその保護タイプはサポートされていません！\n&c" + types, ex);
         }
-        AreaInfo.State state;
+        AreaState state;
         try {
-            state = AreaInfo.State.valueOf(args.get(2).toUpperCase());
+            state = AreaState.valueOf(args.get(2).toUpperCase());
         } catch (IllegalStateException ex) {
-            String types = Arrays.stream(AreaInfo.State.values())
+            String types = Arrays.stream(AreaState.values())
                     .map(p -> p.toString().toLowerCase())
                     .collect(Collectors.joining("/"));
             throw new CommandException("&cその保護状態はサポートされていません！\n&c" + types, ex);

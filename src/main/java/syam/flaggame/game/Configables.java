@@ -40,7 +40,14 @@ public enum Configables {
     AVAILABLE("ステージ有効", ConfigType.SIMPLE),
     PROTECT("ゲーム外保護", ConfigType.SIMPLE),
     KILLSCORE("キル得点", ConfigType.SIMPLE),
-    DEATHSCORE("デス得点", ConfigType.SIMPLE),;
+    DEATHSCORE("デス得点", ConfigType.SIMPLE),
+    COOLDOWN("クールダウン", ConfigType.SIMPLE),
+    
+    // stage description
+    AUTHOR("製作者", ConfigType.SIMPLE),
+    DESCRIPTION("説明", ConfigType.SIMPLE),
+    GUIDE("概要", ConfigType.SIMPLE),
+    ;
 
     private final String configName;
     private final ConfigType configType;

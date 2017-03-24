@@ -53,6 +53,7 @@ public class Stage {
     private int teamPlayerLimit = 16;
     
     private long gameTime = 6 * 60 * 1000;
+    private long cooldown = 0;
     
     private boolean available = false;
     
@@ -71,6 +72,11 @@ public class Stage {
     private final Map<TeamColor, Location> spawnMap = Collections.synchronizedMap(new EnumMap<>(TeamColor.class));
     private AreaSet areas = new AreaSet();
     private Location specSpawn = null;
+    
+    // stage description
+    private String guide = "";
+    private String description = "";
+    private String author = "";
 
     /**
      * コンストラクタ
@@ -389,6 +395,38 @@ public class Stage {
 
     public double getDeathScore() {
         return deathScore;
+    }
+    
+    public void setDescription(String value) {
+        description = value;
+    }
+    
+    public String getDescription() {
+        return description;
+    }
+    
+    public void setAuthor(String value) {
+        author = value;
+    }
+    
+    public String getAuthor() {
+        return author;
+    }
+    
+    public void setGuide(String value) {
+        guide = value;
+    }
+    
+    public String getGuide() {
+        return guide;
+    }
+    
+    public void setCooldown(long value) {
+        cooldown = value;
+    }
+    
+    public long getCooldown() {
+        return cooldown;
     }
 
     public void setDeathScore(double deathScore) {

@@ -170,23 +170,31 @@ public class StageBsonConverter {
         result.setData(section.getBinary("data").getData());
         return result;
     }
+    
+    private static void writeAreaPermissionStateSet(BsonDocument bson, String key, AreaPermissionStateSet value) {
+        writeEnumMap(bson, key, value.getState(), (b, k, s) -> writeEnum(b, k, s));
+    }
+    
+    private static AreaPermissionStateSet readAreaPermissionStateSet(BsonDocument bson, String key) {
+        return new AreaPermissionStateSet(
+                readEnumMap(bson, key, TeamColor.class, (b, k) -> readEnum(bson, key, AreaState.class))
+        );
+    }
 
     private static void writeAreaInfo(BsonDocument bson, String key, AreaInfo value) {
         BsonDocument section = new BsonDocument();
         writeMap(section, "rollbacks", value.getRollbacks(), StageBsonConverter::writeRollback);
-        writeEnumMap(section, "godmode", value.getGodmodeMap(), StageBsonConverter::writeEnum);
-        writeEnumMap(section, "regeneration", value.getRegenerationMap(), StageBsonConverter::writeEnum);
         writeEnumMap(section, "protection", value.getProtectionMap(), StageBsonConverter::writeEnum);
+        writeEnumMap(section, "permissions", value.getPermissions(), StageBsonConverter::writeAreaPermissionStateSet);
         bson.append(key, section);
     }
 
     private static AreaInfo readAreaInfo(BsonDocument bson, String key) {
         BsonDocument section = bson.getDocument(key);
         AreaInfo result = new AreaInfo();
-        result.setRollbacks(readMap(section, "rolbacks", StageBsonConverter::readRollback));
-        result.setGodmodeMap(readEnumMap(section, "godmode", TeamColor.class, (b, k) -> readEnum(b, k, AreaInfo.State.class)));
-        result.setRegenerationMap(readEnumMap(section, "regeneration", TeamColor.class, (b, k) -> readEnum(b, k, AreaInfo.State.class)));
-        result.setProtectionMap(readEnumMap(section, "protection", Protection.class, (b, k) -> readEnum(b, k, AreaInfo.State.class)));
+        result.setRollbacks(readMap(section, "rollbacks", StageBsonConverter::readRollback));
+        result.setProtectionMap(readEnumMap(section, "protection", Protection.class, (b, k) -> readEnum(b, k, AreaState.class)));
+        result.setPermissions(readEnumMap(section, "permissions", AreaPermission.class, StageBsonConverter::readAreaPermissionStateSet));
         return result;
     }
 
@@ -282,6 +290,7 @@ public class StageBsonConverter {
         section.append("available", new BsonBoolean(value.isAvailable()));
         section.append("kill", new BsonDouble(value.getKillScore()));
         section.append("death", new BsonDouble(value.getDeathScore()));
+        section.append("cooldown", new BsonInt64(value.getCooldown()));
         writeEnumMap(section, "spawn", value.getSpawns(), StageBsonConverter::writeLocation);
         writeLocation(section, "specspawn", value.getSpecSpawn().orElse(null));
         writeList(section, "flags", value.getFlags().values(), StageBsonConverter::writeFlag);
@@ -290,6 +299,9 @@ public class StageBsonConverter {
         writeList(section, "banner-slots", value.getBannerSpawners().values(), StageBsonConverter::writeBannerSpawner);
         writeList(section, "containers", value.getChests(), StageBsonConverter::writeLocation);
         writeAreaSet(section, "areas", value.getAreas());
+        section.append("author", new BsonString(value.getAuthor()));
+        section.append("description", new BsonString(value.getDescription()));
+        section.append("guide", new BsonString(value.getGuide()));
         return section;
     }
 
@@ -302,6 +314,7 @@ public class StageBsonConverter {
             stage.setAvailable(bson.getBoolean("available").getValue());
             stage.setKillScore(bson.getDouble("kill").getValue());
             stage.setDeathScore(bson.getDouble("death").getValue());
+            stage.setCooldown(bson.getInt64("cooldown").getValue());
             stage.setSpawns(readEnumMap(bson, "spawn", TeamColor.class, StageBsonConverter::readLocation));
             stage.setSpecSpawn(readLocation(bson, "specspawn"));
             stage.setFlags(readList(bson, "flags", StageBsonConverter::readFlag));
@@ -310,6 +323,9 @@ public class StageBsonConverter {
             stage.setBannerSlots(readList(bson, "banner-slots", StageBsonConverter::readBannerSlot));
             stage.setChests(readList(bson, "containers", StageBsonConverter::readLocation));
             stage.setAreas(readAreaSet(bson, "areas"));
+            stage.setAuthor(bson.getString("author").getValue());
+            stage.setDescription(bson.getString("description").getValue());
+            stage.setGuide(bson.getString("guide").getValue());
             return stage;
         } catch (StageReservedException ex) {
             throw new RuntimeException(ex);

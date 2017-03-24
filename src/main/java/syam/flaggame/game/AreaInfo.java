@@ -20,9 +20,7 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
-import jp.llv.flaggame.reception.TeamColor;
 import jp.llv.flaggame.rollback.RollbackTarget;
-import org.bukkit.ChatColor;
 
 /**
  *
@@ -31,9 +29,9 @@ import org.bukkit.ChatColor;
 public class AreaInfo {
 
     private final Map<String, RollbackData> rollbacks = new HashMap<>();
-    private final Map<TeamColor, State> godmode = new EnumMap<>(TeamColor.class);
-    private final Map<Protection, State> protection = new EnumMap<>(Protection.class);
-    private final Map<TeamColor, State> regeneration = new EnumMap<>(TeamColor.class);
+    private final Map<Protection, AreaState> protection = new EnumMap<>(Protection.class);
+    private final Map<AreaPermission, AreaPermissionStateSet> permissions = new EnumMap<>(AreaPermission.class);
+
     
     public RollbackData addRollback(String id) {
         if (rollbacks.containsKey(id)) {
@@ -68,84 +66,36 @@ public class AreaInfo {
         rollbacks.clear();
     }
     
-    public State isGodmode(TeamColor color) {
-        State state = godmode.get(color);
-        return state == null ? State.DEFAULT : state;
+    public AreaState isProtected(Protection type) {
+        AreaState state = protection.get(type);
+        return state == null ? AreaState.DEFAULT : state;
     }
     
-    public void setGodmode(TeamColor color, State state) {
-        godmode.put(color, state);
-    }
-    
-    /*package*/ Map<TeamColor, State> getGodmodeMap() {
-        return Collections.unmodifiableMap(godmode);
-    }
-    
-    /*package*/ void setGodmodeMap(Map<TeamColor, State> map) {
-        godmode.putAll(map);
-    }
-    
-    public State isRegeneratable(TeamColor color) {
-        State state = regeneration.get(color);
-        return state == null ? State.DEFAULT : state;
-    }
-    
-    public void setRegeneratable(TeamColor color, State state) {
-        regeneration.put(color, state);
-    }
-    
-    /*package*/ Map<TeamColor, State> getRegenerationMap() {
-        return Collections.unmodifiableMap(regeneration);
-    }
-    
-    /*package*/ void setRegenerationMap(Map<TeamColor, State> map) {
-        regeneration.putAll(map);
-    }
-    
-    public State isProtected(Protection type) {
-        State state = protection.get(type);
-        return state == null ? State.DEFAULT : state;
-    }
-    
-    public void setProtected(Protection type, State state) {
+    public void setProtected(Protection type, AreaState state) {
         protection.put(type, state);
     }
     
-    /*package*/ Map<Protection, State> getProtectionMap() {
+    /*package*/ Map<Protection, AreaState> getProtectionMap() {
         return Collections.unmodifiableMap(protection);
     }
     
-    /*package*/ void setProtectionMap(Map<Protection, State> map) {
+    /*package*/ void setProtectionMap(Map<Protection, AreaState> map) {
         protection.putAll(map);
     }
     
-    public enum State {
-        TRUE(true, true, ChatColor.GREEN),
-        FALSE(false, true, ChatColor.RED),
-        DEFAULT(false, false, ChatColor.GOLD),;
-
-        private final ChatColor color;
-        private final boolean positive;
-        private final boolean forceful;
-
-        private State(boolean positive, boolean forceful, ChatColor color) {
-            this.positive = positive;
-            this.forceful = forceful;
-            this.color = color;
+    public AreaPermissionStateSet getPermission(AreaPermission type) {
+        if (!permissions.containsKey(type)) {
+            permissions.put(type, new AreaPermissionStateSet());
         }
-
-        public boolean isPositive() {
-            return positive;
-        }
-
-        public boolean isForceful() {
-            return forceful;
-        }
-        
-        public String format() {
-            return color + toString().toLowerCase();
-        }
-
+        return permissions.get(type); 
+    }
+    
+    /*package*/ void setPermissions(Map<AreaPermission, AreaPermissionStateSet> permissions) {
+        this.permissions.putAll(permissions);
+    }
+    
+    /*package*/ Map<AreaPermission, AreaPermissionStateSet> getPermissions() {
+        return this.permissions;
     }
     
     public static class RollbackData {

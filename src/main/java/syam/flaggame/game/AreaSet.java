@@ -121,14 +121,14 @@ public class AreaSet {
                 .collect(Collectors.toList());
     }
 
-    public boolean getAreaInfo(Location loc, Function<? super AreaInfo, ? extends AreaInfo.State> mapper) {
+    public boolean getAreaInfo(Location loc, Function<? super AreaInfo, ? extends AreaState> mapper) {
         for (AreaInfo info : getAreaInfo(loc)) {
-            AreaInfo.State s = mapper.apply(info);
+            AreaState s = mapper.apply(info);
             if (s.isForceful()) {
                 return s.isPositive();
             }
         }
-        return AreaInfo.State.DEFAULT.isPositive();
+        return AreaState.DEFAULT.isPositive();
     }
 
     /*package*/ Map<String, Cuboid> getAreaMap() {
