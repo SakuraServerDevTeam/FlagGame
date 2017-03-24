@@ -102,6 +102,7 @@ public class MongoDB implements Database {
     @Override
     public void saveStages(Collection<Stage> stages) throws DatabaseException {
         MongoCollection<BsonValue> coll = database.getCollection("stages").withDocumentClass(BsonValue.class);
+        coll.deleteMany(new BsonDocument());
         stages.parallelStream().map(StageBsonConverter::writeStage).forEach(coll::insertOne);
     }
 
