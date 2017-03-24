@@ -38,6 +38,7 @@ public enum Configables {
     GAMETIME("ゲームの制限時間(秒)", ConfigType.SIMPLE),
     TEAMLIMIT("チーム毎の人数制限", ConfigType.SIMPLE),
     AVAILABLE("ステージ有効", ConfigType.SIMPLE),
+    PROTECT("ゲーム外保護", ConfigType.SIMPLE),
     KILLSCORE("キル得点", ConfigType.SIMPLE),
     DEATHSCORE("デス得点", ConfigType.SIMPLE),;
 

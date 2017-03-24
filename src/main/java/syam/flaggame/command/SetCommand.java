@@ -119,6 +119,9 @@ public class SetCommand extends BaseCommand {
                 case AVAILABLE: // 有効設定
                     setStageAvailable(stage);
                     return;
+                case PROTECT:
+                    setStageProtect(stage);
+                    return;
                 case KILLSCORE:
                     setKillScore(stage);
                     return;
@@ -342,6 +345,28 @@ public class SetCommand extends BaseCommand {
 
         Actions.message(sender, "&aステージ'" + game.getName() + "'のチーム毎人数上限値は " + cnt + "人 に設定されました！");
         plugin.getDynmap().updateRegion(game);
+    }
+
+    private void setStageProtect(Stage stage) throws CommandException, StageReservedException {
+        Boolean protect = true; // デフォルトtrue
+        String value = args.get(1).trim();
+
+        if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("yes")) {
+            protect = true;
+        } else if (value.equalsIgnoreCase("false") || value.equalsIgnoreCase("no")) {
+            protect = false;
+        } else {
+            throw new CommandException("&c値が不正です！true または false を指定してください！");
+        }
+
+        String result = "&a有効";
+        if (!protect) {
+            result = "&c無効";
+        }
+
+        stage.setProtected(protect);
+        Actions.message(sender, "&aステージ'" + stage.getName() + "'の保護は " + result + " &aに設定されました！");
+        plugin.getDynmap().updateRegion(stage);
     }
 
     private void setStageAvailable(Stage stage) throws CommandException, StageReservedException {
