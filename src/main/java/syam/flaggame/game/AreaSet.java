@@ -34,53 +34,56 @@ import syam.flaggame.util.Cuboid;
  * @author toyblocks
  */
 public class AreaSet {
-    
+
     private static final String STAGE_AREA_NAME = "stage";
-    
+
     private final Map<String, Cuboid> areas;
     private final Map<String, AreaInfo> information;
-    
+
     public AreaSet() {
         this.areas = new ValueSortedMap<>(Comparator.comparing(Cuboid::getArea));
         this.information = new HashMap<>();
     }
-    
+
     public void setArea(String name, Cuboid area) {
         Objects.requireNonNull(area);
         this.areas.put(name, area);
-        getAreaInfo(name).removeRollbacks();
+        AreaInfo info = getAreaInfo(name);
+        if (info != null) {
+            info.removeRollbacks();
+        }
     }
-    
+
     public void setStageArea(Cuboid area) {
         setArea(STAGE_AREA_NAME, area);
     }
-    
+
     public void removeArea(String name) {
         areas.remove(name);
         information.remove(name);
     }
-    
+
     public Cuboid getArea(String name) {
         return areas.get(name);
     }
-    
+
     public Cuboid getStageArea() {
         return areas.get(STAGE_AREA_NAME);
     }
-    
+
     public boolean hasStageArea() {
         return getStageArea() != null;
     }
-    
+
     public void setAreaInfo(String name, AreaInfo info) {
         Objects.requireNonNull(info);
         this.information.put(name, info);
     }
-    
+
     public void setStageAreaInfo(AreaInfo info) {
         setAreaInfo(STAGE_AREA_NAME, info);
     }
-    
+
     public AreaInfo getAreaInfo(String name) {
         if (!areas.containsKey(name)) {
             return null;
@@ -90,34 +93,34 @@ public class AreaSet {
         }
         return information.get(name);
     }
-    
+
     public AreaInfo getStageAreaInfo() {
         return getAreaInfo(STAGE_AREA_NAME);
     }
-    
+
     public Set<String> getAreas() {
         return Collections.unmodifiableSet(areas.keySet());
     }
-    
+
     public List<String> getAreas(Location loc) {
         return areas.entrySet().stream()
                 .filter(e -> e.getValue().contains(loc))
                 .map(e -> e.getKey())
                 .collect(Collectors.toList());
     }
-    
+
     public String getPrimaryArea(Location loc) {
         List<String> a = getAreas(loc);
         return a.isEmpty() ? null : a.get(0);
     }
-    
+
     public List<AreaInfo> getAreaInfo(Location loc) {
         return areas.entrySet().stream()
                 .filter(e -> e.getValue().contains(loc))
                 .map(e -> getAreaInfo(e.getKey()))
                 .collect(Collectors.toList());
     }
-    
+
     public boolean getAreaInfo(Location loc, Function<? super AreaInfo, ? extends AreaInfo.State> mapper) {
         for (AreaInfo info : getAreaInfo(loc)) {
             AreaInfo.State s = mapper.apply(info);
@@ -127,21 +130,21 @@ public class AreaSet {
         }
         return AreaInfo.State.DEFAULT.isPositive();
     }
-    
+
     /*package*/ Map<String, Cuboid> getAreaMap() {
         return areas;
     }
-    
+
     /*package*/ void setAreaMap(Map<String, Cuboid> map) {
         areas.putAll(map);
     }
-    
+
     /*package*/ Map<String, AreaInfo> getAreaInfoMap() {
         return information;
     }
-    
+
     /*package*/ void setAreaInfoMap(Map<String, AreaInfo> map) {
         information.putAll(map);
     }
-    
+
 }
