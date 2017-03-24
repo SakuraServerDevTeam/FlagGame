@@ -119,6 +119,7 @@ public class StageCommand extends BaseCommand implements Queueable {
         // 新規ゲーム登録
         try {
             stage.setAvailable(false);
+            stage.setProtected(false);
         } catch (StageReservedException ex) {
             throw new RuntimeException("Is illegal opperation executed? Please report this?");
         }
