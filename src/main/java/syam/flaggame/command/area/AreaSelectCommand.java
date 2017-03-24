@@ -46,12 +46,12 @@ public class AreaSelectCommand extends AreaCommand {
         if (!WorldEditHandler.setSelectedArea(player, area)) {
             throw new CommandException("&cエリア選択に失敗しました！");
         }
-        sendMessage("&cエリアを選択しました！");
+        sendMessage("&aエリアを選択しました！");
     }
 
     @Override
     public boolean permission() {
         return Perms.SELECT.has(player);
     }
-    
+
 }

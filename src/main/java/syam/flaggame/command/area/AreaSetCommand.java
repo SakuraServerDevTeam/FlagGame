@@ -42,16 +42,16 @@ public class AreaSetCommand extends AreaCommand {
         Cuboid region;
         try {
             region = WorldEditHandler.getSelectedArea(player);
-        } catch(IllegalStateException ex) {
+        } catch (IllegalStateException ex) {
             throw new CommandException("&c" + ex.getMessage());
         }
         stage.getAreas().setArea(id, region);
-        sendMessage("&a'&6"+stage.getName()+"&a'の'&6"+id+"&a'エリアを設定しました！");
+        sendMessage("&a'&6" + stage.getName() + "&a'の'&6" + id + "&a'エリアを設定しました！");
     }
 
     @Override
     public boolean permission() {
         return Perms.STAGE_CONFIG_SET.has(sender);
     }
-    
+
 }
