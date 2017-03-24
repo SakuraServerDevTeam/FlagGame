@@ -41,7 +41,7 @@ public class AreaSet {
     private final Map<String, AreaInfo> information;
 
     public AreaSet() {
-        this.areas = new ValueSortedMap<>(Comparator.comparing(Cuboid::getArea));
+        this.areas = ValueSortedMap.newInstance(Comparator.comparing(Cuboid::getArea));
         this.information = new HashMap<>();
     }
 
