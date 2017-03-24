@@ -33,12 +33,18 @@ import java.util.stream.Collectors;
  * @author toyblocks
  */
 public class ValueSortedMap<K, V> implements Map<K, V> {
-    
+
     private final Comparator<Entry<K, V>> comparator;
     private final TreeSet<Entry<K, V>> map;
-    
+
+    public ValueSortedMap(Comparator<? super V> comparator, Comparator<? super K> subComparator) {
+        Comparator<Entry<K, V>> c1 = Comparator.comparing(Entry::getValue, comparator);
+        this.comparator = c1.thenComparing(Entry::getKey, subComparator);
+        this.map = new TreeSet<>(this.comparator);
+    }
+
     public ValueSortedMap(Comparator<? super V> comparator) {
-        this.comparator = (e1, e2) -> comparator.compare(e1.getValue(), e2.getValue());
+        this.comparator = Comparator.comparing(Entry::getValue, comparator);
         this.map = new TreeSet<>(this.comparator);
     }
 
@@ -118,5 +124,13 @@ public class ValueSortedMap<K, V> implements Map<K, V> {
     public void clear() {
         map.clear();
     }
-    
+
+    public static <K, V extends Comparable<? super V>> ValueSortedMap<K, V> newInstance() {
+        return new ValueSortedMap<>(Comparator.naturalOrder());
+    }
+
+    public static <K extends Comparable<? super K>, V> ValueSortedMap<K, V> newInstance(Comparator<? super V> comparator) {
+        return new ValueSortedMap<>(comparator, Comparator.naturalOrder());
+    }
+
 }
