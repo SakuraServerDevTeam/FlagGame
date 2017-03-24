@@ -275,7 +275,7 @@ public class StageBsonConverter {
 
     public static BsonDocument writeStage(Stage value) {
         BsonDocument section = new BsonDocument();
-        section.append("name", new BsonString(value.getName()));
+        section.append("_id", new BsonString(value.getName()));
         section.append("time", new BsonInt64(value.getGameTime()));
         section.append("teamlimit", new BsonInt32(value.getTeamLimit()));
         section.append("protected", new BsonBoolean(value.isProtected()));
@@ -295,7 +295,7 @@ public class StageBsonConverter {
 
     public static Stage readStage(BsonDocument bson) {
         try {
-            Stage stage = new Stage(bson.getString("name").getValue());
+            Stage stage = new Stage(bson.getString("_id").getValue());
             stage.setGameTime(bson.getInt64("time").getValue());
             stage.setTeamLimit(bson.getInt32("teamlimit").getValue());
             stage.setProtected(bson.getBoolean("protected").getValue());
