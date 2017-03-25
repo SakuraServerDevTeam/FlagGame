@@ -228,15 +228,6 @@ public class FGPlayerListener implements Listener {
             event.setUseInteractedBlock(Result.DENY);
             event.setUseItemInHand(Result.DENY);
         }
-
-        // 看板を右クリックした
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK && block.getState() instanceof Sign) {
-            Sign sign = (Sign) block.getState();
-            // 1行目チェック
-            if (sign.getLine(0).equals("§a[FlagGame]")) {
-                clickFlagSign(player, block);
-            }
-        }
     }
 
     // プレイヤーがログインした
@@ -270,78 +261,5 @@ public class FGPlayerListener implements Listener {
             }
         }, 20L);
     }
-
-    private void clickFlagSign(Player player, Block block) {
-        if (!(block.getState() instanceof Sign)) {
-            return;
-        }
-
-        Sign sign = (Sign) block.getState();
-        String line2 = sign.getLine(1); // 2行目
-        String line3 = sign.getLine(2); // 3行目
-
-        GamePlayer fgp = this.plugin.getPlayers().getPlayer(player);
-
-        // 処理を分ける
-        switch (line2.trim().toLowerCase()) {
-            // 回復
-            case "heal":
-                if (!"".equals(line3) && !line3.isEmpty()) {//特定チーム限定
-                    TeamColor signTeam;
-
-                    try {
-                        signTeam = TeamColor.valueOf(line3.trim().toUpperCase());
-                    } catch (IllegalArgumentException ex) {
-                        Actions.message(player, "&cThis sign is broken! Please contact server staff!");
-                        return;
-                    }
-
-                    if (!fgp.getTeam().isPresent()) {
-                        Actions.message(player, "&cこの看板はフラッグゲーム中にのみ使うことができます");
-                        return;
-                    }
-
-                    if (fgp.getTeam().get().getColor() != signTeam) {
-                        Actions.message(player, "&cこれはあなたのチームの看板ではありません！");
-                        return;
-                    }
-                }
-
-                // 20以上にならないように体力とお腹ゲージを+2(ハート、おにく1つ分)回復させる
-                double nowHP = player.getHealth();
-                nowHP = nowHP + 2;
-                if (nowHP > 20) {
-                    nowHP = 20;
-                }
-
-                int nowFL = player.getFoodLevel();
-                nowFL = nowFL + 2;
-                if (nowFL > 20) {
-                    nowFL = 20;
-                }
-
-                // プレイヤーにセット
-                player.setHealth(nowHP);
-                player.setFoodLevel(nowFL);
-                player.setFireTicks(0); // 燃えてれば消してあげる
-
-                Actions.message(player, MESSAGE_PREFIX + "&aHealed!");
-
-                break;
-
-            // 自殺
-            case "kill":
-                if (fgp.getTeam().isPresent()) {
-                    Game game = fgp.getGame().get();
-                    GamePlayer.sendMessage(game.getReception(), "&6[" + game.getName() + "]&6 '" + fgp.getColoredName() + "&6'が自殺しました。");
-                }
-                player.setHealth(0);
-                player.setFoodLevel(0);
-                break;
-
-            default:
-                Actions.sendPrefixedMessage(player, "&cThis sign is broken! Please contact server staff!");
-        }
-
-    }
+    
 }

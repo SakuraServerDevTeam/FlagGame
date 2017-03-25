@@ -327,7 +327,8 @@ public class FlagGame extends JavaPlugin {
         Stream.<Function<FlagGame, ? extends Listener>>of(
                 FGPlayerListener::new,
                 FGBlockListener::new,
-                FGEntityListener::new
+                FGEntityListener::new,
+                FGSignListener::new
         ).map(l -> l.apply(this)).forEach(l -> this.getServer().getPluginManager().registerEvents(l, this));
     }
 
