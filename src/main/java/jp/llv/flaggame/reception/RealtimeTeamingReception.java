@@ -259,4 +259,9 @@ public class RealtimeTeamingReception implements GameReception {
         return this.records;
     }
 
+    @Override
+    public Optional<Stage> getStage() {
+        return Optional.of(stage);
+    }
+
 }
