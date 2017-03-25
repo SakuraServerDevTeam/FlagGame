@@ -174,26 +174,8 @@ public class StageCommand extends BaseCommand implements Queueable {
 
             // ゲームリストから削除
             this.plugin.getStages().removeStage(args.get(0));
-
-            // ゲームデータファイルを削除
-            String fileDir = plugin.getDataFolder() + System.getProperty("file.separator") + "stageData";
-            boolean deleted = false;
-            try {
-                File file = new File(fileDir + System.getProperty("file.separator") + stage.getFileName());
-                if (file.exists()) {
-                    deleted = file.delete();
-                }
-            } catch (Exception ex) {
-                deleted = false;
-                ex.printStackTrace();
-            }
-
-            if (!deleted) {
-                Actions.message(sender, "&cステージ'" + args.get(1) + "'のデータファイル削除中にエラーが発生しました！");
-            } else {
-                Actions.message(sender, "&aステージ'" + args.get(1) + "'を削除しました！");
-                plugin.getDynmap().updateRegions();
-            }
+            Actions.message(sender, "&aステージ'" + args.get(1) + "'を削除しました！");
+            plugin.getDynmap().updateRegions();
         } else {
             Actions.message(sender, "&c内部エラーが発生しました。開発者までご連絡ください。");
             log.log(Level.WARNING, logPrefix + "{0} send invalid queue! (StageCommand.class)", sender.getName());
