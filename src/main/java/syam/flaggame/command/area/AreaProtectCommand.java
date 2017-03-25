@@ -36,7 +36,7 @@ public class AreaProtectCommand extends AreaCommand {
         super(plugin);
         name = "area protect";
         argLength = 1;
-        usage = "<id> [<type> <state>] <- delete region";
+        usage = "<id> [<type> <state>] <- manage protection of the region";
     }
 
     @Override
