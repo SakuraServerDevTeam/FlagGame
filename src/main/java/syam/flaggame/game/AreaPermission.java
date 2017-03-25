@@ -25,7 +25,7 @@ public enum AreaPermission {
     GODMODE,
     REGENERATION,
     DAMAGE,
-    CHEST,
+    CONTAINER,
     DOOR,;
     
     public static AreaPermission of(String name) {
