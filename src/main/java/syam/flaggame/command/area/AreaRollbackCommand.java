@@ -16,6 +16,7 @@
  */
 package syam.flaggame.command.area;
 
+import java.util.Map;
 import syam.flaggame.FlagGame;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.AreaInfo;
@@ -32,8 +33,8 @@ public class AreaRollbackCommand extends AreaCommand {
     public AreaRollbackCommand(FlagGame plugin) {
         super(plugin);
         name = "area rollback";
-        argLength = 2;
-        usage = "<id> <name> [timing] <- schedule rollback";
+        argLength = 1;
+        usage = "<id> [name] [timing] <- schedule rollback";
     }
 
     @Override
@@ -43,6 +44,21 @@ public class AreaRollbackCommand extends AreaCommand {
         if (info == null) {
             throw new CommandException("&cその名前のエリアは存在しません！");
         }
+
+        if (args.size() == 1) {
+            int count = info.getRollbacks().size();
+            Actions.message(sender, "&a ==============&b RollbackList(" + count + ") &a==============");
+            if (count == 0) {
+                Actions.message(sender, " &7設定されているロールバックがありません");
+            } else {
+                for (Map.Entry<String, AreaInfo.RollbackData> entry : info.getRollbacks().entrySet()) {
+                    sendMessage("&6" + entry.getKey() + "&a: " + entry.getValue().getTarget().toString().toLowerCase());
+                }
+            }
+            Actions.message(sender, "&a ============================================");
+            return;
+        }
+
         String savename = args.get(1);
         AreaInfo.RollbackData data = info.getRollback(savename);
         if (data == null) {
