@@ -39,7 +39,6 @@ import jp.llv.flaggame.game.HitpointTask;
 import jp.llv.flaggame.game.basic.objective.HeldBanner;
 import jp.llv.flaggame.game.protection.StageProtectionListener;
 import jp.llv.flaggame.profile.DeviationBasedExpCalcurator;
-import jp.llv.flaggame.profile.RecordStream;
 import jp.llv.flaggame.profile.record.FlagCaptureRecord;
 import jp.llv.flaggame.profile.record.FlagScoreRecord;
 import jp.llv.flaggame.profile.record.GameStartRecord;
@@ -451,7 +450,6 @@ public class BasicGame implements Game {
                 g.resetTabName();
             }
         }
-        this.reception.close("The game finished");
         
         String author = "".equals(stage.getAuthor()) ? "" : "presented by " + stage.getAuthor();
         GamePlayer.sendTitle(this, "&6試合終了", author, 0, 60, 20);
