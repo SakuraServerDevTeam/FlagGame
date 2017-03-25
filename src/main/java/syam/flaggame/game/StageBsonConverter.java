@@ -178,7 +178,7 @@ public class StageBsonConverter {
     
     private static AreaPermissionStateSet readAreaPermissionStateSet(BsonDocument bson, String key) {
         return new AreaPermissionStateSet(
-                readEnumMap(bson, key, TeamColor.class, (b, k) -> readEnum(bson, key, AreaState.class))
+                readEnumMap(bson, key, TeamColor.class, (b, k) -> readEnum(b, k, AreaState.class))
         );
     }
 
