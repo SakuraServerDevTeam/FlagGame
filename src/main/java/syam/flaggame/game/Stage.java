@@ -48,7 +48,6 @@ public class Stage {
     private GameReception reception;
 
     // ***** ステージデータ *****
-    private String fileName;
     private final String stageName;
     private int teamPlayerLimit = 16;
     
@@ -312,15 +311,6 @@ public class Stage {
     
     public Set<TeamColor> getTeams() {
         return Collections.unmodifiableSet(this.getSpawns().keySet());
-    }
-
-    /**
-     * ファイル名を取得
-     *
-     * @return name of the stage configuration file
-     */
-    public String getFileName() {
-        return fileName;
     }
 
     /**

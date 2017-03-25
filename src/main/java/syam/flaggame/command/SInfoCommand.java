@@ -100,7 +100,7 @@ public class SInfoCommand extends BaseCommand {
                 players = "&7参加プレイヤーなし";
             }
 
-            String s1 = "&6 " + stage.getName() + "&7(" + stage.getFileName() + ")"
+            String s1 = "&6 " + stage.getName()
                         + "&b: 状態=&f" + status
                         + "&b 制限時間=&6" + Actions.getTimeString(stage.getGameTimeInSec())
                         + "&b フラッグ数=&6" + stage.getFlags().size();
