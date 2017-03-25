@@ -95,7 +95,7 @@ public class FGBlockListener implements Listener {
     }
 
     // 看板設置
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onSignChange(final SignChangeEvent event) {
         Player player = event.getPlayer();
         Block block = event.getBlock();
@@ -119,7 +119,7 @@ public class FGBlockListener implements Listener {
 
     /* 以下ワールド保護 */
     // 葉の消滅を抑制
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onLeavesDecay(final LeavesDecayEvent event) {
         // ゲーム用ワールドでなければ返す
         if (event.getBlock().getWorld() != Bukkit.getWorld(plugin.getConfigs().getGameWorld())) {
@@ -133,7 +133,7 @@ public class FGBlockListener implements Listener {
     }
 
     // 氷 → 水 抑制
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onBlockFade(final BlockFadeEvent event) {
         // ゲーム用ワールドでなければ返す
         if (event.getBlock().getWorld() != Bukkit.getWorld(plugin.getConfigs().getGameWorld())) {
@@ -147,7 +147,7 @@ public class FGBlockListener implements Listener {
     }
 
     // 水 → 氷 抑制
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onBlockForm(final BlockFormEvent event) {
         // ゲーム用ワールドでなければ返す
         if (event.getBlock().getWorld() != Bukkit.getWorld(plugin.getConfigs().getGameWorld())) {
