@@ -39,6 +39,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
 import syam.flaggame.FlagGame;
 import syam.flaggame.game.AreaPermission;
@@ -220,9 +221,15 @@ public class BGEntityListener extends BGListener {
             if (killerEnt instanceof Player) { // killed by a player
                 killer = (Player) killerEnt;
                 ItemStack is = killer.getInventory().getItemInMainHand();
-                weapon = is == null ? null
-                        : is.getItemMeta().hasDisplayName()
-                                ? is.getItemMeta().getDisplayName() : StringUtil.capitalize(is.getType().name());
+                if (is == null) {
+                    weapon = null;
+                } else if (!is.hasItemMeta()) {
+                    weapon = StringUtil.capitalize(is.getType().name());
+                } else if (!is.getItemMeta().hasDisplayName()) {
+                    weapon = StringUtil.capitalize(is.getType().name());
+                } else {
+                    weapon = is.getItemMeta().getDisplayName();
+                }
             } else if (killerEnt instanceof Projectile) { // killed by projectile
                 Projectile p = (Projectile) killerEnt;
                 weapon = p.getCustomName();
