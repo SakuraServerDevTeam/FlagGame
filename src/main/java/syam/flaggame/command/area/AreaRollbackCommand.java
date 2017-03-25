@@ -32,7 +32,7 @@ public class AreaRollbackCommand extends AreaCommand {
     public AreaRollbackCommand(FlagGame plugin) {
         super(plugin);
         name = "area rollback";
-        argLength = 3;
+        argLength = 2;
         usage = "<id> <name> [timing] <- schedule rollback";
     }
 
