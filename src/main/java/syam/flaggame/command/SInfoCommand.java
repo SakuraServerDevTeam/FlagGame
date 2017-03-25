@@ -16,6 +16,7 @@
  */
 package syam.flaggame.command;
 
+import java.util.stream.Collectors;
 import jp.llv.flaggame.game.Game;
 import jp.llv.flaggame.reception.GameReception;
 import jp.llv.flaggame.reception.Team;
@@ -106,7 +107,8 @@ public class SInfoCommand extends BaseCommand {
             String s2 = "&b 製作者=&6" + stage.getAuthor()
                         + "&b 説明=&6" + stage.getDescription()
                         + " &bガイド=&6" + stage.getGuide();
-            String s3 = "&b チーム毎人数制限=&6" + stage.getTeamLimit() + "&b 赤チームスポーン=" + chksp_red + "&b 青チームスポーン=" + chksp_blue;
+            String s3 = "&b チーム毎人数制限=&6" + stage.getTeamLimit()
+                    + "&b チーム=&6" + stage.getSpawns().keySet().stream().map(TeamColor::toString).collect(Collectors.joining("/"));
             String s5 = "&b キル得点=&6" + stage.getKillScore() + "&b デス得点=&6" + stage.getDeathScore();
             String s6 = "&b フラッグ数=&6" + stage.getFlags().size()
                         + "&b バナースポナー数=&6" + stage.getBannerSpawners().size()
@@ -116,6 +118,7 @@ public class SInfoCommand extends BaseCommand {
 
             // メッセージ送信
             Actions.message(sender, s1);
+            Actions.message(sender, s2);
             Actions.message(sender, s3);
             Actions.message(sender, s4);
             Actions.message(sender, s5);
