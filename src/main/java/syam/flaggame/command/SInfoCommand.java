@@ -103,6 +103,9 @@ public class SInfoCommand extends BaseCommand {
                         + "&b: 状態=&f" + status
                         + "&b 制限時間=&6" + Actions.getTimeString(stage.getGameTimeInSec())
                         + "&b フラッグ数=&6" + stage.getFlags().size();
+            String s2 = "&b 製作者=&6" + stage.getAuthor()
+                        + "&b 説明=&6" + stage.getDescription()
+                        + " &bガイド=&6" + stage.getGuide();
             String s3 = "&b チーム毎人数制限=&6" + stage.getTeamLimit() + "&b 赤チームスポーン=" + chksp_red + "&b 青チームスポーン=" + chksp_blue;
             String s5 = "&b キル得点=&6" + stage.getKillScore() + "&b デス得点=&6" + stage.getDeathScore();
             String s6 = "&b フラッグ数=&6" + stage.getFlags().size()
@@ -115,6 +118,8 @@ public class SInfoCommand extends BaseCommand {
             Actions.message(sender, s1);
             Actions.message(sender, s3);
             Actions.message(sender, s4);
+            Actions.message(sender, s5);
+            Actions.message(sender, s6);
 
             Actions.message(sender, "&a ================================================");
         }
