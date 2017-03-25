@@ -79,7 +79,9 @@ public class PlayerManager implements Iterable<GamePlayer> {
      * @return all game players in the world
      */
     public Collection<GamePlayer> getPlayersIn(World world) {
-        return this.players.values().stream().filter(p -> p.getPlayer().getWorld().equals(world))
+        return this.players.values().stream()
+                .filter(GamePlayer::isOnline)
+                .filter(p -> p.getPlayer().getWorld().equals(world))
                 .collect(Collectors.toSet());
     }
 
