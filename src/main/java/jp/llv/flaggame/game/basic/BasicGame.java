@@ -326,6 +326,8 @@ public class BasicGame implements Game {
                     .runTaskLater(plugin, this::notifyRemainTime, t);
             this.onFinishing.offer(task::cancel);
         });
+
+        GamePlayer.sendTitle(this, "&6試合開始", stage.getGuide(), 0, 2, 1);
     }
 
     private void stop() {
@@ -448,6 +450,9 @@ public class BasicGame implements Game {
             }
         }
         this.reception.close("The game finished");
+        
+        String author = "".equals(stage.getAuthor()) ? "" : "presented by " + stage.getAuthor();
+        GamePlayer.sendTitle(this, "&6試合終了", author, 0, 2, 1);
     }
 
     @Override
