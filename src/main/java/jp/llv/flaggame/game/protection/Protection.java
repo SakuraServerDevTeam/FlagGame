@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package syam.flaggame.game;
+package jp.llv.flaggame.game.protection;
 
 /**
  *
@@ -22,6 +22,24 @@ package syam.flaggame.game;
  */
 public enum Protection {
     
-    BLOCK
+    BREAK,
+    PLACE,
+    BUCKET_FILL,
+    BUCKET_EMPTY,
+    SHEAR,
+    BURN,
+    FADE,
+    FORM,
+    GROW,
+    IGNITE,
+    DECAY,
+    HANGING_PLACE,
+    HANGING_BREAK,
+    CRAFT,
+    ARMOR_STAND,
+    VEHICLE_ENTER,
+    VEHICLE_EXIT,
+    VEHICLE_DAMAGE,
+    ENTITY_DAMAGE,
     
 }

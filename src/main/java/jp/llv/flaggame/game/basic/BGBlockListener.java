@@ -69,7 +69,6 @@ public class BGBlockListener extends BGListener {
         Optional<Nexus> on = this.game.getStage().getNexus(event.getBlock().getLocation());
         Optional<BannerSpawner> ob = this.game.getStage().getBannerSpawner(event.getBlock().getLocation());
 
-        event.setCancelled(true);
         of.ifPresent(f -> this.breakFlag(gplayer, f, event));
         on.ifPresent(n -> this.breakNexus(gplayer, n, event));
         ob.ifPresent(b -> this.breakBannerSpawner(gplayer, b, event));

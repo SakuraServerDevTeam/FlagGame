@@ -22,7 +22,7 @@ import syam.flaggame.FlagGame;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.AreaInfo;
 import syam.flaggame.game.AreaState;
-import syam.flaggame.game.Protection;
+import jp.llv.flaggame.game.protection.Protection;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
 
