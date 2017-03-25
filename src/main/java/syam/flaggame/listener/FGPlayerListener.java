@@ -16,7 +16,6 @@
  */
 package syam.flaggame.listener;
 
-import java.util.logging.Logger;
 import jp.llv.flaggame.game.Game;
 import jp.llv.flaggame.game.basic.objective.BannerSlot;
 import jp.llv.flaggame.game.basic.objective.BannerSpawner;
@@ -52,9 +51,7 @@ import syam.flaggame.util.Actions;
 
 public class FGPlayerListener implements Listener {
 
-    public static final Logger log = FlagGame.logger;
-    private static final String logPrefix = FlagGame.logPrefix;
-    private static final String msgPrefix = FlagGame.msgPrefix;
+    private static final String MESSAGE_PREFIX = FlagGame.msgPrefix;
 
     private final FlagGame plugin;
 
@@ -74,13 +71,13 @@ public class FGPlayerListener implements Listener {
         }
 
         GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
-        
+
         // 管理モードで権限を持ち、かつ設定したツールでブロックを右クリックした
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK
-                && gPlayer.getSetupSession().isPresent()
-                && event.getHand() == EquipmentSlot.HAND
-                && player.getInventory().getItemInMainHand().getTypeId() == plugin.getConfigs().getToolID()
-                && Perms.SET.has(player)) {
+            && gPlayer.getSetupSession().isPresent()
+            && event.getHand() == EquipmentSlot.HAND
+            && player.getInventory().getItemInMainHand().getTypeId() == plugin.getConfigs().getToolID()
+            && Perms.SET.has(player)) {
             SetupSession sess = gPlayer.getSetupSession().get();
             Configables conf = sess.getSetting();
             Stage stage = sess.getSelectedStage();
@@ -144,8 +141,8 @@ public class FGPlayerListener implements Listener {
                         return;
                     }
                     Actions.message(player, "&aステージ'" + stage.getName() + "'の"
-                            + (sess.getSelectedColor() != null ? sess.getSelectedColor().getRichName() : "全チーム") + "&aの"
-                                    + sess.getSelectedPoint() + "ポイント目標を登録しました！");
+                                            + (sess.getSelectedColor() != null ? sess.getSelectedColor().getRichName() : "全チーム") + "&aの"
+                                            + sess.getSelectedPoint() + "ポイント目標を登録しました！");
                     break;
                 case BANNER_SLOT:
                     if (stage.getBannerSlot(loc).isPresent()) {
@@ -166,8 +163,8 @@ public class FGPlayerListener implements Listener {
                         return;
                     }
                     Actions.message(player, "&aステージ'" + stage.getName() + "'の"
-                            + (sess.getSelectedColor() != null ? sess.getSelectedColor().getRichName() : "全チーム") + "&aの"
-                            + "スロットを登録しました！");
+                                            + (sess.getSelectedColor() != null ? sess.getSelectedColor().getRichName() : "全チーム") + "&aの"
+                                            + "スロットを登録しました！");
                     break;
                 case BANNER_SPAWNER:
                     if (stage.getBannerSpawner(loc).isPresent()) {
@@ -196,7 +193,7 @@ public class FGPlayerListener implements Listener {
                         return;
                     }
                     Actions.message(player, "&aステージ'" + stage.getName() + "'の"
-                            + sess.getSelectedPoint() + "ポイントバナースポナーを登録しました！");
+                                            + sess.getSelectedPoint() + "ポイントバナースポナーを登録しました！");
                     break;
                 // チェストモード
                 case CHEST:
@@ -257,17 +254,17 @@ public class FGPlayerListener implements Listener {
                     String awardMsg = reception.getMaxAward() > 0 ? reception.getMaxAward() + "Coin" : "None";
 
                     Actions.message(player, "&b* ===================================");
-                    Actions.message(player, msgPrefix + "&2フラッグゲーム'&6" + reception.getName() + "&2'の参加受付が行われています！");
-                    Actions.message(player, msgPrefix + "&2 参加料:&6 " + entryFeeMsg + "&2   賞金:&6 " + awardMsg);
-                    Actions.message(player, msgPrefix + "&2 '&6/flag join " + reception.getID() + "&2' コマンドで参加してください！");
+                    Actions.message(player, MESSAGE_PREFIX + "&2フラッグゲーム'&6" + reception.getName() + "&2'の参加受付が行われています！");
+                    Actions.message(player, MESSAGE_PREFIX + "&2 参加料:&6 " + entryFeeMsg + "&2   賞金:&6 " + awardMsg);
+                    Actions.message(player, MESSAGE_PREFIX + "&2 '&6/flag join " + reception.getID() + "&2' コマンドで参加してください！");
                     Actions.message(player, "&b* ===================================");
 
                 } // 開始中ゲーム
                 else if (reception.getState().toGameState() == Game.State.STARTED) {
                     // 観戦アナウンス
                     Actions.message(player, "&b* ===================================");
-                    Actions.message(player, msgPrefix + "&2フラッグゲーム'&6" + reception.getName() + "&2'が始まっています！");
-                    Actions.message(player, msgPrefix + "&2 '&6/flag watch " + reception.getID() + "&2' コマンドで観戦することができます！");
+                    Actions.message(player, MESSAGE_PREFIX + "&2フラッグゲーム'&6" + reception.getName() + "&2'が始まっています！");
+                    Actions.message(player, MESSAGE_PREFIX + "&2 '&6/flag watch " + reception.getID() + "&2' コマンドで観戦することができます！");
                     Actions.message(player, "&b* ===================================");
                 }
             }
@@ -328,7 +325,7 @@ public class FGPlayerListener implements Listener {
                 player.setFoodLevel(nowFL);
                 player.setFireTicks(0); // 燃えてれば消してあげる
 
-                Actions.message(player, msgPrefix + "&aHealed!");
+                Actions.message(player, MESSAGE_PREFIX + "&aHealed!");
 
                 break;
 
