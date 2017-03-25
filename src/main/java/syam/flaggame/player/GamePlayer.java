@@ -281,7 +281,7 @@ public class GamePlayer {
         }
     }
     
-    public static void playSound(Iterable<? extends GamePlayer> players, String title, String subTitle, int in, int stay, int out) {
+    public static void sendTitle(Iterable<? extends GamePlayer> players, String title, String subTitle, int in, int stay, int out) {
         for (GamePlayer p : players) {
             if (p == null) {
                 continue;
