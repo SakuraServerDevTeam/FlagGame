@@ -54,26 +54,33 @@ public class AreaSaveCommand extends AreaCommand {
         RollbackTarget target;
         try {
             target = RollbackTarget.valueOf(args.get(2).toUpperCase());
-        } catch(IllegalArgumentException ex) {
+        } catch (IllegalArgumentException ex) {
             String types = Arrays.stream(RollbackTarget.values())
                     .map(p -> p.toString().toLowerCase())
                     .collect(Collectors.joining("/"));
             throw new CommandException("&cそのロールバック対象はサポートされていません！\n&c" + types, ex);
         }
-        data.setTarget(target);
-        try {
-            data.setData(target.serialize(stage, stage.getAreas().getArea(id)));
-        } catch (RollbackException ex) {
-            throw new CommandException("&c領域の保存に失敗しました！", ex);
+        if (target == RollbackTarget.NONE) {
+            info.removeRollback(savename);
+            sendMessage("&a'&6" + stage.getName() + "&a'の'&6"
+                        + id + "&a'エリアの'&6"
+                        + savename + "&a'を削除しました！");
+        } else {
+            data.setTarget(target);
+            try {
+                data.setData(target.serialize(stage, stage.getAreas().getArea(id)));
+            } catch (RollbackException ex) {
+                throw new CommandException("&c領域の保存に失敗しました！", ex);
+            }
+            sendMessage("&a'&6" + stage.getName() + "&a'の'&6"
+                        + id + "&a'エリアの'&6"
+                        + savename + "&a'をセーブしました！");
         }
-        sendMessage("&a'&6" + stage.getName() + "&a'の'&6"
-                    + id + "&a'エリアの'&6"
-                    + savename + "&a'をセーブしました！");
     }
 
     @Override
     public boolean permission() {
         return Perms.STAGE_CONFIG_SET.has(player);
     }
-    
+
 }
