@@ -16,7 +16,6 @@
  */
 package syam.flaggame.command;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -173,7 +172,7 @@ public class StageCommand extends BaseCommand implements Queueable {
             }
 
             // ゲームリストから削除
-            this.plugin.getStages().removeStage(args.get(0));
+            this.plugin.getStages().removeStage(args.get(1));
             Actions.message(sender, "&aステージ'" + args.get(1) + "'を削除しました！");
             plugin.getDynmap().updateRegions();
         } else {
