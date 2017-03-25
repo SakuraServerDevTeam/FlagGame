@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import jp.llv.flaggame.events.GameFinishedEvent;
 import org.bukkit.Bukkit;
 
 import org.bukkit.World;
@@ -86,7 +87,7 @@ public class PlayerManager implements Iterable<GamePlayer> {
      * Returns the game player with the given UUID.
      *
      * @param uuid the uuid of the player to retrieve, nullable
-     * @return the player if the player is online, otherwise {@code null}
+     * @return the player if the player is online or in a game, otherwise {@code null}
      */
     public GamePlayer getPlayer(UUID uuid) {
         return this.players.get(uuid);
@@ -96,7 +97,7 @@ public class PlayerManager implements Iterable<GamePlayer> {
      * Return the game player with the given name.
      *
      * @param name the name of the player to retrieve, {@code null} means noone
-     * @return the player if the player is online, otherwise {@code null}
+     * @return the player if the player is online or in a game, otherwise {@code null}
      */
     public GamePlayer getPlayer(String name) {
         return this.players.values().stream().filter(p -> p.getName().equals(name)).findAny().orElse(null);
@@ -106,7 +107,7 @@ public class PlayerManager implements Iterable<GamePlayer> {
      * Return the game player of the bukkit player.
      *
      * @param player the bukkit player, who has the uuid of the game player
-     * @return the player if the player is online, otherwise {@code null}.
+     * @return the player if the player is online or in a game, otherwise {@code null}.
      */
     public GamePlayer getPlayer(Player player) {
         return player == null ? null : this.getPlayer(player.getUniqueId());
@@ -122,12 +123,22 @@ public class PlayerManager implements Iterable<GamePlayer> {
         return this.getPlayers().iterator();
     }
 
+    private void gc() {
+        Iterator<GamePlayer> it = players.values().iterator();
+        while (it.hasNext()) {
+            GamePlayer player = it.next();
+            if (!player.isOnline() && !player.getEntry().isPresent()) {
+                it.remove();
+            }
+        }
+    }
+
     /**
      * An internal event handler to keep contents of
      * {@link syam.flaggame.player.PlayerManager#players} the same as
-     * {@link org.bukkit.Bukkit#getOnlinePlayers()}. This listener shouldn't be
-     * unregistered while {@link syam.flaggame.player.PlayerManager} keeps
-     * alive.
+     * {@link org.bukkit.Bukkit#getOnlinePlayers()} except during games. This
+     * listener shouldn't be unregistered while
+     * {@link syam.flaggame.player.PlayerManager} keeps alive.
      */
     private class OnlinePlayerListener implements Listener {
 
@@ -141,8 +152,12 @@ public class PlayerManager implements Iterable<GamePlayer> {
         @SuppressWarnings("deprecation")
         public void on(PlayerJoinEvent e) throws CommandException {
             Player p = e.getPlayer();
-            GamePlayer gp = new GamePlayer(PlayerManager.this, p);
-            PlayerManager.this.players.put(p.getUniqueId(),gp);
+            GamePlayer gp = PlayerManager.this.getPlayer(p);
+            if (gp != null) { // the player is in a game
+                return;
+            }
+            gp = new GamePlayer(PlayerManager.this, p);
+            PlayerManager.this.players.put(p.getUniqueId(), gp);
             for (jp.llv.flaggame.reception.GameReception r : PlayerManager.this.plugin.getReceptions()) {
                 if (r.getPlayers().contains(gp)) {
                     gp.join(r, Collections.emptyList());
@@ -158,7 +173,13 @@ public class PlayerManager implements Iterable<GamePlayer> {
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void on(PlayerQuitEvent e) {
             PlayerManager.this.getPlayer(e.getPlayer()).resetTabName();
-            PlayerManager.this.players.remove(e.getPlayer().getUniqueId());
+            PlayerManager.this.gc();
         }
+
+        @EventHandler
+        public void on(GameFinishedEvent e) {
+            PlayerManager.this.gc();
+        }
+
     }
 }
