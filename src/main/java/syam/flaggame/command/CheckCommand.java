@@ -63,7 +63,7 @@ public class CheckCommand extends BaseCommand {
             error = true;
             Actions.message(sender, msgPrefix + "&6[*]&bステージエリア: &c未設定");
             if (help == null) {
-                help = "&6 * ステージエリアを設定してください！ *\n" + "&6 WorldEditでステージエリアを選択して、\n" + "&6 '&a/flag set stage&6'コマンドを実行してください";
+                help = "&6 * ステージエリアを設定してください！ *\n" + "&6 WorldEditでステージエリアを選択して、\n" + "&6 '&a/flag area set stage&6'コマンドを実行してください";
             }
         } else {
             Actions.message(sender, msgPrefix + "&6[*]&bステージエリア: &6設定済み");
