@@ -186,8 +186,6 @@ public class BasicGame implements Game {
         this.state = State.STARTED;
         this.getRecordStream().push(new GameStartRecord(this.getID(), this.stage.getName()));
 
-        stage.initialize();
-
         this.expectedFinishAt = System.currentTimeMillis() + this.stage.getGameTime();
 
         GamePlayer.sendMessage(this.plugin.getPlayers(),
@@ -238,9 +236,9 @@ public class BasicGame implements Game {
             }
         }
 
-        this.stage.getStageArea().getPos1().getWorld().getEntities().stream()
+        this.stage.getAreas().getStageArea().getPos1().getWorld().getEntities().stream()
                 .filter(e -> e instanceof Item)
-                .filter(e -> this.stage.getStageArea().contains(e.getLocation()))
+                .filter(e -> this.stage.getAreas().getStageArea().contains(e.getLocation()))
                 .forEach(Entity::remove);
 
         //各種処理系開始

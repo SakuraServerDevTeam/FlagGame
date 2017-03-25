@@ -472,10 +472,6 @@ public class Stage {
         return Optional.ofNullable(this.reception);
     }
     
-    public void initialize() {
-        throw new UnsupportedOperationException("WIP");
-    }
-    
     public void validate() throws NullPointerException {
         if (!available || spawnMap.isEmpty()) {
             throw new NullPointerException();

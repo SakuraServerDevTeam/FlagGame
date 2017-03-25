@@ -56,8 +56,8 @@ public class StageCommand extends BaseCommand implements Queueable {
         }
 
         // アクション取得
-        stageAction action = null;
-        for (stageAction check : stageAction.values()) {
+        StageAction action = null;
+        for (StageAction check : StageAction.values()) {
             if (check.name().equalsIgnoreCase(args.get(0))) {
                 action = check;
                 break;
@@ -78,11 +78,6 @@ public class StageCommand extends BaseCommand implements Queueable {
             case DELETE:
                 if (checkPerm(Perms.DELETE)) {
                     delete();
-                }
-                return;
-            case ROLLBACK:
-                if (checkPerm(Perms.ROLLBACK)) {
-                    rollback();
                 }
                 return;
 
@@ -158,47 +153,13 @@ public class StageCommand extends BaseCommand implements Queueable {
         Actions.message(sender, "&a/flag confirm &dコマンドは10秒間のみ有効です。");
     }
 
-    private void rollback() throws CommandException {
-        if (args.size() <= 1) {
-            throw new CommandException("&cステージ名または -all を指定してください！");
-        }
-        boolean all = false;
-        if (args.get(1).equalsIgnoreCase("-all")) {
-            all = true;
-        }
-
-        if (!all) {
-            Stage stage = this.plugin.getStages().getStage(args.get(1))
-                    .orElseThrow(() -> new CommandException("&cその名前のステージは存在しません！"));
-
-            if (stage.isReserved()) {
-                throw new CommandException("&cそのステージは現在使用中のためロールバックできません！");
-            }
-
-            // ステージロールバック
-            stage.initialize();
-
-            Actions.message(sender, "&aステージ'" + stage.getName() + "'をロールバックしました！");
-
-        } else {
-            long rollbackedCount = this.plugin.getStages().getStages().values().stream()
-                    .filter(s -> !s.isReserved())
-                    .count();
-            this.plugin.getStages().getStages().values().stream()
-                    .filter(s -> !s.isReserved())
-                    .forEach(Stage::initialize);
-
-            Actions.message(sender, "&a全" + rollbackedCount + "ステージをロールバックしました！");
-        }
-    }
-
     /* ***** ここまで ********************************************** */
  /*
      * キュー実行処理
      */
     @Override
     public void executeQueue(List<String> args) throws CommandException {
-        if (stageAction.DELETE.name().equalsIgnoreCase(args.get(0))) {
+        if (StageAction.DELETE.name().equalsIgnoreCase(args.get(0))) {
             if (args.size() <= 1) {
                 Actions.message(sender, "&cステージ名が不正です");
                 return;
@@ -210,9 +171,6 @@ public class StageCommand extends BaseCommand implements Queueable {
                 Actions.message(sender, "&cそのステージは現在受付中または開始中のため削除できません");
                 return;
             }
-
-            // ステージロールバック
-            stage.initialize();
 
             // ゲームリストから削除
             this.plugin.getStages().removeStage(args.get(0));
@@ -262,9 +220,9 @@ public class StageCommand extends BaseCommand implements Queueable {
      *
      * @author syam(syamn)
      */
-    enum stageAction {
+    enum StageAction {
 
-        CREATE, DELETE, ROLLBACK,;
+        CREATE, DELETE,;
     }
 
     /**
@@ -272,7 +230,7 @@ public class StageCommand extends BaseCommand implements Queueable {
      */
     private void sendAvailableAction() {
         List<String> col = new ArrayList<>();
-        for (stageAction action : stageAction.values()) {
+        for (StageAction action : StageAction.values()) {
             col.add(action.name());
         }
         Actions.message(sender, "&cそのアクションは存在しません！");
