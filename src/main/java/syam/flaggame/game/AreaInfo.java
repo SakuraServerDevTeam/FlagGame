@@ -16,6 +16,7 @@
  */
 package syam.flaggame.game;
 
+import jp.llv.flaggame.game.protection.Protection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
