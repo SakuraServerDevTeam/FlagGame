@@ -52,7 +52,7 @@ public class FGBlockListener implements Listener {
      *
      * @param event
      */
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onBlockBreak(final BlockBreakEvent event) {
         if (onBlockChange(event, event.getPlayer())) {
             event.setCancelled(true);
@@ -64,7 +64,7 @@ public class FGBlockListener implements Listener {
      *
      * @param event
      */
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onBlockPlace(final BlockPlaceEvent event) {
         if (onBlockChange(event, event.getPlayer())) {
             event.setCancelled(true);
