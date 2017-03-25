@@ -55,7 +55,7 @@ public class SInfoCommand extends BaseCommand {
                             .map(GameReception.State::toGameState)
                             .map(s -> s == Game.State.PREPARATION ? "&6受付中" : "&c開始中").orElse("&7待機中");
 
-                    String s = "&6" + stage.getName() + "&b: 状態=&f" + status + "&b 制限時間=&6" + Actions.getTimeString(stage.getGameTimeInSec()) + "&b フラッグ数=&6" + stage.getFlags().size();
+                    String s = "&6" + stage.getName() + "&b: 状態=&f" + status + "&b 制限時間=&6" + Actions.getTimeString(stage.getGameTimeInSec()) + "&b チェスト数=&6" + stage.getChests().size();
 
                     // メッセージ送信
                     Actions.message(sender, s);
