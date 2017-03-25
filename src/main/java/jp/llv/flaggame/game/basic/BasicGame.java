@@ -30,6 +30,7 @@ import java.util.OptionalLong;
 import java.util.Queue;
 import java.util.Set;
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 import jp.llv.flaggame.events.GameStartEvent;
@@ -76,6 +77,9 @@ import syam.flaggame.player.GamePlayer;
 import syam.flaggame.util.Actions;
 import jp.llv.flaggame.profile.ExpCalcurator;
 import jp.llv.flaggame.profile.record.BannerKeepRecord;
+import jp.llv.flaggame.rollback.RollbackException;
+import syam.flaggame.game.AreaInfo;
+import syam.flaggame.util.Cuboid;
 
 /**
  *
@@ -238,10 +242,36 @@ public class BasicGame implements Game {
             }
         }
 
+        // stage rollback
         this.stage.getAreas().getStageArea().getPos1().getWorld().getEntities().stream()
                 .filter(e -> e instanceof Item)
                 .filter(e -> this.stage.getAreas().getStageArea().contains(e.getLocation()))
                 .forEach(Entity::remove);
+        for (String areaID : stage.getAreas().getAreas()) {
+            Cuboid area = stage.getAreas().getArea(areaID);
+            AreaInfo info = stage.getAreas().getAreaInfo(areaID);
+            for (AreaInfo.RollbackData rollback : info.getRollbacks().values()) {
+                if (rollback.getTiming() == 0) {
+                    try {
+                        rollback.getTarget().deserialize(stage, area, rollback.getData());
+                    } catch (RollbackException ex) {
+                        plugin.getLogger().log(Level.WARNING, "Failed to rollback", ex);
+                        this.stopForcibly("Failed to rollback");
+                        return;
+                    }
+                } else {
+                    BukkitTask rollbackTask = plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                        try {
+                            rollback.getTarget().deserialize(stage, area, rollback.getData());
+                        } catch (RollbackException ex) {
+                            plugin.getLogger().log(Level.WARNING, "Failed to rollback", ex);
+                            this.stopForcibly("Failed to rollback");
+                        }
+                    }, rollback.getTiming());
+                    onFinishing.offer(rollbackTask::cancel);
+                }
+            }
+        }
 
         //各種処理系開始
         BGListener playerListener = new BGPlayerListener(plugin, this);
@@ -259,11 +289,10 @@ public class BasicGame implements Game {
         BGListener entityListener = new BGEntityListener(plugin, this);
         this.plugin.getServer().getPluginManager().registerEvents(entityListener, this.plugin);
         this.onFinishing.offer(entityListener::unregister);
-        
+
         StageProtectionListener protectionListener = new StageProtectionListener(plugin, this);
         this.plugin.getServer().getPluginManager().registerEvents(protectionListener, this.plugin);
         this.onFinishing.offer(protectionListener::unregister);
-        
 
         this.getTeams().stream().forEach(team -> {
             String title = "\u00A76FlagGame ~\u00A7b" + this.stage.getName() + "\u00A76";
@@ -282,7 +311,7 @@ public class BasicGame implements Game {
         BukkitTask updateTask = this.plugin.getServer().getScheduler()
                 .runTaskTimer(plugin, this::updateRemainTime, 20L, 20L);
         this.onFinishing.offer(updateTask::cancel);
-        
+
         BukkitTask hitpointTask = new HitpointTask(this).runTaskTimer(plugin, 10L, 10L);
         this.onFinishing.offer(hitpointTask::cancel);
 
