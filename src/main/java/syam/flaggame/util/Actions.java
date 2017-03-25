@@ -88,9 +88,19 @@ public class Actions {
             message(sender, type, message);
         }
     }
-    
+
     public static void sendPrefixedMessage(CommandSender sender, ChatMessageType type, String message) {
         sendPrefixedMessage(sender, type, new TextComponent(message.replaceAll("&([0-9a-fk-or])", "\u00A7$1")));
+    }
+
+    public static void sendTitle(Player player, String title, String subTitle, int in, int stay, int out) {
+        player.sendTitle(
+                title.replaceAll("&([0-9a-fk-or])", "\u00A7$1"),
+                subTitle.replaceAll("&([0-9a-fk-or])", "\u00A7$1"),
+                in,
+                stay,
+                out
+        );
     }
 
     // ユーティリティ

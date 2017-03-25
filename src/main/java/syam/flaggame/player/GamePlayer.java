@@ -238,6 +238,13 @@ public class GamePlayer {
         }
         this.getPlayer().playSound(this.getPlayer().getLocation(), sound, 1f, 1f);
     }
+    
+    public void sendTitle(String title, String sub, int in, int stay, int out) {
+        if (!this.isOnline()) {
+            return;
+        }
+        Actions.sendTitle(getPlayer(), title, title, in, stay, out);
+    }
 
     public static void sendMessage(Iterable<? extends GamePlayer> players, ChatMessageType type, String... messages) {
         for (GamePlayer p : players) {
@@ -271,6 +278,15 @@ public class GamePlayer {
                 continue;
             }
             p.playSound(sound);
+        }
+    }
+    
+    public static void playSound(Iterable<? extends GamePlayer> players, String title, String subTitle, int in, int stay, int out) {
+        for (GamePlayer p : players) {
+            if (p == null) {
+                continue;
+            }
+            p.sendTitle(title, subTitle, in, stay, out);
         }
     }
 
