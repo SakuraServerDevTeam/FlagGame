@@ -16,9 +16,11 @@
  */
 package syam.flaggame.command;
 
+import java.util.UUID;
 import jp.llv.flaggame.reception.GameReception;
 import syam.flaggame.FlagGame;
 import syam.flaggame.exception.CommandException;
+import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.player.GamePlayer;
 
@@ -38,8 +40,16 @@ public class CloseCommand extends BaseCommand {
 
     @Override
     public void execute() throws CommandException {
-        GameReception reception = this.plugin.getReceptions().getReception(this.args.get(0))
-                .orElseThrow(() -> new CommandException("&c受付'" + args.get(0) + "'が見つかりません！"));
+        GameReception reception = null;
+        try {
+            UUID uuid = UUID.fromString(args.get(0));
+            reception = plugin.getReceptions().getReception(uuid).orElse(null);
+        } catch(IllegalArgumentException ex) {
+        }
+        if (reception == null) {
+            reception = plugin.getStages().getStage(args.get(0)).flatMap(Stage::getReception)
+                    .orElseThrow(() -> new CommandException("&c受付'" + args.get(0) + "'が見つかりません！"));
+        }
         GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
         
         if (reception.getState()==GameReception.State.CLOSED) {
