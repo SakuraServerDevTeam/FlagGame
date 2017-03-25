@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 import jp.llv.flaggame.events.GameStartEvent;
 import jp.llv.flaggame.game.Game;
+import jp.llv.flaggame.game.HitpointTask;
 import jp.llv.flaggame.game.basic.objective.HeldBanner;
 import jp.llv.flaggame.profile.DeviationBasedExpCalcurator;
 import jp.llv.flaggame.profile.RecordStream;
@@ -275,6 +276,9 @@ public class BasicGame implements Game {
         BukkitTask updateTask = this.plugin.getServer().getScheduler()
                 .runTaskTimer(plugin, this::updateRemainTime, 20L, 20L);
         this.onFinishing.offer(updateTask::cancel);
+        
+        BukkitTask hitpointTask = new HitpointTask(this).runTaskTimer(plugin, 10L, 10L);
+        this.onFinishing.offer(hitpointTask::cancel);
 
         LongStream lessThanAMinute = LongStream//1~10秒,30秒
                 .of(1000L, 2000L, 3000L, 4000L, 5000L, 6000L, 7000L, 8000L, 9000L, 10000L, 30000L)
