@@ -22,6 +22,24 @@ package jp.llv.flaggame.game.protection;
  */
 public enum Protection {
     
-    BLOCK
+    BREAK,
+    PLACE,
+    BUCKET_FILL,
+    BUCKET_EMPTY,
+    SHEAR,
+    BURN,
+    FADE,
+    FORM,
+    GROW,
+    IGNITE,
+    DECAY,
+    HANGING_PLACE,
+    HANGING_BREAK,
+    CRAFT,
+    ARMOR_STAND,
+    VEHICLE_ENTER,
+    VEHICLE_EXIT,
+    VEHICLE_DAMAGE,
+    ENTITY_DAMAGE,
     
 }

@@ -36,6 +36,7 @@ import jp.llv.flaggame.events.GameStartEvent;
 import jp.llv.flaggame.game.Game;
 import jp.llv.flaggame.game.HitpointTask;
 import jp.llv.flaggame.game.basic.objective.HeldBanner;
+import jp.llv.flaggame.game.protection.StageProtectionListener;
 import jp.llv.flaggame.profile.DeviationBasedExpCalcurator;
 import jp.llv.flaggame.profile.RecordStream;
 import jp.llv.flaggame.profile.record.FlagCaptureRecord;
@@ -258,6 +259,11 @@ public class BasicGame implements Game {
         BGListener entityListener = new BGEntityListener(plugin, this);
         this.plugin.getServer().getPluginManager().registerEvents(entityListener, this.plugin);
         this.onFinishing.offer(entityListener::unregister);
+        
+        StageProtectionListener protectionListener = new StageProtectionListener(plugin, this);
+        this.plugin.getServer().getPluginManager().registerEvents(protectionListener, this.plugin);
+        this.onFinishing.offer(protectionListener::unregister);
+        
 
         this.getTeams().stream().forEach(team -> {
             String title = "\u00A76FlagGame ~\u00A7b" + this.stage.getName() + "\u00A76";
