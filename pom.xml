@@ -38,29 +38,6 @@
         </developer>
     </developers>
 
-    <!-- License -->
-    <licenses>
-        <license>
-            <name>All right reserved</name>
-            <url>LICENSE.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-
-    <!-- SCM -->
-    <scm>
-        <connection>scm:git:git://github.com/syamn/FlagGame.git</connection>
-        <url>https://github.com/syamn/FlagGame.git</url>
-        <tag>master</tag>
-        <developerConnection>scm:git:git@github.com:syamn/FlagGame.git</developerConnection>
-    </scm>
-
-    <!-- CI -->
-    <ciManagement>
-        <system>jenkins</system>
-        <url>http://ci.sakura-server.net/</url>
-    </ciManagement>
-
     <!-- Build -->
     <build>
         <finalName>${project.name}-${project.version}</finalName>
