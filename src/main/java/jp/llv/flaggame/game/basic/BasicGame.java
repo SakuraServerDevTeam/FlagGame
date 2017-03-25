@@ -99,6 +99,7 @@ public class BasicGame implements Game {
     private State state = State.PREPARATION;
     private long expectedFinishAt = 0;
 
+    private final BGRecordStream records;
     private final ExpCalcurator expCalcurator = new DeviationBasedExpCalcurator();
 
     public BasicGame(FlagGame plugin, GameReception reception, Stage stage, Collection<Team> ts) {
@@ -117,6 +118,7 @@ public class BasicGame implements Game {
         ts.forEach(t -> {
             this.teams.put(t.getColor(), t);
         });
+        this.records = new BGRecordStream(plugin, this);
     }
 
     public BasicGame(FlagGame plugin, GameReception reception, Stage stage, Team... teams) {
@@ -539,8 +541,8 @@ public class BasicGame implements Game {
         return this.state;
     }
 
-    public RecordStream getRecordStream() {
-        return this.reception.getRecordStream();
+    public BGRecordStream getRecordStream() {
+        return this.records;
     }
 
     private GamePlayer getPlayer(UUID uuid) {
