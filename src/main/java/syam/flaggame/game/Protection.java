@@ -1,5 +1,5 @@
-/* 
- * Copyright (C) 2017 Syamn, SakuraServerDev
+/*
+ * Copyright (C) 2017 toyblocks
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,13 +17,11 @@
 package syam.flaggame.game;
 
 /**
- * Configable列挙に紐付ける設定種類を表す列挙クラスです
- * 
- * @author syam
+ *
+ * @author toyblocks
  */
-public enum ConfigType {
-    POINT, // プレイヤーの現在値を取得する設定
-    MANAGER, // マネージャモードに入る設定
-    SIMPLE, // お金など単にそのコマンドだけで変更可能な設定
-    ;
+public enum Protection {
+    
+    BLOCK
+    
 }

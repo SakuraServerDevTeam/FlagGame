@@ -19,7 +19,6 @@ package jp.llv.flaggame.game.basic;
 import java.util.Collection;
 import jp.llv.flaggame.profile.record.LoginRecord;
 import jp.llv.flaggame.profile.record.PlayerLeaveRecord;
-import jp.llv.flaggame.reception.Team;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -37,11 +36,13 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import syam.flaggame.FlagGame;
 import jp.llv.flaggame.reception.TeamColor;
+import org.bukkit.block.BlockState;
 import org.bukkit.event.EventHandler;
-import syam.flaggame.game.Stage;
 import syam.flaggame.player.GamePlayer;
 import syam.flaggame.util.Actions;
 import org.bukkit.event.player.PlayerJoinEvent;
+import syam.flaggame.game.AreaPermission;
+import syam.flaggame.game.AreaSet;
 
 /**
  *
@@ -67,13 +68,13 @@ public class BGPlayerListener extends BGListener {
         }
 
         Block block = event.getClickedBlock();
-        if (!(block.getState() instanceof InventoryHolder)
-            && !(block.getState().getData() instanceof Openable)) {
-            return;
-        }
-
-        if (!canUseBlockAt(gplayer, event.getClickedBlock().getLocation())) {
-            gplayer.sendMessage("&cここは敵拠点です!");
+        BlockState state = block.getState();
+        AreaSet area = game.getStage().getAreas();
+        TeamColor color = gplayer.getTeam().get().getColor();
+        Location loc = block.getLocation();
+        if ((state instanceof InventoryHolder && !area.getAreaInfo(loc, a -> a.getPermission(AreaPermission.CONTAINER).getState(color)))
+                || (state instanceof Openable && !area.getAreaInfo(loc, a -> a.getPermission(AreaPermission.DOOR).getState(color)))) {
+            gplayer.sendMessage("&cあなたのチームはこのブロックにアクセスできません!");
             event.setCancelled(true);
             event.setUseInteractedBlock(Event.Result.DENY);
             event.setUseItemInHand(Event.Result.DENY);
@@ -140,22 +141,6 @@ public class BGPlayerListener extends BGListener {
         player.setHealth(0D);
         String message = gplayer.getColoredName() + "&6がログアウトしたため死亡しました";
         GamePlayer.sendMessage(this.plugin.getPlayers().getPlayersIn(player.getWorld()), message);
-    }
-
-    private static boolean canUseBlockAt(GamePlayer player, Location loc) {
-        if (!player.getStage().isPresent()) {
-            return false;
-        }
-        Stage stage = player.getEntry().get().getStage().get();
-        for (Team team : player.getGame().get().getTeams()) {
-            if (player.getTeam().map(t -> (t == team)).orElse(Boolean.FALSE)) {
-                continue;
-            }
-            if (stage.getBase(team.getColor()).isIn(loc)) {
-                return false;
-            }
-        }
-        return true;
     }
 
 }

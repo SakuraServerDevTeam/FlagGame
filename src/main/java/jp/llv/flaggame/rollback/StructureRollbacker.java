@@ -1,5 +1,5 @@
-/* 
- * Copyright (C) 2017 Syamn, SakuraServerDev
+/*
+ * Copyright (C) 2017 toyblocks
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,16 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package syam.flaggame.game;
+package jp.llv.flaggame.rollback;
+
+import syam.flaggame.game.Stage;
+import syam.flaggame.util.Cuboid;
 
 /**
- * Configable列挙に紐付ける設定種類を表す列挙クラスです
- * 
- * @author syam
+ *
+ * @author toyblocks
  */
-public enum ConfigType {
-    POINT, // プレイヤーの現在値を取得する設定
-    MANAGER, // マネージャモードに入る設定
-    SIMPLE, // お金など単にそのコマンドだけで変更可能な設定
-    ;
+public interface StructureRollbacker {
+    
+    byte[] serialize(Stage stage, Cuboid area) throws RollbackException;
+    
+    void deserialize(Stage stage, Cuboid area, byte[] source) throws RollbackException;
+    
 }

@@ -35,15 +35,17 @@ public class BannerSpawner {
     private final Location loc;
     private final byte point;
     private final byte hp;
+    private final boolean producing;
     
     private final boolean wall;
     private final BlockFace face;
 
-    public BannerSpawner(Location loc, byte point, byte hp, boolean wall, BlockFace face) {
+    public BannerSpawner(Location loc, byte point, byte hp, boolean producing, boolean wall, BlockFace face) {
         Objects.requireNonNull(loc, "A banner spawner must be located");
         this.loc = loc;
         this.point = point;
         this.hp = hp;
+        this.producing = producing;
         this.wall = wall;
         this.face = face;
     }
@@ -62,6 +64,10 @@ public class BannerSpawner {
     
     public boolean isSnatchable() {
         return this.hp < 0;
+    }
+
+    public boolean isProducing() {
+        return producing;
     }
 
     public boolean isWall() {

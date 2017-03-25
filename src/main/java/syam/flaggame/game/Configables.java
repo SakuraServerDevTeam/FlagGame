@@ -24,9 +24,6 @@ package syam.flaggame.game;
 public enum Configables {
 
     // 一般
-
-    STAGE("ステージエリア", ConfigType.AREA), // エリア保護を行うステージ全体の領域設定
-    BASE("拠点エリア", ConfigType.AREA), // 各チーム拠点の領域設定
     SPAWN("スポーン地点", ConfigType.POINT), // 各チームのスポーン地点
     FLAG("フラッグ", ConfigType.MANAGER), // 各チーム拠点の領域設定
     CHEST("チェスト", ConfigType.MANAGER), // 各チーム拠点の領域設定
@@ -40,10 +37,17 @@ public enum Configables {
     // オプション
     GAMETIME("ゲームの制限時間(秒)", ConfigType.SIMPLE),
     TEAMLIMIT("チーム毎の人数制限", ConfigType.SIMPLE),
-    PROTECT("ステージ保護", ConfigType.SIMPLE),
     AVAILABLE("ステージ有効", ConfigType.SIMPLE),
+    PROTECT("ゲーム外保護", ConfigType.SIMPLE),
     KILLSCORE("キル得点", ConfigType.SIMPLE),
-    DEATHSCORE("デス得点", ConfigType.SIMPLE),;
+    DEATHSCORE("デス得点", ConfigType.SIMPLE),
+    COOLDOWN("クールダウン", ConfigType.SIMPLE),
+    
+    // stage description
+    AUTHOR("製作者", ConfigType.SIMPLE),
+    DESCRIPTION("説明", ConfigType.SIMPLE),
+    GUIDE("概要", ConfigType.SIMPLE),
+    ;
 
     private final String configName;
     private final ConfigType configType;

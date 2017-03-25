@@ -22,27 +22,18 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import jp.llv.flaggame.game.basic.objective.*;
 import jp.llv.flaggame.reception.GameReception;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.inventory.ItemStack;
 
-import syam.flaggame.FlagGame;
 import jp.llv.flaggame.reception.TeamColor;
 import syam.flaggame.exception.StageReservedException;
-import syam.flaggame.util.Actions;
-import syam.flaggame.util.Cuboid;
 
 /**
  * Stage (Stage.java)
@@ -50,10 +41,6 @@ import syam.flaggame.util.Cuboid;
  * @author syam(syamn)
  */
 public class Stage {
-
-    // Logger
-    public static final Logger log = FlagGame.logger;
-    private static final String logPrefix = FlagGame.logPrefix;
     
     public static final Pattern NAME_REGEX = Pattern.compile("^[a-z0-9](?:[a-z0-9_-]*[a-z0-9])?$");
 
@@ -66,6 +53,7 @@ public class Stage {
     private int teamPlayerLimit = 16;
     
     private long gameTime = 6 * 60 * 1000;
+    private long cooldown = 0;
     
     private boolean available = false;
     
@@ -80,11 +68,15 @@ public class Stage {
     private final Set<Location> chests = Collections.newSetFromMap(new ConcurrentHashMap<Location, Boolean>());
 
     // 地点・エリア
-    private Cuboid stageArea = null;
-    private boolean stageProtect = true;
+    private boolean protect = true;
     private final Map<TeamColor, Location> spawnMap = Collections.synchronizedMap(new EnumMap<>(TeamColor.class));
-    private final Map<TeamColor, Cuboid> baseMap = Collections.synchronizedMap(new EnumMap<>(TeamColor.class));
+    private AreaSet areas = new AreaSet();
     private Location specSpawn = null;
+    
+    // stage description
+    private String guide = "";
+    private String description = "";
+    private String author = "";
 
     /**
      * コンストラクタ
@@ -301,69 +293,25 @@ public class Stage {
         this.specSpawn = loc != null ? loc.clone() : null;
     }
 
-    /* ***** エリア関係 ***** */
-    // ステージ
-    public void setStageArea(Location pos1, Location pos2) throws StageReservedException {
-        checkEditable();
-        this.setStageArea(new Cuboid(pos1, pos2));
+    public AreaSet getAreas() {
+        return areas;
     }
     
-    public void setStageArea(Cuboid cuboid) throws StageReservedException {
-        checkEditable();
-        this.stageArea = cuboid;
-    }
-    
-    public Cuboid getStageArea() {
-        return this.stageArea;
-    }
-    
-    public boolean hasStageArea() {
-        return this.stageArea != null;
+    /*package*/ void setAreas(AreaSet areas) {
+        this.areas = areas;
     }
     
     public void setProtected(boolean protect) throws StageReservedException {
         checkEditable();
-        this.stageProtect = protect;
+        this.protect = protect;
     }
     
-    public boolean isStageProtected() {
-        return this.stageProtect;
-    }
-
-    // 拠点
-    public void setBase(TeamColor team, Location pos1, Location pos2) throws StageReservedException {
-        checkEditable();
-        baseMap.put(team, new Cuboid(pos1, pos2));
-    }
-    
-    public void setBase(TeamColor team, Cuboid cuboid) throws StageReservedException {
-        checkEditable();
-        if (cuboid == null) {
-            baseMap.remove(team);
-        } else {
-            baseMap.put(team, cuboid);
-        }
-    }
-    
-    public Cuboid getBase(TeamColor team) {
-        if (team == null || !baseMap.containsKey(team)) {
-            return null;
-        }
-        return baseMap.get(team);
-    }
-    
-    public Map<TeamColor, Cuboid> getBases() {
-        return baseMap;
-    }
-    
-    public void setBases(Map<TeamColor, Cuboid> bases) throws StageReservedException {
-        checkEditable();
-        this.baseMap.clear();
-        this.baseMap.putAll(bases);
+    public boolean isProtected() {
+        return this.protect;
     }
     
     public Set<TeamColor> getTeams() {
-        return Collections.unmodifiableSet(this.getBases().keySet());
+        return Collections.unmodifiableSet(this.getSpawns().keySet());
     }
 
     /**
@@ -448,6 +396,38 @@ public class Stage {
     public double getDeathScore() {
         return deathScore;
     }
+    
+    public void setDescription(String value) {
+        description = value;
+    }
+    
+    public String getDescription() {
+        return description;
+    }
+    
+    public void setAuthor(String value) {
+        author = value;
+    }
+    
+    public String getAuthor() {
+        return author;
+    }
+    
+    public void setGuide(String value) {
+        guide = value;
+    }
+    
+    public String getGuide() {
+        return guide;
+    }
+    
+    public void setCooldown(long value) {
+        cooldown = value;
+    }
+    
+    public long getCooldown() {
+        return cooldown;
+    }
 
     public void setDeathScore(double deathScore) {
         this.deathScore = deathScore;
@@ -492,88 +472,8 @@ public class Stage {
         return Optional.ofNullable(this.reception);
     }
     
-    public void initialize() {
-        this.rollbackChests();
-        this.rollbackFlags();
-        this.rollbackBanners();
-    }
-
-    /* ロールバックメソッド */
-    /**
-     * このゲームの全ブロックをロールバックする
-     *
-     * @return
-     */
-    private void rollbackFlags() {
-        for (Flag flag : flags.values()) {
-            flag.rollback();
-        }
-    }
-
-    /*
-     * コンテナブロックを2ブロック下の同じコンテナから要素をコピーする
-     */
-    private void rollbackChests() {
-        for (Location loc : chests) {
-            Block toBlock = loc.getBlock();
-            Block fromBlock = toBlock.getRelative(BlockFace.DOWN, 2);
-
-            // インベントリインターフェースを持たないブロックはスキップ
-            if (!(toBlock.getState() instanceof InventoryHolder)) {
-                log.log(Level.WARNING, logPrefix + "Block is not InventoryHolder!Rollback skipping.. Block: {0}", Actions.getBlockLocationString(toBlock.getLocation()));
-                continue;
-            }
-            // 2ブロック下とブロックIDが違えばスキップ
-            if (toBlock.getType() != fromBlock.getType()) {
-                log.log(Level.WARNING, logPrefix + "BlockID unmatched!Rollback skipping.. Block: {0}", Actions.getBlockLocationString(toBlock.getLocation()));
-                continue;
-            }
-
-            // 各チェストがインベントリホルダにキャスト出来ない場合例外にならないようtryで囲う
-            InventoryHolder toContainer;
-            InventoryHolder fromContainer; // チェストでなければここで例外 修正予定 →
-            // 7/22修正済み
-            try {
-                toContainer = (InventoryHolder) toBlock.getState();
-                fromContainer = (InventoryHolder) fromBlock.getState();
-            } catch (ClassCastException ex) {
-                log.log(Level.WARNING, logPrefix + "Container can''t cast to InventoryHolder! Rollback skipping.. Block: {0}", Actions.getBlockLocationString(toBlock.getLocation()));
-                continue;
-            }
-
-            // チェスト内容コピー
-            try {
-                ItemStack[] oldIs = fromContainer.getInventory().getContents().clone();
-                ItemStack[] newIs = new ItemStack[oldIs.length];
-                for (int i = 0; i < oldIs.length; i++) {
-                    if (oldIs[i] == null) {
-                        continue;
-                    }
-                    // newIs[i] = oldIs[i].clone(); // ItemStackシャローコピー不可
-                    newIs[i] = new ItemStack(oldIs[i]); // ディープコピー
-                }
-                
-                toContainer.getInventory().setContents(newIs);
-            } catch (NullPointerException npe) {
-                npe.printStackTrace();
-            } catch (Exception ex) {
-                log.log(Level.WARNING, "Invalid inventory@{0}", toBlock.getLocation());
-                log.log(Level.WARNING, ex.getMessage());
-            }
-        }
-    }
-    
-    private void rollbackBanners() {
-        for (BannerSpawner spawner : bannerSpawners.values()) {
-            spawner.spawnBanner();
-        }
-    }
-    
     public void validate() throws NullPointerException {
-        Objects.requireNonNull(stageArea);
-        if (!available || !stageProtect || spawnMap.isEmpty() || baseMap.isEmpty()) {
-            throw new NullPointerException();
-        } else if (!Objects.equals(spawnMap.keySet(), baseMap.keySet())) {
+        if (!available || spawnMap.isEmpty()) {
             throw new NullPointerException();
         }
     }

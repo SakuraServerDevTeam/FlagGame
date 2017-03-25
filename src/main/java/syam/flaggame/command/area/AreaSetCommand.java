@@ -1,5 +1,5 @@
-/* 
- * Copyright (C) 2017 Syamn, SakuraServerDev
+/*
+ * Copyright (C) 2017 toyblocks
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,40 +14,44 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package syam.flaggame.command;
+package syam.flaggame.command.area;
 
-import java.util.logging.Level;
-import jp.llv.flaggame.database.DatabaseException;
 import syam.flaggame.FlagGame;
 import syam.flaggame.exception.CommandException;
+import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
-import syam.flaggame.util.Actions;
+import syam.flaggame.util.Cuboid;
+import syam.flaggame.util.WorldEditHandler;
 
-public class SaveCommand extends BaseCommand {
+/**
+ *
+ * @author toyblocks
+ */
+public class AreaSetCommand extends AreaCommand {
 
-    public SaveCommand(FlagGame plugin) {
+    public AreaSetCommand(FlagGame plugin) {
         super(plugin);
-        bePlayer = false;
-        name = "save";
-        argLength = 0;
-        usage = "<- save map data";
+        name = "area set";
+        argLength = 1;
+        usage = "<id> <- set region";
     }
 
     @Override
-    public void execute() throws CommandException {
-        // データ保存
+    public void execute(Stage stage) throws CommandException {
+        String id = args.get(0);
+        Cuboid region;
         try {
-            plugin.getStages().saveStages();
-        } catch (DatabaseException ex) {
-            plugin.getLogger().log(Level.WARNING, "Failed to connect database!", ex);
-            throw new CommandException("&cデータベースへの保存に失敗しました！");
+            region = WorldEditHandler.getSelectedArea(player);
+        } catch (IllegalStateException ex) {
+            throw new CommandException("&c" + ex.getMessage());
         }
-
-        Actions.message(sender, "&aStages Saved!");
+        stage.getAreas().setArea(id, region);
+        sendMessage("&a'&6" + stage.getName() + "&a'の'&6" + id + "&a'エリアを設定しました！");
     }
 
     @Override
     public boolean permission() {
-        return Perms.SAVE.has(sender);
+        return Perms.STAGE_CONFIG_SET.has(sender);
     }
+
 }

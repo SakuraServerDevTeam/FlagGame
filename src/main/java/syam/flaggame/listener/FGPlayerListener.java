@@ -117,7 +117,7 @@ public class FGPlayerListener implements Listener {
 
                     // 新規フラッグ登録
                     try {
-                        stage.addFlag(new Flag(loc, type));
+                        stage.addFlag(new Flag(loc, type, false));
                     } catch (StageReservedException ex) {
                         Actions.message(player, "&cステージ" + stage.getName() + "は現在編集不可です!");
                         return;
@@ -190,7 +190,7 @@ public class FGPlayerListener implements Listener {
                     BlockFace face = ((Banner) b.getState().getData()).getAttachedFace();
 
                     try {
-                        stage.addBannerSpawner(new BannerSpawner(loc, sess.getSelectedPoint().byteValue(), sess.getSelectedHp(), wall, face));
+                        stage.addBannerSpawner(new BannerSpawner(loc, sess.getSelectedPoint().byteValue(), sess.getSelectedHp(), false, wall, face));
                     } catch (StageReservedException ex) {
                         Actions.message(player, "&cステージ" + stage.getName() + "は現在編集不可です!");
                         return;

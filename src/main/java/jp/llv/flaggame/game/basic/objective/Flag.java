@@ -27,18 +27,20 @@ public class Flag {
     public static final Material[] FLAG_BLOCK_IDS = {Material.WOOL, Material.STAINED_CLAY, Material.STAINED_GLASS};
     private final Location loc; // フラッグ座標
     private final double type; // フラッグの種類
+    private final boolean producing;
 
     /*
      * コンストラクタ
      * 
      * @param plugin
      */
-    public Flag(final Location loc, final double type) {
+    public Flag(final Location loc, final double type, boolean producing) {
         if (loc == null) throw new NullPointerException();
 
         // フラッグデータ登録
         this.loc = loc;
         this.type = type;
+        this.producing = producing;
     }
 
     /**
@@ -70,6 +72,10 @@ public class Flag {
      */
     public double getFlagPoint() {
         return type;
+    }
+
+    public boolean isProducing() {
+        return producing;
     }
 
     public String getTypeName() {

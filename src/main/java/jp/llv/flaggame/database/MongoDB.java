@@ -19,13 +19,21 @@ package jp.llv.flaggame.database;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 import jp.llv.flaggame.profile.GameRecordStream;
+import org.bson.BsonDocument;
+import org.bson.BsonValue;
 import syam.flaggame.ConfigurationManager;
 import syam.flaggame.FlagGame;
+import syam.flaggame.game.Stage;
+import syam.flaggame.game.StageBsonConverter;
 
 /**
  *
@@ -57,7 +65,7 @@ public class MongoDB implements Database {
                             config.getDatabaseUserpass().toCharArray()
                     );
             client = credential == null ? new MongoClient(addr) : new MongoClient(addr, Arrays.asList(credential));
-            
+            database = client.getDatabase(config.getDatabaseDbname());
         }
     }
 
@@ -79,6 +87,23 @@ public class MongoDB implements Database {
     @Override
     public Collection<UUID> getGames() throws DatabaseException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Collection<Stage> loadStages() throws DatabaseException {
+        MongoCollection<BsonValue> coll = database.getCollection("stages").withDocumentClass(BsonValue.class);
+        List<Stage> result = new ArrayList<>();
+        coll.find().map(BsonDocument.class::cast)
+                .map(StageBsonConverter::readStage)
+                .forEach((Consumer<Stage>) result::add);
+        return result;
+    }
+
+    @Override
+    public void saveStages(Collection<Stage> stages) throws DatabaseException {
+        MongoCollection<BsonValue> coll = database.getCollection("stages").withDocumentClass(BsonValue.class);
+        coll.deleteMany(new BsonDocument());
+        stages.parallelStream().map(StageBsonConverter::writeStage).forEach(coll::insertOne);
     }
 
     @Override

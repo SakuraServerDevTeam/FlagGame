@@ -46,9 +46,9 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import syam.flaggame.command.*;
+import syam.flaggame.command.area.*;
 import syam.flaggame.command.queue.ConfirmQueue;
 import syam.flaggame.listener.*;
-import syam.flaggame.game.StageFileManager;
 import syam.flaggame.game.StageManager;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.player.PlayerManager;
@@ -79,14 +79,13 @@ public class FlagGame extends JavaPlugin {
 
     // ** Private classes **
     private ConfigurationManager config;
-    private StageFileManager gfm;
     private Debug debug;
     private ConfirmQueue queue;
 
-    private PlayerManager pm;
-    private ReceptionManager rm;
-    private GameManager gm;
-    private StageManager sm;
+    private PlayerManager players;
+    private ReceptionManager receptions;
+    private GameManager games;
+    private StageManager stages;
 
     // ** Variable **
     // プレイヤーデータベース
@@ -155,29 +154,36 @@ public class FlagGame extends JavaPlugin {
         debug.endTimer("commands");
 
         // データベース連携
-        /*debug.startTimer("database");
-        database = new MongoDB(this.config);
+        debug.startTimer("database");
+        database = new MongoDB(this, this.config);
         try {
             database.connect();
         } catch (DatabaseException ex) {
+            getLogger().log(Level.WARNING, "Failed to connect database!", ex);
+            getServer().getPluginManager().disablePlugin(this);
+            return;
         }
         this.getServer().getScheduler().runTaskTimer(this, database::tryConnect, 600000L, 300000L);
-        debug.endTimer("database");*/
+        debug.endTimer("database");
 
         debug.startTimer("managers");
-        gfm = new StageFileManager(this);
-
-        pm = new PlayerManager(this);
-        rm = new ReceptionManager(this);
-        rm.addType("rt", RealtimeTeamingReception::new);
-        rm.addType("ert", EvenRequiredRealtimeTeamingReception::new);
-        gm = new GameManager(this);
-        sm = new StageManager();
+        players = new PlayerManager(this);
+        receptions = new ReceptionManager(this);
+        receptions.addType("rt", RealtimeTeamingReception::new);
+        receptions.addType("ert", EvenRequiredRealtimeTeamingReception::new);
+        games = new GameManager(this);
+        stages = new StageManager(this);
         debug.endTimer("managers");
 
         // ゲームデータ読み込み
         debug.startTimer("load games");
-        gfm.loadStages();
+        try {
+            stages.loadStages();
+        } catch (DatabaseException ex) {
+            getLogger().log(Level.WARNING, "Failed to connect database!", ex);
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
         debug.endTimer("load games");
 
         // dynmapフック
@@ -204,13 +210,18 @@ public class FlagGame extends JavaPlugin {
     public void onDisable() {
         commands.clear();
 
-        if (this.rm != null) {
-            this.rm.closeAll("&cDisabled");
+        if (this.receptions != null) {
+            this.receptions.closeAll("&cDisabled");
         }
 
         // ゲームデータを保存
-        if (gfm != null) {
-            gfm.saveStages();
+        if (stages != null) {
+            try {
+                stages.saveStages();
+            } catch (DatabaseException ex) {
+                getLogger().log(Level.WARNING, "Failed to save stages!", ex);
+                return;
+            }
         }
 
         // タスクをすべて止める
@@ -224,7 +235,7 @@ public class FlagGame extends JavaPlugin {
         // メッセージ表示
         PluginDescriptionFile pdfFile = this.getDescription();
         logger.log(Level.INFO, "[{0}] version {1} is disabled!", new Object[]{pdfFile.getName(), pdfFile.getVersion()});
-        
+
         try {
             this.database.close();
         } catch (DatabaseException ex) {
@@ -300,7 +311,15 @@ public class FlagGame extends JavaPlugin {
                 CheckCommand::new,
                 TpCommand::new,
                 SaveCommand::new,
-                ReloadCommand::new
+                ReloadCommand::new,
+                AreaDeleteCommand::new,
+                AreaPermitCommand::new,
+                AreaListCommand::new,
+                AreaLoadCommand::new,
+                AreaProtectCommand::new,
+                AreaSaveCommand::new,
+                AreaSelectCommand::new,
+                AreaSetCommand::new
         ).map(f -> f.apply(this)).forEach(this.commands::add);
     }
 
@@ -324,30 +343,19 @@ public class FlagGame extends JavaPlugin {
             }
 
             outer:
-            for (BaseCommand command : commands.toArray(new BaseCommand[0])) {
+            for (BaseCommand command : commands) {
                 String[] cmds = command.getName().split(" ");
                 for (int i = 0; i < cmds.length; i++) {
                     if (i >= args.length || !cmds[i].equalsIgnoreCase(args[i])) {
                         continue outer;
                     }
-                    // 実行
-                    return command.run(sender, args, commandLabel);
                 }
+                return command.run(sender, args, commandLabel);
             }
-            // 有効コマンドなし ヘルプ表示
             new HelpCommand(this).run(sender, args, commandLabel);
             return true;
         }
         return false;
-    }
-
-    /**
-     * ゲームファイルマネージャを返す
-     *
-     * @return GameManager
-     */
-    public StageFileManager getFileManager() {
-        return gfm;
     }
 
     /**
@@ -400,19 +408,19 @@ public class FlagGame extends JavaPlugin {
     }
 
     public PlayerManager getPlayers() {
-        return pm;
+        return players;
     }
 
     public ReceptionManager getReceptions() {
-        return rm;
+        return receptions;
     }
 
     public GameManager getGames() {
-        return gm;
+        return games;
     }
 
     public StageManager getStages() {
-        return sm;
+        return stages;
     }
 
     public static FlagGame getInstance() {

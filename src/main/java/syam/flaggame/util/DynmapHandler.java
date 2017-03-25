@@ -36,7 +36,6 @@ import org.dynmap.markers.MarkerSet;
 
 import syam.flaggame.FlagGame;
 import syam.flaggame.game.Stage;
-import syam.flaggame.game.StageManager;
 
 public class DynmapHandler {
     // Logger
@@ -174,7 +173,7 @@ public class DynmapHandler {
         double[] z;
 
         // ステージエリア未設定ならスキップ
-        Cuboid region = stage.getStageArea();
+        Cuboid region = stage.getAreas().getStageArea();
         if (region == null) return;
 
         // ステージエリアの頂点を取得

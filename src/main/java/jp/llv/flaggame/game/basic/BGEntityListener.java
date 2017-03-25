@@ -41,6 +41,8 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 import syam.flaggame.FlagGame;
+import syam.flaggame.game.AreaPermission;
+import syam.flaggame.game.AreaSet;
 import syam.flaggame.player.GamePlayer;
 
 /**
@@ -95,9 +97,10 @@ public class BGEntityListener extends BGListener {
         }
 
         // Disallow damage in basements
-        if (this.game.getStage().getBase(gp.getTeam().get().getColor()).isIn(player.getLocation())) {
+        AreaSet as = game.getStage().getAreas();
+        if (as.getAreaInfo(player.getLocation(), a -> a.getPermission(AreaPermission.GODMODE).getState(gp.getTeam().get().getColor()))) {
             event.setCancelled(true);
-            if (!this.game.getStage().getBase(gd.getTeam().get().getColor()).isIn(damager.getLocation())) {
+            if (!as.getAreaInfo(damager.getLocation(), a -> a.getPermission(AreaPermission.GODMODE).getState(gd.getTeam().get().getColor()))) {
                 damager.damage(event.getDamage(), player);
             }
             return;

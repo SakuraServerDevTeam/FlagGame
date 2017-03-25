@@ -26,6 +26,7 @@ import org.bukkit.entity.Player;
 
 import syam.flaggame.FlagGame;
 import syam.flaggame.exception.CommandException;
+import syam.flaggame.player.GamePlayer;
 import syam.flaggame.util.Actions;
 
 public abstract class BaseCommand {
@@ -134,4 +135,9 @@ public abstract class BaseCommand {
     public void sendUsage() {
         Actions.message(sender, "&c/" + this.command + " " + name + " " + usage);
     }
+    
+    public void sendMessage(String message) {
+        Actions.sendPrefixedMessage(sender, message);
+    }
+    
 }
