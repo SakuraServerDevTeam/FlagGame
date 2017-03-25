@@ -41,6 +41,9 @@ public class AreaLoadCommand extends AreaCommand {
     public void execute(Stage stage) throws CommandException {
         String id = args.get(0);
         AreaInfo info = stage.getAreas().getAreaInfo(id);
+        if (info == null) {
+            throw new CommandException("&cその名前のエリアは存在しません！");
+        }
         String savename = args.get(1);
         AreaInfo.RollbackData data = info.getRollback(savename);
         if (data == null) {
