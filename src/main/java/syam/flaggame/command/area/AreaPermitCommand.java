@@ -35,7 +35,7 @@ public class AreaPermitCommand extends AreaCommand {
 
     public AreaPermitCommand(FlagGame plugin) {
         super(plugin);
-        name = "area load";
+        name = "area permit";
         argLength = 3;
         usage = "<id> <permission> <teamcolor> [state] <- load region";
     }
