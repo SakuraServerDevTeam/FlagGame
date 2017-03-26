@@ -197,10 +197,8 @@ public class RealtimeTeamingReception implements GameReception {
 
     @Override
     public void stop(String reason) throws IllegalStateException {
-        if (this.getState() != State.STARTED) {
-            if (this.game != null) {
-                this.game.stopForcibly(reason);
-            }
+        if (this.getState() == State.STARTED) {
+            this.game.stopForcibly(reason);
             this.state = State.FINISHED;
         }
         if (stageReservation != null) {
