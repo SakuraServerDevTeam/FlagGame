@@ -39,7 +39,6 @@ import jp.llv.flaggame.game.HitpointTask;
 import jp.llv.flaggame.game.basic.objective.HeldBanner;
 import jp.llv.flaggame.game.protection.StageProtectionListener;
 import jp.llv.flaggame.profile.DeviationBasedExpCalcurator;
-import jp.llv.flaggame.profile.RecordStream;
 import jp.llv.flaggame.profile.record.FlagCaptureRecord;
 import jp.llv.flaggame.profile.record.FlagScoreRecord;
 import jp.llv.flaggame.profile.record.GameStartRecord;
@@ -451,10 +450,33 @@ public class BasicGame implements Game {
                 g.resetTabName();
             }
         }
-        this.reception.close("The game finished");
-        
+
+        BaseComponent[] rateMessage = new ComponentBuilder("クリックでステージの評価にご協力ください: ").color(ChatColor.GOLD)
+                .append("❤").color(ChatColor.GREEN)
+                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/f rate 0"))
+                .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("1.根本的問題がある").color(ChatColor.RED).create()))
+                .append("❤").color(ChatColor.GREEN)
+                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/f rate 1"))
+                .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("2.多くの問題がある").color(ChatColor.RED).create()))
+                .append("❤").color(ChatColor.GREEN)
+                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/f rate 2"))
+                .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("3.改善の余地がある").color(ChatColor.GOLD).create()))
+                .append("❤").color(ChatColor.GREEN)
+                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/f rate 3"))
+                .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("4.個人的に楽しめた").color(ChatColor.GOLD).create()))
+                .append("❤").color(ChatColor.GREEN)
+                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/f rate 4"))
+                .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("5.チームで楽しめた").color(ChatColor.GREEN).create()))
+                .append("❤").color(ChatColor.GREEN)
+                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/f rate 5"))
+                .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("6.全員が楽しめた").color(ChatColor.GREEN).create()))
+                .create();
+        GamePlayer.sendMessage(this, rateMessage);
+
         String author = "".equals(stage.getAuthor()) ? "" : "presented by " + stage.getAuthor();
         GamePlayer.sendTitle(this, "&6試合終了", author, 0, 60, 20);
+        
+        reception.stop("The game has finished");
     }
 
     @Override

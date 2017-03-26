@@ -243,7 +243,7 @@ public class GamePlayer {
         if (!this.isOnline()) {
             return;
         }
-        Actions.sendTitle(getPlayer(), title, title, in, stay, out);
+        Actions.sendTitle(getPlayer(), title, sub, in, stay, out);
     }
 
     public static void sendMessage(Iterable<? extends GamePlayer> players, ChatMessageType type, String... messages) {

@@ -116,12 +116,8 @@ public class RealtimeTeamingReception implements GameReception {
     @Override
     @SuppressWarnings("deprecation")
     public void close(String reason) {
-        if (this.getState() == State.STARTED) {
+        if (getState().toGameState() != Game.State.FINISHED) {
             this.stop(reason);
-        }
-
-        if (this.stageReservation != null) {
-            this.stageReservation.release();
         }
 
         for (GamePlayer p : this.getPlayers()) {
@@ -163,7 +159,7 @@ public class RealtimeTeamingReception implements GameReception {
         this.records.push(new PlayerTeamRecord(id, player.getPlayer(), color));
         int count = this.players.entrySet().stream().map(Map.Entry::getValue).mapToInt(Set::size).sum();
         GamePlayer.sendMessage(this.plugin.getPlayers(), color.getColor() + player.getName() + "&aが'&6"
-                + this.getName() + "&a'で開催予定のゲームに参加しました(&6" + count + "人目&a)");
+                                                         + this.getName() + "&a'で開催予定のゲームに参加しました(&6" + count + "人目&a)");
     }
 
     @Override
@@ -176,11 +172,17 @@ public class RealtimeTeamingReception implements GameReception {
             if (team.contains(player)) {
                 team.remove(player);
                 player.leave(this);
-                this.records.push(new PlayerLeaveRecord(id, player.getPlayer()));
-                GamePlayer.sendMessage(this.plugin.getPlayers(), player.getColoredName() + "&aが'" + this.getName() + "'で開催予定のゲームへのエントリーを取り消しました");
+                if (getState().toGameState() != Game.State.FINISHED) {
+                    this.records.push(new PlayerLeaveRecord(id, player.getPlayer()));
+                    GamePlayer.sendMessage(this.plugin.getPlayers(), player.getColoredName() + "&aが'" + this.getName() + "'で開催予定のゲームへのエントリーを取り消しました");
+                }
+                if (players.values().stream().allMatch(Collection::isEmpty)) {
+                    this.close("All players has left");
+                }
                 return;
             }
         }
+
         throw new IllegalArgumentException("That player is not joined");
     }
 
@@ -189,26 +191,34 @@ public class RealtimeTeamingReception implements GameReception {
         if (this.getState() != State.OPENED) {
             throw new IllegalStateException();
         }
-        this.state = State.STARTING;
-        GamePlayer.sendMessage(this.plugin.getPlayers(), "&2フラッグゲーム'&6" + this.getName() + "&2'の参加受付が終了しました！");
         //Build teams
         Set<Team> teams = new HashSet<>();
         for (Map.Entry<TeamColor, Set<GamePlayer>> e : this.players.entrySet()) {
             teams.add(new Team(this, e.getKey(), e.getValue()));
         }
         //start game
-        this.game = new BasicGame(this.plugin, this, this.stage, teams);
-        this.game.startLater(10000L);
+        try {
+            this.game = new BasicGame(this.plugin, this, this.stage, teams);
+            this.game.startLater(10000L);
+        } catch (CommandException ex) {
+            this.game = null;
+            throw ex;
+        }
+        // successfully started
+        this.state = State.STARTING;
+        GamePlayer.sendMessage(this.plugin.getPlayers(), "&2フラッグゲーム'&6" + this.getName() + "&2'の参加受付が終了しました！");
     }
 
     @Override
     public void stop(String reason) throws IllegalStateException {
-        if (this.getState() != State.STARTED) {
-            throw new IllegalStateException();
+        if (this.getState() == State.STARTED) {
+            this.game.stopForcibly(reason);
+            this.state = State.FINISHED;
         }
-
-        this.game.stopForcibly(reason);
-        this.state = State.FINISHED;
+        if (stageReservation != null) {
+            stageReservation.release();
+            stageReservation = null;
+        }
     }
 
     @Override
@@ -230,7 +240,11 @@ public class RealtimeTeamingReception implements GameReception {
     public State getState() {
         //まずゲームと状態を同期
         if (this.state == State.OPENED
-                && this.getGame().map(Game::getState).map(Game.State.STARTED::equals).orElse(Boolean.FALSE)) {
+            && this.getGame().map(Game::getState).map(Game.State.STARTED::equals).orElse(Boolean.FALSE)) {
+            this.state = State.STARTED;
+        }
+        if (this.state == State.STARTING
+            && this.game.getState() != Game.State.PREPARATION) {
             this.state = State.STARTED;
         }
         if (this.state == State.STARTED && this.game.getState() == Game.State.FINISHED) {
