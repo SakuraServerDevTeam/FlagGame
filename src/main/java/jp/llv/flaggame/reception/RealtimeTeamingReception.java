@@ -170,8 +170,10 @@ public class RealtimeTeamingReception implements GameReception {
             if (team.contains(player)) {
                 team.remove(player);
                 player.leave(this);
-                this.records.push(new PlayerLeaveRecord(id, player.getPlayer()));
-                GamePlayer.sendMessage(this.plugin.getPlayers(), player.getColoredName() + "&aが'" + this.getName() + "'で開催予定のゲームへのエントリーを取り消しました");
+                if (getState().toGameState() != Game.State.FINISHED) {
+                    this.records.push(new PlayerLeaveRecord(id, player.getPlayer()));
+                    GamePlayer.sendMessage(this.plugin.getPlayers(), player.getColoredName() + "&aが'" + this.getName() + "'で開催予定のゲームへのエントリーを取り消しました");
+                }
                 return;
             }
         }
@@ -236,7 +238,7 @@ public class RealtimeTeamingReception implements GameReception {
             this.state = State.STARTED;
         }
         if (this.state == State.STARTING
-                && this.game.getState() != Game.State.PREPARATION) {
+            && this.game.getState() != Game.State.PREPARATION) {
             this.state = State.STARTED;
         }
         if (this.state == State.STARTED && this.game.getState() == Game.State.FINISHED) {

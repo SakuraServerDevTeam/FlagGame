@@ -56,6 +56,7 @@ public class RateCommand extends BaseCommand {
         }
         reception.getRecordStream().push(new StageRateRecord(reception.getID(), player, rate));
         reception.leave(gplayer);
+        sendMessage("&a投票への協力ありがとうございました！");
     }
 
     @Override
