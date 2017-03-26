@@ -24,6 +24,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import jp.llv.flaggame.events.GameFinishedEvent;
+import jp.llv.flaggame.game.Game;
+import jp.llv.flaggame.reception.GameReception;
 import org.bukkit.Bukkit;
 
 import org.bukkit.World;
@@ -89,7 +91,8 @@ public class PlayerManager implements Iterable<GamePlayer> {
      * Returns the game player with the given UUID.
      *
      * @param uuid the uuid of the player to retrieve, nullable
-     * @return the player if the player is online or in a game, otherwise {@code null}
+     * @return the player if the player is online or in a game, otherwise
+     * {@code null}
      */
     public GamePlayer getPlayer(UUID uuid) {
         return this.players.get(uuid);
@@ -99,7 +102,8 @@ public class PlayerManager implements Iterable<GamePlayer> {
      * Return the game player with the given name.
      *
      * @param name the name of the player to retrieve, {@code null} means noone
-     * @return the player if the player is online or in a game, otherwise {@code null}
+     * @return the player if the player is online or in a game, otherwise
+     * {@code null}
      */
     public GamePlayer getPlayer(String name) {
         return this.players.values().stream().filter(p -> p.getName().equals(name)).findAny().orElse(null);
@@ -109,7 +113,8 @@ public class PlayerManager implements Iterable<GamePlayer> {
      * Return the game player of the bukkit player.
      *
      * @param player the bukkit player, who has the uuid of the game player
-     * @return the player if the player is online or in a game, otherwise {@code null}.
+     * @return the player if the player is online or in a game, otherwise
+     * {@code null}.
      */
     public GamePlayer getPlayer(Player player) {
         return player == null ? null : this.getPlayer(player.getUniqueId());
@@ -129,9 +134,16 @@ public class PlayerManager implements Iterable<GamePlayer> {
         Iterator<GamePlayer> it = players.values().iterator();
         while (it.hasNext()) {
             GamePlayer player = it.next();
-            if (!player.isOnline() && !player.getEntry().isPresent()) {
-                it.remove();
+            if (player.isOnline()) {
+                continue; // the player is still online
+            } else if (player.getEntry().isPresent()) {
+                GameReception entry = player.getEntry().get();
+                if (entry.getState().toGameState() != Game.State.FINISHED) {
+                    continue; // the player is still in game
+                }
+                entry.leave(player); // remove from the reception
             }
+            it.remove(); // otherwise remove player
         }
     }
 
