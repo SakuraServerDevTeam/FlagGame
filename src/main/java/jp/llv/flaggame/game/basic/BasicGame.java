@@ -475,6 +475,8 @@ public class BasicGame implements Game {
 
         String author = "".equals(stage.getAuthor()) ? "" : "presented by " + stage.getAuthor();
         GamePlayer.sendTitle(this, "&6試合終了", author, 0, 60, 20);
+        
+        reception.stop("The game has finished");
     }
 
     @Override

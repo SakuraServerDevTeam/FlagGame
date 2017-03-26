@@ -116,13 +116,7 @@ public class RealtimeTeamingReception implements GameReception {
     @Override
     @SuppressWarnings("deprecation")
     public void close(String reason) {
-        if (this.getState() == State.STARTED) {
-            this.stop(reason);
-        }
-
-        if (this.stageReservation != null) {
-            this.stageReservation.release();
-        }
+        this.stop(reason);
 
         for (GamePlayer p : this.getPlayers()) {
             for (Set<GamePlayer> team : this.players.values()) {
@@ -163,7 +157,7 @@ public class RealtimeTeamingReception implements GameReception {
         this.records.push(new PlayerTeamRecord(id, player.getPlayer(), color));
         int count = this.players.entrySet().stream().map(Map.Entry::getValue).mapToInt(Set::size).sum();
         GamePlayer.sendMessage(this.plugin.getPlayers(), color.getColor() + player.getName() + "&aが'&6"
-                + this.getName() + "&a'で開催予定のゲームに参加しました(&6" + count + "人目&a)");
+                                                         + this.getName() + "&a'で開催予定のゲームに参加しました(&6" + count + "人目&a)");
     }
 
     @Override
@@ -204,11 +198,13 @@ public class RealtimeTeamingReception implements GameReception {
     @Override
     public void stop(String reason) throws IllegalStateException {
         if (this.getState() != State.STARTED) {
-            throw new IllegalStateException();
+            this.game.stopForcibly(reason);
+            this.state = State.FINISHED;
         }
-
-        this.game.stopForcibly(reason);
-        this.state = State.FINISHED;
+        if (stageReservation != null) {
+            stageReservation.release();
+            stageReservation = null;
+        }
     }
 
     @Override
@@ -230,7 +226,7 @@ public class RealtimeTeamingReception implements GameReception {
     public State getState() {
         //まずゲームと状態を同期
         if (this.state == State.OPENED
-                && this.getGame().map(Game::getState).map(Game.State.STARTED::equals).orElse(Boolean.FALSE)) {
+            && this.getGame().map(Game::getState).map(Game.State.STARTED::equals).orElse(Boolean.FALSE)) {
             this.state = State.STARTED;
         }
         if (this.state == State.STARTED && this.game.getState() == Game.State.FINISHED) {
