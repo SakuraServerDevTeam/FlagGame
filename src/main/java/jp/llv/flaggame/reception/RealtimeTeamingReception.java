@@ -116,7 +116,9 @@ public class RealtimeTeamingReception implements GameReception {
     @Override
     @SuppressWarnings("deprecation")
     public void close(String reason) {
-        this.stop(reason);
+        if (getState().toGameState() != Game.State.FINISHED) {
+            this.stop(reason);
+        }
 
         for (GamePlayer p : this.getPlayers()) {
             for (Set<GamePlayer> team : this.players.values()) {
@@ -177,6 +179,11 @@ public class RealtimeTeamingReception implements GameReception {
                 return;
             }
         }
+        
+        if (players.values().stream().allMatch(Collection::isEmpty)) {
+            this.close("All players has left");
+        }
+        
         throw new IllegalArgumentException("That player is not joined");
     }
 
