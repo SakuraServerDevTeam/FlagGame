@@ -73,7 +73,7 @@ public class BGPlayerListener extends BGListener {
         TeamColor color = gplayer.getTeam().get().getColor();
         Location loc = block.getLocation();
         if ((state instanceof InventoryHolder && !area.getAreaInfo(loc, a -> a.getPermission(AreaPermission.CONTAINER).getState(color)))
-                || (state instanceof Openable && !area.getAreaInfo(loc, a -> a.getPermission(AreaPermission.DOOR).getState(color)))) {
+                || (state.getData() instanceof Openable && !area.getAreaInfo(loc, a -> a.getPermission(AreaPermission.DOOR).getState(color)))) {
             gplayer.sendMessage("&cあなたのチームはこのブロックにアクセスできません!");
             event.setCancelled(true);
             event.setUseInteractedBlock(Event.Result.DENY);
