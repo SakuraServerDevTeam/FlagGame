@@ -55,6 +55,7 @@ public class RateCommand extends BaseCommand {
             throw new CommandException("&c0-5の整数値で評価してください！");
         }
         reception.getRecordStream().push(new StageRateRecord(reception.getID(), player, rate));
+        reception.leave(gplayer);
     }
 
     @Override
