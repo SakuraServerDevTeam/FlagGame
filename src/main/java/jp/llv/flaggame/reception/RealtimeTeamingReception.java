@@ -235,6 +235,10 @@ public class RealtimeTeamingReception implements GameReception {
             && this.getGame().map(Game::getState).map(Game.State.STARTED::equals).orElse(Boolean.FALSE)) {
             this.state = State.STARTED;
         }
+        if (this.state == State.STARTING
+                && this.game.getState() != Game.State.PREPARATION) {
+            this.state = State.STARTED;
+        }
         if (this.state == State.STARTED && this.game.getState() == Game.State.FINISHED) {
             this.state = State.FINISHED;
         }
