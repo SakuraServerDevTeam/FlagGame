@@ -176,14 +176,13 @@ public class RealtimeTeamingReception implements GameReception {
                     this.records.push(new PlayerLeaveRecord(id, player.getPlayer()));
                     GamePlayer.sendMessage(this.plugin.getPlayers(), player.getColoredName() + "&aが'" + this.getName() + "'で開催予定のゲームへのエントリーを取り消しました");
                 }
+                if (players.values().stream().allMatch(Collection::isEmpty)) {
+                    this.close("All players has left");
+                }
                 return;
             }
         }
-        
-        if (players.values().stream().allMatch(Collection::isEmpty)) {
-            this.close("All players has left");
-        }
-        
+
         throw new IllegalArgumentException("That player is not joined");
     }
 

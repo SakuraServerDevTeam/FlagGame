@@ -187,7 +187,8 @@ public class PlayerManager implements Iterable<GamePlayer> {
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void on(PlayerQuitEvent e) {
             PlayerManager.this.getPlayer(e.getPlayer()).resetTabName();
-            PlayerManager.this.gc();
+            // wait until Player#getOnline returns false
+            plugin.getServer().getScheduler().runTask(plugin, PlayerManager.this::gc);
         }
 
         @EventHandler
