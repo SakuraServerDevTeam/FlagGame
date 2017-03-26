@@ -42,7 +42,6 @@ public class LeaveCommand extends BaseCommand {
     public void execute() throws CommandException {
         // 参加しているゲームを取得する
         GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
-        
 
         World world = player.getWorld();
 
@@ -60,14 +59,23 @@ public class LeaveCommand extends BaseCommand {
             }
         } else {// ゲームに参加しているプレイヤー
             GameReception reception = gPlayer.getEntry().get();
-            if (reception.getState().toGameState() == Game.State.PREPARATION) {
-                if (!Perms.LEAVE_READY.has(sender)) {
-                    throw new CommandException("&cゲームのエントリーを取り消す権限がありません");
-                }
-                reception.leave(gPlayer);
-                gPlayer.sendMessage("&a"+reception.getID()+"のエントリーを取り消しました。");
-            } else {
-                    throw new CommandException("&cThat function is not implemented in alpha-build");
+            switch (reception.getState().toGameState()) {
+                case PREPARATION:
+                    if (!Perms.LEAVE_READY.has(sender)) {
+                        throw new CommandException("&cゲームのエントリーを取り消す権限がありません");
+                    }
+                    reception.leave(gPlayer);
+                    gPlayer.sendMessage("&a" + reception.getID() + "のエントリーを取り消しました。");
+                    break;
+                case STARTED:
+                    throw new CommandException("&cゲーム中に退場することはできません！");
+                case FINISHED:
+                    if (!Perms.LEAVE_GAME.has(sender)) {
+                        throw new CommandException("&cゲームのエントリーを破棄する権限がありません");
+                    }
+                    reception.leave(gPlayer);
+                    gPlayer.sendMessage("&a" + reception.getID() + "のエントリーを破棄しました。");
+                    break;
             }
         }
     }

@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import jp.llv.flaggame.events.ReceptionJoinEvent;
+import jp.llv.flaggame.game.Game;
 import jp.llv.flaggame.reception.GameReception;
 import syam.flaggame.FlagGame;
 
@@ -45,10 +46,14 @@ public class JoinCommand extends BaseCommand {
         GameReception reception = null;
         List<String> joinArgs;
 
+        GameReception currentReception = null;
         if (gPlayer.getEntry().isPresent()) {
-            throw new CommandException("&cあなたは既に参加中のゲームがあります!");
+            currentReception = gPlayer.getEntry().get();
+            if (currentReception.getState().toGameState() != Game.State.FINISHED) {
+                throw new CommandException("&cあなたは既に参加中のゲームがあります!");
+            }
         }
-        
+
         if (args.size() >= 1) {// 引数があれば指定したステージに参加
             reception = this.plugin.getReceptions().getReception(args.get(0))
                     .orElseThrow(() -> new CommandException("&cステージ'" + args.get(0) + "'が見つかりません"));
@@ -69,15 +74,17 @@ public class JoinCommand extends BaseCommand {
             }
             joinArgs = Collections.emptyList();
         }
-        
+
         // Call event
         ReceptionJoinEvent joinEvent = new ReceptionJoinEvent(gPlayer, reception, reception.getEntryFee());
         plugin.getServer().getPluginManager().callEvent(joinEvent);
         if (joinEvent.isCancelled()) {
             return;
         }
-        
-        
+
+        if (currentReception != null) {
+            currentReception.leave(gPlayer);
+        }
         reception.join(gPlayer, joinArgs);
 
         // 参加料チェック
