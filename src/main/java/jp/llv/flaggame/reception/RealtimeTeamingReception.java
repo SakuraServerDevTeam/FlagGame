@@ -183,16 +183,22 @@ public class RealtimeTeamingReception implements GameReception {
         if (this.getState() != State.OPENED) {
             throw new IllegalStateException();
         }
-        this.state = State.STARTING;
-        GamePlayer.sendMessage(this.plugin.getPlayers(), "&2フラッグゲーム'&6" + this.getName() + "&2'の参加受付が終了しました！");
         //Build teams
         Set<Team> teams = new HashSet<>();
         for (Map.Entry<TeamColor, Set<GamePlayer>> e : this.players.entrySet()) {
             teams.add(new Team(this, e.getKey(), e.getValue()));
         }
         //start game
-        this.game = new BasicGame(this.plugin, this, this.stage, teams);
-        this.game.startLater(10000L);
+        try {
+            this.game = new BasicGame(this.plugin, this, this.stage, teams);
+            this.game.startLater(10000L);
+        } catch (CommandException ex) {
+            this.game = null;
+            throw ex;
+        }
+        // successfully started
+        this.state = State.STARTING;
+        GamePlayer.sendMessage(this.plugin.getPlayers(), "&2フラッグゲーム'&6" + this.getName() + "&2'の参加受付が終了しました！");
     }
 
     @Override
