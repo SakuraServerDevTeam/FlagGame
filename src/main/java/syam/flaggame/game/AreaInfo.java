@@ -20,7 +20,9 @@ import jp.llv.flaggame.game.protection.Protection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import jp.llv.flaggame.rollback.StageData;
 import jp.llv.flaggame.rollback.StageDataType;
 
@@ -58,6 +60,14 @@ public class AreaInfo {
     
     public Map<String, RollbackData> getRollbacks() {
         return Collections.unmodifiableMap(rollbacks);
+    }
+    
+    public List<RollbackData> getInitialRollbacks() {
+        return rollbacks.values().stream().filter(r -> r.getTiming() == 0).collect(Collectors.toList());
+    }
+    
+    public List<RollbackData> getDelayedRollbacks() {
+        return rollbacks.values().stream().filter(r -> r.getTiming() != 0).collect(Collectors.toList());
     }
     
     /*package*/ void setRollbacks(Map<String, RollbackData> map) {

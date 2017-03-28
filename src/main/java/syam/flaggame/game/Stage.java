@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import jp.llv.flaggame.game.basic.objective.*;
 import jp.llv.flaggame.reception.GameReception;
@@ -33,7 +34,12 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 
 import jp.llv.flaggame.reception.TeamColor;
+import jp.llv.flaggame.rollback.QueuedSerializeTask;
+import jp.llv.flaggame.rollback.RollbackException;
+import jp.llv.flaggame.rollback.SerializeTask;
+import syam.flaggame.FlagGame;
 import syam.flaggame.exception.StageReservedException;
+import syam.flaggame.util.Cuboid;
 
 /**
  * Stage (Stage.java)
@@ -421,6 +427,18 @@ public class Stage {
 
     public void setDeathScore(double deathScore) {
         this.deathScore = deathScore;
+    }
+    
+    public SerializeTask getInitialTask(FlagGame plugin, Consumer<RollbackException> callback) {
+        QueuedSerializeTask task = new QueuedSerializeTask(callback);
+        for (String id : getAreas().getAreas()) {
+            Cuboid area = getAreas().getArea(id);
+            AreaInfo info = getAreas().getAreaInfo(id);
+            for (AreaInfo.RollbackData rollback : info.getInitialRollbacks()) {
+                task.offer(rollback.getTarget().load(plugin, this, area, t -> {}));
+            }
+        }
+        return task;
     }
 
     /**
