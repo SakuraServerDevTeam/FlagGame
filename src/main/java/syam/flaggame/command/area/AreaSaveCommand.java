@@ -17,14 +17,19 @@
 package syam.flaggame.command.area;
 
 import java.util.Arrays;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
-import jp.llv.flaggame.rollback.RollbackException;
-import jp.llv.flaggame.rollback.RollbackTarget;
+import jp.llv.flaggame.rollback.SerializeTask;
+import jp.llv.flaggame.rollback.StageData;
+import jp.llv.flaggame.rollback.StageDataType;
+import jp.llv.flaggame.util.ConvertUtils;
+import org.bukkit.entity.Player;
 import syam.flaggame.FlagGame;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.AreaInfo;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
+import syam.flaggame.util.Actions;
 
 /**
  *
@@ -51,31 +56,43 @@ public class AreaSaveCommand extends AreaCommand {
         if (data == null) {
             data = info.addRollback(savename);
         }
-        RollbackTarget target;
+        StageDataType target;
         try {
-            target = RollbackTarget.valueOf(args.get(2).toUpperCase());
+            target = StageDataType.valueOf(args.get(2).toUpperCase());
         } catch (IllegalArgumentException ex) {
-            String types = Arrays.stream(RollbackTarget.values())
+            String types = Arrays.stream(StageDataType.values())
                     .map(p -> p.toString().toLowerCase())
                     .collect(Collectors.joining("/"));
             throw new CommandException("&cそのロールバック対象はサポートされていません！\n&c" + types, ex);
         }
-        if (target == RollbackTarget.NONE) {
+        if (target == StageDataType.NONE) {
             info.removeRollback(savename);
             sendMessage("&a'&6" + stage.getName() + "&a'の'&6"
                         + id + "&a'エリアの'&6"
                         + savename + "&a'を削除しました！");
-        } else {
-            data.setTarget(target);
-            try {
-                data.setData(target.serialize(stage, stage.getAreas().getArea(id)));
-            } catch (RollbackException ex) {
-                throw new CommandException("&c領域の保存に失敗しました！", ex);
-            }
-            sendMessage("&a'&6" + stage.getName() + "&a'の'&6"
-                        + id + "&a'エリアの'&6"
-                        + savename + "&a'をセーブしました！");
+            return;
         }
+        StageData structure = target.newInstance();
+        data.setTarget(structure);
+        final Player playerFinal = player;
+        SerializeTask task = structure.save(plugin, stage, stage.getAreas().getArea(id), ex -> {
+            if (ex == null && playerFinal.isOnline()) {
+                Actions.sendPrefixedMessage(sender, "&a'&6" + stage.getName() + "&a'の'&6"
+                                                    + id + "&a'エリアの'&6"
+                                                    + savename + "&a'をセーブしました！");
+            } else if (ex != null && playerFinal.isOnline()) {
+                Actions.sendPrefixedMessage(sender, "&c'&6" + stage.getName() + "&c'の'&6"
+                                                    + id + "&c'エリアの'&6"
+                                                    + savename + "&c'のセーブに失敗しました！");
+                plugin.getLogger().log(Level.WARNING, "Failed to save stage area", ex);
+            }
+        });
+        String etr = Actions.getTimeString(ConvertUtils.toMiliseconds(task.getEstimatedTickRemaining()));
+        Actions.sendPrefixedMessage(sender, "&a'&6" + stage.getName() + "&a'の'&6"
+                                            + id + "&a'エリアの'&6"
+                                            + savename + "&a'をセーブしています...");
+        Actions.sendPrefixedMessage(sender, "&aこれにはおよそ"+etr+"間かかる予定です...");
+        task.start(plugin);
     }
 
     @Override

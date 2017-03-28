@@ -39,6 +39,10 @@ public final class ConvertUtils {
         return timeinms / 50;
     }
     
+    public static long toMiliseconds(long tick) {
+        return tick * 50;
+    } 
+    
     public static String smartRound(double value) {
         char[] chars = Double.toString(value).toCharArray();
         StringBuilder result = new StringBuilder();

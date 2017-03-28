@@ -17,12 +17,13 @@
 package syam.flaggame.command.area;
 
 import java.util.logging.Level;
-import jp.llv.flaggame.rollback.RollbackException;
-import jp.llv.flaggame.rollback.RollbackTarget;
+import jp.llv.flaggame.rollback.StageDataType;
+import org.bukkit.entity.Player;
 import syam.flaggame.FlagGame;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
+import syam.flaggame.util.Actions;
 import syam.flaggame.util.Cuboid;
 
 /**
@@ -45,18 +46,23 @@ public class AreaInitCommand extends AreaCommand {
         if (area == null) {
             throw new CommandException("&cその名前のエリアは存在しません！");
         }
-        try {
-            RollbackTarget.LEGACY.deserialize(stage, area, null);
-        } catch (RollbackException ex) {
-            plugin.getLogger().log(Level.WARNING, "Failed to rollback", ex);
-            throw new CommandException("&cロールバックに失敗しました！", ex);
-        }
-        sendMessage("&aエリアの初期化に成功しました！");
+        final Player playerFinal = player;
+        StageDataType.NONE.newInstance().load(plugin, stage, area, ex -> {
+            if (ex == null && playerFinal.isOnline()) {
+                Actions.sendPrefixedMessage(sender, "&a'&6" + stage.getName() + "&a'の'&6"
+                                                    + id + "&a'エリアを初期化しました！");
+            } else if (ex != null && playerFinal.isOnline()) {
+                Actions.sendPrefixedMessage(sender, "&c'&6" + stage.getName() + "&c'の'&6"
+                                                    + id + "&c'エリアの初期化に失敗しました！");
+                plugin.getLogger().log(Level.WARNING, "Failed to init stage area", ex);
+            }
+
+        });
     }
 
     @Override
     public boolean permission() {
         return Perms.STAGE_CONFIG_SET.has(player);
     }
-    
+
 }

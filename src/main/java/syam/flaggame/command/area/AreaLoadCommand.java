@@ -16,13 +16,17 @@
  */
 package syam.flaggame.command.area;
 
-import jp.llv.flaggame.rollback.RollbackException;
-import jp.llv.flaggame.rollback.RollbackTarget;
+import java.util.logging.Level;
+import jp.llv.flaggame.rollback.SerializeTask;
+import jp.llv.flaggame.rollback.StageData;
+import jp.llv.flaggame.util.ConvertUtils;
+import org.bukkit.entity.Player;
 import syam.flaggame.FlagGame;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.AreaInfo;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
+import syam.flaggame.util.Actions;
 
 /**
  *
@@ -49,20 +53,31 @@ public class AreaLoadCommand extends AreaCommand {
         if (data == null) {
             throw new CommandException("&c該当の名前のデータは保存されていません！");
         }
-        RollbackTarget target = data.getTarget();
-        try {
-            target.deserialize(stage, stage.getAreas().getArea(id), data.getData());
-        } catch (RollbackException ex) {
-            throw new CommandException("&c領域の読み込みに失敗しました！", ex);
-        }
-        sendMessage("&a'&6" + stage.getName() + "&a'の'&6"
-                    + id + "&a'エリアの'&6"
-                    + savename + "&a'をロードしました！");
+        StageData target = data.getTarget();
+        final Player playerFinal = player;
+        SerializeTask task = target.load(plugin, stage, stage.getAreas().getArea(id), ex -> {
+            if (ex == null && playerFinal.isOnline()) {
+                Actions.sendPrefixedMessage(sender, "&a'&6" + stage.getName() + "&a'の'&6"
+                                                    + id + "&a'エリアの'&6"
+                                                    + savename + "&a'をロードしました！");
+            } else if (ex != null && playerFinal.isOnline()) {
+                Actions.sendPrefixedMessage(sender, "&c'&6" + stage.getName() + "&c'の'&6"
+                                                    + id + "&c'エリアの'&6"
+                                                    + savename + "&c'のロードに失敗しました！");
+                plugin.getLogger().log(Level.WARNING, "Failed to load stage area", ex);
+            }
+        });
+        String etr = Actions.getTimeString(ConvertUtils.toMiliseconds(task.getEstimatedTickRemaining()));
+        Actions.sendPrefixedMessage(sender, "&a'&6" + stage.getName() + "&a'の'&6"
+                                            + id + "&a'エリアの'&6"
+                                            + savename + "&a'をロードしています...");
+        Actions.sendPrefixedMessage(sender, "&aこれにはおよそ"+etr+"間かかる予定です...");
+        task.start(plugin);
     }
 
     @Override
     public boolean permission() {
         return Perms.ROLLBACK.has(player);
     }
-    
+
 }
