@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2017 SakuraServerDev
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,17 +16,28 @@
  */
 package jp.llv.flaggame.rollback;
 
-import syam.flaggame.game.Stage;
-import syam.flaggame.util.Cuboid;
+import java.util.function.Supplier;
 
 /**
  *
- * @author toyblocks
+ * @author SakuraServerDev
  */
-public interface StructureRollbacker {
+public enum StageDataType {
     
-    byte[] serialize(Stage stage, Cuboid area) throws RollbackException;
-    
-    void deserialize(Stage stage, Cuboid area, byte[] source) throws RollbackException;
+    NONE(VoidStageData::new),
+    CLASSIC(ClassicStageData::new),
+    SL_BLOCKS(() -> new StructureLibStageData(false, true)),
+    SL_ENTITIES(() -> new StructureLibStageData(true, true)),
+    ;
+
+    private final Supplier<StageData> constructor;
+
+    private StageDataType(Supplier<StageData> constructor) {
+        this.constructor = constructor;
+    }
+
+    public StageData newInstance() {
+        return constructor.get();
+    }
     
 }
