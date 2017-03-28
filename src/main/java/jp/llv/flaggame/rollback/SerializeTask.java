@@ -34,15 +34,19 @@ public abstract class  SerializeTask extends BukkitRunnable {
         this.callback = callback;
     }
 
-    public void start(Plugin plugin) {
+    public final void start(Plugin plugin) {
+        start(plugin, 0L);
+    }
+
+    public final void start(Plugin plugin, long delay) {
         if (isFinished()) {
             callback.accept(null);
         }
-        this.runTaskTimer(plugin, 0L, 1L);
+        this.runTaskTimer(plugin, delay, 1L);
     }
     
     @Override
-    public void run() {
+    public final void run() {
         try {
             step();
         } catch(RollbackException ex) {
