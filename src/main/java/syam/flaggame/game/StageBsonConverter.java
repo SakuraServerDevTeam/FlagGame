@@ -29,7 +29,7 @@ import jp.llv.flaggame.game.basic.objective.BannerSpawner;
 import jp.llv.flaggame.game.basic.objective.Flag;
 import jp.llv.flaggame.game.basic.objective.Nexus;
 import jp.llv.flaggame.reception.TeamColor;
-import jp.llv.flaggame.rollback.RollbackTarget;
+import jp.llv.flaggame.rollback.StageDataType;
 import jp.llv.flaggame.util.TriConsumer;
 import org.bson.BsonBinary;
 import org.bson.BsonBoolean;
@@ -158,7 +158,7 @@ public class StageBsonConverter {
     private static void writeRollback(BsonDocument bson, String key, AreaInfo.RollbackData value) {
         BsonDocument section = new BsonDocument();
         section.append("timing", new BsonInt64(value.getTiming()));
-        writeEnum(section, "target", value.getTarget());
+        writeEnum(section, "target", value.getTarget().getType());
         section.append("data", new BsonBinary(value.getData()));
         bson.append(key, section);
     }
@@ -167,7 +167,7 @@ public class StageBsonConverter {
         BsonDocument section = bson.getDocument(key);
         AreaInfo.RollbackData result = new AreaInfo.RollbackData();
         result.setTiming(section.getInt64("timing").getValue());
-        result.setTarget(readEnum(section, "target", RollbackTarget.class));
+        result.setTarget(readEnum(section, "target", StageDataType.class).newInstance());
         result.setData(section.getBinary("data").getData());
         return result;
     }

@@ -21,7 +21,8 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
-import jp.llv.flaggame.rollback.RollbackTarget;
+import jp.llv.flaggame.rollback.StageData;
+import jp.llv.flaggame.rollback.StageDataType;
 
 /**
  *
@@ -102,17 +103,17 @@ public class AreaInfo {
     public static class RollbackData {
         
         private long timing = 0L;
-        private RollbackTarget target = RollbackTarget.NONE;
+        private StageData target = StageDataType.NONE.newInstance();
         private byte[] data = {};
 
         /*package*/ RollbackData() {
         }
         
-        public RollbackTarget getTarget() {
+        public StageData getTarget() {
             return target;
         }
         
-        public void setTarget(RollbackTarget target) {
+        public void setTarget(StageData target) {
             this.target = target;
         }
         
