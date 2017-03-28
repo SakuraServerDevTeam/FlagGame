@@ -110,8 +110,15 @@ public class AreaInfo {
         return this.permissions;
     }
     
+    /**
+     * Scheduled rollback data.
+     */
     public static class RollbackData {
         
+        /**
+         * scheduled timing. if zero, this will be handled in reception.
+         * otherwise in game.
+         */
         private long timing = 0L;
         private StageData target = StageDataType.NONE.newInstance();
         private byte[] data = {};
