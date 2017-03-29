@@ -16,7 +16,6 @@
  */
 package syam.flaggame;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -54,7 +53,6 @@ import syam.flaggame.permission.Perms;
 import syam.flaggame.player.PlayerManager;
 import syam.flaggame.util.Debug;
 import syam.flaggame.util.DynmapHandler;
-import syam.flaggame.util.Metrics;
 
 public class FlagGame extends JavaPlugin {
 
@@ -191,11 +189,6 @@ public class FlagGame extends JavaPlugin {
         setupDynmap();
         debug.endTimer("dynmap");
 
-        // Metrics
-        debug.startTimer("metrics");
-        setupMetrics();
-        debug.endTimer("metrics");
-
         // メッセージ表示
         PluginDescriptionFile pdfFile = this.getDescription();
         logger.log(Level.INFO, "[{0}] version {1} is enabled!", new Object[]{pdfFile.getName(), pdfFile.getVersion()});
@@ -278,18 +271,6 @@ public class FlagGame extends JavaPlugin {
                 dynmap.init();
             }
         }, 20L);
-    }
-
-    /**
-     * Metricsセットアップ
-     */
-    private void setupMetrics() {
-        try {
-            Metrics metrics = new Metrics(this);
-            metrics.start();
-        } catch (IOException ex) {
-            this.getLogger().log(Level.WARNING, "Could not send metrics data!", ex);
-        }
     }
 
     private void registerCommands() {
