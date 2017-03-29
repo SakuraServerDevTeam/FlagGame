@@ -30,6 +30,7 @@ import jp.llv.flaggame.reception.Team;
 import jp.llv.flaggame.util.StringUtil;
 import net.md_5.bungee.api.ChatMessageType;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -154,6 +155,7 @@ public class BGEntityListener extends BGListener {
             return;
         }
 
+        Team killedTeam = gkilled.getTeam().get();
         Team killerTeam = gkiller != null ? gkiller.getTeam().get() : null;
 
         //Keep exp level in order to keep score
@@ -171,7 +173,12 @@ public class BGEntityListener extends BGListener {
             game.getRecordStream().push(new PlayerKillRecord(game.getID(), killer, game.getStage().getKillScore(), killed.getUniqueId(), weapon));
         }
         game.getRecordStream().push(new PlayerDeathRecord(game.getID(), killed, game.getStage().getDeathScore()));
+        
         GamePlayer.sendMessage(this.plugin.getPlayers().getPlayersIn(killed.getWorld()), ChatMessageType.ACTION_BAR, message);
+        GamePlayer.playSound(killedTeam, Sound.ENTITY_RABBIT_DEATH);
+        if (killerTeam != null) {
+            GamePlayer.playSound(killerTeam, Sound.ENTITY_SKELETON_DEATH);
+        }
 
         // Banner check
         Optional<HeldBanner> bannerHeld = game.getBannerHeld(gkilled);

@@ -39,7 +39,12 @@ import jp.llv.flaggame.profile.record.FlagBreakRecord;
 import jp.llv.flaggame.profile.record.FlagCaptureRecord;
 import jp.llv.flaggame.profile.record.NexusBreakRecord;
 import net.md_5.bungee.api.ChatMessageType;
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
 import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.entity.Firework;
+import org.bukkit.inventory.meta.FireworkMeta;
 import syam.flaggame.player.GamePlayer;
 
 /**
@@ -123,8 +128,18 @@ public class BGBlockListener extends BGListener {
 
         if (plugin.getConfigs().getUseFlagEffects()) {
             Location loc = b.getLocation();
-            loc.getWorld().playEffect(loc, Effect.ENDER_SIGNAL, 0, 10);
-            loc.getWorld().playEffect(loc, Effect.SMOKE, 4, 2);
+            Firework effect = loc.getWorld().spawn(loc, Firework.class);
+            FireworkMeta meta = effect.getFireworkMeta();
+            meta.setPower(0);
+            meta.addEffect(
+                    FireworkEffect.builder()
+                    .trail(true).flicker(false)
+                    .withColor(placerTeam.getColor().getColor())
+                    .with(FireworkEffect.Type.BURST)
+                    .build()
+            );
+            effect.setFireworkMeta(meta);
+            GamePlayer.playSound(placerTeam, Sound.BLOCK_NOTE_HARP);
         }
     }
 
@@ -160,24 +175,26 @@ public class BGBlockListener extends BGListener {
             Location loc = s.getLocation();
             loc.getWorld().playEffect(loc, Effect.ENDER_SIGNAL, 0, 10);
             loc.getWorld().playEffect(loc, Effect.SMOKE, 4, 2);
+            GamePlayer.playSound(gplayer.getTeam().get(), Sound.BLOCK_ANVIL_PLACE);
         }
     }
 
     private void breakFlag(GamePlayer gplayer, Flag f, BlockBreakEvent event) {
         Team placerTeam = gplayer.getTeam().get();
         @SuppressWarnings("deprecation")
-        TeamColor placedTeamColor = TeamColor.getByColorData(event.getBlock().getData());
-        if (placerTeam.getColor() == placedTeamColor) {
+        TeamColor brokenTeamColor = TeamColor.getByColorData(event.getBlock().getData());
+        if (placerTeam.getColor() == brokenTeamColor) {
             gplayer.sendMessage(ChatMessageType.ACTION_BAR, "&c味方チームのフラッグは破壊できません!");
             event.setCancelled(true);
             return;
         }
 
+        Team brokenTeam = game.getTeam(brokenTeamColor);
         event.setCancelled(false);
 
         GamePlayer.sendMessage(placerTeam, ChatMessageType.ACTION_BAR,
-                gplayer.getColoredName() + "&aが" + placedTeamColor.getTeamName() + "チームの&6" + f.getTypeName() + "pフラッグ&aを破壊しました!");
-        this.game.getTeams().stream().filter(team -> team.getColor() == placedTeamColor)
+                gplayer.getColoredName() + "&aが" + brokenTeamColor.getTeamName() + "チームの&6" + f.getTypeName() + "pフラッグ&aを破壊しました!");
+        this.game.getTeams().stream().filter(team -> team == brokenTeam)
                 .forEach(team -> GamePlayer.sendMessage(team, ChatMessageType.ACTION_BAR,
                         gplayer.getColoredName() + "&aに&6" + f.getTypeName() + "pフラッグ&aを破壊されました!"));
         game.getRecordStream().push(new FlagBreakRecord(
@@ -190,7 +207,7 @@ public class BGBlockListener extends BGListener {
         if (plugin.getConfigs().getUseFlagEffects()) {
             Location loc = event.getBlock().getLocation();
             loc.getWorld().createExplosion(loc, 0F, false);
-            loc.getWorld().playEffect(loc, Effect.ENDER_SIGNAL, 0, 10);
+            GamePlayer.playSound(brokenTeam, Sound.ENTITY_BLAZE_HURT);
         }
     }
 
@@ -221,8 +238,8 @@ public class BGBlockListener extends BGListener {
 
         if (plugin.getConfigs().getUseFlagEffects()) {
             Location loc = event.getBlock().getLocation();
-            loc.getWorld().createExplosion(loc, 0F, false);
             loc.getWorld().playEffect(loc, Effect.ENDER_SIGNAL, 0, 10);
+            GamePlayer.playSound(broken, Sound.ENTITY_GUARDIAN_HURT);
         }
     }
 
