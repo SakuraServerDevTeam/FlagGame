@@ -51,6 +51,7 @@ public class AreaProtectCommand extends AreaCommand {
             for (Protection type : Protection.values()) {
                 sendMessage("&6" + type.toString().toLowerCase() + "&7: " + info.isProtected(type).format());
             }
+            return;
         } else if (args.size() == 2) {
             sendUsage();
             return;
