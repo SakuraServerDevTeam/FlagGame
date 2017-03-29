@@ -38,7 +38,7 @@ import syam.flaggame.util.Cuboid;
  */
 public class StructureLibStageData extends CachedStageData<TagCompound> {
 
-    private static final int DEFAULT_STEPS_PER_TICK = 0x400;
+    private static final int DEFAULT_STEPS_PER_TICK = 0xf00;
 
     private final boolean entities;
     private final boolean gzip;
