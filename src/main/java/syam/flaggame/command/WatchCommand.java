@@ -18,6 +18,7 @@ package syam.flaggame.command;
 
 import java.util.Collection;
 import jp.llv.flaggame.game.Game;
+import jp.llv.flaggame.reception.GameReception;
 
 import org.bukkit.Location;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
@@ -50,7 +51,7 @@ public class WatchCommand extends BaseCommand {
         } // 引数がなければ自動補完
         else {
             Collection<Game> startingGames = this.plugin.getGames().getGames(Game.State.STARTED);
-            if (gPlayer.getStage().isPresent()) {
+            if (gPlayer.getEntry().map(r -> r.getState().toGameState() != Game.State.FINISHED).orElse(false) && gPlayer.getStage().isPresent()) {
                 stage = gPlayer.getStage().get();
             } else if (startingGames.isEmpty()) {
                 Actions.message(player, "&c現在、始まっているゲームはありません！");
