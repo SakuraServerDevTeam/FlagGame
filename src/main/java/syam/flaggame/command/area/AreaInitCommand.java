@@ -57,7 +57,7 @@ public class AreaInitCommand extends AreaCommand {
                 plugin.getLogger().log(Level.WARNING, "Failed to init stage area", ex);
             }
 
-        });
+        }).start(plugin);
     }
 
     @Override
