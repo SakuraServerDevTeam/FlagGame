@@ -51,7 +51,7 @@ public class AreaSelectCommand extends AreaCommand {
 
     @Override
     public boolean permission() {
-        return Perms.SELECT.has(player);
+        return Perms.SELECT.has(sender);
     }
 
 }

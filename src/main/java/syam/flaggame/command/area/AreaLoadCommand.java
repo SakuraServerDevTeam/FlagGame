@@ -77,7 +77,7 @@ public class AreaLoadCommand extends AreaCommand {
 
     @Override
     public boolean permission() {
-        return Perms.ROLLBACK.has(player);
+        return Perms.ROLLBACK.has(sender);
     }
 
 }

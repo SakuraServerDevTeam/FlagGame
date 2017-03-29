@@ -82,7 +82,7 @@ public class AreaProtectCommand extends AreaCommand {
 
     @Override
     public boolean permission() {
-        return Perms.STAGE_CONFIG_SET.has(player);
+        return Perms.STAGE_CONFIG_SET.has(sender);
     }
 
 }

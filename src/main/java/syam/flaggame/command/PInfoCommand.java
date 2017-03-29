@@ -43,7 +43,7 @@ public class PInfoCommand extends BaseCommand {
 
     @Override
     public boolean permission() {
-        return Perms.PINFO.has(player);
+        return Perms.PINFO.has(sender);
     }
     
 }
