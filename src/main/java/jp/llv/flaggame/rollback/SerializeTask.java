@@ -26,8 +26,6 @@ import org.bukkit.scheduler.BukkitRunnable;
  */
 public abstract class  SerializeTask extends BukkitRunnable {
     
-    protected static final int DEFAULT_STEP = 32 * 32* 32;
-    
     private final Consumer<RollbackException> callback;
 
     public SerializeTask(Consumer<RollbackException> callback) {
