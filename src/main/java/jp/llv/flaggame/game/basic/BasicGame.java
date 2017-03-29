@@ -478,6 +478,7 @@ public class BasicGame implements Game {
         for (GamePlayer g : this.reception.getPlayers()) {
             if (g.getPlayer().isOnline()) {
                 g.getPlayer().teleport(this.stage.getSpawn(g.getTeam().get().getColor()));
+                g.getPlayer().setFallDistance(0f);
                 g.getPlayer().getInventory().clear();
                 g.resetTabName();
             }
