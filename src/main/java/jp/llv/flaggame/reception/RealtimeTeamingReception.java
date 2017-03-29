@@ -37,6 +37,8 @@ import jp.llv.flaggame.profile.record.PlayerLeaveRecord;
 import jp.llv.flaggame.profile.record.PlayerTeamRecord;
 import jp.llv.flaggame.profile.record.ReceptionCloseRecord;
 import jp.llv.flaggame.profile.record.ReceptionOpenRecord;
+import jp.llv.flaggame.rollback.SerializeTask;
+import jp.llv.flaggame.util.ConvertUtils;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -47,6 +49,7 @@ import syam.flaggame.exception.CommandException;
 import syam.flaggame.exception.StageReservedException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.player.GamePlayer;
+import syam.flaggame.util.Actions;
 
 /**
  *
@@ -63,6 +66,7 @@ public class RealtimeTeamingReception implements GameReception {
     private BasicGame game;
     private State state = State.READY;
     private final RecordStream records;
+    private SerializeTask initialTask;
 
     public RealtimeTeamingReception(FlagGame plugin, UUID id, List<String> args) {
         this.plugin = plugin;
@@ -103,6 +107,15 @@ public class RealtimeTeamingReception implements GameReception {
         for (TeamColor color : this.stage.getSpawns().keySet()) {
             this.players.put(color, new HashSet<>());
         }
+        
+        initialTask = stage.getInitialTask(plugin, ex -> {
+            
+        });
+        String etr = Actions.getTimeString(ConvertUtils.toMiliseconds(initialTask.getEstimatedTickRemaining()));
+        GamePlayer.sendMessage(plugin.getPlayers(), "&a'&6" + stage.getName() + "&a'をロードしています...");
+        GamePlayer.sendMessage(plugin.getPlayers(), "&aこれにはおよそ"+etr+"間かかる予定です");
+        initialTask.start(plugin);
+        
         this.state = State.OPENED;
         this.records.push(new ReceptionOpenRecord(this.id));
         GamePlayer.sendMessage(this.plugin.getPlayers(), "&2フラッグゲーム'&6" + this.getName() + "&2'の参加受付が開始されました！");
@@ -118,6 +131,10 @@ public class RealtimeTeamingReception implements GameReception {
     public void close(String reason) {
         if (getState().toGameState() != Game.State.FINISHED) {
             this.stop(reason);
+        }
+        
+        if (initialTask != null) {
+            initialTask.cancel();
         }
 
         for (GamePlayer p : this.getPlayers()) {
@@ -191,6 +208,11 @@ public class RealtimeTeamingReception implements GameReception {
         if (this.getState() != State.OPENED) {
             throw new IllegalStateException();
         }
+        
+        if (initialTask != null && !initialTask.isFinished()) {
+            throw new CommandException("&cステージの初期化が完了していません！");
+        }
+        
         //Build teams
         Set<Team> teams = new HashSet<>();
         for (Map.Entry<TeamColor, Set<GamePlayer>> e : this.players.entrySet()) {

@@ -60,8 +60,6 @@ import org.bukkit.Sound;
 import org.bukkit.boss.BarFlag;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
@@ -76,7 +74,7 @@ import syam.flaggame.player.GamePlayer;
 import syam.flaggame.util.Actions;
 import jp.llv.flaggame.profile.ExpCalcurator;
 import jp.llv.flaggame.profile.record.BannerKeepRecord;
-import jp.llv.flaggame.rollback.RollbackException;
+import jp.llv.flaggame.rollback.SerializeTask;
 import syam.flaggame.game.AreaInfo;
 import syam.flaggame.util.Cuboid;
 
@@ -244,33 +242,19 @@ public class BasicGame implements Game {
         }
 
         // stage rollback
-        this.stage.getAreas().getStageArea().getPos1().getWorld().getEntities().stream()
-                .filter(e -> e instanceof Item)
-                .filter(e -> this.stage.getAreas().getStageArea().contains(e.getLocation()))
-                .forEach(Entity::remove);
         for (String areaID : stage.getAreas().getAreas()) {
             Cuboid area = stage.getAreas().getArea(areaID);
             AreaInfo info = stage.getAreas().getAreaInfo(areaID);
-            for (AreaInfo.RollbackData rollback : info.getRollbacks().values()) {
-                if (rollback.getTiming() == 0) {
-                    try {
-                        rollback.getTarget().deserialize(stage, area, rollback.getData());
-                    } catch (RollbackException ex) {
+            for (AreaInfo.RollbackData rollback : info.getDelayedRollbacks()) {
+                SerializeTask task = rollback.getTarget().load(plugin, stage, area, ex -> {
+                    if (ex != null) {
                         plugin.getLogger().log(Level.WARNING, "Failed to rollback", ex);
                         this.stopForcibly("Failed to rollback");
-                        return;
                     }
-                } else {
-                    BukkitTask rollbackTask = plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
-                        try {
-                            rollback.getTarget().deserialize(stage, area, rollback.getData());
-                        } catch (RollbackException ex) {
-                            plugin.getLogger().log(Level.WARNING, "Failed to rollback", ex);
-                            this.stopForcibly("Failed to rollback");
-                        }
-                    }, rollback.getTiming());
-                    onFinishing.offer(rollbackTask::cancel);
-                }
+                    
+                });
+                task.start(plugin, rollback.getTiming());
+                onFinishing.offer(task::cancel);
             }
         }
 
@@ -475,7 +459,7 @@ public class BasicGame implements Game {
 
         String author = "".equals(stage.getAuthor()) ? "" : "presented by " + stage.getAuthor();
         GamePlayer.sendTitle(this, "&6試合終了", author, 0, 60, 20);
-        
+
         reception.stop("The game has finished");
     }
 

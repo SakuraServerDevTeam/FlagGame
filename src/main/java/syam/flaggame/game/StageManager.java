@@ -24,6 +24,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import jp.llv.flaggame.database.DatabaseException;
+import jp.llv.flaggame.rollback.RollbackException;
+import org.bukkit.World;
 import syam.flaggame.FlagGame;
 
 /**
@@ -127,6 +129,19 @@ public class StageManager implements Iterable<Stage> {
         if (!plugin.getDatabases().isPresent()) {
             throw new DatabaseException("Not connected");
         }
+        World gameWorld = plugin.getServer().getWorld(plugin.getConfigs().getGameWorld());
+        for (Stage stage : stages.values()) {
+            for (String area : stage.getAreas().getAreas()) {
+                AreaInfo info = stage.getAreas().getAreaInfo(area);
+                for (AreaInfo.RollbackData rollback : info.getRollbacks().values()) {
+                    try {
+                        rollback.setData(rollback.getTarget().write(plugin, gameWorld));
+                    } catch (RollbackException ex) {
+                        throw new DatabaseException(ex);
+                    }
+                }
+            }
+        }
         plugin.getDatabases().get().saveStages(stages.values());
     }
 
@@ -135,8 +150,19 @@ public class StageManager implements Iterable<Stage> {
             throw new DatabaseException("Not connected");
         }
         stages.clear();
+        World gameWorld = plugin.getServer().getWorld(plugin.getConfigs().getGameWorld());
         for (Stage stage : plugin.getDatabases().get().loadStages()) {
             stages.put(stage.getName(), stage);
+            for (String area : stage.getAreas().getAreas()) {
+                AreaInfo info = stage.getAreas().getAreaInfo(area);
+                for (AreaInfo.RollbackData rollback : info.getRollbacks().values()) {
+                    try {
+                        rollback.getTarget().read(plugin, gameWorld, rollback.getData());
+                    } catch (RollbackException ex) {
+                        throw new DatabaseException(ex);
+                    }
+                }
+            }
         }
     }
 

@@ -20,8 +20,11 @@ import jp.llv.flaggame.game.protection.Protection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import jp.llv.flaggame.rollback.RollbackTarget;
+import java.util.stream.Collectors;
+import jp.llv.flaggame.rollback.StageData;
+import jp.llv.flaggame.rollback.StageDataType;
 
 /**
  *
@@ -57,6 +60,14 @@ public class AreaInfo {
     
     public Map<String, RollbackData> getRollbacks() {
         return Collections.unmodifiableMap(rollbacks);
+    }
+    
+    public List<RollbackData> getInitialRollbacks() {
+        return rollbacks.values().stream().filter(r -> r.getTiming() == 0).collect(Collectors.toList());
+    }
+    
+    public List<RollbackData> getDelayedRollbacks() {
+        return rollbacks.values().stream().filter(r -> r.getTiming() != 0).collect(Collectors.toList());
     }
     
     /*package*/ void setRollbacks(Map<String, RollbackData> map) {
@@ -99,20 +110,27 @@ public class AreaInfo {
         return this.permissions;
     }
     
+    /**
+     * Scheduled rollback data.
+     */
     public static class RollbackData {
         
+        /**
+         * scheduled timing. if zero, this will be handled in reception.
+         * otherwise in game.
+         */
         private long timing = 0L;
-        private RollbackTarget target = RollbackTarget.NONE;
+        private StageData target = StageDataType.NONE.newInstance();
         private byte[] data = {};
 
         /*package*/ RollbackData() {
         }
         
-        public RollbackTarget getTarget() {
+        public StageData getTarget() {
             return target;
         }
         
-        public void setTarget(RollbackTarget target) {
+        public void setTarget(StageData target) {
             this.target = target;
         }
         
