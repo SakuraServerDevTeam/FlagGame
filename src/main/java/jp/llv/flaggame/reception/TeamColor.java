@@ -16,6 +16,8 @@
  */
 package jp.llv.flaggame.reception;
 
+import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.boss.BarColor;
 
@@ -26,23 +28,24 @@ import org.bukkit.boss.BarColor;
  */
 public enum TeamColor {
 
-    RED("赤", 0xE, 'c', DyeColor.RED, BarColor.RED),
-    BLUE("青", 0xB, '9', DyeColor.BLUE, BarColor.BLUE),
-    GREEN("緑", 0x5, 'a', DyeColor.GREEN, BarColor.GREEN),
-    ORANGE("橙", 0x1, '6', DyeColor.ORANGE, BarColor.YELLOW),
-    PINK("桃", 0x6, 'd', DyeColor.PINK, BarColor.PINK),
-    SKYBLUE("水", 0x3, 'b', DyeColor.LIGHT_BLUE, BarColor.WHITE),
-    YELLOW("黄", 0x4, 'e', DyeColor.YELLOW, BarColor.YELLOW),
-    PURPLE("紫", 0x2, '5', DyeColor.PURPLE, BarColor.PURPLE);
+    RED("赤", 0xE, Color.RED, ChatColor.RED, DyeColor.RED, BarColor.RED),
+    BLUE("青", 0xB, Color.BLUE, ChatColor.BLUE, DyeColor.BLUE, BarColor.BLUE),
+    GREEN("緑", 0x5, Color.GREEN, ChatColor.GREEN, DyeColor.GREEN, BarColor.GREEN),
+    ORANGE("橙", 0x1, Color.ORANGE, ChatColor.GOLD, DyeColor.ORANGE, BarColor.YELLOW),
+    PINK("桃", 0x6, Color.FUCHSIA, ChatColor.LIGHT_PURPLE, DyeColor.PINK, BarColor.PINK),
+    SKYBLUE("水", 0x3, Color.AQUA, ChatColor.AQUA, DyeColor.LIGHT_BLUE, BarColor.WHITE),
+    YELLOW("黄", 0x4, Color.YELLOW, ChatColor.YELLOW, DyeColor.YELLOW, BarColor.YELLOW),
+    PURPLE("紫", 0x2, Color.PURPLE, ChatColor.DARK_PURPLE, DyeColor.PURPLE, BarColor.PURPLE);
 
     private static final char COLOR_PREFIX = '\u00A7';
     private final String teamName;
     private final byte blockData;
-    private final char colorTag;
+    private final Color color;
+    private final ChatColor chatColor;
     private final DyeColor dyeColor;
     private final BarColor barColor;
 
-    private TeamColor(String teamName, int blockData, char colorTag, DyeColor dyeColor, BarColor barColor) {
+    private TeamColor(String teamName, int blockData, Color color, ChatColor chatColor, DyeColor dyeColor, BarColor barColor) {
         this.teamName = teamName;
 
         if (blockData < Byte.MIN_VALUE || blockData > Byte.MAX_VALUE) {
@@ -51,7 +54,8 @@ public enum TeamColor {
 
         this.blockData = (byte) blockData;
 
-        this.colorTag = colorTag;
+        this.color = color;
+        this.chatColor = chatColor;
         this.dyeColor = dyeColor;
         this.barColor = barColor;
     }
@@ -74,13 +78,17 @@ public enum TeamColor {
         return blockData;
     }
 
+    public Color getColor() {
+        return color;
+    }
+    
     /**
      * チームの色タグ "&(char)" を返す
      *
      * @return color code corresponding to the team
      */
-    public String getColor() {
-        return new StringBuilder().append(COLOR_PREFIX).append(this.colorTag).toString();
+    public String getChatColor() {
+        return chatColor.toString();
     }
 
     public DyeColor getDyeColor() {
@@ -92,7 +100,7 @@ public enum TeamColor {
     }
 
     public String getRichName() {
-        return this.getColor() + this.getTeamName() + "チーム&r";
+        return this.getChatColor() + this.getTeamName() + "チーム&r";
     }
 
     public static TeamColor getByColorData(byte data) {

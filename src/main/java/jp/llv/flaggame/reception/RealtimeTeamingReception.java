@@ -175,7 +175,7 @@ public class RealtimeTeamingReception implements GameReception {
         this.records.push(new PlayerEntryRecord(id, player.getPlayer()));
         this.records.push(new PlayerTeamRecord(id, player.getPlayer(), color));
         int count = this.players.entrySet().stream().map(Map.Entry::getValue).mapToInt(Set::size).sum();
-        GamePlayer.sendMessage(this.plugin.getPlayers(), color.getColor() + player.getName() + "&aが'&6"
+        GamePlayer.sendMessage(this.plugin.getPlayers(), color.getChatColor() + player.getName() + "&aが'&6"
                                                          + this.getName() + "&a'で開催予定のゲームに参加しました(&6" + count + "人目&a)");
     }
 

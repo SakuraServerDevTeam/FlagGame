@@ -237,7 +237,7 @@ public class BasicGame implements Game {
                         .filter(Objects::nonNull).filter(vp::hasPotionEffect).forEach(vp::removePotionEffect);
 
                 //プレイヤーリストへ色適用
-                player.setTabName(team.getColor().getColor() + player.getName());
+                player.setTabName(team.getColor().getChatColor() + player.getName());
             }
         }
 
@@ -385,7 +385,7 @@ public class BasicGame implements Game {
 
         GamePlayer.sendMessage(this.plugin.getPlayers(), "&2フラッグゲーム'&6" + this.stage.getName() + "&2'が終わりました!");
         GamePlayer.sendMessage(this.plugin.getPlayers(), teamPoints.entrySet().stream()
-                .map(e -> e.getKey().getRichName() + "得点: &6" + e.getValue() + e.getKey().getColor() + "点")
+                .map(e -> e.getKey().getRichName() + "得点: &6" + e.getValue() + e.getKey().getChatColor() + "点")
                 .collect(Collectors.joining(", "))
         );
         if (winnerTeams.isEmpty()) {

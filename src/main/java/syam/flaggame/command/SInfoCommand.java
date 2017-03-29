@@ -87,7 +87,7 @@ public class SInfoCommand extends BaseCommand {
             int cnt_players = 0;
             if (stage.isReserved() && stage.getReception().get().getGame().isPresent()) {
                 for (Team entry : stage.getReception().get().getGame().get().getTeams()) {
-                    String color = entry.getColor().getColor();
+                    String color = entry.getColor().getChatColor();
                     for (GamePlayer n : entry) {
                         players = players + color + n.getName() + "&f, ";
                         cnt_players++;
