@@ -32,6 +32,7 @@ import net.md_5.bungee.api.ChatMessageType;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -40,7 +41,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
 import syam.flaggame.FlagGame;
 import syam.flaggame.game.AreaPermission;
@@ -91,6 +91,10 @@ public class BGEntityListener extends BGListener {
                 GamePlayer.sendMessage(game, ChatMessageType.ACTION_BAR,
                         gp.getColoredName() + "&aが&6" + b.getPoint() + "pバナー&aを落としました！");
             });
+            // supress damage by game-effect
+            if (event.getDamager() instanceof Firework) {
+                event.setCancelled(true);
+            }
             return;
         }
 
@@ -173,7 +177,7 @@ public class BGEntityListener extends BGListener {
             game.getRecordStream().push(new PlayerKillRecord(game.getID(), killer, game.getStage().getKillScore(), killed.getUniqueId(), weapon));
         }
         game.getRecordStream().push(new PlayerDeathRecord(game.getID(), killed, game.getStage().getDeathScore()));
-        
+
         GamePlayer.sendMessage(this.plugin.getPlayers().getPlayersIn(killed.getWorld()), ChatMessageType.ACTION_BAR, message);
         GamePlayer.playSound(killedTeam, Sound.ENTITY_RABBIT_DEATH);
         if (killerTeam != null) {
