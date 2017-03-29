@@ -122,15 +122,8 @@ public class StageCommand extends BaseCommand implements Queueable {
         GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
         gPlayer.createSetupSession(stage);
 
-        // update dynmap, save stage
+        // update dynmap
         plugin.getDynmap().updateRegions();
-        try {
-            plugin.getStages().saveStages();
-        } catch (DatabaseException ex) {
-            plugin.getLogger().log(Level.WARNING, "Failed to connect database!", ex);
-            throw new CommandException("&cデータベースへの保存に失敗しました！");
-        }
-
         Actions.message(sender, "&a新規ステージ'" + stage.getName() + "'を登録して選択しました！");
     }
 
