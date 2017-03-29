@@ -24,54 +24,46 @@ package syam.flaggame.game;
 public enum Configables {
 
     // 一般
-    SPAWN("スポーン地点", ConfigType.POINT), // 各チームのスポーン地点
-    FLAG("フラッグ", ConfigType.MANAGER), // 各チーム拠点の領域設定
-    CHEST("チェスト", ConfigType.MANAGER), // 各チーム拠点の領域設定
-    NEXUS("目標", ConfigType.MANAGER),
-    BANNER_SPAWNER("バナー出現ポイント", ConfigType.MANAGER),
-    BANNER_SLOT("バナースロット", ConfigType.MANAGER),
-
-    SPECSPAWN("観戦者スポーン地点", ConfigType.POINT), // 観戦時にテレポートする位置 SPECTATE / SPEC /
-    // SSPAWN ..etc?
+    SPAWN(ConfigType.POINT),
+    FLAG(ConfigType.MANAGER),
+    CHEST(ConfigType.MANAGER),
+    NEXUS(ConfigType.MANAGER),
+    BANNER_SPAWNER(ConfigType.MANAGER),
+    BANNER_SLOT(ConfigType.MANAGER),
+    SPECSPAWN(ConfigType.POINT),
 
     // オプション
-    GAMETIME("ゲームの制限時間(秒)", ConfigType.SIMPLE),
-    TEAMLIMIT("チーム毎の人数制限", ConfigType.SIMPLE),
-    AVAILABLE("ステージ有効", ConfigType.SIMPLE),
-    PROTECT("ゲーム外保護", ConfigType.SIMPLE),
-    KILLSCORE("キル得点", ConfigType.SIMPLE),
-    DEATHSCORE("デス得点", ConfigType.SIMPLE),
-    COOLDOWN("クールダウン", ConfigType.SIMPLE),
+    GAMETIME(ConfigType.SIMPLE),
+    TEAMLIMIT(ConfigType.SIMPLE),
+    AVAILABLE(ConfigType.SIMPLE),
+    PROTECT(ConfigType.SIMPLE),
+    KILLSCORE(ConfigType.SIMPLE),
+    DEATHSCORE(ConfigType.SIMPLE),
+    COOLDOWN(ConfigType.SIMPLE),
     
-    // stage description
-    AUTHOR("製作者", ConfigType.SIMPLE),
-    DESCRIPTION("説明", ConfigType.SIMPLE),
-    GUIDE("概要", ConfigType.SIMPLE),
-    ;
+    // ショートカット
+    STAGE(ConfigType.AREA),
+    BASE(ConfigType.AREA),
+    
+    // ステージ解説
+    AUTHOR(ConfigType.SIMPLE),
+    DESCRIPTION(ConfigType.SIMPLE),
+    GUIDE(ConfigType.SIMPLE),;
 
-    private final String configName;
     private final ConfigType configType;
 
-    private Configables(String configName, ConfigType configType) {
-        this.configName = configName;
+    private Configables(ConfigType configType) {
         this.configType = configType;
     }
 
-    /**
-     * 設定名を返す
-     *
-     * @return String
-     */
-    public String getConfigName() {
-        return this.configName;
+    public ConfigType getType() {
+        return this.configType;
     }
 
-    /**
-     * 設定種類を返す
-     *
-     * @return ConfigType
-     */
-    public ConfigType getConfigType() {
-        return this.configType;
+    public enum ConfigType {
+        POINT, // プレイヤーの現在値を取得する設定
+        MANAGER, // マネージャモードに入る設定
+        SIMPLE, // お金など単にそのコマンドだけで変更可能な設定
+        AREA, // 範囲設定
     }
 }

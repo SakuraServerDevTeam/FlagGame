@@ -23,14 +23,19 @@ import org.bukkit.Material;
 import syam.flaggame.FlagGame;
 
 import jp.llv.flaggame.reception.TeamColor;
-import syam.flaggame.game.ConfigType;
+import jp.llv.flaggame.rollback.StageDataType;
 import syam.flaggame.game.Configables;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.exception.StageReservedException;
+import syam.flaggame.game.AreaInfo;
+import syam.flaggame.game.AreaPermission;
+import syam.flaggame.game.AreaState;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.player.GamePlayer;
 import syam.flaggame.util.Actions;
+import syam.flaggame.util.Cuboid;
+import syam.flaggame.util.WorldEditHandler;
 
 public class SetCommand extends BaseCommand {
 
@@ -38,7 +43,6 @@ public class SetCommand extends BaseCommand {
      * TODO: 設定によってコンソールから実行可能にする Confiable列挙にbePlayer (boolean)
      * を追加するか、ConfigType.Area
      */
-
     public SetCommand(FlagGame plugin) {
         super(plugin);
         bePlayer = true;
@@ -77,7 +81,7 @@ public class SetCommand extends BaseCommand {
         }
 
         // 設定タイプが ConfigType.SIMPLE の場合はサブ引数が2つ以上必要
-        if (conf.getConfigType() == ConfigType.SIMPLE) {
+        if (conf.getType() == Configables.ConfigType.SIMPLE) {
             if (args.size() < 2) {
                 throw new CommandException("&c引数が足りません！ 設定する値を入力してください！");
             }
@@ -131,7 +135,7 @@ public class SetCommand extends BaseCommand {
                 case COOLDOWN:
                     setCooldown(stage);
                     return;
-                
+
                 /* stage description */
                 case AUTHOR:
                     setAuthor(stage);
@@ -141,6 +145,14 @@ public class SetCommand extends BaseCommand {
                     return;
                 case GUIDE:
                     setGuide(stage);
+                    return;
+
+                /* shortcut */
+                case STAGE:
+                    setStage(stage);
+                    return;
+                case BASE:
+                    setBase(stage);
                     return;
 
                 // 定義漏れ
@@ -156,7 +168,6 @@ public class SetCommand extends BaseCommand {
 
     /* ***** ここから各設定関数 ****************************** */
     // 一般
-
     /**
      * スポーン地点設定
      *
@@ -342,6 +353,7 @@ public class SetCommand extends BaseCommand {
         }
         Actions.message(sender, "&aステージ'" + game.getName() + "'のゲーム時間は " + sec + " に設定されました！");
     }
+
     private void setCooldown(Stage game) throws CommandException, StageReservedException {
         int num = 0; // デフォルト0秒
         try {
@@ -427,7 +439,7 @@ public class SetCommand extends BaseCommand {
         stage.setAvailable(available);
         Actions.message(sender, "&aステージ'" + stage.getName() + "'は使用" + result + "&aに設定されました！");
     }
-    
+
     private void setKillScore(Stage stage) throws CommandException, StageReservedException {
         double point;
         try {
@@ -440,7 +452,7 @@ public class SetCommand extends BaseCommand {
 
         Actions.message(sender, "&aステージ'" + stage.getName() + "'のキル得点は " + point + "点 に設定されました！");
     }
-    
+
     private void setDeathScore(Stage stage) throws CommandException, StageReservedException {
         double point;
         try {
@@ -453,21 +465,66 @@ public class SetCommand extends BaseCommand {
 
         Actions.message(sender, "&aステージ'" + stage.getName() + "'のデス得点は " + point + "点 に設定されました！");
     }
-    
+
     // stage description
     private void setDescription(Stage stage) throws CommandException, StageReservedException {
         stage.setDescription(args.get(1));
         Actions.message(sender, "&aステージ'" + stage.getName() + "'の説明は '" + args.get(1) + "' に設定されました！");
     }
-    
+
     private void setAuthor(Stage stage) throws CommandException, StageReservedException {
         stage.setAuthor(args.get(1));
         Actions.message(sender, "&aステージ'" + stage.getName() + "'の製作者は '" + args.get(1) + "' に設定されました！");
     }
-    
+
     private void setGuide(Stage stage) throws CommandException, StageReservedException {
         stage.setGuide(args.get(1));
         Actions.message(sender, "&aステージ'" + stage.getName() + "'の概要は '" + args.get(1) + "' に設定されました！");
+    }
+
+    // shortcut
+    private void setStage(Stage stage) throws CommandException, StageReservedException {
+        Cuboid region;
+        try {
+            region = WorldEditHandler.getSelectedArea(player);
+        } catch (IllegalStateException ex) {
+            throw new CommandException("&c" + ex.getMessage());
+        }
+        stage.getAreas().setStageArea(region);
+        AreaInfo info = stage.getAreas().getStageAreaInfo();
+        AreaInfo.RollbackData rollback = info.addRollback("init");
+        rollback.setTarget(StageDataType.CLASSIC.newInstance());
+        sendMessage("&a'&6" + stage.getName() + "&a'のステージエリアを設定しました！");
+        sendMessage("&a'&6" + stage.getName() + "&a'のステージエリアの'&6init&a'をセーブしました！");
+    }
+
+    private void setBase(Stage game) throws CommandException, StageReservedException {
+        if (args.size() < 2) {
+            throw new CommandException("&c引数が足りません！設定するチームを指定してください！");
+        }
+        TeamColor team;
+        try {
+            team = TeamColor.of(args.get(1));
+        } catch (IllegalArgumentException ex) {
+            throw new CommandException("&cチーム'" + args.get(1) + "'が見つかりません！");
+        }
+        String id = team.toString().toLowerCase().concat("-base");
+        Cuboid area;
+        try {
+            area = WorldEditHandler.getSelectedArea(player);
+        } catch (IllegalStateException ex) {
+            throw new CommandException("&c" + ex.getMessage());
+        }
+        game.getAreas().setArea(id, area);
+        AreaInfo info = game.getAreas().getAreaInfo(id);
+        info.getPermission(AreaPermission.DOOR).setState(team, AreaState.TRUE);
+        info.getPermission(AreaPermission.CONTAINER).setState(team, AreaState.TRUE);
+        info.getPermission(AreaPermission.GODMODE).setState(team, AreaState.TRUE);
+        sendMessage("&a" + team.getTeamName() + "&aチームの拠点を設定しました！");
+        sendMessage("&aステージ'&6" + game.getName() + "&a'のエリア'&6" + id + "&a'での権限'&6" + AreaPermission.DOOR + "&a'を状態'" + AreaState.TRUE.format() + "&a'に変更しました！");
+        sendMessage("&aステージ'&6" + game.getName() + "&a'のエリア'&6" + id + "&a'での権限'&6" + AreaPermission.CONTAINER + "&a'を状態'" + AreaState.TRUE.format() + "&a'に変更しました！");
+        sendMessage("&aステージ'&6" + game.getName() + "&a'のエリア'&6" + id + "&a'での権限'&6" + AreaPermission.GODMODE + "&a'を状態'" + AreaState.TRUE.format() + "&a'に変更しました！");
+        plugin.getDynmap().updateRegion(game);
     }
 
     /* ***** ここまで **************************************** */
