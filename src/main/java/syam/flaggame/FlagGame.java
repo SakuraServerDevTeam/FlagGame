@@ -204,7 +204,7 @@ public class FlagGame extends JavaPlugin {
                 return;
             }
         }
-
+        
         // タスクをすべて止める
         getServer().getScheduler().cancelTasks(this);
 
