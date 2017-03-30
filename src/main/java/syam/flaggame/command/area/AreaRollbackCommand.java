@@ -36,7 +36,8 @@ public class AreaRollbackCommand extends AreaCommand {
                 plugin,
                 1,
                 "<id> [name] [timing] <- schedule rollback",
-                "area rollback"
+                "area rollback",
+                "ar"
         );
     }
 

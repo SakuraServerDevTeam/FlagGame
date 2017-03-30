@@ -39,7 +39,8 @@ public class JoinCommand extends BaseCommand {
                 true,
                 0,
                 "[game] <- join the game",
-                "join"
+                "join",
+                "j"
         );
     }
 

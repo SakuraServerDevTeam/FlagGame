@@ -41,7 +41,7 @@ public class HelpCommand extends BaseCommand {
         for (BaseCommand cmd : this.plugin.getCommands()) {
             cmd.sender = this.sender;
             if (cmd.hasPermission(sender)) {
-                Actions.message(sender, "&8-&7 /" + command + " &c" + cmd.name + " &7" + cmd.usage);
+                Actions.message(sender, "&8-&7 /" + command + " &c" + cmd.getName() + " &7" + cmd.getUsage());
             }
         }
         Actions.message(sender, "&c===================================");

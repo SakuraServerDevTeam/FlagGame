@@ -40,7 +40,8 @@ public class AreaLoadCommand extends AreaCommand {
                 plugin,
                 2,
                 "<id> <name> <- load region",
-                "area load"
+                "area load",
+                "alo"
         );
     }
 

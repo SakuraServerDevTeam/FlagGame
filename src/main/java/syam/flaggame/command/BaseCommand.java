@@ -42,10 +42,10 @@ public abstract class BaseCommand {
     protected List<String> args = new ArrayList<>();
 
     // プロパティ
-    protected boolean bePlayer = true;
-    protected String name;
-    protected int argLength = 0;
-    protected String usage;
+    private final boolean bePlayer;
+    private final String name;
+    private final int argLength;
+    private final String usage;
     private final Perms permission;
     private final String[] aliases;
     
@@ -138,6 +138,14 @@ public abstract class BaseCommand {
 
     public String getName() {
         return this.name;
+    }
+
+    public String getUsage() {
+        return usage;
+    }
+
+    public String[] getAliases() {
+        return aliases.clone();
     }
 
     /**

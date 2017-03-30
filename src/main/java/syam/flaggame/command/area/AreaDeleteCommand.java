@@ -34,7 +34,8 @@ public class AreaDeleteCommand extends AreaCommand {
                 plugin,
                 1,
                "<id> <- delete region",
-                "area delete"
+                "area delete",
+                "ad"
         );
     }
 

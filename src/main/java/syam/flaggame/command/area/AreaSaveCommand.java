@@ -43,7 +43,8 @@ public class AreaSaveCommand extends AreaCommand {
                 plugin,
                 3,
                 "<id> <name> <target> <- save region",
-                "area save"
+                "area save",
+                "asa"
         );
     }
 

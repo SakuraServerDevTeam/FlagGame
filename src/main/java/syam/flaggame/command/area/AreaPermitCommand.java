@@ -39,7 +39,8 @@ public class AreaPermitCommand extends AreaCommand {
                 plugin,
                 3,
                 "<id> <permission> <teamcolor> [state] <- load region",
-                "area permit"
+                "area permit",
+                "ap"
         );
     }
 

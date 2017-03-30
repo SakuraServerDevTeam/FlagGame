@@ -35,7 +35,8 @@ public class AreaSetCommand extends AreaCommand {
                 plugin,
                 1,
                 "<id> <- set region",
-                "area set"
+                "area set",
+                "aset"
         );
     }
 

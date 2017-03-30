@@ -65,7 +65,6 @@ public class FlagGame extends JavaPlugin {
      * 
      * 参加チームの選択
      */
-
     // ** Commands **
     private final List<BaseCommand> commands = new ArrayList<>();
 
@@ -312,19 +311,22 @@ public class FlagGame extends JavaPlugin {
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String args[]) {
         if (cmd.getName().equalsIgnoreCase("flag")) {
             if (args.length == 0) {
-                // 引数ゼロはヘルプ表示
-                args = new String[]{"help"};
+                new HelpCommand(this).run(sender, args, commandLabel);
+                return true;
             }
 
-            outer:
+            String flatarg = String.join(" ", args).toLowerCase();
             for (BaseCommand command : commands) {
-                String[] cmds = command.getName().split(" ");
-                for (int i = 0; i < cmds.length; i++) {
-                    if (i >= args.length || !cmds[i].equalsIgnoreCase(args[i])) {
-                        continue outer;
+                if (flatarg.startsWith(command.getName())) {
+                    return command.run(sender, args, commandLabel);
+                }
+            }
+            for (BaseCommand command : commands) {
+                for (String alias : command.getAliases()) {
+                    if (flatarg.startsWith(alias)) {
+                        return command.run(sender, args, commandLabel);
                     }
                 }
-                return command.run(sender, args, commandLabel);
             }
             new HelpCommand(this).run(sender, args, commandLabel);
             return true;
