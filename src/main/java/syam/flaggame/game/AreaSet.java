@@ -25,6 +25,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import jp.llv.flaggame.game.permission.GamePermissionState;
 import jp.llv.flaggame.util.ValueSortedMap;
 import org.bukkit.Location;
 import syam.flaggame.util.Cuboid;
@@ -121,14 +122,14 @@ public class AreaSet {
                 .collect(Collectors.toList());
     }
 
-    public boolean getAreaInfo(Location loc, Function<? super AreaInfo, ? extends AreaState> mapper) {
+    public boolean getAreaInfo(Location loc, Function<? super AreaInfo, ? extends GamePermissionState> mapper) {
         for (AreaInfo info : getAreaInfo(loc)) {
-            AreaState s = mapper.apply(info);
+            GamePermissionState s = mapper.apply(info);
             if (s.isForceful()) {
                 return s.isPositive();
             }
         }
-        return AreaState.DEFAULT.isPositive();
+        return GamePermissionState.DEFAULT.isPositive();
     }
 
     /*package*/ Map<String, Cuboid> getAreaMap() {

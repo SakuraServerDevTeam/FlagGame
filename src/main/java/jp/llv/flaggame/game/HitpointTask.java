@@ -16,12 +16,12 @@
  */
 package jp.llv.flaggame.game;
 
+import jp.llv.flaggame.game.permission.GamePermission;
 import jp.llv.flaggame.reception.TeamColor;
 import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import syam.flaggame.game.AreaPermission;
 import syam.flaggame.game.AreaSet;
 import syam.flaggame.player.GamePlayer;
 
@@ -47,12 +47,12 @@ public class HitpointTask extends BukkitRunnable {
             Player player = gplayer.getPlayer();
             Location loc = player.getLocation();
             TeamColor color = gplayer.getTeam().get().getColor();
-            if (areas.getAreaInfo(loc, a -> a.getPermission(AreaPermission.REGENERATION).getState(color))) {
+            if (areas.getAreaInfo(loc, a -> a.getPermission(GamePermission.REGENERATION).getState(color))) {
                 double hp = player.getHealth() + 1d;
                 double maxHp = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
                 player.setHealth(hp < maxHp ? hp : maxHp);
             }
-            if (areas.getAreaInfo(loc, a -> a.getPermission(AreaPermission.DAMAGE).getState(color))) {
+            if (areas.getAreaInfo(loc, a -> a.getPermission(GamePermission.DAMAGE).getState(color))) {
                 player.damage(2d);
             }
         }

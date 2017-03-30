@@ -18,6 +18,8 @@ package syam.flaggame.command;
 
 import java.util.ArrayList;
 import java.util.List;
+import jp.llv.flaggame.game.permission.GamePermission;
+import jp.llv.flaggame.game.permission.GamePermissionState;
 
 import org.bukkit.Material;
 import syam.flaggame.FlagGame;
@@ -28,8 +30,6 @@ import syam.flaggame.game.Configables;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.exception.StageReservedException;
 import syam.flaggame.game.AreaInfo;
-import syam.flaggame.game.AreaPermission;
-import syam.flaggame.game.AreaState;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.player.GamePlayer;
@@ -192,7 +192,9 @@ public class SetCommand extends BaseCommand {
         if (team == null) {
             throw new CommandException("&cチーム'" + args.get(1) + "'が見つかりません！");
         }
-
+        if (team == TeamColor.WHITE) {
+            throw new CommandException(team.getRichName()+"&cのスポーン地点を設定することはできません！");
+        }
         if (args.size() >= 3 && args.get(2).equalsIgnoreCase("none")) {
             game.setSpawn(team, null);
             Actions.message(player, "&a" + team.getTeamName() + "&aチームのスポーン地点を削除しました！");
@@ -517,13 +519,13 @@ public class SetCommand extends BaseCommand {
         }
         game.getAreas().setArea(id, area);
         AreaInfo info = game.getAreas().getAreaInfo(id);
-        info.getPermission(AreaPermission.DOOR).setState(team, AreaState.TRUE);
-        info.getPermission(AreaPermission.CONTAINER).setState(team, AreaState.TRUE);
-        info.getPermission(AreaPermission.GODMODE).setState(team, AreaState.TRUE);
+        info.getPermission(GamePermission.DOOR).setState(team, GamePermissionState.ALLOW);
+        info.getPermission(GamePermission.CONTAINER).setState(team, GamePermissionState.ALLOW);
+        info.getPermission(GamePermission.GODMODE).setState(team, GamePermissionState.ALLOW);
         sendMessage("&a" + team.getTeamName() + "&aチームの拠点を設定しました！");
-        sendMessage("&aステージ'&6" + game.getName() + "&a'のエリア'&6" + id + "&a'での権限'&6" + AreaPermission.DOOR + "&a'を状態'" + AreaState.TRUE.format() + "&a'に変更しました！");
-        sendMessage("&aステージ'&6" + game.getName() + "&a'のエリア'&6" + id + "&a'での権限'&6" + AreaPermission.CONTAINER + "&a'を状態'" + AreaState.TRUE.format() + "&a'に変更しました！");
-        sendMessage("&aステージ'&6" + game.getName() + "&a'のエリア'&6" + id + "&a'での権限'&6" + AreaPermission.GODMODE + "&a'を状態'" + AreaState.TRUE.format() + "&a'に変更しました！");
+        sendMessage("&aステージ'&6" + game.getName() + "&a'のエリア'&6" + id + "&a'での権限'&6" + GamePermission.DOOR + "&a'を状態'" + GamePermissionState.ALLOW.format() + "&a'に変更しました！");
+        sendMessage("&aステージ'&6" + game.getName() + "&a'のエリア'&6" + id + "&a'での権限'&6" + GamePermission.CONTAINER + "&a'を状態'" + GamePermissionState.ALLOW.format() + "&a'に変更しました！");
+        sendMessage("&aステージ'&6" + game.getName() + "&a'のエリア'&6" + id + "&a'での権限'&6" + GamePermission.GODMODE + "&a'を状態'" + GamePermissionState.ALLOW.format() + "&a'に変更しました！");
         plugin.getDynmap().updateRegion(game);
     }
 

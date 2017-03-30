@@ -18,12 +18,12 @@ package syam.flaggame.command.area;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
+import jp.llv.flaggame.game.permission.GamePermission;
+import jp.llv.flaggame.game.permission.GamePermissionState;
 import jp.llv.flaggame.reception.TeamColor;
 import syam.flaggame.FlagGame;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.AreaInfo;
-import syam.flaggame.game.AreaPermission;
-import syam.flaggame.game.AreaState;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
 
@@ -48,11 +48,11 @@ public class AreaPermitCommand extends AreaCommand {
             throw new CommandException("&cその名前のエリアは存在しません！");
         }
 
-        AreaPermission permission;
+        GamePermission permission;
         try {
-            permission = AreaPermission.of(args.get(1));
+            permission = GamePermission.of(args.get(1));
         } catch (IllegalArgumentException ex) {
-            String values = Arrays.stream(AreaPermission.values()).map(e -> e.toString().toLowerCase()).collect(Collectors.joining("/"));
+            String values = Arrays.stream(GamePermissionState.values()).map(e -> e.toString().toLowerCase()).collect(Collectors.joining("/"));
             throw new CommandException("&cその権限は存在しません！\n&c" + values, ex);
         }
 
@@ -64,14 +64,14 @@ public class AreaPermitCommand extends AreaCommand {
         }
 
         if (args.size() == 3) {
-            AreaState state = info.getPermission(permission).getState(target);
+            GamePermissionState state = info.getPermission(permission).getState(target);
             sendMessage("&aステージ'&6" + stage.getName() + "&a'のエリア'&6" + id + "&a'での権限'&6" + permission.toString() + "&a'は状態'" + state.format() + "&a'です！");
         } else {
-            AreaState state;
+            GamePermissionState state;
             try {
-                state = AreaState.of(args.get(3));
+                state = GamePermissionState.of(args.get(3));
             } catch (IllegalArgumentException ex) {
-                String values = Arrays.stream(AreaState.values()).map(e -> e.toString().toLowerCase()).collect(Collectors.joining("/"));
+                String values = Arrays.stream(GamePermissionState.values()).map(e -> e.toString().toLowerCase()).collect(Collectors.joining("/"));
                 throw new CommandException("&cその状態は存在しません！\n&c" + values, ex);
             }
             info.getPermission(permission).setState(target, state);

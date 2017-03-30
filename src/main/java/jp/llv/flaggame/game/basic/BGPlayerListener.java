@@ -17,6 +17,7 @@
 package jp.llv.flaggame.game.basic;
 
 import java.util.Collection;
+import jp.llv.flaggame.game.permission.GamePermission;
 import jp.llv.flaggame.profile.record.LoginRecord;
 import jp.llv.flaggame.profile.record.PlayerLeaveRecord;
 import org.bukkit.Location;
@@ -41,7 +42,6 @@ import org.bukkit.event.EventHandler;
 import syam.flaggame.player.GamePlayer;
 import syam.flaggame.util.Actions;
 import org.bukkit.event.player.PlayerJoinEvent;
-import syam.flaggame.game.AreaPermission;
 import syam.flaggame.game.AreaSet;
 
 /**
@@ -72,8 +72,8 @@ public class BGPlayerListener extends BGListener {
         AreaSet area = game.getStage().getAreas();
         TeamColor color = gplayer.getTeam().get().getColor();
         Location loc = block.getLocation();
-        if ((state instanceof InventoryHolder && !area.getAreaInfo(loc, a -> a.getPermission(AreaPermission.CONTAINER).getState(color)))
-                || (state.getData() instanceof Openable && !area.getAreaInfo(loc, a -> a.getPermission(AreaPermission.DOOR).getState(color)))) {
+        if ((state instanceof InventoryHolder && !area.getAreaInfo(loc, a -> a.getPermission(GamePermission.CONTAINER).getState(color)))
+                || (state.getData() instanceof Openable && !area.getAreaInfo(loc, a -> a.getPermission(GamePermission.DOOR).getState(color)))) {
             gplayer.sendMessage("&cあなたのチームはこのブロックにアクセスできません!");
             event.setCancelled(true);
             event.setUseInteractedBlock(Event.Result.DENY);

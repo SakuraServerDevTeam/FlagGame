@@ -37,7 +37,7 @@ import jp.llv.flaggame.events.GameStartEvent;
 import jp.llv.flaggame.game.Game;
 import jp.llv.flaggame.game.HitpointTask;
 import jp.llv.flaggame.game.basic.objective.HeldBanner;
-import jp.llv.flaggame.game.protection.StageProtectionListener;
+import jp.llv.flaggame.game.permission.StagePermissionListener;
 import jp.llv.flaggame.profile.DeviationBasedExpCalcurator;
 import jp.llv.flaggame.profile.record.FlagCaptureRecord;
 import jp.llv.flaggame.profile.record.FlagScoreRecord;
@@ -275,7 +275,7 @@ public class BasicGame implements Game {
         this.plugin.getServer().getPluginManager().registerEvents(entityListener, this.plugin);
         this.onFinishing.offer(entityListener::unregister);
 
-        StageProtectionListener protectionListener = new StageProtectionListener(plugin, this);
+        StagePermissionListener protectionListener = new StagePermissionListener(plugin, this);
         this.plugin.getServer().getPluginManager().registerEvents(protectionListener, this.plugin);
         this.onFinishing.offer(protectionListener::unregister);
 

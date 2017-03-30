@@ -16,13 +16,14 @@
  */
 package syam.flaggame.game;
 
-import jp.llv.flaggame.game.protection.Protection;
+import jp.llv.flaggame.game.permission.GamePermission;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import jp.llv.flaggame.game.permission.GamePermissionStateSet;
 import jp.llv.flaggame.rollback.StageData;
 import jp.llv.flaggame.rollback.StageDataType;
 
@@ -33,8 +34,7 @@ import jp.llv.flaggame.rollback.StageDataType;
 public class AreaInfo {
 
     private final Map<String, RollbackData> rollbacks = new HashMap<>();
-    private final Map<Protection, AreaState> protection = new EnumMap<>(Protection.class);
-    private final Map<AreaPermission, AreaPermissionStateSet> permissions = new EnumMap<>(AreaPermission.class);
+    private final Map<GamePermission, GamePermissionStateSet> permissions = new EnumMap<>(GamePermission.class);
 
     
     public RollbackData addRollback(String id) {
@@ -78,35 +78,18 @@ public class AreaInfo {
         rollbacks.clear();
     }
     
-    public AreaState isProtected(Protection type) {
-        AreaState state = protection.get(type);
-        return state == null ? AreaState.DEFAULT : state;
-    }
-    
-    public void setProtected(Protection type, AreaState state) {
-        protection.put(type, state);
-    }
-    
-    /*package*/ Map<Protection, AreaState> getProtectionMap() {
-        return Collections.unmodifiableMap(protection);
-    }
-    
-    /*package*/ void setProtectionMap(Map<Protection, AreaState> map) {
-        protection.putAll(map);
-    }
-    
-    public AreaPermissionStateSet getPermission(AreaPermission type) {
+    public GamePermissionStateSet getPermission(GamePermission type) {
         if (!permissions.containsKey(type)) {
-            permissions.put(type, new AreaPermissionStateSet());
+            permissions.put(type, new GamePermissionStateSet());
         }
         return permissions.get(type); 
     }
     
-    /*package*/ void setPermissions(Map<AreaPermission, AreaPermissionStateSet> permissions) {
+    /*package*/ void setPermissions(Map<GamePermission, GamePermissionStateSet> permissions) {
         this.permissions.putAll(permissions);
     }
     
-    /*package*/ Map<AreaPermission, AreaPermissionStateSet> getPermissions() {
+    /*package*/ Map<GamePermission, GamePermissionStateSet> getPermissions() {
         return this.permissions;
     }
     

@@ -16,7 +16,7 @@
  */
 package syam.flaggame.game;
 
-import jp.llv.flaggame.game.protection.Protection;
+import jp.llv.flaggame.game.permission.GamePermission;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
@@ -28,6 +28,8 @@ import jp.llv.flaggame.game.basic.objective.BannerSlot;
 import jp.llv.flaggame.game.basic.objective.BannerSpawner;
 import jp.llv.flaggame.game.basic.objective.Flag;
 import jp.llv.flaggame.game.basic.objective.Nexus;
+import jp.llv.flaggame.game.permission.GamePermissionState;
+import jp.llv.flaggame.game.permission.GamePermissionStateSet;
 import jp.llv.flaggame.reception.TeamColor;
 import jp.llv.flaggame.rollback.StageDataType;
 import jp.llv.flaggame.util.TriConsumer;
@@ -172,21 +174,20 @@ public class StageBsonConverter {
         return result;
     }
     
-    private static void writeAreaPermissionStateSet(BsonDocument bson, String key, AreaPermissionStateSet value) {
+    private static void writeGamePermissionStateSet(BsonDocument bson, String key, GamePermissionStateSet value) {
         writeEnumMap(bson, key, value.getState(), (b, k, s) -> writeEnum(b, k, s));
     }
     
-    private static AreaPermissionStateSet readAreaPermissionStateSet(BsonDocument bson, String key) {
-        return new AreaPermissionStateSet(
-                readEnumMap(bson, key, TeamColor.class, (b, k) -> readEnum(b, k, AreaState.class))
+    private static GamePermissionStateSet readGamePermissionStateSet(BsonDocument bson, String key) {
+        return new GamePermissionStateSet(
+                readEnumMap(bson, key, TeamColor.class, (b, k) -> readEnum(b, k, GamePermissionState.class))
         );
     }
 
     private static void writeAreaInfo(BsonDocument bson, String key, AreaInfo value) {
         BsonDocument section = new BsonDocument();
         writeMap(section, "rollbacks", value.getRollbacks(), StageBsonConverter::writeRollback);
-        writeEnumMap(section, "protection", value.getProtectionMap(), StageBsonConverter::writeEnum);
-        writeEnumMap(section, "permissions", value.getPermissions(), StageBsonConverter::writeAreaPermissionStateSet);
+        writeEnumMap(section, "permissions", value.getPermissions(), StageBsonConverter::writeGamePermissionStateSet);
         bson.append(key, section);
     }
 
@@ -194,8 +195,7 @@ public class StageBsonConverter {
         BsonDocument section = bson.getDocument(key);
         AreaInfo result = new AreaInfo();
         result.setRollbacks(readMap(section, "rollbacks", StageBsonConverter::readRollback));
-        result.setProtectionMap(readEnumMap(section, "protection", Protection.class, (b, k) -> readEnum(b, k, AreaState.class)));
-        result.setPermissions(readEnumMap(section, "permissions", AreaPermission.class, StageBsonConverter::readAreaPermissionStateSet));
+        result.setPermissions(readEnumMap(section, "permissions", GamePermission.class, StageBsonConverter::readGamePermissionStateSet));
         return result;
     }
 

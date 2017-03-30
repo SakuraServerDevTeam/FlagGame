@@ -23,6 +23,7 @@ import java.util.Set;
 import jp.llv.flaggame.game.basic.objective.BannerSpawner;
 import jp.llv.flaggame.game.basic.objective.Flag;
 import jp.llv.flaggame.game.basic.objective.HeldBanner;
+import jp.llv.flaggame.game.permission.GamePermission;
 import jp.llv.flaggame.profile.record.BannerStealRecord;
 import jp.llv.flaggame.profile.record.PlayerDeathRecord;
 import jp.llv.flaggame.profile.record.PlayerKillRecord;
@@ -43,7 +44,6 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 import syam.flaggame.FlagGame;
-import syam.flaggame.game.AreaPermission;
 import syam.flaggame.game.AreaSet;
 import syam.flaggame.player.GamePlayer;
 
@@ -104,9 +104,9 @@ public class BGEntityListener extends BGListener {
 
         // Disallow damage in basements
         AreaSet as = game.getStage().getAreas();
-        if (as.getAreaInfo(player.getLocation(), a -> a.getPermission(AreaPermission.GODMODE).getState(gp.getTeam().get().getColor()))) {
+        if (as.getAreaInfo(player.getLocation(), a -> a.getPermission(GamePermission.GODMODE).getState(gp.getTeam().get().getColor()))) {
             event.setCancelled(true);
-            if (!as.getAreaInfo(damager.getLocation(), a -> a.getPermission(AreaPermission.GODMODE).getState(gd.getTeam().get().getColor()))) {
+            if (!as.getAreaInfo(damager.getLocation(), a -> a.getPermission(GamePermission.GODMODE).getState(gd.getTeam().get().getColor()))) {
                 damager.damage(event.getDamage(), player);
             }
             return;
