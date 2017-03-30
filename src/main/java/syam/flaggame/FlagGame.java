@@ -268,8 +268,8 @@ public class FlagGame extends JavaPlugin {
                 PInfoCommand::new,
                 ListCommand::new,
                 JoinCommand::new,
-                WatchCommand::new,
                 LeaveCommand::new,
+                WatchCommand::new,
                 ConfirmCommand::new,
                 ReadyCommand::new,
                 StartCommand::new,
@@ -281,16 +281,16 @@ public class FlagGame extends JavaPlugin {
                 TpCommand::new,
                 SaveCommand::new,
                 ReloadCommand::new,
+                RateCommand::new,
                 AreaDeleteCommand::new,
                 AreaPermitCommand::new,
                 AreaListCommand::new,
-                AreaLoadCommand::new,
                 AreaSaveCommand::new,
+                AreaLoadCommand::new,
                 AreaSelectCommand::new,
                 AreaSetCommand::new,
                 AreaRollbackCommand::new,
                 AreaInitCommand::new,
-                RateCommand::new,
                 AreaTestCommand::new
         ).map(f -> f.apply(this)).forEach(this.commands::add);
     }
