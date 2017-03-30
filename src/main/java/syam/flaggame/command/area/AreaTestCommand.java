@@ -52,7 +52,7 @@ public class AreaTestCommand extends AreaCommand {
         try {
             permission = GamePermission.of(args.get(0));
         } catch (IllegalArgumentException ex) {
-            String values = Arrays.stream(GamePermissionState.values()).map(e -> e.toString().toLowerCase()).collect(Collectors.joining("/"));
+            String values = Arrays.stream(GamePermission.values()).map(e -> e.toString().toLowerCase()).collect(Collectors.joining("/"));
             throw new CommandException("&cその権限は存在しません！\n&c" + values, ex);
         }
         TeamColor color;
