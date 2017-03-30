@@ -232,7 +232,7 @@ public class DynmapHandler {
         s = s.replaceAll("%chestcount%", stage.getChests().size() + "個");
 
         // Build options
-        s = s.replaceAll("%gametime%", Actions.getTimeString(stage.getGameTimeInSec()));
+        s = s.replaceAll("%gametime%", Actions.getTimeString(stage.getGameTime() / 1000));
         s = s.replaceAll("%teamlimit%", stage.getTeamLimit() + "人");
 
         // Build Award/EntryFee

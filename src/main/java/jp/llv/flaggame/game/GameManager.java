@@ -52,6 +52,7 @@ public class GameManager implements Iterable<Game> {
                 .collect(Collectors.toSet());
     }
     
+    @Deprecated
     public Optional<Game> getGame(String id) {
         return this.receptions.getReception(id).flatMap(GameReception::getGame);
     }
