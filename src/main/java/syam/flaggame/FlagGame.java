@@ -302,7 +302,8 @@ public class FlagGame extends JavaPlugin {
                 AreaSetCommand::new,
                 AreaRollbackCommand::new,
                 AreaInitCommand::new,
-                RateCommand::new
+                RateCommand::new,
+                AreaTestCommand::new
         ).map(f -> f.apply(this)).forEach(this.commands::add);
     }
 
