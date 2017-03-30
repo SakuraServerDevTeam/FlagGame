@@ -24,6 +24,7 @@ import jp.llv.flaggame.events.ReceptionJoinEvent;
 import jp.llv.flaggame.game.Game;
 import jp.llv.flaggame.reception.GameReception;
 import syam.flaggame.FlagGame;
+import org.bukkit.permissions.Permissible;
 
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.permission.Perms;
@@ -33,11 +34,13 @@ import syam.flaggame.util.Actions;
 public class JoinCommand extends BaseCommand {
 
     public JoinCommand(FlagGame plugin) {
-        super(plugin);
-        bePlayer = true;
-        name = "join";
-        argLength = 0;
-        usage = "[game] <- join the game";
+        super(
+                plugin,
+                true,
+                0,
+                "[game] <- join the game",
+                "join"
+        );
     }
 
     @Override
@@ -102,7 +105,7 @@ public class JoinCommand extends BaseCommand {
     }
 
     @Override
-    public boolean permission() {
-        return Perms.JOIN.has(sender);
+    public boolean hasPermission(Permissible target) {
+        return Perms.JOIN.has(target);
     }
 }

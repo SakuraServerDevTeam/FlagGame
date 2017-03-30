@@ -23,6 +23,7 @@ import jp.llv.flaggame.reception.GameReception;
 import org.bukkit.Location;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import syam.flaggame.FlagGame;
+import org.bukkit.permissions.Permissible;
 import syam.flaggame.exception.CommandException;
 
 import syam.flaggame.game.Stage;
@@ -33,11 +34,14 @@ import syam.flaggame.util.Actions;
 public class WatchCommand extends BaseCommand {
 
     public WatchCommand(FlagGame plugin) {
-        super(plugin);
-        bePlayer = true;
-        name = "watch";
-        argLength = 0;
-        usage = "[stage] <- watch the game";
+        super(
+                plugin,
+                false,
+                1,
+                "<reception-type> [optional args...] <- ready game",
+                "ready"
+        );
+    
     }
 
     @Override
@@ -82,7 +86,7 @@ public class WatchCommand extends BaseCommand {
     }
 
     @Override
-    public boolean permission() {
-        return Perms.WATCH.has(sender);
+    public boolean hasPermission(Permissible target) {
+        return Perms.WATCH.has(target);
     }
 }

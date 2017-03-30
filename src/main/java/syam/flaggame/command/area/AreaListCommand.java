@@ -18,6 +18,7 @@ package syam.flaggame.command.area;
 
 import java.util.Set;
 import syam.flaggame.FlagGame;
+import org.bukkit.permissions.Permissible;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
@@ -30,10 +31,12 @@ import syam.flaggame.util.Actions;
 public class AreaListCommand extends AreaCommand {
 
     public AreaListCommand(FlagGame plugin) {
-        super(plugin);
-        name = "area list";
-        argLength = 0;
-        usage = "<- show a list of areas";
+        super(
+                plugin,
+                0,
+                "area list",
+                "<- show a list of areas"
+        );
     }
 
     @Override
@@ -52,8 +55,8 @@ public class AreaListCommand extends AreaCommand {
     }
 
     @Override
-    public boolean permission() {
-        return Perms.STAGE_CONFIG_CHECK.has(sender);
+    public boolean hasPermission(Permissible target) {
+        return Perms.STAGE_CONFIG_CHECK.has(target);
     }
 
 }

@@ -18,17 +18,21 @@ package syam.flaggame.command;
 
 import java.util.logging.Level;
 import syam.flaggame.FlagGame;
+import org.bukkit.permissions.Permissible;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.util.Actions;
 
 public class ReloadCommand extends BaseCommand {
 
     public ReloadCommand(FlagGame plugin) {
-        super(plugin);
-        bePlayer = false;
-        name = "reload";
-        argLength = 0;
-        usage = "<- reload config.yml";
+        super(
+                plugin,
+                false,
+                1,
+                "<reception-type> [optional args...] <- ready game",
+                "ready"
+        );
+    
     }
 
     @Override
@@ -44,7 +48,7 @@ public class ReloadCommand extends BaseCommand {
     }
 
     @Override
-    public boolean permission() {
-        return Perms.RELOAD.has(sender);
+    public boolean hasPermission(Permissible target) {
+        return Perms.RELOAD.has(target);
     }
 }

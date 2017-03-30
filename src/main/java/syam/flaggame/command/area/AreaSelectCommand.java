@@ -17,6 +17,7 @@
 package syam.flaggame.command.area;
 
 import syam.flaggame.FlagGame;
+import org.bukkit.permissions.Permissible;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
@@ -30,10 +31,12 @@ import syam.flaggame.util.WorldEditHandler;
 public class AreaSelectCommand extends AreaCommand {
 
     public AreaSelectCommand(FlagGame plugin) {
-        super(plugin);
-        name = "area select";
-        argLength = 1;
-        usage = "<id> <- select region";
+        super(
+                plugin,
+                1,
+                "<id> <- select region",
+                "area select"
+        );
     }
 
     @Override
@@ -50,8 +53,8 @@ public class AreaSelectCommand extends AreaCommand {
     }
 
     @Override
-    public boolean permission() {
-        return Perms.SELECT.has(sender);
+    public boolean hasPermission(Permissible target) {
+        return Perms.SELECT.has(target);
     }
 
 }

@@ -16,13 +16,13 @@
  */
 package syam.flaggame.command;
 
-import jp.llv.flaggame.game.Game;
 import jp.llv.flaggame.reception.GameReception;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import syam.flaggame.FlagGame;
+import org.bukkit.permissions.Permissible;
 
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.permission.Perms;
@@ -31,11 +31,13 @@ import syam.flaggame.player.GamePlayer;
 public class LeaveCommand extends BaseCommand {
 
     public LeaveCommand(FlagGame plugin) {
-        super(plugin);
-        bePlayer = true;
-        name = "leave";
-        argLength = 0;
-        usage = "<leave> <- leave the game";
+        super(
+                plugin,
+                true,
+                0,
+                "<leave> <- leave the game",
+                "leave"
+        );
     }
 
     @Override
@@ -91,7 +93,7 @@ public class LeaveCommand extends BaseCommand {
     }
 
     @Override
-    public boolean permission() {
-        return (Perms.LEAVE_GAME.has(sender) || Perms.LEAVE_READY.has(sender) || Perms.LEAVE_SPECTATE.has(sender));
+    public boolean hasPermission(Permissible target) {
+        return (Perms.LEAVE_GAME.has(target) || Perms.LEAVE_READY.has(target) || Perms.LEAVE_SPECTATE.has(target));
     }
 }

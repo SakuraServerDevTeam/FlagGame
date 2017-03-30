@@ -19,6 +19,7 @@ package syam.flaggame.command;
 import java.util.logging.Level;
 import jp.llv.flaggame.database.DatabaseException;
 import syam.flaggame.FlagGame;
+import org.bukkit.permissions.Permissible;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.util.Actions;
@@ -26,11 +27,14 @@ import syam.flaggame.util.Actions;
 public class SaveCommand extends BaseCommand {
 
     public SaveCommand(FlagGame plugin) {
-        super(plugin);
-        bePlayer = false;
-        name = "save";
-        argLength = 0;
-        usage = "<- save map data";
+        super(
+                plugin,
+                false,
+                1,
+                "<reception-type> [optional args...] <- ready game",
+                "ready"
+        );
+    
     }
 
     @Override
@@ -47,7 +51,7 @@ public class SaveCommand extends BaseCommand {
     }
 
     @Override
-    public boolean permission() {
-        return Perms.SAVE.has(sender);
+    public boolean hasPermission(Permissible target) {
+        return Perms.SAVE.has(target);
     }
 }

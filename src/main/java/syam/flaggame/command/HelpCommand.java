@@ -17,16 +17,19 @@
 package syam.flaggame.command;
 
 import syam.flaggame.FlagGame;
+import org.bukkit.permissions.Permissible;
 import syam.flaggame.util.Actions;
 
 public class HelpCommand extends BaseCommand {
     
     public HelpCommand(FlagGame plugin) {
-        super(plugin);
-        bePlayer = false;
-        name = "help";
-        argLength = 0;
-        usage = "<- show command help";
+        super(
+                plugin,
+                false,
+                0,
+                "<- show command help",
+                "help"
+        );
     }
 
     @Override
@@ -37,7 +40,7 @@ public class HelpCommand extends BaseCommand {
         // 全コマンドをループで表示
         for (BaseCommand cmd : this.plugin.getCommands()) {
             cmd.sender = this.sender;
-            if (cmd.permission()) {
+            if (cmd.hasPermission(sender)) {
                 Actions.message(sender, "&8-&7 /" + command + " &c" + cmd.name + " &7" + cmd.usage);
             }
         }
@@ -45,7 +48,7 @@ public class HelpCommand extends BaseCommand {
     }
 
     @Override
-    public boolean permission() {
+    public boolean hasPermission(Permissible target) {
         return true;
     }
 }

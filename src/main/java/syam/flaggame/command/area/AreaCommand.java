@@ -20,6 +20,7 @@ import syam.flaggame.FlagGame;
 import syam.flaggame.command.BaseCommand;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
+import syam.flaggame.permission.Perms;
 import syam.flaggame.player.GamePlayer;
 
 /**
@@ -27,10 +28,13 @@ import syam.flaggame.player.GamePlayer;
  * @author toyblocks
  */
 public abstract class AreaCommand extends BaseCommand{
-    
-    public AreaCommand(FlagGame plugin) {
-        super(plugin);
-        bePlayer = true;
+
+    public AreaCommand(FlagGame plugin, int argLength, String usage, Perms permission, String name, String... aliases) {
+        super(plugin, true, argLength, usage, permission, name, aliases);
+    }
+
+    public AreaCommand(FlagGame plugin, int argLength, String usage, String name, String... aliases) {
+        super(plugin, true, argLength, usage, name, aliases);
     }
 
     @Override

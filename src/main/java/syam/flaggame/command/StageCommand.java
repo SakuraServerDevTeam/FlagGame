@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import syam.flaggame.FlagGame;
+import org.bukkit.permissions.Permissible;
 
 import syam.flaggame.command.queue.Queueable;
 import syam.flaggame.event.StageCreateEvent;
@@ -38,11 +39,14 @@ import syam.flaggame.util.Actions;
 public class StageCommand extends BaseCommand implements Queueable {
 
     public StageCommand(FlagGame plugin) {
-        super(plugin);
-        bePlayer = true;
-        name = "stage";
-        argLength = 0;
-        usage = "<action> [stage] <- management stages";
+        super(
+                plugin,
+                false,
+                1,
+                "<reception-type> [optional args...] <- ready game",
+                "ready"
+        );
+    
     }
 
     @Override
@@ -208,7 +212,7 @@ public class StageCommand extends BaseCommand implements Queueable {
     }
 
     @Override
-    public boolean permission() {
-        return (Perms.CREATE.has(sender) || Perms.DELETE.has(sender) || Perms.ROLLBACK.has(sender));
+    public boolean hasPermission(Permissible target) {
+        return (Perms.CREATE.has(target) || Perms.DELETE.has(target) || Perms.ROLLBACK.has(target));
     }
 }

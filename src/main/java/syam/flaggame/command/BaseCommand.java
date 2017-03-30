@@ -24,7 +24,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import syam.flaggame.FlagGame;
+import org.bukkit.permissions.Permissible;
 import syam.flaggame.exception.CommandException;
+import syam.flaggame.permission.Perms;
 import syam.flaggame.util.Actions;
 
 public abstract class BaseCommand {
@@ -44,9 +46,21 @@ public abstract class BaseCommand {
     protected String name;
     protected int argLength = 0;
     protected String usage;
-
-    public BaseCommand(FlagGame plugin) {
+    private final Perms permission;
+    private final String[] aliases;
+    
+    public BaseCommand(FlagGame plugin, boolean bePlayer, int argLength, String usage, Perms permission, String name, String ... aliases) {
         this.plugin = plugin;
+        this.bePlayer = bePlayer;
+        this.argLength = argLength;
+        this.usage = usage;
+        this.permission = permission;
+        this.name = name;
+        this.aliases = aliases;
+    }
+    
+    public BaseCommand(FlagGame plugin, boolean bePlayer, int argLength, String usage, String name, String ... aliases) {
+        this(plugin, bePlayer, argLength, usage, null, name, aliases);
     }
     
     public boolean run(CommandSender sender, String[] preArgs, String cmd) {
@@ -81,7 +95,7 @@ public abstract class BaseCommand {
         }
 
         // 権限チェック
-        if (!permission()) {
+        if (!hasPermission(sender)) {
             Actions.message(sender, "&cYou don't have permission to use this!");
             return true;
         }
@@ -115,9 +129,12 @@ public abstract class BaseCommand {
     /**
      * コマンド実行に必要な権限を持っているか検証する
      * 
+     * @param target target to check permission
      * @return trueなら権限あり、falseなら権限なし
      */
-    public abstract boolean permission();
+    public boolean hasPermission(Permissible target) {
+        return permission == null ? true : permission.has(target);
+    }
 
     public String getName() {
         return this.name;

@@ -24,6 +24,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.InventoryHolder;
 import syam.flaggame.FlagGame;
+import org.bukkit.permissions.Permissible;
 
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
@@ -33,11 +34,13 @@ import syam.flaggame.util.Actions;
 public class CheckCommand extends BaseCommand {
 
     public CheckCommand(FlagGame plugin) {
-        super(plugin);
-        bePlayer = false;
-        name = "check";
-        argLength = 1;
-        usage = "<stage> <- check the setup status";
+        super(
+                plugin,
+                false,
+                1,
+                "<stage> <- check the setup status",
+                "check"
+        );
     }
 
     @Override
@@ -61,7 +64,7 @@ public class CheckCommand extends BaseCommand {
         // ステージエリア
         if (!stage.getAreas().hasStageArea()) {
             error = true;
-            sendMessage( "&6[*]&bステージエリア: &c未設定");
+            sendMessage("&6[*]&bステージエリア: &c未設定");
             if (help == null) {
                 help = "&6 * ステージエリアを設定してください！ *\n" + "&6 WorldEditでステージエリアを選択して、\n" + "&6 '&a/flag area set stage&6'コマンドを実行してください";
             }
@@ -141,7 +144,7 @@ public class CheckCommand extends BaseCommand {
     }
 
     @Override
-    public boolean permission() {
-        return Perms.CHECK.has(sender);
+    public boolean hasPermission(Permissible target) {
+        return Perms.CHECK.has(target);
     }
 }

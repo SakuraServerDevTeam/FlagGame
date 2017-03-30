@@ -23,6 +23,7 @@ import jp.llv.flaggame.game.permission.GamePermissionState;
 
 import org.bukkit.Material;
 import syam.flaggame.FlagGame;
+import org.bukkit.permissions.Permissible;
 
 import jp.llv.flaggame.reception.TeamColor;
 import jp.llv.flaggame.rollback.StageDataType;
@@ -44,11 +45,14 @@ public class SetCommand extends BaseCommand {
      * を追加するか、ConfigType.Area
      */
     public SetCommand(FlagGame plugin) {
-        super(plugin);
-        bePlayer = true;
-        name = "set";
-        argLength = 0;
-        usage = "<option> [value] <- set option";
+        super(
+                plugin,
+                false,
+                1,
+                "<reception-type> [optional args...] <- ready game",
+                "ready"
+        );
+    
     }
 
     /**
@@ -541,7 +545,7 @@ public class SetCommand extends BaseCommand {
     }
 
     @Override
-    public boolean permission() {
-        return Perms.SET.has(sender);
+    public boolean hasPermission(Permissible target) {
+        return Perms.SET.has(target);
     }
 }

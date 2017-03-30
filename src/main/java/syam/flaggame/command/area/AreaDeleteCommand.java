@@ -17,6 +17,7 @@
 package syam.flaggame.command.area;
 
 import syam.flaggame.FlagGame;
+import org.bukkit.permissions.Permissible;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
@@ -29,10 +30,12 @@ import syam.flaggame.util.Cuboid;
 public class AreaDeleteCommand extends AreaCommand {
 
     public AreaDeleteCommand(FlagGame plugin) {
-        super(plugin);
-        name = "area delete";
-        argLength = 1;
-        usage = "<id> <- delete region";
+        super(
+                plugin,
+                1,
+               "<id> <- delete region",
+                "area delete"
+        );
     }
 
     @Override
@@ -47,8 +50,8 @@ public class AreaDeleteCommand extends AreaCommand {
     }
 
     @Override
-    public boolean permission() {
-        return Perms.STAGE_CONFIG_SET.has(sender);
+    public boolean hasPermission(Permissible target) {
+        return Perms.STAGE_CONFIG_SET.has(target);
     }
     
 }

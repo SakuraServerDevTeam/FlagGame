@@ -18,6 +18,7 @@ package syam.flaggame.command;
 
 import org.bukkit.Location;
 import syam.flaggame.FlagGame;
+import org.bukkit.permissions.Permissible;
 
 import jp.llv.flaggame.reception.TeamColor;
 import syam.flaggame.exception.CommandException;
@@ -30,11 +31,14 @@ import syam.flaggame.util.Actions;
 public class TpCommand extends BaseCommand {
 
     public TpCommand(FlagGame plugin) {
-        super(plugin);
-        bePlayer = true;
-        name = "tp";
-        argLength = 1;
-        usage = "<Area> [Team] [Game] <- tp to specific location";
+        super(
+                plugin,
+                false,
+                1,
+                "<reception-type> [optional args...] <- ready game",
+                "ready"
+        );
+    
     }
 
     @Override
@@ -86,7 +90,7 @@ public class TpCommand extends BaseCommand {
     }
 
     @Override
-    public boolean permission() {
-        return Perms.TP.has(sender);
+    public boolean hasPermission(Permissible target) {
+        return Perms.TP.has(target);
     }
 }

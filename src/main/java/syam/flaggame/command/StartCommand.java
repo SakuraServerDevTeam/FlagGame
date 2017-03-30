@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import jp.llv.flaggame.reception.GameReception;
 import syam.flaggame.FlagGame;
+import org.bukkit.permissions.Permissible;
 
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.permission.Perms;
@@ -29,11 +30,14 @@ import syam.flaggame.permission.Perms;
 public class StartCommand extends BaseCommand {
 
     public StartCommand(FlagGame plugin) {
-        super(plugin);
-        bePlayer = false;
-        name = "start";
-        argLength = 0;
-        usage = "[stage] <- start game";
+        super(
+                plugin,
+                false,
+                1,
+                "<reception-type> [optional args...] <- ready game",
+                "ready"
+        );
+    
     }
 
     @Override
@@ -66,8 +70,8 @@ public class StartCommand extends BaseCommand {
     }
 
     @Override
-    public boolean permission() {
-        return Perms.START.has(sender);
+    public boolean hasPermission(Permissible target) {
+        return Perms.START.has(target);
     }
 
 }

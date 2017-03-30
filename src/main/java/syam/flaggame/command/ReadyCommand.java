@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import jp.llv.flaggame.reception.GameReception;
 import syam.flaggame.FlagGame;
+import org.bukkit.permissions.Permissible;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.util.Actions;
@@ -28,11 +29,13 @@ import syam.flaggame.util.Actions;
 public class ReadyCommand extends BaseCommand {
 
     public ReadyCommand(FlagGame plugin) {
-        super(plugin);
-        bePlayer = false;
-        name = "ready";
-        argLength = 1;
-        usage = "<reception-type> [optional args...] <- ready game";
+        super(
+                plugin,
+                false,
+                1,
+                "<reception-type> [optional args...] <- ready game",
+                "ready"
+        );
     }
 
     @Override
@@ -60,7 +63,7 @@ public class ReadyCommand extends BaseCommand {
     }
 
     @Override
-    public boolean permission() {
-        return Perms.READY.has(sender);
+    public boolean hasPermission(Permissible target) {
+        return Perms.READY.has(target);
     }
 }

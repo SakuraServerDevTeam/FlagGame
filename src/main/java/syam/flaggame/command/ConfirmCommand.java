@@ -17,6 +17,7 @@
 package syam.flaggame.command;
 
 import syam.flaggame.FlagGame;
+import org.bukkit.permissions.Permissible;
 import syam.flaggame.exception.CommandException;
 
 /**
@@ -27,11 +28,13 @@ import syam.flaggame.exception.CommandException;
 public class ConfirmCommand extends BaseCommand {
 
     public ConfirmCommand(FlagGame plugin) {
-        super(plugin);
-        bePlayer = false;
-        name = "confirm";
-        argLength = 0;
-        usage = "<- command confirm";
+        super(
+                plugin,
+                false,
+                0,
+                "<- command confirm",
+                "confirm"
+        );
     }
 
     @Override
@@ -43,7 +46,7 @@ public class ConfirmCommand extends BaseCommand {
     }
 
     @Override
-    public boolean permission() {
+    public boolean hasPermission(Permissible target) {
         return true;
     }
 }

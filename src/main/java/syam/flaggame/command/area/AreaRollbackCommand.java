@@ -18,6 +18,7 @@ package syam.flaggame.command.area;
 
 import java.util.Map;
 import syam.flaggame.FlagGame;
+import org.bukkit.permissions.Permissible;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.AreaInfo;
 import syam.flaggame.game.Stage;
@@ -31,10 +32,12 @@ import syam.flaggame.util.Actions;
 public class AreaRollbackCommand extends AreaCommand {
 
     public AreaRollbackCommand(FlagGame plugin) {
-        super(plugin);
-        name = "area rollback";
-        argLength = 1;
-        usage = "<id> [name] [timing] <- schedule rollback";
+        super(
+                plugin,
+                1,
+                "<id> [name] [timing] <- schedule rollback",
+                "area rollback"
+        );
     }
 
     @Override
@@ -92,8 +95,8 @@ public class AreaRollbackCommand extends AreaCommand {
     }
 
     @Override
-    public boolean permission() {
-        return Perms.STAGE_CONFIG_SET.has(sender);
+    public boolean hasPermission(Permissible target) {
+        return Perms.STAGE_CONFIG_SET.has(target);
     }
 
 }

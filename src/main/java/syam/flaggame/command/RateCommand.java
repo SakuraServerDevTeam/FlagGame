@@ -19,6 +19,7 @@ package syam.flaggame.command;
 import jp.llv.flaggame.profile.record.StageRateRecord;
 import jp.llv.flaggame.reception.GameReception;
 import syam.flaggame.FlagGame;
+import org.bukkit.permissions.Permissible;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.player.GamePlayer;
 
@@ -29,11 +30,13 @@ import syam.flaggame.player.GamePlayer;
 public class RateCommand extends BaseCommand {
     
     public RateCommand(FlagGame plugin) {
-        super(plugin);
-        bePlayer = true;
-        name = "rate";
-        argLength = 1;
-        usage = "<rate> <- rate the stage";
+        super(
+                plugin,
+                true,
+                1,
+                "<rate> <- rate the stage",
+                "rate"
+        );
     }
 
     @Override
@@ -60,7 +63,7 @@ public class RateCommand extends BaseCommand {
     }
 
     @Override
-    public boolean permission() {
+    public boolean hasPermission(Permissible target) {
         return true;
     }
     

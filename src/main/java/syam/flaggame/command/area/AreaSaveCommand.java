@@ -25,6 +25,7 @@ import jp.llv.flaggame.rollback.StageDataType;
 import jp.llv.flaggame.util.ConvertUtils;
 import org.bukkit.entity.Player;
 import syam.flaggame.FlagGame;
+import org.bukkit.permissions.Permissible;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.AreaInfo;
 import syam.flaggame.game.Stage;
@@ -38,10 +39,12 @@ import syam.flaggame.util.Actions;
 public class AreaSaveCommand extends AreaCommand {
 
     public AreaSaveCommand(FlagGame plugin) {
-        super(plugin);
-        name = "area save";
-        argLength = 3;
-        usage = "<id> <name> <target> <- save region";
+        super(
+                plugin,
+                3,
+                "<id> <name> <target> <- save region",
+                "area save"
+        );
     }
 
     @Override
@@ -96,8 +99,8 @@ public class AreaSaveCommand extends AreaCommand {
     }
 
     @Override
-    public boolean permission() {
-        return Perms.STAGE_CONFIG_SET.has(sender);
+    public boolean hasPermission(Permissible target) {
+        return Perms.STAGE_CONFIG_SET.has(target);
     }
 
 }

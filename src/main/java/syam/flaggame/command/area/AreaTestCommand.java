@@ -23,6 +23,7 @@ import jp.llv.flaggame.game.permission.GamePermissionState;
 import jp.llv.flaggame.reception.TeamColor;
 import org.bukkit.Location;
 import syam.flaggame.FlagGame;
+import org.bukkit.permissions.Permissible;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.AreaInfo;
 import syam.flaggame.game.Stage;
@@ -36,10 +37,12 @@ import syam.flaggame.util.Actions;
 public class AreaTestCommand extends AreaCommand {
 
     public AreaTestCommand(FlagGame plugin) {
-        super(plugin);
-        name = "area test";
-        argLength = 1;
-        usage = "<permission> [color] <- select region";
+        super(
+                plugin,
+                1,
+                "<permission> [color] <- select region",
+                "area test"
+        );
     }
 
     @Override
@@ -87,8 +90,8 @@ public class AreaTestCommand extends AreaCommand {
     }
 
     @Override
-    public boolean permission() {
-        return Perms.STAGE_CONFIG_CHECK.has(sender);
+    public boolean hasPermission(Permissible target) {
+        return Perms.STAGE_CONFIG_CHECK.has(target);
     }
 
 }

@@ -17,6 +17,7 @@
 package syam.flaggame.command;
 
 import syam.flaggame.FlagGame;
+import org.bukkit.permissions.Permissible;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.player.GamePlayer;
@@ -28,11 +29,13 @@ import syam.flaggame.player.GamePlayer;
 public class PInfoCommand extends BaseCommand {
 
     public PInfoCommand(FlagGame plugin) {
-        super(plugin);
-        bePlayer = true;
-        name = "pinfo";
-        argLength = 0;
-        usage = " <- show your internal information";
+        super(
+                plugin,
+                true,
+                0,
+                " <- show your internal information",
+                "pinfo"
+        );
     }
 
     @Override
@@ -42,8 +45,8 @@ public class PInfoCommand extends BaseCommand {
     }
 
     @Override
-    public boolean permission() {
-        return Perms.PINFO.has(sender);
+    public boolean hasPermission(Permissible target) {
+        return Perms.PINFO.has(target);
     }
     
 }

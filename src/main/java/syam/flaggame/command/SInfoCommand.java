@@ -21,6 +21,7 @@ import jp.llv.flaggame.game.Game;
 import jp.llv.flaggame.reception.GameReception;
 import jp.llv.flaggame.reception.Team;
 import syam.flaggame.FlagGame;
+import org.bukkit.permissions.Permissible;
 
 import jp.llv.flaggame.reception.TeamColor;
 import syam.flaggame.exception.CommandException;
@@ -32,11 +33,14 @@ import syam.flaggame.util.Actions;
 public class SInfoCommand extends BaseCommand {
 
     public SInfoCommand(FlagGame plugin) {
-        super(plugin);
-        bePlayer = false;
-        name = "sinfo";
-        argLength = 0;
-        usage = "[stage] <- show stage info";
+        super(
+                plugin,
+                false,
+                1,
+                "<reception-type> [optional args...] <- ready game",
+                "ready"
+        );
+    
     }
 
     @Override
@@ -129,7 +133,7 @@ public class SInfoCommand extends BaseCommand {
     }
 
     @Override
-    public boolean permission() {
-        return Perms.SINFO.has(sender);
+    public boolean hasPermission(Permissible target) {
+        return Perms.SINFO.has(target);
     }
 }

@@ -22,6 +22,7 @@ import jp.llv.flaggame.rollback.StageData;
 import jp.llv.flaggame.util.ConvertUtils;
 import org.bukkit.entity.Player;
 import syam.flaggame.FlagGame;
+import org.bukkit.permissions.Permissible;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.AreaInfo;
 import syam.flaggame.game.Stage;
@@ -35,10 +36,12 @@ import syam.flaggame.util.Actions;
 public class AreaLoadCommand extends AreaCommand {
 
     public AreaLoadCommand(FlagGame plugin) {
-        super(plugin);
-        name = "area load";
-        argLength = 2;
-        usage = "<id> <name> <- load region";
+        super(
+                plugin,
+                2,
+                "<id> <name> <- load region",
+                "area load"
+        );
     }
 
     @Override
@@ -76,8 +79,8 @@ public class AreaLoadCommand extends AreaCommand {
     }
 
     @Override
-    public boolean permission() {
-        return Perms.ROLLBACK.has(sender);
+    public boolean hasPermission(Permissible target) {
+        return Perms.ROLLBACK.has(target);
     }
 
 }

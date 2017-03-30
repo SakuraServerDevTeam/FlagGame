@@ -17,6 +17,7 @@
 package syam.flaggame.command.area;
 
 import syam.flaggame.FlagGame;
+import org.bukkit.permissions.Permissible;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
@@ -30,10 +31,12 @@ import syam.flaggame.util.WorldEditHandler;
 public class AreaSetCommand extends AreaCommand {
 
     public AreaSetCommand(FlagGame plugin) {
-        super(plugin);
-        name = "area set";
-        argLength = 1;
-        usage = "<id> <- set region";
+        super(
+                plugin,
+                1,
+                "<id> <- set region",
+                "area set"
+        );
     }
 
     @Override
@@ -50,8 +53,8 @@ public class AreaSetCommand extends AreaCommand {
     }
 
     @Override
-    public boolean permission() {
-        return Perms.STAGE_CONFIG_SET.has(sender);
+    public boolean hasPermission(Permissible target) {
+        return Perms.STAGE_CONFIG_SET.has(target);
     }
 
 }

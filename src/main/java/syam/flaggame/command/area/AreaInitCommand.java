@@ -20,6 +20,7 @@ import java.util.logging.Level;
 import jp.llv.flaggame.rollback.StageDataType;
 import org.bukkit.entity.Player;
 import syam.flaggame.FlagGame;
+import org.bukkit.permissions.Permissible;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
@@ -33,10 +34,12 @@ import syam.flaggame.util.Cuboid;
 public class AreaInitCommand extends AreaCommand {
 
     public AreaInitCommand(FlagGame plugin) {
-        super(plugin);
-        name = "area init";
-        argLength = 1;
-        usage = "<id> <- init region";
+        super(
+                plugin,
+                1,
+                "<id> <- init region",
+                "area init"
+        );
     }
 
     @Override
@@ -61,8 +64,8 @@ public class AreaInitCommand extends AreaCommand {
     }
 
     @Override
-    public boolean permission() {
-        return Perms.STAGE_CONFIG_SET.has(sender);
+    public boolean hasPermission(Permissible target) {
+        return Perms.STAGE_CONFIG_SET.has(target);
     }
 
 }
