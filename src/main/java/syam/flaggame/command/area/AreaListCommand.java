@@ -34,8 +34,8 @@ public class AreaListCommand extends AreaCommand {
         super(
                 plugin,
                 0,
-                "area list",
                 "<- show a list of areas",
+                "area list",
                 "ali"
         );
     }

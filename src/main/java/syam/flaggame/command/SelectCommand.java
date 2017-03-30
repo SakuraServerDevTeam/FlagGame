@@ -32,10 +32,10 @@ public class SelectCommand extends BaseCommand {
     public SelectCommand(FlagGame plugin) {
         super(
                 plugin,
-                false,
-                1,
-                "<reception-type> [optional args...] <- ready game",
-                "ready"
+                true,
+                0,
+                "[stage] <- select exist stage",
+                "select"
         );
     
     }

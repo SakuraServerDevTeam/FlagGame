@@ -47,10 +47,10 @@ public class SetCommand extends BaseCommand {
     public SetCommand(FlagGame plugin) {
         super(
                 plugin,
-                false,
-                1,
-                "<reception-type> [optional args...] <- ready game",
-                "ready"
+                true,
+                0,
+                "<option> [value] <- set option",
+                "set"
         );
     
     }

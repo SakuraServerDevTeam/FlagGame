@@ -18,7 +18,6 @@ package syam.flaggame.command;
 
 import java.util.Collection;
 import jp.llv.flaggame.game.Game;
-import jp.llv.flaggame.reception.GameReception;
 
 import org.bukkit.Location;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
@@ -36,10 +35,10 @@ public class WatchCommand extends BaseCommand {
     public WatchCommand(FlagGame plugin) {
         super(
                 plugin,
-                false,
-                1,
-                "<reception-type> [optional args...] <- ready game",
-                "ready"
+                true,
+                0,
+                "[stage] <- watch the game",
+                "watch"
         );
     
     }

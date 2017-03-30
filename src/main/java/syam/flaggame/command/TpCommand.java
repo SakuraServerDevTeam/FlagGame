@@ -33,10 +33,10 @@ public class TpCommand extends BaseCommand {
     public TpCommand(FlagGame plugin) {
         super(
                 plugin,
-                false,
+                true,
                 1,
-                "<reception-type> [optional args...] <- ready game",
-                "ready"
+                "<area> [team] [game] <- tp to specific location",
+                "tp"
         );
     
     }

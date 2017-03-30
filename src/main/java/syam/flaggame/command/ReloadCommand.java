@@ -28,9 +28,9 @@ public class ReloadCommand extends BaseCommand {
         super(
                 plugin,
                 false,
-                1,
-                "<reception-type> [optional args...] <- ready game",
-                "ready"
+                0,
+                "<- reload config.yml",
+                "reload"
         );
     
     }

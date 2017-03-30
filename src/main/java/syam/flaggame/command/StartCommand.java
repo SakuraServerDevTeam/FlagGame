@@ -33,9 +33,9 @@ public class StartCommand extends BaseCommand {
         super(
                 plugin,
                 false,
-                1,
-                "<reception-type> [optional args...] <- ready game",
-                "ready"
+                0,
+                "[stage] <- start game",
+                "start"
         );
     
     }

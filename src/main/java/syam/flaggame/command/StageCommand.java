@@ -41,10 +41,10 @@ public class StageCommand extends BaseCommand implements Queueable {
     public StageCommand(FlagGame plugin) {
         super(
                 plugin,
-                false,
-                1,
-                "<reception-type> [optional args...] <- ready game",
-                "ready"
+                true,
+                0,
+                "<action> [stage] <- management stages",
+                "stage"
         );
     
     }
