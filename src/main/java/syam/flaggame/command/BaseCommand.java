@@ -76,7 +76,7 @@ public abstract class BaseCommand {
 
         // 引数からコマンドの部分を取り除く
         // (コマンド名に含まれる半角スペースをカウント、リストの先頭から順にループで取り除く)
-        for (int i = 0; i < name.split(" ").length && i < args.size(); i++)
+        for (int i = 0; i < command.split(" ").length && i < args.size(); i++)
             args.remove(0);
 
         // 引数の長さチェック

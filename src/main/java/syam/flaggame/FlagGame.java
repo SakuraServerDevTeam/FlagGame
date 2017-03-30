@@ -318,13 +318,13 @@ public class FlagGame extends JavaPlugin {
             String flatarg = String.join(" ", args).toLowerCase();
             for (BaseCommand command : commands) {
                 if (flatarg.startsWith(command.getName())) {
-                    return command.run(sender, args, commandLabel);
+                    return command.run(sender, args, command.getName());
                 }
             }
             for (BaseCommand command : commands) {
                 for (String alias : command.getAliases()) {
                     if (flatarg.startsWith(alias)) {
-                        return command.run(sender, args, commandLabel);
+                        return command.run(sender, args, alias);
                     }
                 }
             }
