@@ -19,21 +19,15 @@ package syam.flaggame.command;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import syam.flaggame.FlagGame;
 import syam.flaggame.exception.CommandException;
-import syam.flaggame.player.GamePlayer;
 import syam.flaggame.util.Actions;
 
 public abstract class BaseCommand {
-    // Logger
-    protected static final Logger log = FlagGame.logger;
-    protected static final String logPrefix = FlagGame.logPrefix;
-    protected static final String msgPrefix = FlagGame.msgPrefix;
 
     /* コマンド関係 */
     // 初期化必要無し

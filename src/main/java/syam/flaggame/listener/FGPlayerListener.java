@@ -25,7 +25,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
@@ -35,7 +34,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.*;
 
 import syam.flaggame.FlagGame;
-import jp.llv.flaggame.reception.TeamColor;
 import syam.flaggame.game.Configables;
 import jp.llv.flaggame.game.basic.objective.Flag;
 import jp.llv.flaggame.game.basic.objective.Nexus;
@@ -50,8 +48,6 @@ import syam.flaggame.player.SetupSession;
 import syam.flaggame.util.Actions;
 
 public class FGPlayerListener implements Listener {
-
-    private static final String MESSAGE_PREFIX = FlagGame.msgPrefix;
 
     private final FlagGame plugin;
 
@@ -245,17 +241,17 @@ public class FGPlayerListener implements Listener {
                     String awardMsg = reception.getMaxAward() > 0 ? reception.getMaxAward() + "Coin" : "None";
 
                     Actions.message(player, "&b* ===================================");
-                    Actions.message(player, MESSAGE_PREFIX + "&2フラッグゲーム'&6" + reception.getName() + "&2'の参加受付が行われています！");
-                    Actions.message(player, MESSAGE_PREFIX + "&2 参加料:&6 " + entryFeeMsg + "&2   賞金:&6 " + awardMsg);
-                    Actions.message(player, MESSAGE_PREFIX + "&2 '&6/flag join " + reception.getID() + "&2' コマンドで参加してください！");
+                    Actions.sendPrefixedMessage(player, "&2フラッグゲーム'&6" + reception.getName() + "&2'の参加受付が行われています！");
+                    Actions.sendPrefixedMessage(player, "&2 参加料:&6 " + entryFeeMsg + "&2   賞金:&6 " + awardMsg);
+                    Actions.sendPrefixedMessage(player, "&2 '&6/flag join " + reception.getID() + "&2' コマンドで参加してください！");
                     Actions.message(player, "&b* ===================================");
 
                 } // 開始中ゲーム
                 else if (reception.getState().toGameState() == Game.State.STARTED) {
                     // 観戦アナウンス
                     Actions.message(player, "&b* ===================================");
-                    Actions.message(player, MESSAGE_PREFIX + "&2フラッグゲーム'&6" + reception.getName() + "&2'が始まっています！");
-                    Actions.message(player, MESSAGE_PREFIX + "&2 '&6/flag watch " + reception.getID() + "&2' コマンドで観戦することができます！");
+                    Actions.sendPrefixedMessage(player, "&2フラッグゲーム'&6" + reception.getName() + "&2'が始まっています！");
+                    Actions.sendPrefixedMessage(player, "&2 '&6/flag watch " + reception.getID() + "&2' コマンドで観戦することができます！");
                     Actions.message(player, "&b* ===================================");
                 }
             }

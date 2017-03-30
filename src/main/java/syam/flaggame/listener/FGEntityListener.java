@@ -16,8 +16,6 @@
  */
 package syam.flaggame.listener;
 
-import java.util.logging.Logger;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -33,7 +31,6 @@ import syam.flaggame.FlagGame;
 import syam.flaggame.player.GamePlayer;
 
 public class FGEntityListener implements Listener {
-    public static final Logger log = FlagGame.logger;
 
     private final FlagGame plugin;
 

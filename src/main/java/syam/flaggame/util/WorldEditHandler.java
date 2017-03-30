@@ -16,8 +16,6 @@
  */
 package syam.flaggame.util;
 
-import java.util.logging.Logger;
-
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -32,7 +30,6 @@ import com.sk89q.worldedit.bukkit.BukkitPlayer;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
-import java.util.logging.Level;
 
 /**
  * WorldEditの選択領域を取得するためのWorldEditハンドラ
@@ -41,11 +38,6 @@ import java.util.logging.Level;
  *
  */
 public class WorldEditHandler {
-
-    // Logger
-    public static final Logger log = FlagGame.logger;
-    private static final String logPrefix = FlagGame.logPrefix;
-    private static final String msgPrefix = FlagGame.msgPrefix;
 
     /**
      * WorldEditプラグインインスタンスを返す
@@ -60,7 +52,7 @@ public class WorldEditHandler {
         // プラグインが見つからない
         if (plugin == null) {
             if (bPlayer != null && bPlayer.isOnline()) {
-                Actions.message(bPlayer, msgPrefix + "&cWorldEdit is not loaded!");
+                Actions.sendPrefixedMessage(bPlayer, "&cWorldEdit is not loaded!");
             }
             return null;
         }
@@ -100,7 +92,7 @@ public class WorldEditHandler {
 
         // セレクタが立方体セレクタか判定
         if (!(session.getRegionSelector(session.getSelectionWorld()) instanceof CuboidRegionSelector)) {
-            Actions.message(bPlayer, msgPrefix + "&cFlagGame supports only cuboid regions!");
+            Actions.sendPrefixedMessage(bPlayer, "&cFlagGame supports only cuboid regions!");
             return null;
         }
 
@@ -122,11 +114,7 @@ public class WorldEditHandler {
             return corners;
         } catch (IncompleteRegionException ex) {
             // 正しく領域が選択されていない例外
-            Actions.message(bPlayer, msgPrefix + "&cWorldEdit region is not fully selected!");
-        } catch (Exception ex) {
-            // その他一般例外
-            log.log(Level.WARNING, logPrefix + "Error while retreiving WorldEdit region: {0}", ex.getMessage());
-            ex.printStackTrace();
+            Actions.sendPrefixedMessage(bPlayer, "&cWorldEdit region is not fully selected!");
         }
         return null;
     }
@@ -185,20 +173,13 @@ public class WorldEditHandler {
         com.sk89q.worldedit.world.World world = player.getWorld();
         LocalSession session = we.getWorldEdit().getSessionManager().get(player);
 
-        try {
-            CuboidRegionSelector selector = new CuboidRegionSelector(world);
+        CuboidRegionSelector selector = new CuboidRegionSelector(world);
 
-            selector.selectPrimary(new Vector(pos1.getBlockX(), pos1.getBlockY(), pos1.getBlockZ()), null);
-            selector.selectSecondary(new Vector(pos2.getBlockX(), pos2.getBlockY(), pos2.getBlockZ()), null);
+        selector.selectPrimary(new Vector(pos1.getBlockX(), pos1.getBlockY(), pos1.getBlockZ()), null);
+        selector.selectSecondary(new Vector(pos2.getBlockX(), pos2.getBlockY(), pos2.getBlockZ()), null);
 
-            session.setRegionSelector(world, selector);
-            session.dispatchCUISelection(player);
-        } catch (Exception ex) {
-            // 一般例外
-            log.log(Level.WARNING, logPrefix + "Error while selecting WorldEdit region: {0}", ex.getMessage());
-            ex.printStackTrace();
-            return false;
-        }
+        session.setRegionSelector(world, selector);
+        session.dispatchCUISelection(player);
 
         return true;
     }
@@ -217,9 +198,9 @@ public class WorldEditHandler {
         }
         return selectWorldEditRegion(bPlayer, pos1.getLocation(), pos2.getLocation());
     }
-    
+
     public static boolean setSelectedArea(Player player, Cuboid area) {
         return selectWorldEditRegion(player, area.getPos1(), area.getPos2());
     }
-    
+
 }

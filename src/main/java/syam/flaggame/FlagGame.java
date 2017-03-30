@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Stream;
 import jp.llv.flaggame.database.Database;
 import jp.llv.flaggame.database.DatabaseException;
@@ -49,7 +48,6 @@ import syam.flaggame.command.area.*;
 import syam.flaggame.command.queue.ConfirmQueue;
 import syam.flaggame.listener.*;
 import syam.flaggame.game.StageManager;
-import syam.flaggame.permission.Perms;
 import syam.flaggame.player.PlayerManager;
 import syam.flaggame.util.Debug;
 import syam.flaggame.util.DynmapHandler;
@@ -67,10 +65,6 @@ public class FlagGame extends JavaPlugin {
      * 
      * 参加チームの選択
      */
-    // ** Logger **
-    public final static Logger logger = Logger.getLogger("FlagGame");
-    public final static String logPrefix = "[FlagGame] ";
-    public final static String msgPrefix = "&6[FlagGame] &f";
 
     // ** Commands **
     private final List<BaseCommand> commands = new ArrayList<>();
@@ -122,7 +116,7 @@ public class FlagGame extends JavaPlugin {
         }
 
         // setup Debugger
-        Debug.getInstance().init(logger, logPrefix, "plugins/FlagGame/debug.log", getConfigs().isDebug());
+        Debug.getInstance().init(getLogger(), "plugins/FlagGame/debug.log", getConfigs().isDebug());
         debug = Debug.getInstance();
 
         // Vault
@@ -134,11 +128,6 @@ public class FlagGame extends JavaPlugin {
         if (!pluginManager.isPluginEnabled(this)) {
             return;
         }
-
-        // 権限ハンドラセットアップ
-        debug.startTimer("permission");
-        Perms.setupPermissionHandler();
-        debug.endTimer("permission");
 
         // Regist Listeners
         debug.startTimer("listeners");
@@ -191,7 +180,7 @@ public class FlagGame extends JavaPlugin {
 
         // メッセージ表示
         PluginDescriptionFile pdfFile = this.getDescription();
-        logger.log(Level.INFO, "[{0}] version {1} is enabled!", new Object[]{pdfFile.getName(), pdfFile.getVersion()});
+        getLogger().log(Level.INFO, "[{0}] version {1} is enabled!", new Object[]{pdfFile.getName(), pdfFile.getVersion()});
 
         debug.finishStartup();
     }
@@ -227,7 +216,7 @@ public class FlagGame extends JavaPlugin {
 
         // メッセージ表示
         PluginDescriptionFile pdfFile = this.getDescription();
-        logger.log(Level.INFO, "[{0}] version {1} is disabled!", new Object[]{pdfFile.getName(), pdfFile.getVersion()});
+        getLogger().log(Level.INFO, "[{0}] version {1} is disabled!", new Object[]{pdfFile.getName(), pdfFile.getVersion()});
 
         try {
             this.database.close();
@@ -251,13 +240,13 @@ public class FlagGame extends JavaPlugin {
                 economy = economyProvider.getProvider();
             } // 例外チェック
             catch (Exception e) {
-                logger.warning(logPrefix + "Could NOT be hook to Vault.");
+                getLogger().warning("Could NOT be hook to Vault.");
                 return;
             }
-            logger.info(logPrefix + "Hooked to Vault!");
+            getLogger().info("Hooked to Vault!");
         } else {
             // Vaultが見つからなかった
-            logger.warning(logPrefix + "Vault was NOT found!");
+            getLogger().warning("Vault was NOT found!");
         }
     }
 

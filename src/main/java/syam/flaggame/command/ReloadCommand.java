@@ -16,6 +16,7 @@
  */
 package syam.flaggame.command;
 
+import java.util.logging.Level;
 import syam.flaggame.FlagGame;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.util.Actions;
@@ -35,13 +36,9 @@ public class ReloadCommand extends BaseCommand {
         try {
             plugin.getConfigs().loadConfig(false);
         } catch (Exception ex) {
-            log.warning(logPrefix + "an error occured while trying to load the config file.");
-            ex.printStackTrace();
+            plugin.getLogger().log(Level.WARNING, "an error occured while trying to load the config file.", ex);
             return;
         }
-
-        // 権限管理プラグイン再設定
-        Perms.setupPermissionHandler();
 
         Actions.message(sender, "&aConfiguration reloaded!");
     }

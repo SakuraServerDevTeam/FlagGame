@@ -31,25 +31,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public class ConfigurationManager {
 
     // Logger
-    private static final Logger logger = FlagGame.logger;
-    private static final String LOG_PREFIX = FlagGame.logPrefix;
     private static final String DEFAULT_DETAIL_DIRECTORY = "plugins/FlagGame/detail/";
     // Defaults
     private static final String DEFAULT_WORLD_NAME = "flag";
     private static final List<String> DEFAULT_DISABLED_COMMANDS = Arrays.asList("/spawn", "/home", "/setspawn");
-    private static final List<String> DEFAULT_PERMISSIONS = Arrays.asList("vault","superperms","ops");
+    private static final List<String> DEFAULT_PERMISSIONS = Arrays.asList("vault", "superperms", "ops");
 
-    private static final double VERSION = 0.5D;
-    
-    private final JavaPlugin plugin;
+    private static final double VERSION = 0.6D;
+
+    private final FlagGame plugin;
     private final File pluginDir;
     // 設定項目
     /* Basic Configs */
@@ -89,9 +85,9 @@ public class ConfigurationManager {
      *
      * @param plugin
      */
-    public ConfigurationManager(final JavaPlugin plugin) {
+    public ConfigurationManager(FlagGame plugin) {
         this.plugin = plugin;
-        this.pluginDir = this.plugin.getDataFolder();
+        this.pluginDir = plugin.getDataFolder();
     }
 
     /**
@@ -108,7 +104,7 @@ public class ConfigurationManager {
         // 無ければデフォルトコピー
         if (!file.exists()) {
             extractResource("/config.yml", pluginDir, false, true);
-            logger.info(LOG_PREFIX + "config.yml is not found! Created default config.yml!");
+            plugin.getLogger().info("config.yml is not found! Created default config.yml!");
         }
 
         plugin.reloadConfig();
@@ -161,7 +157,7 @@ public class ConfigurationManager {
 
         // ワールドチェック 見つからなければプラグイン無効化
         if (Bukkit.getWorld(gameWorld) == null) {
-            logger.log(Level.WARNING,LOG_PREFIX + "World {0} is Not Found! Disabling plugin..", gameWorld);
+            plugin.getLogger().log(Level.WARNING, "World {0} is Not Found! Disabling plugin..", gameWorld);
             throw new IllegalStateException("Game world not found; configuration required");
         }
 
@@ -327,13 +323,13 @@ public class ConfigurationManager {
      *
      * @param dir File 作成するディレクトリ
      */
-    private static void createDir(File dir) {
+    private void createDir(File dir) {
         // 既に存在すれば作らない
         if (dir.isDirectory()) {
             return;
         }
         if (!dir.mkdir()) {
-            logger.log(Level.WARNING,LOG_PREFIX + "Can''t create directory: {0}", dir.getName());
+            plugin.getLogger().log(Level.WARNING, "Can''t create directory: {0}", dir.getName());
         }
     }
 
@@ -354,15 +350,15 @@ public class ConfigurationManager {
             String destPath = new File(plugin.getDataFolder(), destName).getPath();
             try {
                 copyTransfer(srcPath, destPath);
-                logger.log(Level.INFO,LOG_PREFIX + "Copied old config.yml to {0}!", destName);
+                plugin.getLogger().log(Level.INFO, "Copied old config.yml to {0}!", destName);
             } catch (Exception ex) {
-                logger.warning(LOG_PREFIX + "Cannot copy old config.yml!");
+                plugin.getLogger().log(Level.WARNING, "Cannot copy old config.yml!", ex);
             }
 
             // config.ymlと言語ファイルを強制コピー
             extractResource("/config.yml", plugin.getDataFolder(), true, false);
 
-            logger.info(LOG_PREFIX + "Deleted existing configuration file and generate a new one!");
+            plugin.getLogger().info("Deleted existing configuration file and generate a new one!");
         }
     }
 
@@ -375,7 +371,7 @@ public class ConfigurationManager {
      * @param checkenc 出力元のファイルを環境によって適したエンコードにするかどうか
      * @author syam
      */
-    static void extractResource(String from, File to, boolean force, boolean checkenc) {
+    void extractResource(String from, File to, boolean force, boolean checkenc) {
         File of = to;
 
         // ファイル展開先がディレクトリならファイルに変換、ファイルでなければ返す
@@ -383,7 +379,7 @@ public class ConfigurationManager {
             String filename = new File(from).getName();
             of = new File(to, filename);
         } else if (!of.isFile()) {
-            logger.log(Level.WARNING,LOG_PREFIX + "not a file:{0}", of);
+            plugin.getLogger().log(Level.WARNING, "not a file:{0}", of);
             return;
         }
 
@@ -400,7 +396,7 @@ public class ConfigurationManager {
             // jar内部のリソースファイルを取得
             URL res = FlagGame.class.getResource(from);
             if (res == null) {
-                logger.log(Level.WARNING,"Can''t find " + LOG_PREFIX + "{0} in plugin Jar file", from);
+                plugin.getLogger().log(Level.WARNING, "Can''t find " + "{0} in plugin Jar file", from);
                 return;
             }
             URLConnection resConn = res.openConnection();
@@ -408,9 +404,9 @@ public class ConfigurationManager {
             in = resConn.getInputStream();
 
             if (in == null) {
-                logger.log(Level.WARNING,LOG_PREFIX + "Can''t get input stream from {0}", res);
-            } else {
-                // 出力処理 ファイルによって出力方法を変える
+                plugin.getLogger().log(Level.WARNING, "Can''t get input stream from {0}", res);
+            } else // 出力処理 ファイルによって出力方法を変える
+            {
                 if (checkenc) {
                     // 環境依存文字を含むファイルはこちら環境
 

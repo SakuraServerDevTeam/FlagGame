@@ -33,7 +33,6 @@ public class Debug {
     private static Debug instance = null;
 
     private Logger log;
-    private String logPrefix;
     private TextFileHandler logFile = null;
     private boolean debug = false;
     private Level oldLogLevel = null;
@@ -52,18 +51,6 @@ public class Debug {
      */
     public void init(Logger log, String logPrefix, boolean isDebug) {
         this.log = log;
-
-        this.logPrefix = logPrefix;
-        if (logPrefix == null) {
-            this.logPrefix = "[" + log.getName() + "] ";
-        } else {
-            if (logPrefix.endsWith(" ")) {
-                this.logPrefix = logPrefix;
-            } else {
-                this.logPrefix = logPrefix + " ";
-            }
-        }
-
         setDebug(isDebug);
     }
 
@@ -87,7 +74,7 @@ public class Debug {
      */
     public void debug(Object... args) {
         if (debug) {
-            StringBuilder sb = new StringBuilder(logPrefix);
+            StringBuilder sb = new StringBuilder();
 
             for (int i = 0; i < args.length; i++) {
                 sb.append(args[i]);
@@ -101,8 +88,7 @@ public class Debug {
                 try {
                     logFile.appendLine(logHeader + sb.toString());
                 } catch (IOException ex) {
-                    log.log(Level.WARNING, "{0}Could not write debug log file!", logPrefix);
-                    ex.printStackTrace();
+                    log.log(Level.WARNING, "Could not write debug log file!", ex);
                 }
             }
         }
@@ -164,13 +150,13 @@ public class Debug {
             log.setLevel(Level.FINE);
             setConsoleLevel(Level.FINE);
 
-            log.log(Level.INFO, "{0}DEBUG MODE ENABLED!", logPrefix);
+            log.log(Level.INFO, "DEBUG MODE ENABLED!");
         } else {
             if (oldLogLevel != null) {
                 log.setLevel(oldLogLevel);
                 setConsoleLevel(oldLogLevel);
             }
-            log.log(Level.INFO, "{0}DEBUG MODE DISABLED!", logPrefix);
+            log.log(Level.INFO, "DEBUG MODE DISABLED!");
         }
     }
 

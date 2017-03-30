@@ -18,7 +18,6 @@ package syam.flaggame.util;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import org.bukkit.Location;
 import org.bukkit.Server;
@@ -38,10 +37,6 @@ import syam.flaggame.FlagGame;
 import syam.flaggame.game.Stage;
 
 public class DynmapHandler {
-    // Logger
-    public static final Logger log = FlagGame.logger;
-    private static final String logPrefix = FlagGame.logPrefix;
-    private static final String msgPrefix = FlagGame.msgPrefix;
 
     private final FlagGame plugin;
 
@@ -77,7 +72,7 @@ public class DynmapHandler {
         // Get dynmap
         dynmap = pm.getPlugin("dynmap");
         if (dynmap == null) {
-            log.severe(logPrefix + "Cannot find dynmap!");
+            plugin.getLogger().severe("Cannot find dynmap!");
             return;
         }
 
@@ -101,7 +96,7 @@ public class DynmapHandler {
         // Get markers API
         markerapi = api.getMarkerAPI();
         if (markerapi == null) {
-            log.severe(logPrefix + "Cannot loading Dynmap marker API!");
+            plugin.getLogger().severe("Cannot loading Dynmap marker API!");
             return;
         }
 
@@ -118,14 +113,14 @@ public class DynmapHandler {
         }
 
         if (set == null) {
-            log.severe(logPrefix + "Cannot creating dynmap marker set!");
+            plugin.getLogger().severe("Cannot creating dynmap marker set!");
             return;
         }
         // set.setMinZoom(0);
         set.setLayerPriority(10);
         set.setHideByDefault(false);
 
-        log.info(logPrefix + "Hooked to dynmap!");
+        plugin.getLogger().info("Hooked to dynmap!");
         activated = true;
 
         updateRegions();

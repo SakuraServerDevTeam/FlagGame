@@ -19,7 +19,6 @@ package syam.flaggame.command;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import jp.llv.flaggame.database.DatabaseException;
 import syam.flaggame.FlagGame;
 
 import syam.flaggame.command.queue.Queueable;
@@ -82,9 +81,7 @@ public class StageCommand extends BaseCommand implements Queueable {
 
             // 定義漏れ
             default:
-                Actions.message(sender, "&アクションが不正です 開発者にご連絡ください");
-                log.log(Level.WARNING, logPrefix + "Undefined action: {0}! Please report this!", action.name());
-                break;
+                throw new CommandException("&アクションが不正です 開発者にご連絡ください");
         }
     }
 
@@ -169,8 +166,7 @@ public class StageCommand extends BaseCommand implements Queueable {
             Actions.message(sender, "&aステージ'" + args.get(1) + "'を削除しました！");
             plugin.getDynmap().updateRegions();
         } else {
-            Actions.message(sender, "&c内部エラーが発生しました。開発者までご連絡ください。");
-            log.log(Level.WARNING, logPrefix + "{0} send invalid queue! (StageCommand.class)", sender.getName());
+            throw new CommandException("&c内部エラーが発生しました。開発者までご連絡ください。");
         }
     }
 

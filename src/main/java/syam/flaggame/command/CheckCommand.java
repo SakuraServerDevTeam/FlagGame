@@ -50,7 +50,7 @@ public class CheckCommand extends BaseCommand {
         }
 
         // 設定状況をチェックする
-        Actions.message(sender, msgPrefix + "&aステージ'" + args.get(0) + "'の設定をチェックします..");
+        sendMessage("&aステージ'" + args.get(0) + "'の設定をチェックします..");
         Actions.message(sender, "&a ===========================================");
 
         // flags
@@ -61,29 +61,29 @@ public class CheckCommand extends BaseCommand {
         // ステージエリア
         if (!stage.getAreas().hasStageArea()) {
             error = true;
-            Actions.message(sender, msgPrefix + "&6[*]&bステージエリア: &c未設定");
+            sendMessage( "&6[*]&bステージエリア: &c未設定");
             if (help == null) {
                 help = "&6 * ステージエリアを設定してください！ *\n" + "&6 WorldEditでステージエリアを選択して、\n" + "&6 '&a/flag area set stage&6'コマンドを実行してください";
             }
         } else {
-            Actions.message(sender, msgPrefix + "&6[*]&bステージエリア: &6設定済み");
+            sendMessage("&6[*]&bステージエリア: &6設定済み");
         }
 
         // チームスポーン
         if (stage.getSpawns().size() < 1) {
             error = true;
-            Actions.message(sender, msgPrefix + "&6[*]&b各チームスポーン地点: &c未設定");
+            sendMessage("&6[*]&b各チームスポーン地点: &c未設定");
             if (help == null) {
                 help = "&6 * 各チームのスポーン地点を設定してください！ *\n" + "&6 スポーン地点で'&a/flag set spawn <チーム名>&6'コマンドを実行してください";
             }
         } else {
-            Actions.message(sender, msgPrefix + "&6[*]&b各チームスポーン地点: &6設定済み");
+            sendMessage("&6[*]&b各チームスポーン地点: &6設定済み");
         }
 
-        Actions.message(sender, msgPrefix + "&6   &bフラッグ: &6" + stage.getFlags().size() + "個");
-        Actions.message(sender, msgPrefix + "&6   &bバナースポナー: &6" + stage.getBannerSpawners().size() + "個");
-        Actions.message(sender, msgPrefix + "&6   &bバナースロット: &6" + stage.getBannerSlots().size() + "個");
-        Actions.message(sender, msgPrefix + "&6   &bコア: &6" + stage.getNexuses().size() + "個");
+        sendMessage("&6   &bフラッグ: &6" + stage.getFlags().size() + "個");
+        sendMessage("&6   &bバナースポナー: &6" + stage.getBannerSpawners().size() + "個");
+        sendMessage("&6   &bバナースロット: &6" + stage.getBannerSlots().size() + "個");
+        sendMessage("&6   &bコア: &6" + stage.getNexuses().size() + "個");
 
         // チェスト
         if (stage.getChests().size() > 0) {
@@ -102,19 +102,19 @@ public class CheckCommand extends BaseCommand {
                 }
             }
             if (!errorLoc.isEmpty()) {
-                Actions.message(sender, msgPrefix + "&6   &bチェスト: &c" + stage.getChests().size() + "個中 エラー " + errorLoc.size() + "個");
+                sendMessage("&6   &bチェスト: &c" + stage.getChests().size() + "個中 エラー " + errorLoc.size() + "個");
             } else {
-                Actions.message(sender, msgPrefix + "&6   &bチェスト: &6" + stage.getChests().size() + "個 OK");
+                sendMessage("&6   &bチェスト: &6" + stage.getChests().size() + "個 OK");
             }
         } else {
-            Actions.message(sender, msgPrefix + "&6   &bチェスト: &6" + stage.getChests().size() + "個");
+            sendMessage("&6   &bチェスト: &6" + stage.getChests().size() + "個");
         }
 
         // 観戦者スポーン
         if (stage.getSpecSpawn().isPresent()) {
-            Actions.message(sender, msgPrefix + "&6   &b観戦者スポーン地点: &6設定済み");
+            sendMessage("&6   &b観戦者スポーン地点: &6設定済み");
         } else {
-            Actions.message(sender, msgPrefix + "&6   &b観戦者スポーン地点: &c未設定");
+            sendMessage("&6   &b観戦者スポーン地点: &c未設定");
         }
 
         Actions.message(sender, "&a ===========================================");

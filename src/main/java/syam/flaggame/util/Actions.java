@@ -17,7 +17,6 @@
 package syam.flaggame.util;
 
 import java.util.UUID;
-import java.util.logging.Logger;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -32,8 +31,7 @@ import syam.flaggame.FlagGame;
 public class Actions {
 
     // Logger
-    public static final Logger log = FlagGame.logger;
-    public static final String MESSAGE_PREFIX = FlagGame.msgPrefix;
+    public static final String MESSAGE_PREFIX = "&6[FlagGame] &r";
 
     // メッセージ送信系関数
     /* メッセージをユニキャスト

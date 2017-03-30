@@ -18,8 +18,6 @@ package syam.flaggame.permission;
 
 import org.bukkit.permissions.Permissible;
 
-import syam.flaggame.FlagGame;
-
 /**
  * Permission (Permission.java)
  * 
@@ -71,32 +69,7 @@ public enum Perms {
      */
     public boolean has(final Permissible perm) {
         if (perm == null) return false;
-        return handler.has(perm, this.node);
+        return perm.hasPermission(this.node);
     }
-
-    /*
-     * 指定したプレイヤーが権限を持っているか(String)
-     * 
-     * @param player
-     *            PlayerName
-     * @return boolean
-     */
-    public boolean has(final String playerName) {
-        if (playerName == null) return false;
-        return has(FlagGame.getInstance().getServer().getPlayer(playerName));
-    }
-
-    /* ***** Static ***** */
-    // 権限ハンドラ
-    private static PermissionHandler handler = null;
-
-    /**
-     * PermissionHandlerセットアップ
-     */
-    public static void setupPermissionHandler() {
-        if (handler == null) {
-            handler = PermissionHandler.getInstance();
-        }
-        handler.setupPermissions(true);
-    }
+    
 }

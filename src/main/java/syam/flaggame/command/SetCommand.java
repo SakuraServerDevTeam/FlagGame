@@ -157,9 +157,7 @@ public class SetCommand extends BaseCommand {
 
                 // 定義漏れ
                 default:
-                    Actions.message(sender, "&c設定項目が不正です 開発者にご連絡ください");
-                    log.warning(logPrefix + "Undefined configables! Please report this!");
-                    break;
+                    throw new CommandException("&c設定項目が不正です 開発者にご連絡ください");
             }
         } catch (StageReservedException ex) {
             Actions.message(player, "&cステージ" + stage.getName() + "は現在編集不可です!");
