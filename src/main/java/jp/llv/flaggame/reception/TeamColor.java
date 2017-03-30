@@ -35,7 +35,9 @@ public enum TeamColor {
     PINK("桃", 0x6, Color.FUCHSIA, ChatColor.LIGHT_PURPLE, DyeColor.PINK, BarColor.PINK),
     SKYBLUE("水", 0x3, Color.AQUA, ChatColor.AQUA, DyeColor.LIGHT_BLUE, BarColor.WHITE),
     YELLOW("黄", 0x4, Color.YELLOW, ChatColor.YELLOW, DyeColor.YELLOW, BarColor.YELLOW),
-    PURPLE("紫", 0x2, Color.PURPLE, ChatColor.DARK_PURPLE, DyeColor.PURPLE, BarColor.PURPLE);
+    PURPLE("紫", 0x2, Color.PURPLE, ChatColor.DARK_PURPLE, DyeColor.PURPLE, BarColor.PURPLE),
+    WHITE("白", 0x0, Color.WHITE, ChatColor.WHITE, DyeColor.WHITE, BarColor.WHITE),
+    ;
 
     private static final char COLOR_PREFIX = '\u00A7';
     private final String teamName;
