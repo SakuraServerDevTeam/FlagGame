@@ -39,7 +39,6 @@ import jp.llv.flaggame.profile.record.FlagBreakRecord;
 import jp.llv.flaggame.profile.record.FlagCaptureRecord;
 import jp.llv.flaggame.profile.record.NexusBreakRecord;
 import net.md_5.bungee.api.ChatMessageType;
-import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -90,7 +89,6 @@ public class BGBlockListener extends BGListener {
         Optional<Flag> of = this.game.getStage().getFlag(event.getBlock().getLocation());
         Optional<BannerSlot> os = this.game.getStage().getBannerSlot(event.getBlock().getLocation());
 
-        event.setCancelled(true);
         of.ifPresent(f -> this.placeFlag(gplayer, f, event));
         os.ifPresent(s -> this.placeBanner(gplayer, s, event));
     }
