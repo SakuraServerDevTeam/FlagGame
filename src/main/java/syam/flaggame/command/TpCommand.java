@@ -16,9 +16,12 @@
  */
 package syam.flaggame.command;
 
+import java.util.List;
 import org.bukkit.Location;
 import syam.flaggame.FlagGame;
 import org.bukkit.permissions.Permissible;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import jp.llv.flaggame.reception.TeamColor;
 import syam.flaggame.exception.CommandException;
@@ -42,7 +45,7 @@ public class TpCommand extends BaseCommand {
     }
 
     @Override
-    public void execute() throws CommandException {
+    public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
         if (args.get(0).equalsIgnoreCase("spawn")) {
             if (args.size() < 2) {
                 throw new CommandException("&c引数が足りません！");

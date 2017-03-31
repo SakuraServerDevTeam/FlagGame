@@ -16,8 +16,11 @@
  */
 package syam.flaggame.command;
 
+import java.util.List;
 import syam.flaggame.FlagGame;
 import org.bukkit.permissions.Permissible;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
@@ -41,7 +44,7 @@ public class SelectCommand extends BaseCommand {
     }
 
     @Override
-    public void execute() throws CommandException {
+    public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
         GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
         if (args.size() >= 1) {
             // flag select (ステージ名) - 選択
@@ -54,7 +57,7 @@ public class SelectCommand extends BaseCommand {
             }
 
             String msg = "&aステージ'&6" + stage.getName() + "&a'を選択しました！";
-            if (selectRegion(stage)) {
+            if (selectRegion(player, stage)) {
                 Actions.message(player, msg + "(+WorldEdit)");
             } else {
                 Actions.message(player, msg);
@@ -66,7 +69,7 @@ public class SelectCommand extends BaseCommand {
         }
     }
 
-    private boolean selectRegion(final Stage stage) {
+    private boolean selectRegion(Player player, Stage stage) {
         if (!stage.getAreas().hasStageArea() || !WorldEditHandler.isAvailable()) {
             return false;
         }

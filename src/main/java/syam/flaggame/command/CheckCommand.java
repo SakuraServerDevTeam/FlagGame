@@ -25,6 +25,8 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.InventoryHolder;
 import syam.flaggame.FlagGame;
 import org.bukkit.permissions.Permissible;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
@@ -44,7 +46,7 @@ public class CheckCommand extends BaseCommand {
     }
 
     @Override
-    public void execute() throws CommandException {
+    public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
         Stage stage = plugin.getStages().getStage(args.get(0))
                 .orElseThrow(() -> new CommandException("&cステージ'" + args.get(0) + "'が見つかりません"));
 
@@ -53,7 +55,7 @@ public class CheckCommand extends BaseCommand {
         }
 
         // 設定状況をチェックする
-        sendMessage("&aステージ'" + args.get(0) + "'の設定をチェックします..");
+        sendMessage(sender, "&aステージ'" + args.get(0) + "'の設定をチェックします..");
         Actions.message(sender, "&a ===========================================");
 
         // flags
@@ -64,29 +66,29 @@ public class CheckCommand extends BaseCommand {
         // ステージエリア
         if (!stage.getAreas().hasStageArea()) {
             error = true;
-            sendMessage("&6[*]&bステージエリア: &c未設定");
+            sendMessage(sender, "&6[*]&bステージエリア: &c未設定");
             if (help == null) {
                 help = "&6 * ステージエリアを設定してください！ *\n" + "&6 WorldEditでステージエリアを選択して、\n" + "&6 '&a/flag area set stage&6'コマンドを実行してください";
             }
         } else {
-            sendMessage("&6[*]&bステージエリア: &6設定済み");
+            sendMessage(sender, "&6[*]&bステージエリア: &6設定済み");
         }
 
         // チームスポーン
         if (stage.getSpawns().size() < 1) {
             error = true;
-            sendMessage("&6[*]&b各チームスポーン地点: &c未設定");
+            sendMessage(sender, "&6[*]&b各チームスポーン地点: &c未設定");
             if (help == null) {
                 help = "&6 * 各チームのスポーン地点を設定してください！ *\n" + "&6 スポーン地点で'&a/flag set spawn <チーム名>&6'コマンドを実行してください";
             }
         } else {
-            sendMessage("&6[*]&b各チームスポーン地点: &6設定済み");
+            sendMessage(sender, "&6[*]&b各チームスポーン地点: &6設定済み");
         }
 
-        sendMessage("&6   &bフラッグ: &6" + stage.getFlags().size() + "個");
-        sendMessage("&6   &bバナースポナー: &6" + stage.getBannerSpawners().size() + "個");
-        sendMessage("&6   &bバナースロット: &6" + stage.getBannerSlots().size() + "個");
-        sendMessage("&6   &bコア: &6" + stage.getNexuses().size() + "個");
+        sendMessage(sender, "&6   &bフラッグ: &6" + stage.getFlags().size() + "個");
+        sendMessage(sender, "&6   &bバナースポナー: &6" + stage.getBannerSpawners().size() + "個");
+        sendMessage(sender, "&6   &bバナースロット: &6" + stage.getBannerSlots().size() + "個");
+        sendMessage(sender, "&6   &bコア: &6" + stage.getNexuses().size() + "個");
 
         // チェスト
         if (stage.getChests().size() > 0) {
@@ -105,19 +107,19 @@ public class CheckCommand extends BaseCommand {
                 }
             }
             if (!errorLoc.isEmpty()) {
-                sendMessage("&6   &bチェスト: &c" + stage.getChests().size() + "個中 エラー " + errorLoc.size() + "個");
+                sendMessage(sender, "&6   &bチェスト: &c" + stage.getChests().size() + "個中 エラー " + errorLoc.size() + "個");
             } else {
-                sendMessage("&6   &bチェスト: &6" + stage.getChests().size() + "個 OK");
+                sendMessage(sender, "&6   &bチェスト: &6" + stage.getChests().size() + "個 OK");
             }
         } else {
-            sendMessage("&6   &bチェスト: &6" + stage.getChests().size() + "個");
+            sendMessage(sender, "&6   &bチェスト: &6" + stage.getChests().size() + "個");
         }
 
         // 観戦者スポーン
         if (stage.getSpecSpawn().isPresent()) {
-            sendMessage("&6   &b観戦者スポーン地点: &6設定済み");
+            sendMessage(sender, "&6   &b観戦者スポーン地点: &6設定済み");
         } else {
-            sendMessage("&6   &b観戦者スポーン地点: &c未設定");
+            sendMessage(sender, "&6   &b観戦者スポーン地点: &c未設定");
         }
 
         Actions.message(sender, "&a ===========================================");

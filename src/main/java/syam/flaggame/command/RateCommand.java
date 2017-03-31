@@ -16,10 +16,13 @@
  */
 package syam.flaggame.command;
 
+import java.util.List;
 import jp.llv.flaggame.profile.record.StageRateRecord;
 import jp.llv.flaggame.reception.GameReception;
 import syam.flaggame.FlagGame;
 import org.bukkit.permissions.Permissible;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.player.GamePlayer;
 
@@ -40,7 +43,7 @@ public class RateCommand extends BaseCommand {
     }
 
     @Override
-    public void execute() throws CommandException {
+    public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
         GamePlayer gplayer = plugin.getPlayers().getPlayer(player);
         if (!gplayer.getEntry().isPresent()) {
             throw new CommandException("&c評価対象に参加していません！");
@@ -59,7 +62,7 @@ public class RateCommand extends BaseCommand {
         }
         reception.getRecordStream().push(new StageRateRecord(reception.getID(), player, rate));
         reception.leave(gplayer);
-        sendMessage("&a投票への協力ありがとうございました！");
+        sendMessage(sender, "&a投票への協力ありがとうございました！");
     }
 
     @Override

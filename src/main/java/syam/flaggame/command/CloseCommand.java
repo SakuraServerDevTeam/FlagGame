@@ -16,10 +16,13 @@
  */
 package syam.flaggame.command;
 
+import java.util.List;
 import java.util.UUID;
 import jp.llv.flaggame.reception.GameReception;
 import syam.flaggame.FlagGame;
 import org.bukkit.permissions.Permissible;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
@@ -42,7 +45,7 @@ public class CloseCommand extends BaseCommand {
     }
 
     @Override
-    public void execute() throws CommandException {
+    public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
         GameReception reception = null;
         try {
             UUID uuid = UUID.fromString(args.get(0));

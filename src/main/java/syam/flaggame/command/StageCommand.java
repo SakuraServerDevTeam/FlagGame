@@ -18,9 +18,10 @@ package syam.flaggame.command;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import syam.flaggame.FlagGame;
 import org.bukkit.permissions.Permissible;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import syam.flaggame.command.queue.Queueable;
 import syam.flaggame.event.StageCreateEvent;
@@ -50,10 +51,10 @@ public class StageCommand extends BaseCommand implements Queueable {
     }
 
     @Override
-    public void execute() throws CommandException {
+    public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
         // サブ引数なし
         if (args.size() <= 0) {
-            sendAvailableAction();
+            sendAvailableAction(player);
             return;
         }
 
@@ -66,20 +67,20 @@ public class StageCommand extends BaseCommand implements Queueable {
             }
         }
         if (action == null) {
-            sendAvailableAction();
+            sendAvailableAction(player);
             return;
         }
 
         // アクションによって処理を分ける
         switch (action) {
             case CREATE:
-                if (checkPerm(Perms.CREATE)) {
-                    create();
+                if (checkPerm(player, Perms.CREATE)) {
+                    create(args, player);
                 }
                 return;
             case DELETE:
-                if (checkPerm(Perms.DELETE)) {
-                    delete();
+                if (checkPerm(player, Perms.DELETE)) {
+                    delete(args, player);
                 }
                 return;
 
@@ -90,7 +91,7 @@ public class StageCommand extends BaseCommand implements Queueable {
     }
 
     /* ***** ここから各アクション関数 ****************************** */
-    private void create() throws CommandException {
+    private void create(List<String> args, Player player) throws CommandException {
         if (args.size() <= 1) {
             throw new CommandException("&cステージ名を指定してください！");
         }
@@ -105,7 +106,7 @@ public class StageCommand extends BaseCommand implements Queueable {
 
         // Call event
         Stage stage = new Stage(args.get(1));
-        StageCreateEvent stageCreateEvent = new StageCreateEvent(sender, stage);
+        StageCreateEvent stageCreateEvent = new StageCreateEvent(player, stage);
         plugin.getServer().getPluginManager().callEvent(stageCreateEvent);
         if (stageCreateEvent.isCancelled()) {
             return;
@@ -125,10 +126,10 @@ public class StageCommand extends BaseCommand implements Queueable {
 
         // update dynmap
         plugin.getDynmap().updateRegions();
-        Actions.message(sender, "&a新規ステージ'" + stage.getName() + "'を登録して選択しました！");
+        Actions.message(player, "&a新規ステージ'" + stage.getName() + "'を登録して選択しました！");
     }
 
-    private void delete() throws CommandException {
+    private void delete(List<String> args, Player player) throws CommandException {
         if (args.size() <= 1) {
             throw new CommandException("&cステージ名を入力してください！");
         }
@@ -140,10 +141,10 @@ public class StageCommand extends BaseCommand implements Queueable {
         }
 
         // confirmキュー追加
-        plugin.getConfirmQueue().addQueue(sender, this, args, 10);
-        Actions.message(sender, "&dステージ'&7" + args.get(1) + "&d'を削除しようとしています！");
-        Actions.message(sender, "&d続行するには &a/flag confirm &dコマンドを入力してください！");
-        Actions.message(sender, "&a/flag confirm &dコマンドは10秒間のみ有効です。");
+        plugin.getConfirmQueue().addQueue(player, this, args, 10);
+        Actions.message(player, "&dステージ'&7" + args.get(1) + "&d'を削除しようとしています！");
+        Actions.message(player, "&d続行するには &a/flag confirm &dコマンドを入力してください！");
+        Actions.message(player, "&a/flag confirm &dコマンドは10秒間のみ有効です。");
     }
 
     /* ***** ここまで ********************************************** */
@@ -154,20 +155,20 @@ public class StageCommand extends BaseCommand implements Queueable {
     public void executeQueue(List<String> args) throws CommandException {
         if (StageAction.DELETE.name().equalsIgnoreCase(args.get(0))) {
             if (args.size() <= 1) {
-                Actions.message(sender, "&cステージ名が不正です");
+                Actions.message(player, "&cステージ名が不正です");
                 return;
             }
             Stage stage = this.plugin.getStages().getStage(args.get(1))
                     .orElseThrow(() -> new CommandException("&cその名前のステージは存在しません！"));
 
             if (stage.isReserved()) {
-                Actions.message(sender, "&cそのステージは現在受付中または開始中のため削除できません");
+                Actions.message(player, "&cそのステージは現在受付中または開始中のため削除できません");
                 return;
             }
 
             // ゲームリストから削除
             this.plugin.getStages().removeStage(args.get(1));
-            Actions.message(sender, "&aステージ'" + args.get(1) + "'を削除しました！");
+            Actions.message(player, "&aステージ'" + args.get(1) + "'を削除しました！");
             plugin.getDynmap().updateRegions();
         } else {
             throw new CommandException("&c内部エラーが発生しました。開発者までご連絡ください。");
@@ -180,11 +181,11 @@ public class StageCommand extends BaseCommand implements Queueable {
      * @param perm Perms
      * @return bool
      */
-    private boolean checkPerm(Perms perm) {
-        if (perm.has(sender)) {
+    private boolean checkPerm(Player player, Perms perm) {
+        if (perm.has(player)) {
             return true;
         } else {
-            Actions.message(sender, "&cこのアクションを実行する権限がありません！");
+            Actions.message(player, "&cこのアクションを実行する権限がありません！");
             return false;
         }
     }
@@ -202,13 +203,13 @@ public class StageCommand extends BaseCommand implements Queueable {
     /**
      * 指定可能なアクションをsenderに送信する
      */
-    private void sendAvailableAction() {
+    private void sendAvailableAction(Player player) {
         List<String> col = new ArrayList<>();
         for (StageAction action : StageAction.values()) {
             col.add(action.name());
         }
-        Actions.message(sender, "&cそのアクションは存在しません！");
-        Actions.message(sender, "&6 " + String.join("/", col).toLowerCase());
+        Actions.message(player, "&cそのアクションは存在しません！");
+        Actions.message(player, "&6 " + String.join("/", col).toLowerCase());
     }
 
     @Override

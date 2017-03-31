@@ -16,6 +16,7 @@
  */
 package syam.flaggame.command;
 
+import java.util.List;
 import jp.llv.flaggame.reception.GameReception;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -23,6 +24,8 @@ import org.bukkit.World;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import syam.flaggame.FlagGame;
 import org.bukkit.permissions.Permissible;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.permission.Perms;
@@ -42,7 +45,7 @@ public class LeaveCommand extends BaseCommand {
     }
 
     @Override
-    public void execute() throws CommandException {
+    public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
         // 参加しているゲームを取得する
         GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
 
@@ -88,7 +91,7 @@ public class LeaveCommand extends BaseCommand {
         if (gPlayer.tpBack()) {
             gPlayer.sendMessage("&aテレポートしました！");
         } else {
-            player.teleport(def, TeleportCause.PLUGIN);
+            gPlayer.getPlayer().teleport(def, TeleportCause.PLUGIN);
             gPlayer.sendMessage("&aゲームワールドのスポーン地点に戻りました！");
         }
     }

@@ -16,6 +16,8 @@
  */
 package syam.flaggame.command.area;
 
+import java.util.List;
+import org.bukkit.entity.Player;
 import syam.flaggame.FlagGame;
 import org.bukkit.permissions.Permissible;
 import syam.flaggame.exception.CommandException;
@@ -40,14 +42,14 @@ public class AreaDeleteCommand extends AreaCommand {
     }
 
     @Override
-    public void execute(Stage stage) throws CommandException {
+    public void execute(List<String> args, Player player, Stage stage) throws CommandException {
         String id = args.get(0);
         Cuboid area = stage.getAreas().getArea(id);
         if (area == null) {
             throw new CommandException("&cその名前のエリアは存在しません！");
         }
         stage.getAreas().removeArea(id);
-        sendMessage("&aエリアを削除しました！");
+        sendMessage(player, "&aエリアを削除しました！");
     }
 
     @Override

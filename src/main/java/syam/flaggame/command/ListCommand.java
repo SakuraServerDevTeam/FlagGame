@@ -16,9 +16,12 @@
  */
 package syam.flaggame.command;
 
+import java.util.List;
 import jp.llv.flaggame.reception.GameReception;
 import syam.flaggame.FlagGame;
 import org.bukkit.permissions.Permissible;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.player.GamePlayer;
@@ -40,7 +43,7 @@ public class ListCommand extends BaseCommand {
     }
 
     @Override
-    public void execute() throws CommandException {
+    public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
         GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
 
         if (this.plugin.getReceptions().getReceptions().isEmpty()) {

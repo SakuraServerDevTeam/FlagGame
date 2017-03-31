@@ -16,10 +16,13 @@
  */
 package syam.flaggame.command;
 
+import java.util.List;
 import java.util.logging.Level;
 import jp.llv.flaggame.database.DatabaseException;
 import syam.flaggame.FlagGame;
 import org.bukkit.permissions.Permissible;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.util.Actions;
@@ -38,7 +41,7 @@ public class SaveCommand extends BaseCommand {
     }
 
     @Override
-    public void execute() throws CommandException {
+    public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
         // データ保存
         try {
             plugin.getStages().saveStages();

@@ -16,6 +16,7 @@
  */
 package syam.flaggame.command.area;
 
+import java.util.List;
 import java.util.logging.Level;
 import jp.llv.flaggame.rollback.StageDataType;
 import org.bukkit.entity.Player;
@@ -44,7 +45,7 @@ public class AreaInitCommand extends AreaCommand {
     }
 
     @Override
-    public void execute(Stage stage) throws CommandException {
+    public void execute(List<String> args, Player player, Stage stage) throws CommandException {
         String id = args.get(0);
         Cuboid area = stage.getAreas().getArea(id);
         if (area == null) {
@@ -53,10 +54,10 @@ public class AreaInitCommand extends AreaCommand {
         final Player playerFinal = player;
         StageDataType.NONE.newInstance().load(plugin, stage, area, ex -> {
             if (ex == null && playerFinal.isOnline()) {
-                Actions.sendPrefixedMessage(sender, "&a'&6" + stage.getName() + "&a'の'&6"
+                Actions.sendPrefixedMessage(player, "&a'&6" + stage.getName() + "&a'の'&6"
                                                     + id + "&a'エリアを初期化しました！");
             } else if (ex != null && playerFinal.isOnline()) {
-                Actions.sendPrefixedMessage(sender, "&c'&6" + stage.getName() + "&c'の'&6"
+                Actions.sendPrefixedMessage(player, "&c'&6" + stage.getName() + "&c'の'&6"
                                                     + id + "&c'エリアの初期化に失敗しました！");
                 plugin.getLogger().log(Level.WARNING, "Failed to init stage area", ex);
             }

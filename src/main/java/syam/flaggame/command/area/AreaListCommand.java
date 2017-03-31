@@ -16,6 +16,8 @@
  */
 package syam.flaggame.command.area;
 
+import java.util.List;
+import org.bukkit.entity.Player;
 import java.util.Set;
 import syam.flaggame.FlagGame;
 import org.bukkit.permissions.Permissible;
@@ -41,18 +43,18 @@ public class AreaListCommand extends AreaCommand {
     }
 
     @Override
-    public void execute(Stage stage) throws CommandException {
+    public void execute(List<String> args, Player player, Stage stage) throws CommandException {
         Set<String> areas = stage.getAreas().getAreas();
-        Actions.message(sender, "&a ===============&b AreaList(" + areas.size() + ") &a===============");
+        Actions.message(player, "&a ===============&b AreaList(" + areas.size() + ") &a===============");
         if (areas.isEmpty()) {
-            Actions.message(sender, " &7定義済みのエリアがありません");
+            Actions.message(player, " &7定義済みのエリアがありません");
         } else {
             for (String id : areas) {
                 int size = stage.getAreas().getArea(id).getArea();
-                Actions.message(sender, "&6" + id + "&7(サイズ:" + size + ")");
+                Actions.message(player, "&6" + id + "&7(サイズ:" + size + ")");
             }
         }
-        Actions.message(sender, "&a ============================================");
+        Actions.message(player, "&a ============================================");
     }
 
     @Override

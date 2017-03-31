@@ -16,6 +16,8 @@
  */
 package syam.flaggame.command.area;
 
+import java.util.List;
+import org.bukkit.entity.Player;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 import jp.llv.flaggame.game.permission.GamePermission;
@@ -47,7 +49,7 @@ public class AreaTestCommand extends AreaCommand {
     }
 
     @Override
-    public void execute(Stage stage) throws CommandException {
+    public void execute(List<String> args, Player player, Stage stage) throws CommandException {
         GamePermission permission;
         try {
             permission = GamePermission.of(args.get(0));
@@ -68,7 +70,7 @@ public class AreaTestCommand extends AreaCommand {
         Location loc = player.getLocation();
         String cause = "定義されていませんでした";
         GamePermissionState state = GamePermissionState.DEFAULT;
-        Actions.message(sender, "&a =================&b AreaTest &a=================");
+        Actions.message(player, "&a =================&b AreaTest &a=================");
         for (String name : stage.getAreas().getAreas()) {
             if (!stage.getAreas().getArea(name).contains(loc)) {
                 continue;
@@ -79,15 +81,15 @@ public class AreaTestCommand extends AreaCommand {
                 cause = "&a'&6" + name + "&a'の定義が適用されています";
                 state = s;
             }
-            Actions.message(sender, "&a'&6" + name + "&a': " + state.format());
+            Actions.message(player, "&a'&6" + name + "&a': " + state.format());
         }
-        Actions.message(sender, "&a'&6"
+        Actions.message(player, "&a'&6"
                                 + stage.getName() + "&a'の"
                                 + color.getRichName() + "&aのここでの権限'&6"
                                 + permission.toString().toLowerCase() + "&a'は'"
                                 + state.format() + "&a'に設定されています。");
-        Actions.message(sender, "&aこの権限は" + cause);
-        Actions.message(sender, "&a ============================================");
+        Actions.message(player, "&aこの権限は" + cause);
+        Actions.message(player, "&a ============================================");
     }
 
     @Override

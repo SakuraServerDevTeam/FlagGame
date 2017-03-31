@@ -16,12 +16,15 @@
  */
 package syam.flaggame.command;
 
+import java.util.List;
 import java.util.stream.Collectors;
 import jp.llv.flaggame.game.Game;
 import jp.llv.flaggame.reception.GameReception;
 import jp.llv.flaggame.reception.Team;
 import syam.flaggame.FlagGame;
 import org.bukkit.permissions.Permissible;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import jp.llv.flaggame.reception.TeamColor;
 import syam.flaggame.exception.CommandException;
@@ -45,7 +48,7 @@ public class SInfoCommand extends BaseCommand {
     }
 
     @Override
-    public void execute() throws CommandException {
+    public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
         // 引数が無ければすべてのステージデータを表示する
         if (args.isEmpty()) {
             int stagecount = this.plugin.getStages().getStages().size();

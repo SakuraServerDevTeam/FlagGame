@@ -16,6 +16,8 @@
  */
 package syam.flaggame.command.area;
 
+import java.util.List;
+import org.bukkit.entity.Player;
 import java.util.Map;
 import syam.flaggame.FlagGame;
 import org.bukkit.permissions.Permissible;
@@ -42,7 +44,7 @@ public class AreaRollbackCommand extends AreaCommand {
     }
 
     @Override
-    public void execute(Stage stage) throws CommandException {
+    public void execute(List<String> args, Player player, Stage stage) throws CommandException {
         String id = args.get(0);
         AreaInfo info = stage.getAreas().getAreaInfo(id);
         if (info == null) {
@@ -51,15 +53,15 @@ public class AreaRollbackCommand extends AreaCommand {
 
         if (args.size() == 1) {
             int count = info.getRollbacks().size();
-            Actions.message(sender, "&a ==============&b RollbackList(" + count + ") &a==============");
+            Actions.message(player, "&a ==============&b RollbackList(" + count + ") &a==============");
             if (count == 0) {
-                Actions.message(sender, " &7設定されているロールバックがありません");
+                Actions.message(player, " &7設定されているロールバックがありません");
             } else {
                 for (Map.Entry<String, AreaInfo.RollbackData> entry : info.getRollbacks().entrySet()) {
-                    sendMessage("&6" + entry.getKey() + "&a: " + entry.getValue().getTarget().toString().toLowerCase());
+                    sendMessage(player, "&6" + entry.getKey() + "&a: " + entry.getValue().getTarget().toString().toLowerCase());
                 }
             }
-            Actions.message(sender, "&a ============================================");
+            Actions.message(player, "&a ============================================");
             return;
         }
 
@@ -69,7 +71,7 @@ public class AreaRollbackCommand extends AreaCommand {
             throw new CommandException("&cその名前のロールバックデータは存在しません！");
         }
         if (args.size() == 2) {
-            sendMessage("&aステージ'&6" + stage.getName()
+            sendMessage(player, "&aステージ'&6" + stage.getName()
                         + "&a'のエリア'&6" + id
                         + "&a'でのロールバック'&6" + savename
                         + "&a'は開始後'" + Actions.getTimeString(data.getTiming())
@@ -86,7 +88,7 @@ public class AreaRollbackCommand extends AreaCommand {
                 throw new CommandException("&c0以上の数字を指定する必要性があります！");
             }
             data.setTiming(timing);
-            sendMessage("&aステージ'&6" + stage.getName()
+            sendMessage(player, "&aステージ'&6" + stage.getName()
                         + "&a'のエリア'&6" + id
                         + "&a'でのロールバック'&6" + savename
                         + "&a'を開始後'" + Actions.getTimeString(timing)

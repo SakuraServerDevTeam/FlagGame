@@ -16,12 +16,15 @@
  */
 package syam.flaggame.command;
 
+import java.util.List;
 import syam.flaggame.FlagGame;
 import org.bukkit.permissions.Permissible;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import syam.flaggame.util.Actions;
 
 public class HelpCommand extends BaseCommand {
-    
+
     public HelpCommand(FlagGame plugin) {
         super(
                 plugin,
@@ -33,15 +36,14 @@ public class HelpCommand extends BaseCommand {
     }
 
     @Override
-    public void execute() {
+    public void execute(List<String> args, CommandSender sender, Player player) {
         Actions.message(sender, "&c===================================");
-        Actions.message(sender, "&bFlagGame Plugin version &3" + plugin.getDescription().getVersion() + " &bby "+String.join(", ", plugin.getDescription().getAuthors()));
+        Actions.message(sender, "&bFlagGame Plugin version &3" + plugin.getDescription().getVersion() + " &bby " + String.join(", ", plugin.getDescription().getAuthors()));
         Actions.message(sender, " &b<>&f = required, &b[]&f = optional");
         // 全コマンドをループで表示
         for (BaseCommand cmd : this.plugin.getCommands()) {
-            cmd.sender = this.sender;
             if (cmd.hasPermission(sender)) {
-                Actions.message(sender, "&8-&7 /" + command + " &c" + cmd.getName() + " &7" + cmd.getUsage());
+                Actions.message(sender, "&8-&7 " + BaseCommand.COMMAND_PREFIX + " &c" + cmd.getName() + " &7" + cmd.getUsage());
             }
         }
         Actions.message(sender, "&c===================================");

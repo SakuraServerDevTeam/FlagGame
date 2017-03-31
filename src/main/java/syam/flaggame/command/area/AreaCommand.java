@@ -16,6 +16,9 @@
  */
 package syam.flaggame.command.area;
 
+import java.util.List;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import syam.flaggame.FlagGame;
 import syam.flaggame.command.BaseCommand;
 import syam.flaggame.exception.CommandException;
@@ -38,14 +41,14 @@ public abstract class AreaCommand extends BaseCommand{
     }
 
     @Override
-    public void execute() throws CommandException {
-        GamePlayer gp = plugin.getPlayers().getPlayer(this.player);
+    public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
+        GamePlayer gp = plugin.getPlayers().getPlayer(player);
         if (!gp.getSetupSession().isPresent()) {
             throw new CommandException("&c先に編集するゲームを選択してください");
         }
-        this.execute(gp.getSetupSession().get().getSelectedStage());
+        this.execute(args, player, gp.getSetupSession().get().getSelectedStage());
     }
     
-    public abstract void execute(Stage stage) throws CommandException;
+    public abstract void execute(List<String> args, Player player, Stage stage) throws CommandException;
     
 }

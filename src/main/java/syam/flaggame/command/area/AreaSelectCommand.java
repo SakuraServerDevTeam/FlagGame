@@ -16,6 +16,8 @@
  */
 package syam.flaggame.command.area;
 
+import java.util.List;
+import org.bukkit.entity.Player;
 import syam.flaggame.FlagGame;
 import org.bukkit.permissions.Permissible;
 import syam.flaggame.exception.CommandException;
@@ -41,7 +43,7 @@ public class AreaSelectCommand extends AreaCommand {
     }
 
     @Override
-    public void execute(Stage stage) throws CommandException {
+    public void execute(List<String> args, Player player, Stage stage) throws CommandException {
         String id = args.get(0);
         Cuboid area = stage.getAreas().getArea(id);
         if (area == null) {
@@ -50,7 +52,7 @@ public class AreaSelectCommand extends AreaCommand {
         if (!WorldEditHandler.setSelectedArea(player, area)) {
             throw new CommandException("&cエリア選択に失敗しました！");
         }
-        sendMessage("&aエリアを選択しました！");
+        sendMessage(player, "&aエリアを選択しました！");
     }
 
     @Override

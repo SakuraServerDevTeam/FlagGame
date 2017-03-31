@@ -16,6 +16,8 @@
  */
 package syam.flaggame.command.area;
 
+import java.util.List;
+import org.bukkit.entity.Player;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 import jp.llv.flaggame.game.permission.GamePermission;
@@ -45,7 +47,7 @@ public class AreaPermitCommand extends AreaCommand {
     }
 
     @Override
-    public void execute(Stage stage) throws CommandException {
+    public void execute(List<String> args, Player player, Stage stage) throws CommandException {
         String id = args.get(0);
         AreaInfo info = stage.getAreas().getAreaInfo(id);
         if (info == null) {
@@ -69,7 +71,7 @@ public class AreaPermitCommand extends AreaCommand {
 
         if (args.size() == 3) {
             GamePermissionState state = info.getPermission(permission).getState(target);
-            sendMessage("&aステージ'&6" + stage.getName() + "&a'のエリア'&6" + id + "&a'での権限'&6" + permission.toString() + "&a'は状態'" + state.format() + "&a'です！");
+            sendMessage(player, "&aステージ'&6" + stage.getName() + "&a'のエリア'&6" + id + "&a'での権限'&6" + permission.toString() + "&a'は状態'" + state.format() + "&a'です！");
         } else {
             GamePermissionState state;
             try {
@@ -79,7 +81,7 @@ public class AreaPermitCommand extends AreaCommand {
                 throw new CommandException("&cその状態は存在しません！\n&c" + values, ex);
             }
             info.getPermission(permission).setState(target, state);
-            sendMessage("&aステージ'&6" + stage.getName() + "&a'のエリア'&6" + id + "&a'での権限'&6" + permission.toString() + "&a'を状態'" + state.format() + "&a'に変更しました！");
+            sendMessage(player, "&aステージ'&6" + stage.getName() + "&a'のエリア'&6" + id + "&a'での権限'&6" + permission.toString() + "&a'を状態'" + state.format() + "&a'に変更しました！");
         }
     }
 

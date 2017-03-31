@@ -16,6 +16,7 @@
  */
 package syam.flaggame.command.area;
 
+import java.util.List;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
@@ -49,7 +50,7 @@ public class AreaSaveCommand extends AreaCommand {
     }
 
     @Override
-    public void execute(Stage stage) throws CommandException {
+    public void execute(List<String> args, Player player, Stage stage) throws CommandException {
         String id = args.get(0);
         AreaInfo info = stage.getAreas().getAreaInfo(id);
         if (info == null) {
@@ -71,7 +72,7 @@ public class AreaSaveCommand extends AreaCommand {
         }
         if (target == StageDataType.NONE) {
             info.removeRollback(savename);
-            sendMessage("&a'&6" + stage.getName() + "&a'の'&6"
+            sendMessage(player, "&a'&6" + stage.getName() + "&a'の'&6"
                         + id + "&a'エリアの'&6"
                         + savename + "&a'を削除しました！");
             return;
@@ -81,21 +82,21 @@ public class AreaSaveCommand extends AreaCommand {
         final Player playerFinal = player;
         SerializeTask task = structure.save(plugin, stage, stage.getAreas().getArea(id), ex -> {
             if (ex == null && playerFinal.isOnline()) {
-                Actions.sendPrefixedMessage(sender, "&a'&6" + stage.getName() + "&a'の'&6"
+                Actions.sendPrefixedMessage(player, "&a'&6" + stage.getName() + "&a'の'&6"
                                                     + id + "&a'エリアの'&6"
                                                     + savename + "&a'をセーブしました！");
             } else if (ex != null && playerFinal.isOnline()) {
-                Actions.sendPrefixedMessage(sender, "&c'&6" + stage.getName() + "&c'の'&6"
+                Actions.sendPrefixedMessage(player, "&c'&6" + stage.getName() + "&c'の'&6"
                                                     + id + "&c'エリアの'&6"
                                                     + savename + "&c'のセーブに失敗しました！");
                 plugin.getLogger().log(Level.WARNING, "Failed to save stage area", ex);
             }
         });
         String etr = Actions.getTimeString(ConvertUtils.toMiliseconds(task.getEstimatedTickRemaining()));
-        Actions.sendPrefixedMessage(sender, "&a'&6" + stage.getName() + "&a'の'&6"
+        Actions.sendPrefixedMessage(player, "&a'&6" + stage.getName() + "&a'の'&6"
                                             + id + "&a'エリアの'&6"
                                             + savename + "&a'をセーブしています...");
-        Actions.sendPrefixedMessage(sender, "&aこれにはおよそ"+etr+"間かかる予定です...");
+        Actions.sendPrefixedMessage(player, "&aこれにはおよそ"+etr+"間かかる予定です...");
         task.start(plugin);
     }
 

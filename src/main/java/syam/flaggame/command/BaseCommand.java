@@ -31,15 +31,11 @@ import syam.flaggame.util.Actions;
 
 public abstract class BaseCommand {
 
+    public static final String COMMAND_PREFIX = "/f ";
+    
     /* コマンド関係 */
     // 初期化必要無し
     protected final FlagGame plugin;
-    protected CommandSender sender;
-    protected String command;
-
-    // 初期化必要
-    protected Player player;
-    protected List<String> args = new ArrayList<>();
 
     // プロパティ
     private final boolean bePlayer;
@@ -64,24 +60,16 @@ public abstract class BaseCommand {
     }
     
     public boolean run(CommandSender sender, String[] preArgs, String cmd) {
-        this.sender = sender;
-        this.command = cmd;
-
-        // init
-        init();
-
-        // 引数をソート
-        args.clear();
-        args.addAll(Arrays.asList(preArgs));
+        List<String> args = new ArrayList<>(Arrays.asList(preArgs));
 
         // 引数からコマンドの部分を取り除く
         // (コマンド名に含まれる半角スペースをカウント、リストの先頭から順にループで取り除く)
-        for (int i = 0; i < command.split(" ").length && i < args.size(); i++)
+        for (int i = 0; i < cmd.split(" ").length && i < args.size(); i++)
             args.remove(0);
 
         // 引数の長さチェック
         if (argLength > args.size()) {
-            sendUsage();
+            sendUsage(sender);
             return true;
         }
 
@@ -90,6 +78,7 @@ public abstract class BaseCommand {
             Actions.message(sender, "&cThis command cannot run from Console!");
             return true;
         }
+        Player player = null;
         if (sender instanceof Player) {
             player = (Player) sender;
         }
@@ -102,7 +91,7 @@ public abstract class BaseCommand {
 
         // 実行
         try {
-            execute();
+            execute(args, sender, player);
         } catch (CommandException ex) {
             Throwable error = ex;
             while (error instanceof CommandException) {
@@ -113,18 +102,15 @@ public abstract class BaseCommand {
         return true;
     }
 
-    // init commands
-    private void init() {
-        this.args.clear();
-        player = null;
-    }
-
     /**
      * コマンドを実際に実行する
      * 
+     * @param args arguments presented
+     * @param sender the sender who executed this command
+     * @param player the player who executed this command - equal to sender
      * @throws CommandException
      */
-    public abstract void execute() throws CommandException;
+    public abstract void execute(List<String> args, CommandSender sender, Player player) throws CommandException;
 
     /**
      * コマンド実行に必要な権限を持っているか検証する
@@ -150,12 +136,13 @@ public abstract class BaseCommand {
 
     /**
      * コマンドの使い方を送信する
+     * @param sendTo target
      */
-    public void sendUsage() {
-        Actions.message(sender, "&c/" + this.command + " " + name + " " + usage);
+    public void sendUsage(CommandSender sendTo) {
+        Actions.message(sendTo, "&c" + BaseCommand.COMMAND_PREFIX + " " + name + " " + usage);
     }
     
-    public void sendMessage(String message) {
+    public void sendMessage(CommandSender sender, String message) {
         Actions.sendPrefixedMessage(sender, message);
     }
     
