@@ -242,7 +242,7 @@ public class BasicGame implements Game {
             }
         }
 
-        // stage rollback
+        // stage rollback and message
         for (String areaID : stage.getAreas().getAreas()) {
             Cuboid area = stage.getAreas().getArea(areaID);
             AreaInfo info = stage.getAreas().getAreaInfo(areaID);
@@ -254,10 +254,20 @@ public class BasicGame implements Game {
                     }
 
                 });
-                task.start(plugin, rollback.getTiming());
+                task.start(plugin, ConvertUtils.toTick(rollback.getTiming()));
+                onFinishing.offer(task::cancel);
+            }
+            for (AreaInfo.MessageData message : info.getMessages()) {
+                BukkitTask task = plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                    getPlayers().stream()
+                            .filter(p -> p.isOnline())
+                            .filter(p -> area.contains(p.getPlayer().getLocation()))
+                            .forEach(p -> message.getType().send(p, message.getMessage()));
+                }, ConvertUtils.toTick(message.getTiming()));
                 onFinishing.offer(task::cancel);
             }
         }
+        
 
         //各種処理系開始
         BGListener playerListener = new BGPlayerListener(plugin, this);
