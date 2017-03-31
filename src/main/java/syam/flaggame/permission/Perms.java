@@ -20,31 +20,25 @@ import org.bukkit.permissions.Permissible;
 
 /**
  * Permission (Permission.java)
- * 
+ *
  * @author syam(syamn)
  */
 public enum Perms {
     /* 権限ノード */
 
-    /* コマンド系 */
+ /* コマンド系 */
     // User Commands
-    SINFO("user.stageinfo"),  LIST("user.list"), JOIN("user.join"), LEAVE_GAME("user.leave.game"), LEAVE_READY("user.leave.ready"), LEAVE_SPECTATE("user.leave.spectate"), STATS_SELF("user.stats.self"), STATS_OTHER("user.stats.other"), TOP("user.top"), WATCH("user.watch"),
-
+    SINFO("user.stageinfo"), LIST("user.list"), JOIN("user.join"), LEAVE_GAME("user.leave.game"), LEAVE_READY("user.leave.ready"), LEAVE_SPECTATE("user.leave.spectate"), WATCH("user.watch"),
     // Admin Commands
     PINFO("user.playerinfo"), READY("admin.ready"), CLOSE("admin.close"), SELECT("admin.select"), START("admin.start"), TP("admin.tp"), ROLLBACK("admin.rollback"),
-
     // Setup Commands
     CREATE("admin.setup.create"), DELETE("admin.setup.delete"), SET("admin.setup.set"), CHECK("admin.setup.check"),
-
     // System Commands
     SAVE("admin.save"), RELOAD("admin.reload"),
-
     /* 特殊系 */
-    IGNORE_PROTECT("ignoreWorldProtect"), IGNORE_INTERACT("ignoreInteractEvent"), SIGN("admin.sign"), 
-    
+    IGNORE_PROTECT("ignoreWorldProtect"), SIGN("admin.sign"),
     //new Configuration
-    GLOBAL_CONFIG_CHECK("config.global.check"), GLOBAL_CONFIG_SET("config.global.set"), STAGE_CONFIG_CHECK("config.stage.check"), STAGE_CONFIG_SET("config.stage.set")
-    ;
+    STAGE_CONFIG_CHECK("config.stage.check"), STAGE_CONFIG_SET("config.stage.set");
 
     // ノードヘッダー
     final String HEADER = "flag.";
@@ -52,9 +46,8 @@ public enum Perms {
 
     /**
      * コンストラクタ
-     * 
-     * @param node
-     *            権限ノード
+     *
+     * @param node 権限ノード
      */
     Perms(final String node) {
         this.node = HEADER + node;
@@ -68,8 +61,10 @@ public enum Perms {
      * @return boolean
      */
     public boolean has(final Permissible perm) {
-        if (perm == null) return false;
+        if (perm == null) {
+            return false;
+        }
         return perm.hasPermission(this.node);
     }
-    
+
 }
