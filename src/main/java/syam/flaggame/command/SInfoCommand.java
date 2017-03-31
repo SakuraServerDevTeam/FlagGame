@@ -123,8 +123,8 @@ public class SInfoCommand extends BaseCommand {
                         + "&b バナースロット数=&6" + stage.getBannerSlots().size()
                         + "&b コア数=&6" + stage.getNexuses().size();
             String s4 = "&b プレイヤーリスト&7(" + cnt_players + "人)&b: " + players;
-            String s7 = "&b 参加料=&6" + stage.getEntryFee()
-                    + "&b 賞金=&6" + stage.getPrize();
+            String s7 = "&b 参加料=&6" + Actions.formatMoney(stage.getEntryFee())
+                    + "&b 賞金=&6" + Actions.formatMoney(stage.getPrize());
 
             // メッセージ送信
             Actions.message(sender, s1);
