@@ -140,8 +140,10 @@ public class SetCommand extends BaseCommand {
                     return;
                 case ENTRYFEE:
                     setEntryFee(player, stage, args);
+                    return;
                 case PRIZE:
                     setPrize(player, stage, args);
+                    return;
                 case COOLDOWN:
                     setCooldown(player, stage, args);
                     return;
@@ -381,7 +383,7 @@ public class SetCommand extends BaseCommand {
         if (num >= 60) {
             sec = sec + "(" + Actions.getTimeString(num) + ")";
         }
-        Actions.message(player, "&aステージ'" + game.getName() + "'のゲーム時間は " + sec + " に設定されました！");
+        Actions.message(player, "&aステージ'" + game.getName() + "'の復帰時間は " + sec + " に設定されました！");
     }
 
     private void setTeamLimit(Player player, Stage game, List<String> args) throws CommandException, StageReservedException {
@@ -506,7 +508,7 @@ public class SetCommand extends BaseCommand {
 
         stage.setEntryFee(entryFee);
 
-        Actions.message(player, "&aステージ'" + stage.getName() + "'の賞金は " + Actions.formatMoney(entryFee) + " に設定されました！");
+        Actions.message(player, "&aステージ'" + stage.getName() + "'の参加料は " + Actions.formatMoney(entryFee) + " に設定されました！");
         plugin.getDynmap().updateRegion(stage);
     }
 
