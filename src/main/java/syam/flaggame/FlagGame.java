@@ -281,7 +281,6 @@ public class FlagGame extends JavaPlugin {
                 StageCommand::new,
                 SelectCommand::new,
                 SetCommand::new,
-                CheckCommand::new,
                 TpCommand::new,
                 SaveCommand::new,
                 ReloadCommand::new,
