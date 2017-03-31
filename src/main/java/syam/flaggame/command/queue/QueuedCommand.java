@@ -20,6 +20,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import syam.flaggame.exception.CommandException;
 
 import syam.flaggame.util.Actions;
@@ -60,7 +61,11 @@ public class QueuedCommand {
             return;
         }
         done = true;
-        this.queueable.executeQueue(this.args); // 実行
+        Player player = null;
+        if (sender instanceof Player) {
+            player = (Player) sender;
+        }
+        this.queueable.executeQueue(args, sender, player); // 実行
     }
 
     public CommandSender getSender() {

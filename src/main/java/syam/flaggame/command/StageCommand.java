@@ -152,7 +152,7 @@ public class StageCommand extends BaseCommand implements Queueable {
      * キュー実行処理
      */
     @Override
-    public void executeQueue(List<String> args) throws CommandException {
+    public void executeQueue(List<String> args, CommandSender sender, Player player) throws CommandException {
         if (StageAction.DELETE.name().equalsIgnoreCase(args.get(0))) {
             if (args.size() <= 1) {
                 Actions.message(player, "&cステージ名が不正です");

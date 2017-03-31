@@ -17,6 +17,8 @@
 package syam.flaggame.command.queue;
 
 import java.util.List;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import syam.flaggame.exception.CommandException;
 
 /**
@@ -26,5 +28,5 @@ import syam.flaggame.exception.CommandException;
  */
 public interface Queueable {
 
-    void executeQueue(List<String> args) throws CommandException;
+    void executeQueue(List<String> args, CommandSender sender, Player player) throws CommandException;
 }
