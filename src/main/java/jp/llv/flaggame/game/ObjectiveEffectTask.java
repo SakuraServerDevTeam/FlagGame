@@ -16,12 +16,10 @@
  */
 package jp.llv.flaggame.game;
 
-import java.util.Collection;
-import java.util.stream.Collectors;
 import org.bukkit.Location;
 import org.bukkit.Particle;
+import org.bukkit.World;
 import org.bukkit.scheduler.BukkitRunnable;
-import syam.flaggame.player.GamePlayer;
 
 /**
  *
@@ -37,27 +35,20 @@ public class ObjectiveEffectTask extends BukkitRunnable {
 
     @Override
     public void run() {
-        Collection<GamePlayer> players = game.getPlayers().stream().filter(GamePlayer::isOnline).collect(Collectors.toSet());
-        game.getStage().getFlags().keySet().forEach(l -> spawnParticle(players, l));
-        game.getStage().getNexuses().keySet().forEach(l -> spawnParticle(players, l));
-        game.getStage().getBannerSlots().keySet().forEach(l -> spawnParticle(players, l));
+        game.getStage().getFlags().keySet().forEach(this::spawnParticle);
+        game.getStage().getNexuses().keySet().forEach(this::spawnParticle);
+        game.getStage().getBannerSlots().keySet().forEach(this::spawnParticle);
     }
 
-    private void spawnParticle(Collection<GamePlayer> players, Location loc) {
-        int x = loc.getBlockX(), y = loc.getBlockY(), z = loc.getBlockZ();
-        y += 1;
-        spawnParticle(players, x, y, z);
-        x += 1;
-        spawnParticle(players, x, y, z);
-        z += 1;
-        spawnParticle(players, x, y, z);
-        x -= 1;
-        spawnParticle(players, x, y, z);
-        
-    }
-
-    private void spawnParticle(Collection<GamePlayer> players, double x, double y, double z) {
-        players.stream().forEach(p -> p.getPlayer().spawnParticle(Particle.END_ROD, x, y, z, 1));
+    private void spawnParticle(Location loc) {
+        World world = loc.getWorld();
+        world.spawnParticle(
+                Particle.ENCHANTMENT_TABLE,
+                loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(),
+                10,
+                0.5, 0.5, 0.5,
+                1
+        );
     }
 
 }
