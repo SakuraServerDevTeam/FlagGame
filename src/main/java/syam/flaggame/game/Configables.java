@@ -39,6 +39,8 @@ public enum Configables {
     PROTECT(ConfigType.SIMPLE),
     KILLSCORE(ConfigType.SIMPLE),
     DEATHSCORE(ConfigType.SIMPLE),
+    ENTRYFEE(ConfigType.SIMPLE),
+    PRIZE(ConfigType.SIMPLE),
     COOLDOWN(ConfigType.SIMPLE),
     
     // ショートカット

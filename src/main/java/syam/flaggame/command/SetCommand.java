@@ -54,7 +54,7 @@ public class SetCommand extends BaseCommand {
                 "<option> [value] <- set option",
                 "set"
         );
-    
+
     }
 
     /**
@@ -138,6 +138,10 @@ public class SetCommand extends BaseCommand {
                 case DEATHSCORE:
                     setDeathScore(player, stage, args);
                     return;
+                case ENTRYFEE:
+                    setEntryFee(player, stage, args);
+                case PRIZE:
+                    setPrize(player, stage, args);
                 case COOLDOWN:
                     setCooldown(player, stage, args);
                     return;
@@ -197,7 +201,7 @@ public class SetCommand extends BaseCommand {
             throw new CommandException("&cチーム'" + args.get(1) + "'が見つかりません！");
         }
         if (team == TeamColor.WHITE) {
-            throw new CommandException(team.getRichName()+"&cのスポーン地点を設定することはできません！");
+            throw new CommandException(team.getRichName() + "&cのスポーン地点を設定することはできません！");
         }
         if (args.size() >= 3 && args.get(2).equalsIgnoreCase("none")) {
             game.setSpawn(team, null);
@@ -470,6 +474,40 @@ public class SetCommand extends BaseCommand {
         stage.setDeathScore(point);
 
         Actions.message(player, "&aステージ'" + stage.getName() + "'のデス得点は " + point + "点 に設定されました！");
+    }
+
+    private void setPrize(Player player, Stage stage, List<String> args) throws CommandException, StageReservedException {
+        double prize;
+        try {
+            prize = Double.parseDouble(args.get(1));
+        } catch (NumberFormatException ex) {
+            throw new CommandException("&cオプションの値が整数ではありません！");
+        }
+        if (prize < 0) {
+            throw new CommandException("&c値が不正です！負数は指定できません！");
+        }
+
+        stage.setPrize(prize);
+
+        Actions.message(player, "&aステージ'" + stage.getName() + "'の賞金は " + Actions.formatMoney(prize) + " に設定されました！");
+        plugin.getDynmap().updateRegion(stage);
+    }
+
+    private void setEntryFee(Player player, Stage stage, List<String> args) throws CommandException, StageReservedException {
+        double entryFee;
+        try {
+            entryFee = Double.parseDouble(args.get(1));
+        } catch (NumberFormatException ex) {
+            throw new CommandException("&cオプションの値が整数ではありません！");
+        }
+        if (entryFee < 0) {
+            throw new CommandException("&c値が不正です！負数は指定できません！");
+        }
+
+        stage.setEntryFee(entryFee);
+
+        Actions.message(player, "&aステージ'" + stage.getName() + "'の賞金は " + Actions.formatMoney(entryFee) + " に設定されました！");
+        plugin.getDynmap().updateRegion(stage);
     }
 
     // stage description
