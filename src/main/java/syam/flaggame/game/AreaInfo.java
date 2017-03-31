@@ -16,6 +16,7 @@
  */
 package syam.flaggame.game;
 
+import java.util.ArrayList;
 import jp.llv.flaggame.game.permission.GamePermission;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -35,6 +36,7 @@ public class AreaInfo {
 
     private final Map<String, RollbackData> rollbacks = new HashMap<>();
     private final Map<GamePermission, GamePermissionStateSet> permissions = new EnumMap<>(GamePermission.class);
+    private final List<MessageData> messages = new ArrayList<>();
 
     
     public RollbackData addRollback(String id) {
@@ -93,6 +95,24 @@ public class AreaInfo {
         return this.permissions;
     }
     
+    public List<MessageData> getMessages() {
+        return Collections.unmodifiableList(messages);
+    }
+    
+    public MessageData addMessage(String message) {
+        MessageData data = new MessageData();
+        data.setMessage(message);
+        return data;
+    }
+    
+    public void removeMessage(int index) {
+        this.messages.remove(index);
+    }
+    
+    /*package*/ void setMessages(List<MessageData> messages) {
+        this.messages.addAll(messages);
+    }
+    
     /**
      * Scheduled rollback data.
      */
@@ -134,6 +154,44 @@ public class AreaInfo {
         
         public void setData(byte[] data) {
             this.data = data;
+        }
+        
+    }
+    
+    public static class MessageData {
+        
+        private long timing = 1L;
+        private GameMessageType type = GameMessageType.CHAT;
+        private String message = "";
+
+        /*package*/ MessageData() {
+        }
+
+        public long getTiming() {
+            return timing;
+        }
+
+        public void setTiming(long timing) {
+            if (timing <= 0) {
+                throw new IllegalArgumentException("Negative or zero timing is not allowed");
+            }
+            this.timing = timing;
+        }
+
+        public GameMessageType getType() {
+            return type;
+        }
+
+        public void setType(GameMessageType type) {
+            this.type = type;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
         }
         
     }

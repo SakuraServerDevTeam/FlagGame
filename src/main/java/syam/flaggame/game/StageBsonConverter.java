@@ -183,11 +183,29 @@ public class StageBsonConverter {
                 readEnumMap(bson, key, TeamColor.class, (b, k) -> readEnum(b, k, GamePermissionState.class))
         );
     }
+    
+    private static void writeMessageData(BsonDocument bson, String key, AreaInfo.MessageData value) {
+        BsonDocument section = new BsonDocument();
+        section.append("timing", new BsonInt64(value.getTiming()));
+        writeEnum(section, "type", value.getType());
+        section.append("message", new BsonString(value.getMessage()));
+        bson.append(key, section);
+    }
+    
+    private static AreaInfo.MessageData readMessageData(BsonDocument bson, String key) {
+        BsonDocument section = bson.getDocument(key);
+        AreaInfo.MessageData result = new AreaInfo.MessageData();
+        result.setTiming(section.getInt64("timing").getValue());
+        result.setType(readEnum(section, "type", GameMessageType.class));
+        result.setMessage(section.getString("message").getValue());
+        return result;
+    }
 
     private static void writeAreaInfo(BsonDocument bson, String key, AreaInfo value) {
         BsonDocument section = new BsonDocument();
         writeMap(section, "rollbacks", value.getRollbacks(), StageBsonConverter::writeRollback);
         writeEnumMap(section, "permissions", value.getPermissions(), StageBsonConverter::writeGamePermissionStateSet);
+        writeList(section, "messages", value.getMessages(), StageBsonConverter::writeMessageData);
         bson.append(key, section);
     }
 
@@ -196,6 +214,7 @@ public class StageBsonConverter {
         AreaInfo result = new AreaInfo();
         result.setRollbacks(readMap(section, "rollbacks", StageBsonConverter::readRollback));
         result.setPermissions(readEnumMap(section, "permissions", GamePermission.class, StageBsonConverter::readGamePermissionStateSet));
+        result.setMessages(readList(section, "messages", StageBsonConverter::readMessageData));
         return result;
     }
 
