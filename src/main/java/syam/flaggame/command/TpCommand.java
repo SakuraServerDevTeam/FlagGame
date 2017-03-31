@@ -18,82 +18,81 @@ package syam.flaggame.command;
 
 import java.util.List;
 import org.bukkit.Location;
+import org.bukkit.World;
 import syam.flaggame.FlagGame;
-import org.bukkit.permissions.Permissible;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import jp.llv.flaggame.reception.TeamColor;
+import org.bukkit.util.Vector;
 import syam.flaggame.exception.CommandException;
-import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
-import syam.flaggame.player.GamePlayer;
-import syam.flaggame.player.SetupSession;
-import syam.flaggame.util.Actions;
 
 public class TpCommand extends BaseCommand {
 
     public TpCommand(FlagGame plugin) {
         super(
                 plugin,
-                true,
-                1,
-                "<area> [team] [game] <- tp to specific location",
+                false,
+                4,
+                "<player> <x> <y> <z> [<yaw> <pitch>] [world] [<vx> <vy> <vz>] <- tp the player",
+                Perms.TP,
                 "tp"
         );
-    
+
     }
 
     @Override
     public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
-        if (args.get(0).equalsIgnoreCase("spawn")) {
-            if (args.size() < 2) {
-                throw new CommandException("&c引数が足りません！");
-            }
-            
-            GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
-            
-            // ゲーム取得
-            Stage stage = null;
-            // 引数からゲーム取得
-            if (args.size() >= 3) {
-                stage = this.plugin.getStages().getStage(args.get(2)).orElse(null);
-            }
-
-            // 取れなかった場合選択済みゲームを取得
-            if (stage == null) {
-                stage = gPlayer.getSetupSession().map(SetupSession::getSelectedStage)
-                        .orElseThrow(() -> new CommandException("&c先にゲームを選択してください"));
-            }
-
-            // チーム取得
-            TeamColor team = null;
-            for (TeamColor tm : TeamColor.values()) {
-                if (tm.name().toLowerCase().equalsIgnoreCase(args.get(1))) {
-                    team = tm;
-                    break;
-                }
-            }
-            if (team == null) {
-                throw new CommandException("&cチーム'" + args.get(1) + "'が見つかりません！");
-            }
-
-            Location loc = stage.getSpawn(team);
-
-            if (loc == null) {
-                throw new CommandException("&c" + team.getTeamName() + "チームのスポーン地点は未設定です！");
-            }
-
-            // テレポート
-            player.teleport(loc);
-            Actions.message(player, "&a" + team.getTeamName() + "チームのスポーン地点にテレポートしました！");
-        } else {
-            Actions.message(player, "&cそのエリアは未定義です");
+        Player target = plugin.getServer().getPlayer(args.get(0));
+        if (target == null) {
+            throw new CommandException("&cプレイヤーが見つかりませんでした！");
         }
-    }
-
-    @Override
-    public boolean hasPermission(Permissible target) {
-        return Perms.TP.has(target);
+        double x, y, z;
+        try {
+            x = Double.parseDouble(args.get(1));
+            y = Double.parseDouble(args.get(2));
+            z = Double.parseDouble(args.get(3));
+        } catch (NumberFormatException ex) {
+            throw new CommandException("&c無効な数値です！", ex);
+        }
+        float yaw, pitch;
+        if (args.size() < 6) {
+            yaw = target.getLocation().getYaw();
+            pitch = target.getLocation().getPitch();
+        } else {
+            try {
+                yaw = Float.parseFloat(args.get(4));
+                pitch = Float.parseFloat(args.get(5));
+            } catch (NumberFormatException ex) {
+                throw new CommandException("&c無効な数値です！", ex);
+            }
+        }
+        World world;
+        if (args.size() < 7) {
+            world = target.getWorld();
+        } else {
+            world = plugin.getServer().getWorld(args.get(6));
+            if (world == null) {
+                throw new CommandException("&c無効なワールドです！");
+            }
+        }
+        double vx, vy, vz;
+        if (args.size() < 10) {
+            vx = target.getVelocity().getX();
+            vy = target.getVelocity().getY();
+            vz = target.getVelocity().getZ();
+        } else {
+            try {
+                vx = Double.parseDouble(args.get(7));
+                vy = Double.parseDouble(args.get(8));
+                vz = Double.parseDouble(args.get(9));
+            } catch (NumberFormatException ex) {
+                throw new CommandException("&c無効な数値です！", ex);
+            }
+        }
+        Location loc = new Location(world, x, y, z, yaw, pitch);
+        Vector velocity = new Vector(vx, vy, vz);
+        target.teleport(loc);
+        target.setVelocity(velocity);
+        sendMessage(sender, "&aプレイヤー'&6"+target.getName()+"&a'をテレポートしました！");
     }
 }
