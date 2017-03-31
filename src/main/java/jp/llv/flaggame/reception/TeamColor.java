@@ -19,6 +19,7 @@ package jp.llv.flaggame.reception;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
+import org.bukkit.Material;
 import org.bukkit.boss.BarColor;
 
 /**
@@ -28,26 +29,26 @@ import org.bukkit.boss.BarColor;
  */
 public enum TeamColor {
 
-    RED("赤", 0xE, Color.RED, ChatColor.RED, DyeColor.RED, BarColor.RED),
-    BLUE("青", 0xB, Color.BLUE, ChatColor.BLUE, DyeColor.BLUE, BarColor.BLUE),
-    GREEN("緑", 0x5, Color.GREEN, ChatColor.GREEN, DyeColor.GREEN, BarColor.GREEN),
-    ORANGE("橙", 0x1, Color.ORANGE, ChatColor.GOLD, DyeColor.ORANGE, BarColor.YELLOW),
-    PINK("桃", 0x6, Color.FUCHSIA, ChatColor.LIGHT_PURPLE, DyeColor.PINK, BarColor.PINK),
-    SKYBLUE("水", 0x3, Color.AQUA, ChatColor.AQUA, DyeColor.LIGHT_BLUE, BarColor.WHITE),
-    YELLOW("黄", 0x4, Color.YELLOW, ChatColor.YELLOW, DyeColor.YELLOW, BarColor.YELLOW),
-    PURPLE("紫", 0x2, Color.PURPLE, ChatColor.DARK_PURPLE, DyeColor.PURPLE, BarColor.PURPLE),
-    WHITE("白", 0x0, Color.WHITE, ChatColor.WHITE, DyeColor.WHITE, BarColor.WHITE),
+    RED("赤", 0xE, Color.RED, ChatColor.RED, DyeColor.RED, BarColor.RED, Material.RED_SHULKER_BOX),
+    BLUE("青", 0xB, Color.BLUE, ChatColor.BLUE, DyeColor.BLUE, BarColor.BLUE, Material.BLUE_SHULKER_BOX),
+    GREEN("緑", 0x5, Color.GREEN, ChatColor.GREEN, DyeColor.GREEN, BarColor.GREEN, Material.GREEN_SHULKER_BOX),
+    ORANGE("橙", 0x1, Color.ORANGE, ChatColor.GOLD, DyeColor.ORANGE, BarColor.YELLOW, Material.YELLOW_SHULKER_BOX),
+    PINK("桃", 0x6, Color.FUCHSIA, ChatColor.LIGHT_PURPLE, DyeColor.PINK, BarColor.PINK, Material.PINK_SHULKER_BOX),
+    SKYBLUE("水", 0x3, Color.AQUA, ChatColor.AQUA, DyeColor.LIGHT_BLUE, BarColor.WHITE, Material.LIGHT_BLUE_SHULKER_BOX),
+    YELLOW("黄", 0x4, Color.YELLOW, ChatColor.YELLOW, DyeColor.YELLOW, BarColor.YELLOW, Material.YELLOW_SHULKER_BOX),
+    PURPLE("紫", 0x2, Color.PURPLE, ChatColor.DARK_PURPLE, DyeColor.PURPLE, BarColor.PURPLE, Material.PURPLE_SHULKER_BOX),
+    WHITE("白", 0x0, Color.WHITE, ChatColor.WHITE, DyeColor.WHITE, BarColor.WHITE, Material.WHITE_SHULKER_BOX),
     ;
 
-    private static final char COLOR_PREFIX = '\u00A7';
     private final String teamName;
     private final byte blockData;
     private final Color color;
     private final ChatColor chatColor;
     private final DyeColor dyeColor;
     private final BarColor barColor;
+    private final Material shulerColor;
 
-    private TeamColor(String teamName, int blockData, Color color, ChatColor chatColor, DyeColor dyeColor, BarColor barColor) {
+    private TeamColor(String teamName, int blockData, Color color, ChatColor chatColor, DyeColor dyeColor, BarColor barColor, Material shulerColor) {
         this.teamName = teamName;
 
         if (blockData < Byte.MIN_VALUE || blockData > Byte.MAX_VALUE) {
@@ -60,6 +61,7 @@ public enum TeamColor {
         this.chatColor = chatColor;
         this.dyeColor = dyeColor;
         this.barColor = barColor;
+        this.shulerColor = shulerColor;
     }
 
     /**
@@ -99,6 +101,10 @@ public enum TeamColor {
 
     public BarColor getBarColor() {
         return barColor;
+    }
+
+    public Material getShulerColor() {
+        return shulerColor;
     }
 
     public String getRichName() {
