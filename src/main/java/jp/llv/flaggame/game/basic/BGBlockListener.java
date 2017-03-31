@@ -221,11 +221,14 @@ public class BGBlockListener extends BGListener {
             return;
         }
 
-        GamePlayer.sendMessage(breaker, ChatMessageType.ACTION_BAR,
-                gplayer.getColoredName() + "&aが" + breaker.getColor().getRichName() + "の&6" + f.getPoint() + "p目標&aを破壊しました!");
-        if (f.getColor() != null) {
+        if (broken != null) {
+            GamePlayer.sendMessage(breaker, ChatMessageType.ACTION_BAR,
+                    gplayer.getColoredName() + "&aが" + broken.getColor().getRichName() + "の&6" + f.getPoint() + "p目標&aを破壊しました!");
             GamePlayer.sendMessage(broken, ChatMessageType.ACTION_BAR,
                     gplayer.getColoredName() + "&aに" + f.getPoint() + "p目標&aを破壊されました!");
+        } else {
+            GamePlayer.sendMessage(game, ChatMessageType.ACTION_BAR,
+                    gplayer.getColoredName() + "&aが" + f.getPoint() + "p目標&aを破壊しました!");
         }
         game.getRecordStream().push(new NexusBreakRecord(
                 game.getID(),
@@ -237,7 +240,9 @@ public class BGBlockListener extends BGListener {
         if (plugin.getConfigs().getUseFlagEffects()) {
             Location loc = event.getBlock().getLocation();
             loc.getWorld().playEffect(loc, Effect.ENDER_SIGNAL, 0, 10);
-            GamePlayer.playSound(broken, Sound.ENTITY_GUARDIAN_HURT);
+            if (broken != null) {
+                GamePlayer.playSound(broken, Sound.ENTITY_GUARDIAN_HURT);
+            }
         }
     }
 
