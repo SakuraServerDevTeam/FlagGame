@@ -252,7 +252,7 @@ public class BasicGame implements Game {
                         plugin.getLogger().log(Level.WARNING, "Failed to rollback", ex);
                         this.stopForcibly("Failed to rollback");
                     }
-                    
+
                 });
                 task.start(plugin, rollback.getTiming());
                 onFinishing.offer(task::cancel);
@@ -455,7 +455,18 @@ public class BasicGame implements Game {
         GamePlayer.sendMessage(this, rateMessage);
 
         String author = "".equals(stage.getAuthor()) ? "" : "presented by " + stage.getAuthor();
-        GamePlayer.sendTitle(this, "&6試合終了", author, 0, 60, 20);
+        if (winnerTeams.isEmpty()) {
+            for (GamePlayer player : this) {
+                player.sendTitle("&6試合終了: 引き分け", author, 0, 60, 20);
+            }
+        } else {
+            for (GamePlayer player : winnerPlayers) {
+                player.sendTitle("&a試合終了: 勝利", author, 0, 60, 20);
+            }
+            for (GamePlayer player : getPlayersNotIn(winnerPlayers)) {
+                player.sendTitle("&c試合終了: 敗北", author, 0, 60, 20);
+            }
+        }
 
         reception.stop("The game has finished");
     }
@@ -484,7 +495,7 @@ public class BasicGame implements Game {
         GamePlayer.sendMessage(this.reception.getPlayers(), "&2フラッグゲーム'&6" + this.stage.getName() + "&2'は強制終了されました: "
                                                             + message);
 
-        this.reception.close("The game finished");
+        this.reception.stop("The game has finished");
     }
 
     public long getRemainTime() {

@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import jp.llv.flaggame.reception.GameReception;
 import jp.llv.flaggame.reception.Team;
 import jp.llv.flaggame.reception.TeamColor;
@@ -69,11 +70,11 @@ public interface Game extends Iterable<GamePlayer> {
         return getReception().getPlayers();
     }
 
-    static Collection<GamePlayer> getPlayersIn(Team... teams) {
-        return Arrays.stream(teams).flatMap(t -> t.getPlayers().stream()).collect(Collectors.toSet());
+    static Collection<GamePlayer> getPlayersIn(Iterable<GamePlayer> ... teams) {
+        return Arrays.stream(teams).flatMap(t -> StreamSupport.stream(t.spliterator(), false)).collect(Collectors.toSet());
     }
 
-    default Collection<GamePlayer> getPlayersNotIn(Team... teams) {
+    default Collection<GamePlayer> getPlayersNotIn(Iterable<GamePlayer>... teams) {
         Collection<GamePlayer> result = new HashSet<>(getPlayers());
         result.removeAll(getPlayersIn(teams));
         return result;
