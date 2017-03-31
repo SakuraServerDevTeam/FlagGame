@@ -210,6 +210,7 @@ public class BGBlockListener extends BGListener {
     }
 
     private void breakNexus(GamePlayer gplayer, Nexus f, BlockBreakEvent event) {
+        event.setCancelled(true);
         Team breaker = gplayer.getTeam().get();
         Team broken = null;
         if (f.getColor() != null) {
