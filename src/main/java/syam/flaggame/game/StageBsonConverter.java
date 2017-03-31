@@ -291,6 +291,8 @@ public class StageBsonConverter {
         section.append("available", new BsonBoolean(value.isAvailable()));
         section.append("kill", new BsonDouble(value.getKillScore()));
         section.append("death", new BsonDouble(value.getDeathScore()));
+        section.append("entryfee", new BsonDouble(value.getEntryFee()));
+        section.append("prize", new BsonDouble(value.getPrize()));
         section.append("cooldown", new BsonInt64(value.getCooldown()));
         writeEnumMap(section, "spawn", value.getSpawns(), StageBsonConverter::writeLocation);
         writeLocation(section, "specspawn", value.getSpecSpawn().orElse(null));
@@ -315,6 +317,8 @@ public class StageBsonConverter {
             stage.setAvailable(bson.getBoolean("available").getValue());
             stage.setKillScore(bson.getDouble("kill").getValue());
             stage.setDeathScore(bson.getDouble("death").getValue());
+            stage.setEntryFee(bson.getDouble("entryfee").getValue());
+            stage.setPrize(bson.getDouble("prize").getValue());
             stage.setCooldown(bson.getInt64("cooldown").getValue());
             stage.setSpawns(readEnumMap(bson, "spawn", TeamColor.class, StageBsonConverter::readLocation));
             stage.setSpecSpawn(readLocation(bson, "specspawn"));

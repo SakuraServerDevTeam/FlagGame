@@ -64,6 +64,10 @@ public class Stage {
     
     //キルデススコア
     private double killScore = 0, deathScore = 0;
+    
+    //賞金
+    private double entryFee = 0;
+    private double prize = 0;
 
     // フラッグ・チェスト
     private final Map<Location, Flag> flags = Collections.synchronizedMap(new HashMap<>());
@@ -385,7 +389,8 @@ public class Stage {
         return killScore;
     }
 
-    public void setKillScore(double killScore) {
+    public void setKillScore(double killScore) throws StageReservedException {
+        checkEditable();
         this.killScore = killScore;
     }
 
@@ -393,7 +398,8 @@ public class Stage {
         return deathScore;
     }
     
-    public void setDescription(String value) {
+    public void setDescription(String value) throws StageReservedException {
+        checkEditable();
         description = value;
     }
     
@@ -401,7 +407,8 @@ public class Stage {
         return description;
     }
     
-    public void setAuthor(String value) {
+    public void setAuthor(String value) throws StageReservedException {
+        checkEditable();
         author = value;
     }
     
@@ -409,7 +416,8 @@ public class Stage {
         return author;
     }
     
-    public void setGuide(String value) {
+    public void setGuide(String value) throws StageReservedException {
+        checkEditable();
         guide = value;
     }
     
@@ -417,7 +425,8 @@ public class Stage {
         return guide;
     }
     
-    public void setCooldown(long value) {
+    public void setCooldown(long value) throws StageReservedException {
+        checkEditable();
         cooldown = value;
     }
     
@@ -425,8 +434,27 @@ public class Stage {
         return cooldown;
     }
 
-    public void setDeathScore(double deathScore) {
+    public void setDeathScore(double deathScore) throws StageReservedException {
+        checkEditable();
         this.deathScore = deathScore;
+    }
+
+    public double getEntryFee() {
+        return entryFee;
+    }
+
+    public void setEntryFee(double entryFee) throws StageReservedException {
+        checkEditable();
+        this.entryFee = entryFee;
+    }
+
+    public double getPrize() {
+        return prize;
+    }
+
+    public void setPrize(double prize) throws StageReservedException {
+        checkEditable();
+        this.prize = prize;
     }
     
     public SerializeTask getInitialTask(FlagGame plugin, Consumer<RollbackException> callback) {

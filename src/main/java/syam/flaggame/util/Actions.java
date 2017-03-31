@@ -186,4 +186,14 @@ public class Actions {
         return FlagGame.getInstance().getEconomy()
                 .map(e -> e.has(Bukkit.getOfflinePlayer(uuid), amount)).orElse(false);
     }
+    
+    /**
+     * Format money.
+     * @param amount amount of money to format
+     * @return formatted money
+     */
+    public static String formatMoney(double amount) {
+        return FlagGame.getInstance().getEconomy()
+                .map(e -> e.format(amount)).orElseGet(() -> Double.toString(amount));
+    }
 }
