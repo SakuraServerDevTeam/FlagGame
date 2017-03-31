@@ -111,7 +111,7 @@ public class SInfoCommand extends BaseCommand {
             String s1 = "&6 " + stage.getName()
                         + "&b: 状態=&f" + status
                         + "&b 制限時間=&6" + Actions.getTimeString(stage.getGameTimeInSec())
-                        + "&b フラッグ数=&6" + stage.getFlags().size();
+                        + "&b 登録コンテナ数=&6" + stage.getChests().size();
             String s2 = "&b 製作者=&6" + stage.getAuthor()
                         + "&b 説明=&6" + stage.getDescription()
                         + " &bガイド=&6" + stage.getGuide();
