@@ -45,6 +45,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import syam.flaggame.command.*;
 import syam.flaggame.command.area.*;
+import syam.flaggame.command.area.message.AreaMessageAddCommand;
+import syam.flaggame.command.area.message.AreaMessageDeleteCommand;
+import syam.flaggame.command.area.message.AreaMessageListCommand;
+import syam.flaggame.command.area.message.AreaMessageTimingCommand;
 import syam.flaggame.command.queue.ConfirmQueue;
 import syam.flaggame.listener.*;
 import syam.flaggame.game.StageManager;
@@ -291,7 +295,11 @@ public class FlagGame extends JavaPlugin {
                 AreaSetCommand::new,
                 AreaRollbackCommand::new,
                 AreaInitCommand::new,
-                AreaTestCommand::new
+                AreaTestCommand::new,
+                AreaMessageAddCommand::new,
+                AreaMessageDeleteCommand::new,
+                AreaMessageListCommand::new,
+                AreaMessageTimingCommand::new
         ).map(f -> f.apply(this)).forEach(this.commands::add);
     }
 

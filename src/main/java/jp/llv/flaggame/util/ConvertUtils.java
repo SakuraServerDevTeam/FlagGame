@@ -23,32 +23,40 @@ import java.text.DecimalFormat;
  * @author Toyblocks
  */
 public final class ConvertUtils {
-    
-    private static final DecimalFormat TIME_FORMAT= new DecimalFormat("###0.0");
-    
-    private  ConvertUtils() {
+
+    private static final DecimalFormat TIME_FORMAT = new DecimalFormat("###0.0");
+
+    private ConvertUtils() {
         throw new RuntimeException();
     }
-    
+
     public static String format(long timeinms) {
         double d = timeinms / 1000;
         return TIME_FORMAT.format(d);
     }
-    
+
     public static long toTick(long timeinms) {
         return timeinms / 50;
     }
-    
+
     public static long toMiliseconds(long tick) {
         return tick * 50;
-    } 
-    
+    }
+
+    public static long toTick(double seconds) {
+        return (long) (seconds * 20D);
+    }
+
+    public static long toMiliseconds(double seconds) {
+        return (long) (seconds * 1000D);
+    }
+
     public static String smartRound(double value) {
         char[] chars = Double.toString(value).toCharArray();
         StringBuilder result = new StringBuilder();
         int count = -1;
         for (char c : chars) {
-            if (c== '.' || (count >= 0 && c == '0')) {
+            if (c == '.' || (count >= 0 && c == '0')) {
                 count++;
             } else if (count >= 0) {
                 count = 0;
@@ -60,5 +68,5 @@ public final class ConvertUtils {
         }
         return result.toString();
     }
-    
+
 }

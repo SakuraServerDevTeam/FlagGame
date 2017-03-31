@@ -42,4 +42,8 @@ public enum GameMessageType {
         handler.accept(player, message);
     }
     
+    public static GameMessageType of(String name) {
+        return valueOf(name.toUpperCase());
+    }
+    
 }
