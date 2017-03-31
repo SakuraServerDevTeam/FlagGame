@@ -21,7 +21,6 @@ import java.util.List;
 import jp.llv.flaggame.game.permission.GamePermission;
 import jp.llv.flaggame.game.permission.GamePermissionState;
 
-import org.bukkit.Material;
 import syam.flaggame.FlagGame;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.command.CommandSender;
@@ -99,21 +98,6 @@ public class SetCommand extends BaseCommand {
                 /* 一般 */
                 case SPAWN: // スポーン地点設定
                     setSpawn(player, stage, args);
-                    return;
-                case FLAG: // フラッグ設定
-                    setFlag(player, stage, args);
-                    return;
-                case CHEST: // チェスト設定
-                    setChest(player, stage, args);
-                    return;
-                case NEXUS:
-                    setNexus(player, stage, args);
-                    return;
-                case BANNER_SLOT:
-                    setBannerSlot(player, stage, args);
-                    return;
-                case BANNER_SPAWNER:
-                    setBannerSpawner(player, stage, args);
                     return;
                 case SPECSPAWN: // 観戦者スポーン設定
                     setSpecSpawn(player, stage, args);
@@ -216,119 +200,6 @@ public class SetCommand extends BaseCommand {
 
         Actions.message(player, "&a" + team.getTeamName() + "&aチームのスポーン地点を設定しました！");
         plugin.getDynmap().updateRegion(game);
-    }
-
-    /**
-     * フラッグ管理モード
-     *
-     * @param game
-     * @return true
-     * @throws CommandException
-     */
-    private void setFlag(Player player, Stage game, List<String> args) throws CommandException {
-        // 引数チェック
-        if (args.size() < 2) {
-            throw new CommandException("&c引数が足りません！フラッグの得点を指定してください！");
-        }
-
-        // フラッグタイプチェック
-        double type;
-        try {
-            type = Double.parseDouble(args.get(1));
-        } catch (NumberFormatException ex) {
-            throw new CommandException("フラッグの得点を正しく指定してください!", ex);
-        }
-
-        // マネージャーセット
-        GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
-        gPlayer.createSetupSession(game).setSetting(Configables.FLAG).setSelectedPoint(type);
-        String tool = Material.getMaterial(plugin.getConfigs().getToolID()).name();
-        Actions.message(player, "&aフラッグ管理モードを開始しました。選択ツール: " + tool);
-    }
-
-    private void setNexus(Player player, Stage stage, List<String> args) throws CommandException {
-        if (args.size() < 2) {
-            throw new CommandException("&c引数が足りません！目標の得点を正しく指定してください!");
-        }
-
-        double point;
-        try {
-            point = Double.parseDouble(args.get(1));
-        } catch (NumberFormatException ex) {
-            throw new CommandException("目標の得点を正しく指定してください!", ex);
-        }
-
-        TeamColor color;
-        if (args.size() < 3) {
-            color = null;
-        } else {
-            try {
-                color = TeamColor.of(args.get(2));
-            } catch (IllegalArgumentException ex) {
-                throw new CommandException("目標のチーム色を正しく指定してください!", ex);
-            }
-        }
-
-        GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
-        gPlayer.createSetupSession(stage).setSetting(Configables.NEXUS)
-                .setSelectedPoint(point)
-                .setSelectedColor(color);
-        String tool = Material.getMaterial(plugin.getConfigs().getToolID()).name();
-        Actions.message(player, "&a目標管理モードを開始しました。選択ツール: " + tool);
-    }
-
-    private void setBannerSpawner(Player player, Stage stage, List<String> args) throws CommandException {
-        if (args.size() < 3) {
-            throw new CommandException("&c引数が足りません! バナーの得点と耐久度を正しく指定してください!");
-        }
-
-        byte point, hp;
-        try {
-            point = Byte.parseByte(args.get(1));
-            hp = Byte.parseByte(args.get(2));
-        } catch (NumberFormatException ex) {
-            throw new CommandException("&c数値フォーマットが異常です!");
-        }
-
-        GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
-        gPlayer.createSetupSession(stage).setSetting(Configables.BANNER_SPAWNER)
-                .setSelectedPoint(point)
-                .setHp(hp);
-        String tool = Material.getMaterial(plugin.getConfigs().getToolID()).name();
-        Actions.message(player, "&aバナースポナー管理モードを開始しました。選択ツール: " + tool);
-    }
-
-    private void setBannerSlot(Player player, Stage stage, List<String> args) throws CommandException {
-        TeamColor color;
-        if (args.size() < 2) {
-            color = null;
-        } else {
-            try {
-                color = TeamColor.of(args.get(1));
-            } catch (IllegalArgumentException ex) {
-                throw new CommandException("目標のチーム色を正しく指定してください!", ex);
-            }
-        }
-
-        GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
-        gPlayer.createSetupSession(stage).setSetting(Configables.BANNER_SLOT)
-                .setSelectedColor(color);
-        String tool = Material.getMaterial(plugin.getConfigs().getToolID()).name();
-        Actions.message(player, "&aスロット管理モードを開始しました。選択ツール: " + tool);
-    }
-
-    /**
-     * チェスト管理モード
-     *
-     * @param game
-     * @return true
-     */
-    private void setChest(Player player, Stage game, List<String> args) {
-        // マネージャーセット
-        GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
-        gPlayer.createSetupSession(game).setSetting(Configables.CHEST);
-        String tool = Material.getMaterial(plugin.getConfigs().getToolID()).name();
-        Actions.message(player, "&aチェスト管理モードを開始しました。選択ツール: " + tool);
     }
 
     /**

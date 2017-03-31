@@ -17,7 +17,7 @@
 package syam.flaggame.player;
 
 import jp.llv.flaggame.reception.TeamColor;
-import syam.flaggame.game.Configables;
+import syam.flaggame.command.objective.ObjectiveType;
 import syam.flaggame.game.Stage;
 
 /**
@@ -27,7 +27,7 @@ import syam.flaggame.game.Stage;
 public class SetupSession {
 
     private final Stage stage;
-    private Configables setting;
+    private ObjectiveType setting;
 
     private TeamColor color = null;
     private Double point = null;
@@ -44,11 +44,11 @@ public class SetupSession {
         return this.stage;
     }
 
-    public Configables getSetting() {
+    public ObjectiveType getSetting() {
         return this.setting;
     }
 
-    public SetupSession setSetting(Configables setting) {
+    public SetupSession setSetting(ObjectiveType setting) {
         if (this.setting == setting) {
             return this;
         }
@@ -60,14 +60,14 @@ public class SetupSession {
     }
 
     public Double getSelectedPoint() {
-        if (this.setting != Configables.FLAG && this.setting != Configables.NEXUS && this.setting != Configables.BANNER_SPAWNER) {
+        if (this.setting != ObjectiveType.FLAG && this.setting != ObjectiveType.NEXUS && this.setting != ObjectiveType.BANNER_SPAWNER) {
             throw new IllegalStateException();
         }
         return this.point;
     }
 
     public SetupSession setSelectedPoint(double point) {
-        if (this.setting != Configables.FLAG && this.setting != Configables.NEXUS && this.setting != Configables.BANNER_SPAWNER) {
+        if (this.setting != ObjectiveType.FLAG && this.setting != ObjectiveType.NEXUS && this.setting != ObjectiveType.BANNER_SPAWNER) {
             throw new IllegalStateException();
         }
         this.point = point;
@@ -75,14 +75,14 @@ public class SetupSession {
     }
 
     public TeamColor getSelectedColor() {
-        if (this.setting != Configables.BANNER_SLOT && this.setting != Configables.NEXUS) {
+        if (this.setting != ObjectiveType.BANNER_SLOT && this.setting != ObjectiveType.NEXUS) {
             throw new IllegalStateException();
         }
         return color;
     }
 
     public SetupSession setSelectedColor(TeamColor color) {
-        if (this.setting != Configables.BANNER_SLOT && this.setting != Configables.NEXUS) {
+        if (this.setting != ObjectiveType.BANNER_SLOT && this.setting != ObjectiveType.NEXUS) {
             throw new IllegalStateException();
         }
         this.color = color;
@@ -90,14 +90,14 @@ public class SetupSession {
     }
 
     public Byte getSelectedHp() {
-        if (this.setting != Configables.BANNER_SPAWNER) {
+        if (this.setting != ObjectiveType.BANNER_SPAWNER) {
             throw new IllegalStateException();
         }
         return hp;
     }
 
     public SetupSession setHp(Byte hp) {
-        if (this.setting != Configables.BANNER_SPAWNER) {
+        if (this.setting != ObjectiveType.BANNER_SPAWNER) {
             throw new IllegalStateException();
         }
         this.hp = hp;

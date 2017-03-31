@@ -34,12 +34,12 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.*;
 
 import syam.flaggame.FlagGame;
-import syam.flaggame.game.Configables;
 import jp.llv.flaggame.game.basic.objective.Flag;
 import jp.llv.flaggame.game.basic.objective.Nexus;
 import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.material.Banner;
+import syam.flaggame.command.objective.ObjectiveType;
 import syam.flaggame.exception.StageReservedException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
@@ -75,7 +75,7 @@ public class FGPlayerListener implements Listener {
             && player.getInventory().getItemInMainHand().getTypeId() == plugin.getConfigs().getToolID()
             && Perms.SET.has(player)) {
             SetupSession sess = gPlayer.getSetupSession().get();
-            Configables conf = sess.getSetting();
+            ObjectiveType conf = sess.getSetting();
             Stage stage = sess.getSelectedStage();
             if (stage == null) {
                 Actions.message(player, "&c先に編集するゲームを選択してください！");

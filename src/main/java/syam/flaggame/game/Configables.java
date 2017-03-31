@@ -25,11 +25,6 @@ public enum Configables {
 
     // 一般
     SPAWN(ConfigType.POINT),
-    FLAG(ConfigType.MANAGER),
-    CHEST(ConfigType.MANAGER),
-    NEXUS(ConfigType.MANAGER),
-    BANNER_SPAWNER(ConfigType.MANAGER),
-    BANNER_SLOT(ConfigType.MANAGER),
     SPECSPAWN(ConfigType.POINT),
 
     // オプション
@@ -64,7 +59,6 @@ public enum Configables {
 
     public enum ConfigType {
         POINT, // プレイヤーの現在値を取得する設定
-        MANAGER, // マネージャモードに入る設定
         SIMPLE, // お金など単にそのコマンドだけで変更可能な設定
         AREA, // 範囲設定
     }
