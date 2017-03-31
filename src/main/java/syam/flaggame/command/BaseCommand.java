@@ -31,7 +31,7 @@ import syam.flaggame.util.Actions;
 
 public abstract class BaseCommand {
 
-    public static final String COMMAND_PREFIX = "/f ";
+    public static final String COMMAND_PREFIX = "/flag ";
     
     /* コマンド関係 */
     // 初期化必要無し
@@ -139,7 +139,7 @@ public abstract class BaseCommand {
      * @param sendTo target
      */
     public void sendUsage(CommandSender sendTo) {
-        Actions.message(sendTo, "&c" + BaseCommand.COMMAND_PREFIX + " " + name + " " + usage);
+        Actions.message(sendTo, "&c" + BaseCommand.COMMAND_PREFIX + name + " " + usage);
     }
     
     public void sendMessage(CommandSender sender, String message) {
