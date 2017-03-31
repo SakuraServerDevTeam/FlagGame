@@ -34,11 +34,11 @@ public class AreaMessageDeleteCommand extends AreaCommand {
     public AreaMessageDeleteCommand(FlagGame plugin) {
         super(
                 plugin,
-                3,
-                "<id> <index> <timing> <- set message timing",
+                1,
+                "<id> <index> <- delete message",
                 Perms.STAGE_CONFIG_SET,
-                "area message timing",
-                "amt"
+                "area message delete",
+                "amd"
         );
     }
 
