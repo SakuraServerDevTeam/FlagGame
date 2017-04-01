@@ -17,6 +17,7 @@
 package syam.flaggame.permission;
 
 import org.bukkit.permissions.Permissible;
+import syam.flaggame.exception.PermissionException;
 
 /**
  * Permission (Permission.java)
@@ -65,6 +66,12 @@ public enum Perms {
             return false;
         }
         return perm.hasPermission(this.node);
+    }
+    
+    public void requireTo(Permissible perm) throws PermissionException {
+        if (perm == null || !perm.hasPermission(node)) {
+            throw new PermissionException("Not enough permission");
+        }
     }
 
 }

@@ -26,6 +26,7 @@ import org.bukkit.entity.Player;
 import syam.flaggame.FlagGame;
 import org.bukkit.permissions.Permissible;
 import syam.flaggame.exception.CommandException;
+import syam.flaggame.exception.PermissionException;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.util.Actions;
 
@@ -92,6 +93,8 @@ public abstract class BaseCommand {
         // 実行
         try {
             execute(args, sender, player);
+        } catch (PermissionException ex) {
+            Actions.message(sender, "&cYou don't have permission to use this!");
         } catch (CommandException ex) {
             Throwable error = ex;
             while (error instanceof CommandException) {
