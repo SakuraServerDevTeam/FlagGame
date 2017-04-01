@@ -76,7 +76,8 @@ public class DashboardCommand extends BaseCommand {
                     d.buttonRun("show").append("dashboard").append(stage.getName()).create()
                             .buttonRun("select").append("select").append(stage.getName()).create()
                             .buttonRun("delete").append("stage delete").append(stage.getName()).create();
-                }).sendTo(sender);
+                }).buttonSuggest("create").append("stage create").create()
+                .sendTo(sender);
     }
 
     private void showStageInfo(CommandSender sender, Stage stage) {
