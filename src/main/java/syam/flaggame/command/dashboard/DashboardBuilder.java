@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -156,6 +157,11 @@ public class DashboardBuilder {
     public DashboardBuilder text(Object obj) {
         head = false;
         text.text(obj);
+        return this;
+    }
+
+    public DashboardBuilder text(ChatColor color, Object obj) {
+        text.text(color, obj);
         return this;
     }
 
