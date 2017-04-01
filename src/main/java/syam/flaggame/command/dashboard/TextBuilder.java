@@ -148,6 +148,11 @@ public class TextBuilder<R> {
         return this;
     }
 
+    public TextBuilder<R> text(ChatColor color, Object obj) {
+        this.builder = (this.builder == null ? new ComponentBuilder(Objects.toString(obj)) : this.builder.append(Objects.toString(obj), ComponentBuilder.FormatRetention.NONE)).color(color);
+        return this;
+    }
+
     public R create() {
         return this.callback.apply(this.builder == null ? new BaseComponent[0] : this.builder.create());
     }
