@@ -48,15 +48,15 @@ public class DashboardBuilder {
     private boolean head = true;
 
     private DashboardBuilder(Object name, Object subtitle) {
-        text.gold(PREFIX).text(SPACE).gray(SEPARATE_LINE).lightPurple(name);
+        text.gold(PREFIX).text(SPACE).gray(SEPARATE_LINE).gold(name);
         if (subtitle != null) {
-            text.aqua(BRACKET_LEFT).aqua(subtitle).aqua(BRACKET_RIGHT);
+            text.gray(BRACKET_LEFT).gray(subtitle).gray(BRACKET_RIGHT);
         }
         text.gray(SEPARATE_LINE).br();
         char lineChar = SEPARATE_LINE.charAt(0);
         int length = (SEPARATE_LINE.length() * 2)
                      + name.toString().length()
-                     + (subtitle == null ? 0 : (subtitle.toString().length() + 2));
+                     + (subtitle == null ? 0 : (subtitle.toString().length() + 1));
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < length; i++) {
             sb.append(lineChar);
@@ -183,7 +183,7 @@ public class DashboardBuilder {
         }
         return green(key).gray(SEPARATOR).space();
     }
-    
+
     public DashboardBuilder value(Object value) {
         return gold(value);
     }
@@ -192,6 +192,7 @@ public class DashboardBuilder {
         if (!head) {
             space();
         }
+        head = false;
         text.lightPurple(BUTTON_PREFIX + name + BUTTON_SUFFIX).showing().gray(CLICK).create();
         return CommandBuilder.newBuilder(s -> {
             text.event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, s));
@@ -203,6 +204,7 @@ public class DashboardBuilder {
         if (!head) {
             space();
         }
+        head = false;
         text.lightPurple(BUTTON_PREFIX + name + BUTTON_SUFFIX).showing().gray(CLICK).create();
         return CommandBuilder.newBuilder(s -> {
             text.event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, s + SPACE));
@@ -218,7 +220,7 @@ public class DashboardBuilder {
         for (int i = 0; i < contents.size(); i++) {
             text.gray(i).gray(SEPARATOR).text(SPACE);
             formatter.accept(this, contents.get(i));
-            text.br();
+            br();
         }
         return this;
     }
@@ -230,7 +232,7 @@ public class DashboardBuilder {
         }
         for (T element : contents) {
             formatter.accept(this, element);
-            text.br();
+            br();
         }
         return this;
     }
@@ -261,6 +263,9 @@ public class DashboardBuilder {
     }
 
     public BaseComponent[] create() {
+        if (!head) {
+            br();
+        }
         return text.gold(PREFIX).text(SPACE).gray(endline).create();
     }
 

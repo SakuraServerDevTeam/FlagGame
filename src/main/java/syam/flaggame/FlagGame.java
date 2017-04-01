@@ -269,6 +269,7 @@ public class FlagGame extends JavaPlugin {
     private void registerCommands() {
         Stream.<Function<FlagGame, ? extends BaseCommand>>of(
                 HelpCommand::new,
+                DashboardCommand::new,
                 SInfoCommand::new,
                 PInfoCommand::new,
                 ListCommand::new,

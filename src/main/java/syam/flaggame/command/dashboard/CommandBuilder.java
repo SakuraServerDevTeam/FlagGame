@@ -26,7 +26,7 @@ import java.util.function.Function;
  */
 public class CommandBuilder<R> {
     
-    private final StringBuilder command = new StringBuilder("/");
+    private final StringBuilder command = new StringBuilder("/flaggame:flag");
     private final Function<String, R> callback;
 
     private CommandBuilder(Function<String, R> callback) {
