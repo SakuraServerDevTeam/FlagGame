@@ -93,6 +93,10 @@ public class TpCommand extends BaseCommand {
         Vector velocity = new Vector(vx, vy, vz);
         target.teleport(loc);
         target.setVelocity(velocity);
-        sendMessage(sender, "&aプレイヤー'&6"+target.getName()+"&a'をテレポートしました！");
+        if (sender == target) {
+            sendMessage(sender, "&aテレポートしました！");
+        } else {
+            sendMessage(sender, "&aプレイヤー'&6" + target.getName() + "&a'をテレポートしました！");
+        }
     }
 }
