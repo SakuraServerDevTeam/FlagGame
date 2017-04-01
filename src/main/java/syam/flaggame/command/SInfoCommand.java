@@ -17,20 +17,15 @@
 package syam.flaggame.command;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import jp.llv.flaggame.game.Game;
 import jp.llv.flaggame.reception.GameReception;
-import jp.llv.flaggame.reception.Team;
 import syam.flaggame.FlagGame;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import jp.llv.flaggame.reception.TeamColor;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
-import syam.flaggame.player.GamePlayer;
 import syam.flaggame.util.Actions;
 
 public class SInfoCommand extends BaseCommand {
@@ -81,58 +76,18 @@ public class SInfoCommand extends BaseCommand {
             String status = stage.getReception().map(GameReception::getState).map(GameReception.State::toGameState)
                     .map(s -> s == Game.State.PREPARATION ? "&6受付中" : "&c開始中").orElse("&7待機中");
 
-            String chksp_red = "&c未設定";
-            String chksp_blue = "&c未設定";
-            if (stage.getSpawn(TeamColor.RED) != null) {
-                chksp_red = "&6設定済";
-            }
-            if (stage.getSpawn(TeamColor.BLUE) != null) {
-                chksp_blue = "&6設定済";
-            }
-
-            // プレイヤーリスト構築
-            String players = "";
-            int cnt_players = 0;
-            if (stage.isReserved() && stage.getReception().get().getGame().isPresent()) {
-                for (Team entry : stage.getReception().get().getGame().get().getTeams()) {
-                    String color = entry.getColor().getChatColor();
-                    for (GamePlayer n : entry) {
-                        players = players + color + n.getName() + "&f, ";
-                        cnt_players++;
-                    }
-                }
-            }
-            if (!"".equals(players)) {
-                players = players.substring(0, players.length() - 2);
-            } else {
-                players = "&7参加プレイヤーなし";
-            }
-
             String s1 = "&6 " + stage.getName()
                         + "&b: 状態=&f" + status
                         + "&b 制限時間=&6" + Actions.getTimeString(stage.getGameTimeInSec())
                         + "&b 登録コンテナ数=&6" + stage.getChests().size();
             String s2 = "&b 製作者=&6" + stage.getAuthor()
-                        + "&b 説明=&6" + stage.getDescription()
-                        + " &bガイド=&6" + stage.getGuide();
-            String s3 = "&b チーム毎人数制限=&6" + stage.getTeamLimit()
-                    + "&b チーム=&6" + stage.getSpawns().keySet().stream().map(TeamColor::toString).collect(Collectors.joining("/"));
-            String s5 = "&b キル得点=&6" + stage.getKillScore() + "&b デス得点=&6" + stage.getDeathScore();
-            String s6 = "&b フラッグ数=&6" + stage.getFlags().size()
-                        + "&b バナースポナー数=&6" + stage.getBannerSpawners().size()
-                        + "&b バナースロット数=&6" + stage.getBannerSlots().size()
-                        + "&b コア数=&6" + stage.getNexuses().size();
-            String s4 = "&b プレイヤーリスト&7(" + cnt_players + "人)&b: " + players;
+                        + "&b 説明=&6" + stage.getDescription();
             String s7 = "&b 参加料=&6" + Actions.formatMoney(stage.getEntryFee())
                     + "&b 賞金=&6" + Actions.formatMoney(stage.getPrize());
 
             // メッセージ送信
             Actions.message(sender, s1);
             Actions.message(sender, s2);
-            Actions.message(sender, s3);
-            Actions.message(sender, s4);
-            Actions.message(sender, s5);
-            Actions.message(sender, s6);
             Actions.message(sender, s7);
 
             Actions.message(sender, "&a ================================================");
