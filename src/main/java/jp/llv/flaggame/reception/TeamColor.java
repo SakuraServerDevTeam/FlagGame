@@ -94,6 +94,10 @@ public enum TeamColor {
     public String getChatColor() {
         return chatColor.toString();
     }
+    
+    public ChatColor getBungeeChatColor() {
+        return chatColor;
+    }
 
     public DyeColor getDyeColor() {
         return dyeColor;
