@@ -32,7 +32,6 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import syam.flaggame.FlagGame;
 import jp.llv.flaggame.reception.TeamColor;
 import syam.flaggame.game.objective.Flag;
-import jp.llv.flaggame.game.basic.objective.HeldBanner;
 import syam.flaggame.game.objective.Nexus;
 import jp.llv.flaggame.profile.record.BannerDeployRecord;
 import jp.llv.flaggame.profile.record.FlagBreakRecord;

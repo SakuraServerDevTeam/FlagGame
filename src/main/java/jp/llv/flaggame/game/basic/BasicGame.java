@@ -37,7 +37,6 @@ import jp.llv.flaggame.events.GameStartEvent;
 import jp.llv.flaggame.game.Game;
 import jp.llv.flaggame.game.HitpointTask;
 import jp.llv.flaggame.game.ObjectiveEffectTask;
-import jp.llv.flaggame.game.basic.objective.HeldBanner;
 import jp.llv.flaggame.game.permission.StagePermissionListener;
 import jp.llv.flaggame.profile.DeviationBasedExpCalcurator;
 import jp.llv.flaggame.profile.record.FlagCaptureRecord;

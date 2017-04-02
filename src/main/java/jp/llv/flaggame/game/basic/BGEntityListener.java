@@ -22,7 +22,6 @@ import java.util.Optional;
 import java.util.Set;
 import syam.flaggame.game.objective.BannerSpawner;
 import syam.flaggame.game.objective.Flag;
-import jp.llv.flaggame.game.basic.objective.HeldBanner;
 import jp.llv.flaggame.game.permission.GamePermission;
 import jp.llv.flaggame.profile.record.BannerStealRecord;
 import jp.llv.flaggame.profile.record.PlayerDeathRecord;

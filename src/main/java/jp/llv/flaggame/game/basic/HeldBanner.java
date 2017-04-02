@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jp.llv.flaggame.game.basic.objective;
+package jp.llv.flaggame.game.basic;
 
 import syam.flaggame.game.objective.BannerSpawner;
 import java.util.Collection;
