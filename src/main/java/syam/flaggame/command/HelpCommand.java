@@ -43,7 +43,7 @@ public class HelpCommand extends BaseCommand {
         // 全コマンドをループで表示
         for (BaseCommand cmd : this.plugin.getCommands()) {
             if (cmd.hasPermission(sender)) {
-                Actions.message(sender, "&8-&7 " + BaseCommand.COMMAND_PREFIX + " &c" + cmd.getName() + " &7" + cmd.getUsage());
+                Actions.message(sender, "&8-&7 " + BaseCommand.COMMAND_PREFIX + "&c" + cmd.getName() + " &7" + cmd.getUsage());
             }
         }
         Actions.message(sender, "&c===================================");
