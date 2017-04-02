@@ -263,12 +263,12 @@ public class DashboardBuilder {
 
     public <K extends CharSequence, V> DashboardBuilder appendMap(Map<? extends K, ? extends V> contents,
                                                                   BiConsumer<DashboardBuilder, ? super V> valueFormatter) {
-        return appendMap(contents, (t, k) -> t.green(k), valueFormatter);
+        return appendMap(contents, (t, k) -> t.key(k), valueFormatter);
     }
 
     public <K extends CharSequence, V> DashboardBuilder appendEnumMap(Map<? extends K, ? extends V> contents,
                                                                       BiConsumer<DashboardBuilder, ? super V> valueFormatter) {
-        return appendMap(contents, (t, k) -> t.green(k.toString().toLowerCase()), valueFormatter);
+        return appendMap(contents, (t, k) -> t.key(k.toString().toLowerCase()), valueFormatter);
     }
 
     public BaseComponent[] create() {
