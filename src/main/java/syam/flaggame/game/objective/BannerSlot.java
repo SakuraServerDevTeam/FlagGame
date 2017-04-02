@@ -33,6 +33,7 @@ public class BannerSlot implements Objective {
         this.color = color;
     }
 
+    @Override
     public Location getLocation() {
         return loc;
     }

@@ -30,7 +30,8 @@ public class Chest implements Objective {
         this.loc = loc;
     }
 
-    public Location getLoc() {
+    @Override
+    public Location getLocation() {
         return loc;
     }
 

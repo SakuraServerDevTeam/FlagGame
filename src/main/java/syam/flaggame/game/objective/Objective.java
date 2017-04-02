@@ -16,6 +16,8 @@
  */
 package syam.flaggame.game.objective;
 
+import org.bukkit.Location;
+
 /**
  *
  * @author SakuraServerDev
@@ -27,5 +29,7 @@ public interface Objective {
     }
 
     ObjectiveType getType();
+    
+    Location getLocation();
 
 }

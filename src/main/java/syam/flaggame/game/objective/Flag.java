@@ -82,6 +82,7 @@ public class Flag implements Objective {
         return Double.toString(type);
     }
 
+    @Override
     public Location getLocation() {
         return loc;
     }

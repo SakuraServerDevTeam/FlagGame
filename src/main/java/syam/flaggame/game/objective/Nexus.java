@@ -35,6 +35,7 @@ public class Nexus implements Objective {
         this.point = point;
     }
 
+    @Override
     public Location getLocation() {
         return loc;
     }

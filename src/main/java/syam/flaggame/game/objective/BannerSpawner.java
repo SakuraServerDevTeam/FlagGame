@@ -50,6 +50,7 @@ public class BannerSpawner implements Objective {
         this.face = face;
     }
 
+    @Override
     public Location getLocation() {
         return loc;
     }
