@@ -44,7 +44,9 @@ import org.bson.BsonString;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
+import syam.flaggame.exception.ObjectiveCollisionException;
 import syam.flaggame.exception.StageReservedException;
+import syam.flaggame.game.objective.GameChest;
 import syam.flaggame.util.Cuboid;
 
 public class StageBsonConverter {
@@ -301,6 +303,15 @@ public class StageBsonConverter {
         return new BannerSpawner(loc, point, hp, producing, wall, face);
     }
 
+    private static void writeGameChest(BsonDocument bson, String key, GameChest value) {
+        writeLocation(bson, key, value.getLocation());
+    }
+
+    private static GameChest readGameChest(BsonDocument bson, String key) {
+        Location loc = readLocation(bson, key);
+        return new GameChest(loc);
+    }
+
     public static BsonDocument writeStage(Stage value) {
         BsonDocument section = new BsonDocument();
         section.append("_id", new BsonString(value.getName()));
@@ -315,11 +326,13 @@ public class StageBsonConverter {
         section.append("cooldown", new BsonInt64(value.getCooldown()));
         writeEnumMap(section, "spawn", value.getSpawns(), StageBsonConverter::writeLocation);
         writeLocation(section, "specspawn", value.getSpecSpawn().orElse(null));
-        writeList(section, "flags", value.getFlags().values(), StageBsonConverter::writeFlag);
-        writeList(section, "nexuses", value.getNexuses().values(), StageBsonConverter::writeNexus);
-        writeList(section, "banner-spawners", value.getBannerSlots().values(), StageBsonConverter::writeBannerSlot);
-        writeList(section, "banner-slots", value.getBannerSpawners().values(), StageBsonConverter::writeBannerSpawner);
-        writeList(section, "containers", value.getChests(), StageBsonConverter::writeLocation);
+        
+        writeList(section, "flags", value.getObjectives(Flag.class).values(), StageBsonConverter::writeFlag);
+        writeList(section, "nexuses", value.getObjectives(Nexus.class).values(), StageBsonConverter::writeNexus);
+        writeList(section, "banner-spawners", value.getObjectives(BannerSlot.class).values(), StageBsonConverter::writeBannerSlot);
+        writeList(section, "banner-slots", value.getObjectives(BannerSpawner.class).values(), StageBsonConverter::writeBannerSpawner);
+        writeList(section, "containers", value.getObjectives(GameChest.class).values(), StageBsonConverter::writeGameChest);
+        
         writeAreaSet(section, "areas", value.getAreas());
         section.append("author", new BsonString(value.getAuthor()));
         section.append("description", new BsonString(value.getDescription()));
@@ -341,17 +354,17 @@ public class StageBsonConverter {
             stage.setCooldown(bson.getInt64("cooldown").getValue());
             stage.setSpawns(readEnumMap(bson, "spawn", TeamColor.class, StageBsonConverter::readLocation));
             stage.setSpecSpawn(readLocation(bson, "specspawn"));
-            stage.setFlags(readList(bson, "flags", StageBsonConverter::readFlag));
-            stage.setNexuses(readList(bson, "nexuses", StageBsonConverter::readNexus));
-            stage.setBannerSpawners(readList(bson, "banner-spawners", StageBsonConverter::readBannerSpawner));
-            stage.setBannerSlots(readList(bson, "banner-slots", StageBsonConverter::readBannerSlot));
-            stage.setChests(readList(bson, "containers", StageBsonConverter::readLocation));
+            stage.addObjectives(readList(bson, "flags", StageBsonConverter::readFlag));
+            stage.addObjectives(readList(bson, "nexuses", StageBsonConverter::readNexus));
+            stage.addObjectives(readList(bson, "banner-spawners", StageBsonConverter::readBannerSpawner));
+            stage.addObjectives(readList(bson, "banner-slots", StageBsonConverter::readBannerSlot));
+            stage.addObjectives(readList(bson, "containers", StageBsonConverter::readGameChest));
             stage.setAreas(readAreaSet(bson, "areas"));
             stage.setAuthor(bson.getString("author").getValue());
             stage.setDescription(bson.getString("description").getValue());
             stage.setGuide(bson.getString("guide").getValue());
             return stage;
-        } catch (StageReservedException ex) {
+        } catch (StageReservedException | ObjectiveCollisionException ex) {
             throw new RuntimeException(ex);
         }
     }

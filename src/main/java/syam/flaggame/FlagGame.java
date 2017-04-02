@@ -33,6 +33,7 @@ import jp.llv.flaggame.reception.RealtimeTeamingReception;
 import jp.llv.flaggame.reception.ReceptionManager;
 
 import net.milkbowl.vault.economy.Economy;
+import org.bukkit.World;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -49,6 +50,7 @@ import syam.flaggame.command.area.message.AreaMessageAddCommand;
 import syam.flaggame.command.area.message.AreaMessageDeleteCommand;
 import syam.flaggame.command.area.message.AreaMessageListCommand;
 import syam.flaggame.command.area.message.AreaMessageTimingCommand;
+import syam.flaggame.command.objective.ObjectiveListCommand;
 import syam.flaggame.command.objective.ObjectiveSetCommand;
 import syam.flaggame.command.queue.ConfirmQueue;
 import syam.flaggame.listener.*;
@@ -301,7 +303,8 @@ public class FlagGame extends JavaPlugin {
                 AreaMessageDeleteCommand::new,
                 AreaMessageListCommand::new,
                 AreaMessageTimingCommand::new,
-                ObjectiveSetCommand::new
+                ObjectiveSetCommand::new,
+                ObjectiveListCommand::new
         ).map(f -> f.apply(this)).forEach(this.commands::add);
     }
 
@@ -351,6 +354,10 @@ public class FlagGame extends JavaPlugin {
      */
     public ConfigurationManager getConfigs() {
         return config;
+    }
+    
+    public World getGameWorld() {
+        return getServer().getWorld(config.getGameWorld());
     }
 
     /**

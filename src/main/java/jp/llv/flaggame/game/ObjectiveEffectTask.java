@@ -20,6 +20,10 @@ import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.scheduler.BukkitRunnable;
+import syam.flaggame.game.objective.BannerSlot;
+import syam.flaggame.game.objective.Flag;
+import syam.flaggame.game.objective.Nexus;
+import syam.flaggame.game.objective.Objective;
 
 /**
  *
@@ -35,9 +39,10 @@ public class ObjectiveEffectTask extends BukkitRunnable {
 
     @Override
     public void run() {
-        game.getStage().getFlags().keySet().forEach(this::spawnParticle);
-        game.getStage().getNexuses().keySet().forEach(this::spawnParticle);
-        game.getStage().getBannerSlots().keySet().forEach(this::spawnParticle);
+        game.getStage().getObjectives().values().stream()
+                .filter(o -> o instanceof Flag || o instanceof BannerSlot || o instanceof Nexus)
+                .map(Objective::getLocation)
+                .forEach(this::spawnParticle);
     }
 
     private void spawnParticle(Location loc) {

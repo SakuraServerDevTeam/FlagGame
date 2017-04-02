@@ -35,6 +35,8 @@ import org.dynmap.markers.MarkerSet;
 
 import syam.flaggame.FlagGame;
 import syam.flaggame.game.Stage;
+import syam.flaggame.game.objective.GameChest;
+import syam.flaggame.game.objective.Flag;
 
 public class DynmapHandler {
 
@@ -228,8 +230,8 @@ public class DynmapHandler {
         s = s.replaceAll("%gamename%", stage.getName());
 
         // Build flag/chest count
-        s = s.replaceAll("%flagcount%", stage.getFlags().size() + "個");
-        s = s.replaceAll("%chestcount%", stage.getChests().size() + "個");
+        s = s.replaceAll("%flagcount%", stage.getObjectives(Flag.class).size() + "個");
+        s = s.replaceAll("%chestcount%", stage.getObjectives(GameChest.class).size() + "個");
 
         // Build options
         s = s.replaceAll("%gametime%", Actions.getTimeString(stage.getGameTime() / 1000));

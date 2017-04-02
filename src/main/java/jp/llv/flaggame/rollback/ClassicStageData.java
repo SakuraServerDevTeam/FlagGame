@@ -28,6 +28,7 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import syam.flaggame.FlagGame;
 import syam.flaggame.game.Stage;
+import syam.flaggame.game.objective.GameChest;
 import syam.flaggame.util.Cuboid;
 
 /**
@@ -38,14 +39,14 @@ public class ClassicStageData extends VoidStageData {
 
     @Override
     public SerializeTask load(FlagGame plugin, Stage stage, Cuboid area, Consumer<RollbackException> callback) {
-        stage.getFlags().values().stream()
+        stage.getObjectives(Flag.class).values().stream()
                 .filter(f -> area.contains(f.getLocation()))
                 .forEach(Flag::rollback);
-        stage.getBannerSpawners().values().stream()
+        stage.getObjectives(BannerSpawner.class).values().stream()
                 .filter(b -> area.contains(b.getLocation()))
                 .forEach(BannerSpawner::spawnBanner);
 
-        for (Location loc : stage.getChests()) {
+        for (Location loc : stage.getObjectives(GameChest.class).keySet()) {
             if (!area.contains(loc)) {
                 continue;
             }

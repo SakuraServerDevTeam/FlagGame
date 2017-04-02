@@ -77,6 +77,8 @@ import jp.llv.flaggame.profile.ExpCalcurator;
 import jp.llv.flaggame.profile.record.BannerKeepRecord;
 import jp.llv.flaggame.rollback.SerializeTask;
 import syam.flaggame.game.AreaInfo;
+import syam.flaggame.game.objective.BannerSlot;
+import syam.flaggame.game.objective.Flag;
 import syam.flaggame.util.Cuboid;
 
 /**
@@ -332,7 +334,7 @@ public class BasicGame implements Game {
         }
 
         // calcurate flag score
-        this.stage.getFlags().entrySet().stream()
+        this.stage.getObjectives(Flag.class).entrySet().stream()
                 .filter(e -> e.getValue().getOwner() != null)
                 .map(e -> new FlagScoreRecord(
                         this.getID(),
@@ -341,7 +343,7 @@ public class BasicGame implements Game {
                         e.getValue().getFlagPoint()
                 )).forEach(this.getRecordStream()::push);
         // calcurate banner score
-        if (stage.getBannerSlots().isEmpty()) {
+        if (stage.getObjectives(BannerSlot.class).isEmpty()) {
             heldBanners.entrySet().stream().forEach(e -> getRecordStream().push(
                     new BannerKeepRecord(getID(), e.getKey().getPlayer(), e.getValue().getPoint())));
         }

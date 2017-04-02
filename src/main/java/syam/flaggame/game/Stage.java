@@ -16,10 +16,6 @@
  */
 package syam.flaggame.game;
 
-import syam.flaggame.game.objective.BannerSlot;
-import syam.flaggame.game.objective.Nexus;
-import syam.flaggame.game.objective.BannerSpawner;
-import syam.flaggame.game.objective.Flag;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -27,21 +23,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
-import jp.llv.flaggame.game.basic.objective.*;
 import jp.llv.flaggame.reception.GameReception;
-
 import org.bukkit.Location;
-import org.bukkit.block.Block;
-
 import jp.llv.flaggame.reception.TeamColor;
 import jp.llv.flaggame.rollback.QueuedSerializeTask;
 import jp.llv.flaggame.rollback.RollbackException;
 import jp.llv.flaggame.rollback.SerializeTask;
 import syam.flaggame.FlagGame;
+import syam.flaggame.exception.ObjectiveCollisionException;
 import syam.flaggame.exception.StageReservedException;
+import syam.flaggame.game.objective.Objective;
 import syam.flaggame.util.Cuboid;
 
 /**
@@ -73,11 +66,7 @@ public class Stage {
     private double prize = 0;
 
     // フラッグ・チェスト
-    private final Map<Location, Flag> flags = Collections.synchronizedMap(new HashMap<>());
-    private final Map<Location, Nexus> nexuses = Collections.synchronizedMap(new HashMap<>());
-    private final Map<Location, BannerSpawner> bannerSpawners = Collections.synchronizedMap(new HashMap<>());
-    private final Map<Location, BannerSlot> bannerSlots = Collections.synchronizedMap(new HashMap<>());
-    private final Set<Location> chests = Collections.newSetFromMap(new ConcurrentHashMap<Location, Boolean>());
+    private final Map<Location, Objective> objectives = new HashMap<>();
 
     // 地点・エリア
     private boolean protect = true;
@@ -99,165 +88,63 @@ public class Stage {
         this.stageName = name;
     }
     
-    public void addFlag(Flag flag) throws StageReservedException {
+    public void addObjective(Objective objective) throws StageReservedException, ObjectiveCollisionException {
         checkEditable();
-        flags.put(flag.getLocation(), flag);
+        if (objectives.containsKey(objective.getLocation())) {
+            throw new ObjectiveCollisionException();
+        }
+        objectives.put(objective.getLocation(), objective);
     }
     
-    public Optional<Flag> getFlag(Location loc) {
-        return Optional.ofNullable(flags.get(loc));
+    public Optional<Objective> getObjective(Location loc) {
+        return Optional.ofNullable(objectives.get(loc));
     }
     
-    public void removeFlag(Location loc) throws StageReservedException {
-        checkEditable();
-        flags.remove(loc);
-    }
-    
-    public Map<Location, Flag> getFlags() {
-        return Collections.unmodifiableMap(flags);
-    }
-    
-    public void setFlags(Collection<Flag> flags) throws StageReservedException {
-        checkEditable();
-        this.flags.clear();
-        flags.stream().forEach(f -> this.flags.put(f.getLocation(), f));
-    }
-    
-    public void addNexus(Nexus nexus) throws StageReservedException {
-        checkEditable();
-        this.nexuses.put(nexus.getLocation(), nexus);
-    }
-    
-    public void removeNexus(Location loc) throws StageReservedException {
-        checkEditable();
-        this.nexuses.remove(loc);
-    }
-    
-    public Optional<Nexus> getNexus(Location location) {
-        return Optional.ofNullable(this.nexuses.get(location));
-    }
-    
-    public Map<Location, Nexus> getNexuses() {
-        return Collections.unmodifiableMap(this.nexuses);
-    }
-    
-    public void setNexuses(Collection<Nexus> nexuses) throws StageReservedException {
-        checkEditable();
-        this.nexuses.clear();
-        nexuses.stream().forEach(f -> this.nexuses.put(f.getLocation(), f));
-    }
-    
-    public void addBannerSpawner(BannerSpawner spawner) throws StageReservedException {
-        checkEditable();
-        this.bannerSpawners.put(spawner.getLocation(), spawner);
-    }
-    
-    public void removeBannerSpawner(Location loc) throws StageReservedException {
-        checkEditable();
-        this.bannerSpawners.remove(loc);
-    }
-    
-    public Optional<BannerSpawner> getBannerSpawner(Location loc) {
-        return Optional.ofNullable(this.bannerSpawners.get(loc));
-    }
-    
-    public Map<Location, BannerSpawner> getBannerSpawners() {
-        return Collections.unmodifiableMap(this.bannerSpawners);
-    }
-    
-    public void setBannerSpawners(Collection<BannerSpawner> spawners) throws StageReservedException {
-        checkEditable();
-        this.bannerSpawners.clear();
-        spawners.forEach(s -> this.bannerSpawners.put(s.getLocation(), s));
-    }
-    
-    public void addBannerSlot(BannerSlot slot) throws StageReservedException {
-        checkEditable();
-        this.bannerSlots.put(slot.getLocation(), slot);
-    }
-    
-    public void removeBannerSlot(Location loc) throws StageReservedException {
-        checkEditable();
-        this.bannerSlots.remove(loc);
-    }
-    
-    public Optional<BannerSlot> getBannerSlot(Location loc) {
-        return Optional.ofNullable(this.bannerSlots.get(loc));
-    }
-    
-    public Map<Location, BannerSlot> getBannerSlots() {
-        return Collections.unmodifiableMap(this.bannerSlots);
-    }
-    
-    public void setBannerSlots(Collection<BannerSlot> slots) throws StageReservedException {
-        checkEditable();
-        this.bannerSlots.clear();
-        slots.forEach(s -> this.bannerSlots.put(s.getLocation(), s));
-    }
-
-    /* ***** チェスト関係 ***** */
-    /**
-     * チェストを設定する
-     *
-     * @param loc チェストの座標
-     * @throws syam.flaggame.exception.StageReservedException when this stage is
-     * being used
-     */
-    public void setChest(Location loc) throws StageReservedException {
-        checkEditable();
-        chests.add(loc);
-    }
-
-    /**
-     * チェストブロックを返す
-     *
-     * @param loc 調べるブロックの座標
-     * @return GameTeam または存在しない場合 null
-     */
-    public Block getChest(Location loc) {
-        if (chests.contains(loc)) {
-            return loc.getBlock();
+    public <O extends Objective> Optional<O> getObjective(Location loc, Class<? extends O> clazz) {
+        Objective objective = objectives.get(loc);
+        if (clazz.isInstance(objective)) {
+            return Optional.of(clazz.cast(objective));
         } else {
-            return null;
+            return Optional.empty();
         }
     }
     
-    public boolean isChest(Location loc) {
-        return chests.contains(loc);
+    public boolean isObjective(Location loc) {
+        return getObjective(loc).isPresent();
     }
-
-    /**
-     * チェストブロックを削除する
-     *
-     * @param loc 削除するチェストのブロック座標
-     * @throws syam.flaggame.exception.StageReservedException when this stage is
-     * being used
-     */
-    public void removeChest(Location loc) throws StageReservedException {
+    
+    public boolean isObjective(Class<? extends Objective> clazz, Location loc) {
+        return getObjective(loc, clazz).isPresent();
+    }
+    
+    public void removeObjective(Location loc) throws StageReservedException {
         checkEditable();
-        chests.remove(loc);
+        objectives.remove(loc);
     }
-
-    /**
-     * チェストブロックマップを一括取得する
-     *
-     * @return チェストブロックマップ {@code Map<Location, Block>}
-     */
-    public Set<Location> getChests() {
-        return Collections.unmodifiableSet(chests);
-    }
-
-    /**
-     * チェストブロックマップを一括設定する
-     *
-     * @param chests 設定する元のLocation, Blockマップ
-     * @throws syam.flaggame.exception.StageReservedException when this stage is
-     * being used
-     */
-    public void setChests(Collection<Location> chests) throws StageReservedException {
+    
+    public void removeObjective(Objective objective) throws StageReservedException {
         checkEditable();
-        this.chests.clear();
-        this.chests.addAll(chests);
+        objectives.remove(objective.getLocation(), objective);
+    }
+    
+    public Map<Location, Objective> getObjectives() {
+        return Collections.unmodifiableMap(objectives);
+    }
+    
+    public <O> Map<Location, O> getObjectives(Class<? extends O> clazz) {
+        Map<Location, O> result = new HashMap<>();
+        objectives.forEach((l, o) -> {
+            if (clazz.isInstance(o)) {
+                result.put(l, clazz.cast(o));
+            }
+        });
+        return Collections.unmodifiableMap(result);
+    }
+    
+    public void addObjectives(Collection<? extends Objective> objectives) throws StageReservedException, ObjectiveCollisionException {
+        for (Objective objective : objectives) {
+            addObjective(objective);
+        }
     }
 
     /* ***** スポーン地点関係 ***** */

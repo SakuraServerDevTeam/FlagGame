@@ -69,9 +69,9 @@ public class BGBlockListener extends BGListener {
             return;
         }
 
-        Optional<Flag> of = this.game.getStage().getFlag(event.getBlock().getLocation());
-        Optional<Nexus> on = this.game.getStage().getNexus(event.getBlock().getLocation());
-        Optional<BannerSpawner> ob = this.game.getStage().getBannerSpawner(event.getBlock().getLocation());
+        Optional<Flag> of = this.game.getStage().getObjective(event.getBlock().getLocation(), Flag.class);
+        Optional<Nexus> on = this.game.getStage().getObjective(event.getBlock().getLocation(), Nexus.class);
+        Optional<BannerSpawner> ob = this.game.getStage().getObjective(event.getBlock().getLocation(), BannerSpawner.class);
 
         of.ifPresent(f -> this.breakFlag(gplayer, f, event));
         on.ifPresent(n -> this.breakNexus(gplayer, n, event));
@@ -86,8 +86,8 @@ public class BGBlockListener extends BGListener {
             return;
         }
 
-        Optional<Flag> of = this.game.getStage().getFlag(event.getBlock().getLocation());
-        Optional<BannerSlot> os = this.game.getStage().getBannerSlot(event.getBlock().getLocation());
+        Optional<Flag> of = this.game.getStage().getObjective(event.getBlock().getLocation(), Flag.class);
+        Optional<BannerSlot> os = this.game.getStage().getObjective(event.getBlock().getLocation(), BannerSlot.class);
 
         of.ifPresent(f -> this.placeFlag(gplayer, f, event));
         os.ifPresent(s -> this.placeBanner(gplayer, s, event));
