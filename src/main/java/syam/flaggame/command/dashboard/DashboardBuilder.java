@@ -33,7 +33,7 @@ import syam.flaggame.util.Actions;
  */
 public class DashboardBuilder {
 
-    private static final String PREFIX = "[FlagGame]";
+    public static final String PREFIX = "[FlagGame]";
     private static final String SEPARATE_LINE = "======";
     private static final char SPACE = ' ';
     private static final char SEPARATOR = ':';
