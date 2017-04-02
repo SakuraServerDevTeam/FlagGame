@@ -14,13 +14,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package syam.flaggame.command.area;
+package syam.flaggame.command.area.data;
 
 import java.util.List;
 import org.bukkit.entity.Player;
 import java.util.Map;
+import jp.llv.flaggame.util.ConvertUtils;
 import syam.flaggame.FlagGame;
 import org.bukkit.permissions.Permissible;
+import syam.flaggame.command.area.AreaCommand;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.AreaInfo;
 import syam.flaggame.game.Stage;
@@ -31,15 +33,14 @@ import syam.flaggame.util.Actions;
  *
  * @author toyblocks
  */
-public class AreaRollbackCommand extends AreaCommand {
+public class AreaDataTimingCommand extends AreaCommand {
 
-    public AreaRollbackCommand(FlagGame plugin) {
+    public AreaDataTimingCommand(FlagGame plugin) {
         super(
                 plugin,
-                1,
-                "<id> [name] [timing] <- schedule rollback",
-                "area rollback",
-                "ar"
+                3,
+                "<id> <name> [timing] <- schedule rollback",
+                "area data timing"
         );
     }
 
@@ -49,20 +50,6 @@ public class AreaRollbackCommand extends AreaCommand {
         AreaInfo info = stage.getAreas().getAreaInfo(id);
         if (info == null) {
             throw new CommandException("&cその名前のエリアは存在しません！");
-        }
-
-        if (args.size() == 1) {
-            int count = info.getRollbacks().size();
-            Actions.message(player, "&a ==============&b RollbackList(" + count + ") &a==============");
-            if (count == 0) {
-                Actions.message(player, " &7設定されているロールバックがありません");
-            } else {
-                for (Map.Entry<String, AreaInfo.RollbackData> entry : info.getRollbacks().entrySet()) {
-                    sendMessage(player, "&6" + entry.getKey() + "&a: " + entry.getValue().getTarget().toString().toLowerCase());
-                }
-            }
-            Actions.message(player, "&a ============================================");
-            return;
         }
 
         String savename = args.get(1);
@@ -78,9 +65,9 @@ public class AreaRollbackCommand extends AreaCommand {
                         + "&a'です！"
             );
         } else {
-            int timing;
+            long timing;
             try {
-                timing = Integer.parseInt(args.get(2));
+                timing = ConvertUtils.toMiliseconds(Double.parseDouble(args.get(2)));
             } catch (NumberFormatException ex) {
                 throw new CommandException("&c無効な数字です！", ex);
             }

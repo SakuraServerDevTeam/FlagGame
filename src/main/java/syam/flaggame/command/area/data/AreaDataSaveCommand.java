@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package syam.flaggame.command.area;
+package syam.flaggame.command.area.data;
 
 import java.util.List;
 import java.util.Arrays;
@@ -27,6 +27,7 @@ import jp.llv.flaggame.util.ConvertUtils;
 import org.bukkit.entity.Player;
 import syam.flaggame.FlagGame;
 import org.bukkit.permissions.Permissible;
+import syam.flaggame.command.area.AreaCommand;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.AreaInfo;
 import syam.flaggame.game.Stage;
@@ -37,15 +38,14 @@ import syam.flaggame.util.Actions;
  *
  * @author toyblocks
  */
-public class AreaSaveCommand extends AreaCommand {
+public class AreaDataSaveCommand extends AreaCommand {
 
-    public AreaSaveCommand(FlagGame plugin) {
+    public AreaDataSaveCommand(FlagGame plugin) {
         super(
                 plugin,
                 3,
-                "<id> <name> <target> <- save region",
-                "area save",
-                "asa"
+                "<id> <target> <name> <- save region",
+                "area data save"
         );
     }
 
@@ -56,19 +56,19 @@ public class AreaSaveCommand extends AreaCommand {
         if (info == null) {
             throw new CommandException("&cその名前のエリアは存在しません！");
         }
-        String savename = args.get(1);
-        AreaInfo.RollbackData data = info.getRollback(savename);
-        if (data == null) {
-            data = info.addRollback(savename);
-        }
         StageDataType target;
         try {
-            target = StageDataType.valueOf(args.get(2).toUpperCase());
+            target = StageDataType.valueOf(args.get(1).toUpperCase());
         } catch (IllegalArgumentException ex) {
             String types = Arrays.stream(StageDataType.values())
                     .map(p -> p.toString().toLowerCase())
                     .collect(Collectors.joining("/"));
             throw new CommandException("&cそのロールバック対象はサポートされていません！\n&c" + types, ex);
+        }
+        String savename = args.get(2);
+        AreaInfo.RollbackData data = info.getRollback(savename);
+        if (data == null) {
+            data = info.addRollback(savename);
         }
         if (target == StageDataType.NONE) {
             info.removeRollback(savename);

@@ -33,7 +33,7 @@ import syam.flaggame.util.Actions;
 public abstract class BaseCommand {
 
     public static final String COMMAND_PREFIX = "/flag ";
-    
+
     /* コマンド関係 */
     // 初期化必要無し
     protected final FlagGame plugin;
@@ -45,8 +45,8 @@ public abstract class BaseCommand {
     private final String usage;
     private final Perms permission;
     private final String[] aliases;
-    
-    public BaseCommand(FlagGame plugin, boolean bePlayer, int argLength, String usage, Perms permission, String name, String ... aliases) {
+
+    public BaseCommand(FlagGame plugin, boolean bePlayer, int argLength, String usage, Perms permission, String name, String... aliases) {
         this.plugin = plugin;
         this.bePlayer = bePlayer;
         this.argLength = argLength;
@@ -55,18 +55,19 @@ public abstract class BaseCommand {
         this.name = name;
         this.aliases = aliases;
     }
-    
-    public BaseCommand(FlagGame plugin, boolean bePlayer, int argLength, String usage, String name, String ... aliases) {
+
+    public BaseCommand(FlagGame plugin, boolean bePlayer, int argLength, String usage, String name, String... aliases) {
         this(plugin, bePlayer, argLength, usage, null, name, aliases);
     }
-    
+
     public boolean run(CommandSender sender, String[] preArgs, String cmd) {
         List<String> args = new ArrayList<>(Arrays.asList(preArgs));
 
         // 引数からコマンドの部分を取り除く
         // (コマンド名に含まれる半角スペースをカウント、リストの先頭から順にループで取り除く)
-        for (int i = 0; i < cmd.split(" ").length && i < args.size(); i++)
+        for (int i = 0; i < cmd.split(" ").length && !args.isEmpty(); i++) {
             args.remove(0);
+        }
 
         // 引数の長さチェック
         if (argLength > args.size()) {
@@ -107,7 +108,7 @@ public abstract class BaseCommand {
 
     /**
      * コマンドを実際に実行する
-     * 
+     *
      * @param args arguments presented
      * @param sender the sender who executed this command
      * @param player the player who executed this command - equal to sender
@@ -117,7 +118,7 @@ public abstract class BaseCommand {
 
     /**
      * コマンド実行に必要な権限を持っているか検証する
-     * 
+     *
      * @param target target to check permission
      * @return trueなら権限あり、falseなら権限なし
      */
@@ -139,14 +140,15 @@ public abstract class BaseCommand {
 
     /**
      * コマンドの使い方を送信する
+     *
      * @param sendTo target
      */
     public void sendUsage(CommandSender sendTo) {
         Actions.message(sendTo, "&c" + BaseCommand.COMMAND_PREFIX + name + " " + usage);
     }
-    
+
     public void sendMessage(CommandSender sender, String message) {
         Actions.sendPrefixedMessage(sender, message);
     }
-    
+
 }

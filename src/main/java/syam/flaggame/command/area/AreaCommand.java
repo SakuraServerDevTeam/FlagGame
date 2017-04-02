@@ -30,7 +30,7 @@ import syam.flaggame.player.GamePlayer;
  *
  * @author toyblocks
  */
-public abstract class AreaCommand extends BaseCommand{
+public abstract class AreaCommand extends BaseCommand {
 
     public AreaCommand(FlagGame plugin, int argLength, String usage, Perms permission, String name, String... aliases) {
         super(plugin, true, argLength, usage, permission, name, aliases);
@@ -48,7 +48,7 @@ public abstract class AreaCommand extends BaseCommand{
         }
         this.execute(args, player, gp.getSetupSession().get().getSelectedStage());
     }
-    
+
     public abstract void execute(List<String> args, Player player, Stage stage) throws CommandException;
-    
+
 }

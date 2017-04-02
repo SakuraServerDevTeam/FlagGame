@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package syam.flaggame.command.area;
+package syam.flaggame.command.area.data;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -24,6 +24,7 @@ import jp.llv.flaggame.util.ConvertUtils;
 import org.bukkit.entity.Player;
 import syam.flaggame.FlagGame;
 import org.bukkit.permissions.Permissible;
+import syam.flaggame.command.area.AreaCommand;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.AreaInfo;
 import syam.flaggame.game.Stage;
@@ -34,15 +35,14 @@ import syam.flaggame.util.Actions;
  *
  * @author toyblocks
  */
-public class AreaLoadCommand extends AreaCommand {
+public class AreaDataLoadCommand extends AreaCommand {
 
-    public AreaLoadCommand(FlagGame plugin) {
+    public AreaDataLoadCommand(FlagGame plugin) {
         super(
                 plugin,
                 2,
                 "<id> <name> <- load region",
-                "area load",
-                "alo"
+                "area data load"
         );
     }
 

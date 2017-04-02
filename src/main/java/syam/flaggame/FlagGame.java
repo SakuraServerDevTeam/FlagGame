@@ -46,13 +46,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import syam.flaggame.command.*;
 import syam.flaggame.command.area.*;
-import syam.flaggame.command.area.message.AreaMessageAddCommand;
-import syam.flaggame.command.area.message.AreaMessageDeleteCommand;
-import syam.flaggame.command.area.message.AreaMessageListCommand;
-import syam.flaggame.command.area.message.AreaMessageTimingCommand;
-import syam.flaggame.command.objective.ObjectiveDeleteCommand;
-import syam.flaggame.command.objective.ObjectiveListCommand;
-import syam.flaggame.command.objective.ObjectiveManageCommand;
+import syam.flaggame.command.area.data.*;
+import syam.flaggame.command.area.message.*;
+import syam.flaggame.command.objective.*;
 import syam.flaggame.command.queue.ConfirmQueue;
 import syam.flaggame.listener.*;
 import syam.flaggame.game.StageManager;
@@ -293,11 +289,13 @@ public class FlagGame extends JavaPlugin {
                 AreaDeleteCommand::new,
                 AreaPermitCommand::new,
                 AreaListCommand::new,
-                AreaSaveCommand::new,
-                AreaLoadCommand::new,
+                AreaDataListCommand::new,
+                AreaDataSaveCommand::new,
+                AreaDataLoadCommand::new,
+                AreaDataDeleteCommand::new,
+                AreaDataTimingCommand::new,
                 AreaSelectCommand::new,
                 AreaSetCommand::new,
-                AreaRollbackCommand::new,
                 AreaInitCommand::new,
                 AreaTestCommand::new,
                 AreaMessageAddCommand::new,

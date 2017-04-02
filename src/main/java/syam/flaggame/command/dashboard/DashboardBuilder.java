@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import jp.llv.flaggame.util.TriConsumer;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -256,19 +257,39 @@ public class DashboardBuilder {
             keyFormatter.accept(this, entry.getKey());
             text.gray(SEPARATOR).text(SPACE);
             valueFormatter.accept(this, entry.getValue());
-            text.br();
+            br();
+        }
+        return this;
+    }
+
+    public <K, V> DashboardBuilder appendMap(Map<? extends K, ? extends V> contents,
+                                             BiConsumer<DashboardBuilder, ? super K> keyFormatter,
+                                             TriConsumer<DashboardBuilder, ? super K, ? super V> valueFormatter) {
+        if (!head) {
+            br();
+        }
+        for (Map.Entry<? extends K, ? extends V> entry : contents.entrySet()) {
+            keyFormatter.accept(this, entry.getKey());
+            text.gray(SEPARATOR).text(SPACE);
+            valueFormatter.accept(this, entry.getKey(), entry.getValue());
+            br();
         }
         return this;
     }
 
     public <K extends CharSequence, V> DashboardBuilder appendMap(Map<? extends K, ? extends V> contents,
                                                                   BiConsumer<DashboardBuilder, ? super V> valueFormatter) {
-        return appendMap(contents, (t, k) -> t.key(k), valueFormatter);
+        return appendMap(contents, (t, k) -> t.green(k), valueFormatter);
+    }
+
+    public <K extends CharSequence, V> DashboardBuilder appendMap(Map<? extends K, ? extends V> contents,
+                                                                  TriConsumer<DashboardBuilder, ? super K, ? super V> valueFormatter) {
+        return appendMap(contents, (t, k) -> t.green(k), valueFormatter);
     }
 
     public <K extends CharSequence, V> DashboardBuilder appendEnumMap(Map<? extends K, ? extends V> contents,
                                                                       BiConsumer<DashboardBuilder, ? super V> valueFormatter) {
-        return appendMap(contents, (t, k) -> t.key(k.toString().toLowerCase()), valueFormatter);
+        return appendMap(contents, (t, k) -> t.green(k.toString().toLowerCase()), valueFormatter);
     }
 
     public BaseComponent[] create() {
