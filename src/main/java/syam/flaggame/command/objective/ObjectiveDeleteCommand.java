@@ -37,7 +37,7 @@ public class ObjectiveDeleteCommand extends ObjectiveCommand {
         super(
                 plugin,
                 3,
-                "<x> <y> <z>",
+                "<x> <y> <z> <- delete objective located there",
                 Perms.STAGE_CONFIG_SET,
                 "objective delete",
                 "obj delete", "odel"

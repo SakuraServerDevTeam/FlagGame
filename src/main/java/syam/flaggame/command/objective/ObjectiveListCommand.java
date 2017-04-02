@@ -20,7 +20,6 @@ import syam.flaggame.game.objective.ObjectiveType;
 import java.util.Collection;
 import java.util.List;
 import org.bukkit.Location;
-import org.bukkit.block.Chest;
 import syam.flaggame.game.objective.Flag;
 import org.bukkit.entity.Player;
 import syam.flaggame.FlagGame;
@@ -42,8 +41,8 @@ public class ObjectiveListCommand extends ObjectiveCommand {
     public ObjectiveListCommand(FlagGame plugin) {
         super(
                 plugin,
-                1,
-                "<type>",
+                0,
+                "<- show objective list",
                 Perms.STAGE_CONFIG_CHECK,
                 "objective list",
                 "obj list", "olist"
