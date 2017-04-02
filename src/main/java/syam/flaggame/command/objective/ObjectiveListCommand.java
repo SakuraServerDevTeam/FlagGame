@@ -98,7 +98,7 @@ public class ObjectiveListCommand extends ObjectiveCommand {
                             .buttonRun("delete").append("objective delete")
                             .append(obj.getType())
                             .append(loc.getBlockX()).append(loc.getBlockY()).append(loc.getBlockZ()).create();
-                }).buttonSuggest("enable manager").append("objective manage chest").create()
+                }).buttonRun("enable manager").append("objective manage chest").create()
                 .sendTo(player);
     }
 
