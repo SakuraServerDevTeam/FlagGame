@@ -45,6 +45,10 @@ public enum ObjectiveType {
         return StringUtil.capitalize(name());
     }
     
+    public Class<? extends Objective> getType() {
+        return clazz;
+    }
+    
     public static ObjectiveType of(String name) {
         return valueOf(name.toUpperCase());
     }
