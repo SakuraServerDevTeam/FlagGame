@@ -21,7 +21,8 @@ package syam.flaggame.exception;
  * 
  * @author syam(syamn)
  */
-public class FlagGameException extends RuntimeException {
+public class FlagGameException extends Exception {
+    
     private static final long serialVersionUID = -5759263894003798032L;
 
     public FlagGameException() {

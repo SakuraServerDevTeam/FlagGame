@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2017 SakuraServerDev
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,14 +17,12 @@
 package syam.flaggame.exception;
 
 /**
- * An exception thrown when the accessed stage is used by someone and not able
- * to use.
  *
- * @author Toyblocks
+ * @author SakuraServerDev
  */
-public class StageReservedException extends FlagGameException {
+public class ObjectiveCollisionException extends FlagGameException {
 
-    public StageReservedException() {
+    public ObjectiveCollisionException() {
     }
-
+    
 }
