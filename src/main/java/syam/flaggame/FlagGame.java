@@ -50,8 +50,9 @@ import syam.flaggame.command.area.message.AreaMessageAddCommand;
 import syam.flaggame.command.area.message.AreaMessageDeleteCommand;
 import syam.flaggame.command.area.message.AreaMessageListCommand;
 import syam.flaggame.command.area.message.AreaMessageTimingCommand;
+import syam.flaggame.command.objective.ObjectiveDeleteCommand;
 import syam.flaggame.command.objective.ObjectiveListCommand;
-import syam.flaggame.command.objective.ObjectiveSetCommand;
+import syam.flaggame.command.objective.ObjectiveManageCommand;
 import syam.flaggame.command.queue.ConfirmQueue;
 import syam.flaggame.listener.*;
 import syam.flaggame.game.StageManager;
@@ -303,7 +304,8 @@ public class FlagGame extends JavaPlugin {
                 AreaMessageDeleteCommand::new,
                 AreaMessageListCommand::new,
                 AreaMessageTimingCommand::new,
-                ObjectiveSetCommand::new,
+                ObjectiveManageCommand::new,
+                ObjectiveDeleteCommand::new,
                 ObjectiveListCommand::new
         ).map(f -> f.apply(this)).forEach(this.commands::add);
     }

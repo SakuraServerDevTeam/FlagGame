@@ -20,7 +20,6 @@ import java.util.Collection;
 import java.util.List;
 import jp.llv.flaggame.game.Game;
 import jp.llv.flaggame.reception.TeamColor;
-import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.FlagGame;
@@ -124,7 +123,7 @@ public class DashboardCommand extends BaseCommand {
                         .buttonRun("set here").append("set spawn").append(color).create()
                         .buttonRun("delete").append("set spawn").append(color).append("none").create();
                 if (sender instanceof Player) {
-                    appendTpButton(builder, (Player) sender, stage.getSpawns().get(color));
+                    builder.buttonTp("tp", (Player) sender, stage.getSpawns().get(color));
                 }
             }
         }
@@ -132,7 +131,7 @@ public class DashboardCommand extends BaseCommand {
                 .key("SpecSpawn").value(stage.getSpecSpawn().isPresent() ? "defined" : "undefined")
                 .buttonRun("set here").append("set specspawn").create();
         if (sender instanceof Player && stage.getSpecSpawn().isPresent()) {
-            appendTpButton(builder, (Player) sender, stage.getSpecSpawn().get());
+            builder.buttonTp("tp", (Player) sender, stage.getSpecSpawn().get());
         }
         builder.br()
                 .buttonRun("area").append("area list").create();
@@ -153,13 +152,6 @@ public class DashboardCommand extends BaseCommand {
         } else {
             builder.gray("待機中");
         }
-    }
-
-    private static void appendTpButton(DashboardBuilder builder, Player player, Location loc) {
-        builder.buttonRun("tp").append("tp").append(player.getName())
-                .append(loc.getX()).append(loc.getY()).append(loc.getZ())
-                .append(loc.getYaw()).append(loc.getPitch())
-                .append(loc.getWorld().getName()).create();
     }
 
 }

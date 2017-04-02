@@ -70,7 +70,7 @@ public enum TeamColor {
      * @return name of the team
      */
     public String getTeamName() {
-        return teamName;
+        return teamName + "チーム";
     }
 
     /**
@@ -112,7 +112,7 @@ public enum TeamColor {
     }
 
     public String getRichName() {
-        return this.getChatColor() + this.getTeamName() + "チーム&r";
+        return this.getChatColor() + this.getTeamName() + "&r";
     }
 
     public static TeamColor getByColorData(byte data) {

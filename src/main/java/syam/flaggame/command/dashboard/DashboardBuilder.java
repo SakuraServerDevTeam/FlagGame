@@ -24,7 +24,9 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import syam.flaggame.util.Actions;
 
 /**
@@ -198,6 +200,13 @@ public class DashboardBuilder {
             text.event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, s));
             return this;
         });
+    }
+    
+    public DashboardBuilder buttonTp(String name, Player player, Location loc) {
+        return buttonRun("tp").append("tp").append(player.getName())
+                .append(loc.getX()).append(loc.getY()).append(loc.getZ())
+                .append(loc.getYaw()).append(loc.getPitch())
+                .append(loc.getWorld().getName()).create();
     }
 
     public CommandBuilder<DashboardBuilder> buttonSuggest(String name) {

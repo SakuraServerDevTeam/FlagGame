@@ -191,14 +191,14 @@ public class SetCommand extends BaseCommand {
         }
         if (args.size() >= 3 && args.get(2).equalsIgnoreCase("none")) {
             game.setSpawn(team, null);
-            Actions.message(player, "&a" + team.getTeamName() + "&aチームのスポーン地点を削除しました！");
+            Actions.message(player, team.getRichName() + "&aのスポーン地点を削除しました！");
             return;
         }
 
         // スポーン地点設定
         game.setSpawn(team, player.getLocation());
 
-        Actions.message(player, "&a" + team.getTeamName() + "&aチームのスポーン地点を設定しました！");
+        Actions.message(player, team.getRichName() + "&aのスポーン地点を設定しました！");
         plugin.getDynmap().updateRegion(game);
     }
 
@@ -437,7 +437,7 @@ public class SetCommand extends BaseCommand {
         info.getPermission(GamePermission.DOOR).setState(team, GamePermissionState.ALLOW);
         info.getPermission(GamePermission.CONTAINER).setState(team, GamePermissionState.ALLOW);
         info.getPermission(GamePermission.GODMODE).setState(team, GamePermissionState.ALLOW);
-        sendMessage(player, "&a" + team.getTeamName() + "&aチームの拠点を設定しました！");
+        sendMessage(player, team.getRichName() + "&aの拠点を設定しました！");
         sendMessage(player, "&aステージ'&6" + game.getName() + "&a'のエリア'&6" + id + "&a'での権限'&6" + GamePermission.DOOR + "&a'を状態'" + GamePermissionState.ALLOW.format() + "&a'に変更しました！");
         sendMessage(player, "&aステージ'&6" + game.getName() + "&a'のエリア'&6" + id + "&a'での権限'&6" + GamePermission.CONTAINER + "&a'を状態'" + GamePermissionState.ALLOW.format() + "&a'に変更しました！");
         sendMessage(player, "&aステージ'&6" + game.getName() + "&a'のエリア'&6" + id + "&a'での権限'&6" + GamePermission.GODMODE + "&a'を状態'" + GamePermissionState.ALLOW.format() + "&a'に変更しました！");

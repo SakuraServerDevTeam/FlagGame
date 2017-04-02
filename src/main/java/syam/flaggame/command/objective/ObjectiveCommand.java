@@ -16,6 +16,7 @@
  */
 package syam.flaggame.command.objective;
 
+import syam.flaggame.game.objective.ObjectiveType;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;

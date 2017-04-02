@@ -191,7 +191,7 @@ public class BGBlockListener extends BGListener {
         event.setCancelled(false);
 
         GamePlayer.sendMessage(placerTeam, ChatMessageType.ACTION_BAR,
-                gplayer.getColoredName() + "&aが" + brokenTeamColor.getTeamName() + "チームの&6" + f.getTypeName() + "pフラッグ&aを破壊しました!");
+                gplayer.getColoredName() + "&aが" + brokenTeamColor.getRichName() + "の&6" + f.getTypeName() + "pフラッグ&aを破壊しました!");
         this.game.getTeams().stream().filter(team -> team == brokenTeam)
                 .forEach(team -> GamePlayer.sendMessage(team, ChatMessageType.ACTION_BAR,
                         gplayer.getColoredName() + "&aに&6" + f.getTypeName() + "pフラッグ&aを破壊されました!"));

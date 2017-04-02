@@ -16,6 +16,7 @@
  */
 package syam.flaggame.command.objective;
 
+import syam.flaggame.game.objective.ObjectiveType;
 import java.util.List;
 import jp.llv.flaggame.reception.TeamColor;
 import org.bukkit.Material;
@@ -31,16 +32,16 @@ import syam.flaggame.util.Actions;
  *
  * @author SakuraServerDev
  */
-public class ObjectiveSetCommand extends ObjectiveCommand {
+public class ObjectiveManageCommand extends ObjectiveCommand {
 
-    public ObjectiveSetCommand(FlagGame plugin) {
+    public ObjectiveManageCommand(FlagGame plugin) {
         super(
                 plugin,
                 0,
-                "[option] <- enable objective locate tool",
+                "[option...] <- enable objective locate tool",
                 Perms.SET,
-                "objective set",
-                "obj set", "oset"
+                "objective manage",
+                "obj manage", "omanage"
         );
     }
 
