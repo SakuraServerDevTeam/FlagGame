@@ -17,8 +17,8 @@
 package syam.flaggame.listener;
 
 import jp.llv.flaggame.game.Game;
-import jp.llv.flaggame.game.basic.objective.BannerSlot;
-import jp.llv.flaggame.game.basic.objective.BannerSpawner;
+import syam.flaggame.game.objective.BannerSlot;
+import syam.flaggame.game.objective.BannerSpawner;
 import jp.llv.flaggame.reception.GameReception;
 
 import org.bukkit.Bukkit;
@@ -34,12 +34,12 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.*;
 
 import syam.flaggame.FlagGame;
-import jp.llv.flaggame.game.basic.objective.Flag;
-import jp.llv.flaggame.game.basic.objective.Nexus;
+import syam.flaggame.game.objective.Flag;
+import syam.flaggame.game.objective.Nexus;
 import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.material.Banner;
-import syam.flaggame.command.objective.ObjectiveType;
+import syam.flaggame.game.objective.ObjectiveType;
 import syam.flaggame.exception.StageReservedException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;

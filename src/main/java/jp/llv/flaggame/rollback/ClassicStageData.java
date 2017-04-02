@@ -17,8 +17,8 @@
 package jp.llv.flaggame.rollback;
 
 import java.util.function.Consumer;
-import jp.llv.flaggame.game.basic.objective.BannerSpawner;
-import jp.llv.flaggame.game.basic.objective.Flag;
+import syam.flaggame.game.objective.BannerSpawner;
+import syam.flaggame.game.objective.Flag;
 import jp.llv.flaggame.rollback.SerializeTask.CompletedSerializeTask;
 import jp.llv.flaggame.rollback.SerializeTask.FailedSerializeTask;
 import org.bukkit.Location;

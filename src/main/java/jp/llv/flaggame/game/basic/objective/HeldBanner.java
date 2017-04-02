@@ -16,6 +16,7 @@
  */
 package jp.llv.flaggame.game.basic.objective;
 
+import syam.flaggame.game.objective.BannerSpawner;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;

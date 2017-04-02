@@ -16,7 +16,10 @@
  */
 package syam.flaggame.game;
 
-import jp.llv.flaggame.game.basic.objective.Flag;
+import syam.flaggame.game.objective.BannerSlot;
+import syam.flaggame.game.objective.Nexus;
+import syam.flaggame.game.objective.BannerSpawner;
+import syam.flaggame.game.objective.Flag;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;

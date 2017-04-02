@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2017 SakuraServerDev
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14,31 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jp.llv.flaggame.game.basic.objective;
-
-import org.bukkit.Location;
-import jp.llv.flaggame.reception.TeamColor;
+package syam.flaggame.game.objective;
 
 /**
  *
- * @author Toyblocks
+ * @author SakuraServerDev
  */
-public class BannerSlot {
+public interface Objective {
 
-    private final Location loc;
-    private final TeamColor color;
-
-    public BannerSlot(Location loc, TeamColor color) {
-        this.loc = loc;
-        this.color = color;
+    default String getName() {
+        return getType().getName();
     }
 
-    public Location getLocation() {
-        return loc;
-    }
-
-    public TeamColor getColor() {
-        return color;
-    }
+    ObjectiveType getType();
 
 }

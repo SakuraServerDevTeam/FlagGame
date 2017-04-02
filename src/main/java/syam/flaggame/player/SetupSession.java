@@ -17,7 +17,7 @@
 package syam.flaggame.player;
 
 import jp.llv.flaggame.reception.TeamColor;
-import syam.flaggame.command.objective.ObjectiveType;
+import syam.flaggame.game.objective.ObjectiveType;
 import syam.flaggame.game.Stage;
 
 /**

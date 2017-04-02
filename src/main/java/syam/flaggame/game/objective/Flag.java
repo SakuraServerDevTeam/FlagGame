@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jp.llv.flaggame.game.basic.objective;
+package syam.flaggame.game.objective;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -22,7 +22,7 @@ import org.bukkit.block.Block;
 
 import jp.llv.flaggame.reception.TeamColor;
 
-public class Flag {
+public class Flag implements Objective {
     
     public static final Material[] FLAG_BLOCK_IDS = {Material.WOOL, Material.STAINED_CLAY, Material.STAINED_GLASS};
     private final Location loc; // フラッグ座標
@@ -92,6 +92,11 @@ public class Flag {
             return null;
         }
         return TeamColor.getByColorData(b.getData());
+    }
+
+    @Override
+    public ObjectiveType getType() {
+        return ObjectiveType.FLAG;
     }
     
     public static boolean isFlag(Material material) {

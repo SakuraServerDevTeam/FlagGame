@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jp.llv.flaggame.game.basic.objective;
+package syam.flaggame.game.objective;
 
 import org.bukkit.Location;
 import jp.llv.flaggame.reception.TeamColor;
@@ -23,16 +23,14 @@ import jp.llv.flaggame.reception.TeamColor;
  *
  * @author Toyblocks
  */
-public class Nexus {
-    
+public class BannerSlot implements Objective {
+
     private final Location loc;
     private final TeamColor color;
-    private final double point;
 
-    public Nexus(Location loc, TeamColor color, double point) {
+    public BannerSlot(Location loc, TeamColor color) {
         this.loc = loc;
         this.color = color;
-        this.point = point;
     }
 
     public Location getLocation() {
@@ -43,8 +41,9 @@ public class Nexus {
         return color;
     }
 
-    public double getPoint() {
-        return point;
+    @Override
+    public ObjectiveType getType() {
+        return ObjectiveType.BANNER_SLOT;
     }
-    
+
 }

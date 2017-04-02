@@ -25,7 +25,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.FlagGame;
 import syam.flaggame.command.dashboard.DashboardBuilder;
-import syam.flaggame.command.objective.ObjectiveType;
+import syam.flaggame.game.objective.ObjectiveType;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
