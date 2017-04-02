@@ -146,6 +146,7 @@ public class BGEntityListener extends BGListener {
         if (!this.players.contains(gkilled)) {
             return;
         }
+        event.setDroppedExp(0);
 
         event.setDeathMessage(null);
 
