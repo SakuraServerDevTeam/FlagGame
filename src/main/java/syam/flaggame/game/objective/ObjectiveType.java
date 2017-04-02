@@ -25,7 +25,7 @@ import jp.llv.flaggame.util.StringUtil;
 public enum ObjectiveType {
     
     FLAG(Flag.class),
-    CHEST(Chest.class),
+    CHEST(GameChest.class),
     NEXUS(Nexus.class),
     BANNER_SLOT(BannerSlot.class),
     BANNER_SPAWNER(BannerSpawner.class),

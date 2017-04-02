@@ -22,11 +22,11 @@ import org.bukkit.Location;
  *
  * @author SakuraServerDev
  */
-public class Chest implements Objective {
+public class GameChest implements Objective {
     
     private final Location loc;
 
-    public Chest(Location loc) {
+    public GameChest(Location loc) {
         this.loc = loc;
     }
 
