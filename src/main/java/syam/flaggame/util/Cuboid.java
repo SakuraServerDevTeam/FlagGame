@@ -88,7 +88,7 @@ public class Cuboid {
      * @return X軸の幅
      */
     public int getXWidth() {
-        return max.getBlockX() - min.getBlockX();
+        return max.getBlockX() - min.getBlockX() + 1;
     }
 
     /**
@@ -97,7 +97,7 @@ public class Cuboid {
      * @return Y座標の幅
      */
     public int getZWidth() {
-        return max.getBlockZ() - min.getBlockZ();
+        return max.getBlockZ() - min.getBlockZ() + 1;
     }
 
     /**
@@ -106,7 +106,7 @@ public class Cuboid {
      * @return Y座標の幅
      */
     public int getHeight() {
-        return max.getBlockY() - min.getBlockY();
+        return max.getBlockY() - min.getBlockY() + 1;
     }
 
     /**
