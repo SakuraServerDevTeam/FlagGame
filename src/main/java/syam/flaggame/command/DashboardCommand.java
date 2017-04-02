@@ -127,7 +127,7 @@ public class DashboardCommand extends BaseCommand {
                 }
             }
         }
-        builder.br()
+        builder.buttonSuggest("add").append("set spawn").create().br()
                 .key("SpecSpawn").value(stage.getSpecSpawn().isPresent() ? "defined" : "undefined")
                 .buttonRun("set here").append("set specspawn").create();
         if (sender instanceof Player && stage.getSpecSpawn().isPresent()) {
