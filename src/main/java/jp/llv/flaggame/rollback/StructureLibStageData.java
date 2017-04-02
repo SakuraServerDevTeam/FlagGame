@@ -72,7 +72,7 @@ public class StructureLibStageData extends CachedStageData<TagCompound> {
 
     @Override
     public StageDataType getType() {
-        return entities ? StageDataType.SL_ENTITIES : StageDataType.SL_BLOCKS;
+        return entities ? StageDataType.ENTITIES : StageDataType.BLOCKS;
     }
 
     private class StructureLibStageDataDeserializeTask extends SerializeTask {

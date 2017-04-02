@@ -26,8 +26,8 @@ public enum StageDataType {
     
     NONE(VoidStageData::new),
     CLASSIC(ClassicStageData::new),
-    SL_BLOCKS(() -> new StructureLibStageData(false, true)),
-    SL_ENTITIES(() -> new StructureLibStageData(true, true)),
+    BLOCKS(() -> new StructureLibStageData(false, true)),
+    ENTITIES(() -> new StructureLibStageData(true, true)),
     ;
 
     private final Supplier<StageData> constructor;
