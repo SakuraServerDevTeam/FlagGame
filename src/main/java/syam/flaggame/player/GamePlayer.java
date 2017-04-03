@@ -175,12 +175,20 @@ public class GamePlayer {
     }
 
     public Optional<SetupSession> getSetupSession() {
-        return Optional.ofNullable(this.session);
+        if (this.session == null) {
+            return Optional.empty();
+        } else if (this.session.getSelectedStage().isReserved()) {
+            this.session = null;
+            sendMessage("&c占有されたためにステージ選択が解除されました！");
+        }
+        return Optional.of(this.session);
     }
 
     public SetupSession createSetupSession(Stage stage) {
         if (stage == null) {
             throw new NullPointerException("Stage can't be null.");
+        } else if (stage.isReserved()) {
+            throw new IllegalStateException("The stage is in use.");
         }
         return this.session = new SetupSession(stage);
     }

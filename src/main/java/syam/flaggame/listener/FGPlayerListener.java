@@ -42,7 +42,6 @@ import org.bukkit.material.Banner;
 import syam.flaggame.command.dashboard.OnelineBuilder;
 import syam.flaggame.exception.ObjectiveCollisionException;
 import syam.flaggame.game.objective.ObjectiveType;
-import syam.flaggame.exception.StageReservedException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.game.objective.GameChest;
 import syam.flaggame.permission.Perms;
@@ -156,8 +155,6 @@ public class FGPlayerListener implements Listener {
                 default:
                     break;
             }
-        } catch (StageReservedException ex) {
-            Actions.message(player, "&cステージ" + stage.getName() + "は現在編集不可です!");
         } catch (ObjectiveCollisionException ex) {
             Actions.message(player, "&cそこには既に別のオブジェクティブが存在します！");
         }

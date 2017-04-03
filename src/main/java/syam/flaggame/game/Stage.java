@@ -88,8 +88,7 @@ public class Stage {
         this.stageName = name;
     }
     
-    public void addObjective(Objective objective) throws StageReservedException, ObjectiveCollisionException {
-        checkEditable();
+    public void addObjective(Objective objective) throws ObjectiveCollisionException {
         if (objectives.containsKey(objective.getLocation())) {
             throw new ObjectiveCollisionException();
         }
@@ -117,13 +116,11 @@ public class Stage {
         return getObjective(loc, clazz).isPresent();
     }
     
-    public void removeObjective(Location loc) throws StageReservedException {
-        checkEditable();
+    public void removeObjective(Location loc) {
         objectives.remove(loc);
     }
     
-    public void removeObjective(Objective objective) throws StageReservedException {
-        checkEditable();
+    public void removeObjective(Objective objective) {
         objectives.remove(objective.getLocation(), objective);
     }
     
@@ -155,8 +152,7 @@ public class Stage {
      * @param loc
      * @throws syam.flaggame.exception.StageReservedException when this stage is being used
      */
-    public void setSpawn(TeamColor team, Location loc) throws StageReservedException {
-        checkEditable();
+    public void setSpawn(TeamColor team, Location loc) {
         if (loc == null) {
             spawnMap.remove(team);
         } else {
@@ -187,8 +183,7 @@ public class Stage {
         return Optional.ofNullable(this.specSpawn).map(Location::clone);
     }
     
-    public void setSpecSpawn(Location loc) throws StageReservedException {
-        checkEditable();
+    public void setSpecSpawn(Location loc) {
         this.specSpawn = loc != null ? loc.clone() : null;
     }
 
@@ -200,8 +195,7 @@ public class Stage {
         this.areas = areas;
     }
     
-    public void setProtected(boolean protect) throws StageReservedException {
-        checkEditable();
+    public void setProtected(boolean protect) {
         this.protect = protect;
     }
     
@@ -226,17 +220,13 @@ public class Stage {
      * このゲームの制限時間(秒)を設定する
      *
      * @param sec 制限時間(秒)
-     * @throws syam.flaggame.exception.StageReservedException when this stage is
-     * being used
      */
     @Deprecated
-    public void setGameTimeInSec(int sec) throws StageReservedException {
-        checkEditable();
+    public void setGameTimeInSec(int sec) {
         gameTime = sec * 1000;
     }
     
-    public void setGameTime(long sec) throws StageReservedException {
-        checkEditable();
+    public void setGameTime(long sec) {
         gameTime = sec;
     }
 
@@ -258,11 +248,8 @@ public class Stage {
      * チーム毎の人数上限を設定する
      *
      * @param limit チーム毎の人数上限
-     * @throws syam.flaggame.exception.StageReservedException when this stage is
-     * being used
      */
-    public void setTeamLimit(int limit) throws StageReservedException {
-        checkEditable();
+    public void setTeamLimit(int limit) {
         this.teamPlayerLimit = limit;
     }
 
@@ -279,8 +266,7 @@ public class Stage {
         return killScore;
     }
 
-    public void setKillScore(double killScore) throws StageReservedException {
-        checkEditable();
+    public void setKillScore(double killScore) {
         this.killScore = killScore;
     }
 
@@ -288,8 +274,7 @@ public class Stage {
         return deathScore;
     }
     
-    public void setDescription(String value) throws StageReservedException {
-        checkEditable();
+    public void setDescription(String value) {
         description = value;
     }
     
@@ -297,8 +282,7 @@ public class Stage {
         return description;
     }
     
-    public void setAuthor(String value) throws StageReservedException {
-        checkEditable();
+    public void setAuthor(String value) {
         author = value;
     }
     
@@ -306,8 +290,7 @@ public class Stage {
         return author;
     }
     
-    public void setGuide(String value) throws StageReservedException {
-        checkEditable();
+    public void setGuide(String value) {
         guide = value;
     }
     
@@ -315,8 +298,7 @@ public class Stage {
         return guide;
     }
     
-    public void setCooldown(long value) throws StageReservedException {
-        checkEditable();
+    public void setCooldown(long value) {
         cooldown = value;
     }
     
@@ -324,8 +306,7 @@ public class Stage {
         return cooldown;
     }
 
-    public void setDeathScore(double deathScore) throws StageReservedException {
-        checkEditable();
+    public void setDeathScore(double deathScore)  {
         this.deathScore = deathScore;
     }
 
@@ -333,8 +314,7 @@ public class Stage {
         return entryFee;
     }
 
-    public void setEntryFee(double entryFee) throws StageReservedException {
-        checkEditable();
+    public void setEntryFee(double entryFee) {
         this.entryFee = entryFee;
     }
 
@@ -342,8 +322,7 @@ public class Stage {
         return prize;
     }
 
-    public void setPrize(double prize) throws StageReservedException {
-        checkEditable();
+    public void setPrize(double prize)  {
         this.prize = prize;
     }
     
@@ -366,8 +345,7 @@ public class Stage {
      * @throws syam.flaggame.exception.StageReservedException when this stage is
      * being used
      */
-    public void setAvailable(boolean available) throws StageReservedException {
-        checkEditable();
+    public void setAvailable(boolean available) {
         this.available = available;
     }
 
@@ -384,8 +362,16 @@ public class Stage {
         return this.reception != null;
     }
     
+    /**
+     * Reserve this reception.
+     * @param reception reception going to use this reception, or null.
+     * @return reservation object for release this stage.
+     * @throws StageReservedException if this stage has already reserved.
+     */
     public Reservation reserve(GameReception reception) throws StageReservedException {
-        checkEditable();
+        if (this.isReserved()) {
+            throw new StageReservedException();
+        }
         this.reception = reception;
         return new Reservation(this);
     }
@@ -401,12 +387,6 @@ public class Stage {
     public void validate() throws NullPointerException {
         if (!available || spawnMap.isEmpty()) {
             throw new NullPointerException();
-        }
-    }
-    
-    private void checkEditable() throws StageReservedException {
-        if (this.isReserved()) {
-            throw new StageReservedException();
         }
     }
     

@@ -44,7 +44,7 @@ public class StageCreateCommand extends BaseCommand {
                 Perms.CREATE,
                 "stage create"
         );
-    
+
     }
 
     @Override
@@ -66,12 +66,8 @@ public class StageCreateCommand extends BaseCommand {
         }
 
         // 新規ゲーム登録
-        try {
-            stage.setAvailable(false);
-            stage.setProtected(false);
-        } catch (StageReservedException ex) {
-            throw new RuntimeException("Is illegal opperation executed? Please report this?", ex);
-        }
+        stage.setAvailable(false);
+        stage.setProtected(false);
         this.plugin.getStages().addStage(args.get(0), stage);
 
         GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
@@ -81,6 +77,5 @@ public class StageCreateCommand extends BaseCommand {
         plugin.getDynmap().updateRegions();
         Actions.message(player, "&a新規ステージ'" + stage.getName() + "'を登録して選択しました！");
     }
-    
-}
 
+}

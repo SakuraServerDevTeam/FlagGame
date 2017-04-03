@@ -23,6 +23,7 @@ import syam.flaggame.FlagGame;
 import syam.flaggame.command.BaseCommand;
 import syam.flaggame.command.queue.Queueable;
 import syam.flaggame.exception.CommandException;
+import syam.flaggame.exception.StageReservedException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.util.Actions;
@@ -50,8 +51,10 @@ public class StageDeleteCommand extends BaseCommand {
         Stage stage = this.plugin.getStages().getStage(args.get(0))
                 .orElseThrow(() -> new CommandException("&cその名前のステージは存在しません！"));
 
-        if (stage.isReserved()) {
-            throw new CommandException("&cそのステージは現在受付中または開始中のため削除できません");
+        try {
+            stage.reserve(null); // the stage cannot be reserved, used, or nor edited
+        } catch (StageReservedException ex) {
+            throw new CommandException("&cそのステージは現在受付中または開始中のため削除できません", ex);
         }
 
         // confirmキュー追加

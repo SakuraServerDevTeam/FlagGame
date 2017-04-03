@@ -55,17 +55,13 @@ public class ObjectiveDeleteCommand extends ObjectiveCommand {
             throw new CommandException("&c無効な数値です！");
         }
         Location loc = new Location(plugin.getGameWorld(), x, y, z);
-        try {
-            if (!stage.getObjective(loc, type.getType()).isPresent()) {
-                throw new CommandException("&cそこには"+type.getName()+"はありません！");
-            };
-            stage.removeObjective(loc);
-            OnelineBuilder.newBuilder().info("ステージ").value(stage.getName()).info("の")
-                    .value(type.getName()).info("を削除しました！")
-                    .sendTo(player);
-        } catch (StageReservedException ex) {
-            throw new CommandException("&cステージ" + stage.getName() + "は現在編集不可です!", ex);
-        }
+        if (!stage.getObjective(loc, type.getType()).isPresent()) {
+            throw new CommandException("&cそこには" + type.getName() + "はありません！");
+        };
+        stage.removeObjective(loc);
+        OnelineBuilder.newBuilder().info("ステージ").value(stage.getName()).info("の")
+                .value(type.getName()).info("を削除しました！")
+                .sendTo(player);
     }
 
 }

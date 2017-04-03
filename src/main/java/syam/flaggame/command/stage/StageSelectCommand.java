@@ -52,6 +52,10 @@ public class StageSelectCommand extends BaseCommand {
             Stage stage = this.plugin.getStages().getStage(args.get(0))
                     .orElseThrow(() -> new CommandException("&cステージ'" + args.get(0) + "'が見つかりません！"));
             
+            if (stage.isReserved()) {
+                throw new CommandException("&cステージは占有されています！");
+            }
+            
             // 既に選択中のステージと同じステージでない限りはセッションを作成
             if (gPlayer.getSetupSession().map(SetupSession::getSelectedStage).orElse(null) != stage) {
                 gPlayer.createSetupSession(stage);

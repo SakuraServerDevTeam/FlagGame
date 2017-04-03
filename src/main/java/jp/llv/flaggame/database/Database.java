@@ -47,7 +47,7 @@ public interface Database extends AutoCloseable {
     Collection<Stage> loadStages() throws DatabaseException;
     
     void saveStages(Collection<Stage> stages) throws DatabaseException;
-
+    
     @Override
     public void close() throws DatabaseException;
 

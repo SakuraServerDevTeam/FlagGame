@@ -31,7 +31,6 @@ import jp.llv.flaggame.rollback.StageDataType;
 import syam.flaggame.command.BaseCommand;
 import syam.flaggame.game.Configables;
 import syam.flaggame.exception.CommandException;
-import syam.flaggame.exception.StageReservedException;
 import syam.flaggame.game.AreaInfo;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
@@ -95,70 +94,66 @@ public class StageSetCommand extends BaseCommand {
         }
 
         // 設定項目によって処理を分ける
-        try {
-            switch (conf) {
-                /* 一般 */
-                case SPAWN: // スポーン地点設定
-                    setSpawn(player, stage, args);
-                    return;
-                case SPECSPAWN: // 観戦者スポーン設定
-                    setSpecSpawn(player, stage, args);
-                    return;
+        switch (conf) {
+            /* 一般 */
+            case SPAWN: // スポーン地点設定
+                setSpawn(player, stage, args);
+                return;
+            case SPECSPAWN: // 観戦者スポーン設定
+                setSpecSpawn(player, stage, args);
+                return;
 
-                /* オプション */
-                case GAMETIME: // 制限時間
-                    setGameTime(player, stage, args);
-                    return;
-                case TEAMLIMIT: // チーム人数制限
-                    setTeamLimit(player, stage, args);
-                    return;
-                case AVAILABLE: // 有効設定
-                    setStageAvailable(player, stage, args);
-                    return;
-                case PROTECT:
-                    setStageProtect(player, stage, args);
-                    return;
-                case KILLSCORE:
-                    setKillScore(player, stage, args);
-                    return;
-                case DEATHSCORE:
-                    setDeathScore(player, stage, args);
-                    return;
-                case ENTRYFEE:
-                    setEntryFee(player, stage, args);
-                    return;
-                case PRIZE:
-                    setPrize(player, stage, args);
-                    return;
-                case COOLDOWN:
-                    setCooldown(player, stage, args);
-                    return;
+            /* オプション */
+            case GAMETIME: // 制限時間
+                setGameTime(player, stage, args);
+                return;
+            case TEAMLIMIT: // チーム人数制限
+                setTeamLimit(player, stage, args);
+                return;
+            case AVAILABLE: // 有効設定
+                setStageAvailable(player, stage, args);
+                return;
+            case PROTECT:
+                setStageProtect(player, stage, args);
+                return;
+            case KILLSCORE:
+                setKillScore(player, stage, args);
+                return;
+            case DEATHSCORE:
+                setDeathScore(player, stage, args);
+                return;
+            case ENTRYFEE:
+                setEntryFee(player, stage, args);
+                return;
+            case PRIZE:
+                setPrize(player, stage, args);
+                return;
+            case COOLDOWN:
+                setCooldown(player, stage, args);
+                return;
 
-                /* stage description */
-                case AUTHOR:
-                    setAuthor(player, stage, args);
-                    return;
-                case DESCRIPTION:
-                    setDescription(player, stage, args);
-                    return;
-                case GUIDE:
-                    setGuide(player, stage, args);
-                    return;
+            /* stage description */
+            case AUTHOR:
+                setAuthor(player, stage, args);
+                return;
+            case DESCRIPTION:
+                setDescription(player, stage, args);
+                return;
+            case GUIDE:
+                setGuide(player, stage, args);
+                return;
 
-                /* shortcut */
-                case STAGE:
-                    setStage(player, stage, args);
-                    return;
-                case BASE:
-                    setBase(player, stage, args);
-                    return;
+            /* shortcut */
+            case STAGE:
+                setStage(player, stage, args);
+                return;
+            case BASE:
+                setBase(player, stage, args);
+                return;
 
-                // 定義漏れ
-                default:
-                    throw new CommandException("&c設定項目が不正です 開発者にご連絡ください");
-            }
-        } catch (StageReservedException ex) {
-            Actions.message(player, "&cステージ" + stage.getName() + "は現在編集不可です!");
+            // 定義漏れ
+            default:
+                throw new CommandException("&c設定項目が不正です 開発者にご連絡ください");
         }
     }
 
@@ -171,7 +166,7 @@ public class StageSetCommand extends BaseCommand {
      * @return true
      * @throws CommandException
      */
-    private void setSpawn(Player player, Stage game, List<String> args) throws CommandException, StageReservedException {
+    private void setSpawn(Player player, Stage game, List<String> args) throws CommandException {
         // 引数チェック
         if (args.size() < 2) {
             throw new CommandException("&c引数が足りません！設定するチームを指定してください！");
@@ -210,7 +205,7 @@ public class StageSetCommand extends BaseCommand {
      * @param game 設定対象のゲームイン寸タンス
      * @return
      */
-    private void setSpecSpawn(Player player, Stage game, List<String> args) throws StageReservedException {
+    private void setSpecSpawn(Player player, Stage game, List<String> args) {
         // 観戦者スポーン地点設定
         game.setSpecSpawn(player.getLocation());
 
@@ -219,7 +214,7 @@ public class StageSetCommand extends BaseCommand {
     }
 
     // オプション
-    private void setGameTime(Player player, Stage game, List<String> args) throws CommandException, StageReservedException {
+    private void setGameTime(Player player, Stage game, List<String> args) throws CommandException {
         int num = 60 * 10; // デフォルト10分
         try {
             num = Integer.parseInt(args.get(1));
@@ -239,7 +234,7 @@ public class StageSetCommand extends BaseCommand {
         Actions.message(player, "&aステージ'" + game.getName() + "'のゲーム時間は " + sec + " に設定されました！");
     }
 
-    private void setCooldown(Player player, Stage game, List<String> args) throws CommandException, StageReservedException {
+    private void setCooldown(Player player, Stage game, List<String> args) throws CommandException {
         int num = 0; // デフォルト0秒
         try {
             num = Integer.parseInt(args.get(1));
@@ -259,7 +254,7 @@ public class StageSetCommand extends BaseCommand {
         Actions.message(player, "&aステージ'" + game.getName() + "'の復帰時間は " + sec + " に設定されました！");
     }
 
-    private void setTeamLimit(Player player, Stage game, List<String> args) throws CommandException, StageReservedException {
+    private void setTeamLimit(Player player, Stage game, List<String> args) throws CommandException {
         int cnt = 8; // デフォルト8人
         try {
             cnt = Integer.parseInt(args.get(1));
@@ -277,7 +272,7 @@ public class StageSetCommand extends BaseCommand {
         plugin.getDynmap().updateRegion(game);
     }
 
-    private void setStageProtect(Player player, Stage stage, List<String> args) throws CommandException, StageReservedException {
+    private void setStageProtect(Player player, Stage stage, List<String> args) throws CommandException {
         Boolean protect = true; // デフォルトtrue
         String value = args.get(1).trim();
 
@@ -299,7 +294,7 @@ public class StageSetCommand extends BaseCommand {
         plugin.getDynmap().updateRegion(stage);
     }
 
-    private void setStageAvailable(Player player, Stage stage, List<String> args) throws CommandException, StageReservedException {
+    private void setStageAvailable(Player player, Stage stage, List<String> args) throws CommandException {
         Boolean available = true; // デフォルトtrue
         String value = args.get(1).trim();
 
@@ -325,7 +320,7 @@ public class StageSetCommand extends BaseCommand {
         Actions.message(player, "&aステージ'" + stage.getName() + "'は使用" + result + "&aに設定されました！");
     }
 
-    private void setKillScore(Player player, Stage stage, List<String> args) throws CommandException, StageReservedException {
+    private void setKillScore(Player player, Stage stage, List<String> args) throws CommandException {
         double point;
         try {
             point = Double.parseDouble(args.get(1));
@@ -338,7 +333,7 @@ public class StageSetCommand extends BaseCommand {
         Actions.message(player, "&aステージ'" + stage.getName() + "'のキル得点は " + point + "点 に設定されました！");
     }
 
-    private void setDeathScore(Player player, Stage stage, List<String> args) throws CommandException, StageReservedException {
+    private void setDeathScore(Player player, Stage stage, List<String> args) throws CommandException {
         double point;
         try {
             point = Double.parseDouble(args.get(1));
@@ -351,7 +346,7 @@ public class StageSetCommand extends BaseCommand {
         Actions.message(player, "&aステージ'" + stage.getName() + "'のデス得点は " + point + "点 に設定されました！");
     }
 
-    private void setPrize(Player player, Stage stage, List<String> args) throws CommandException, StageReservedException {
+    private void setPrize(Player player, Stage stage, List<String> args) throws CommandException {
         double prize;
         try {
             prize = Double.parseDouble(args.get(1));
@@ -368,7 +363,7 @@ public class StageSetCommand extends BaseCommand {
         plugin.getDynmap().updateRegion(stage);
     }
 
-    private void setEntryFee(Player player, Stage stage, List<String> args) throws CommandException, StageReservedException {
+    private void setEntryFee(Player player, Stage stage, List<String> args) throws CommandException {
         double entryFee;
         try {
             entryFee = Double.parseDouble(args.get(1));
@@ -386,23 +381,23 @@ public class StageSetCommand extends BaseCommand {
     }
 
     // stage description
-    private void setDescription(Player player, Stage stage, List<String> args) throws CommandException, StageReservedException {
+    private void setDescription(Player player, Stage stage, List<String> args) throws CommandException {
         stage.setDescription(args.get(1));
         Actions.message(player, "&aステージ'" + stage.getName() + "'の説明は '" + args.get(1) + "' に設定されました！");
     }
 
-    private void setAuthor(Player player, Stage stage, List<String> args) throws CommandException, StageReservedException {
+    private void setAuthor(Player player, Stage stage, List<String> args) throws CommandException {
         stage.setAuthor(args.get(1));
         Actions.message(player, "&aステージ'" + stage.getName() + "'の製作者は '" + args.get(1) + "' に設定されました！");
     }
 
-    private void setGuide(Player player, Stage stage, List<String> args) throws CommandException, StageReservedException {
+    private void setGuide(Player player, Stage stage, List<String> args) throws CommandException {
         stage.setGuide(args.get(1));
         Actions.message(player, "&aステージ'" + stage.getName() + "'の概要は '" + args.get(1) + "' に設定されました！");
     }
 
     // shortcut
-    private void setStage(Player player, Stage stage, List<String> args) throws CommandException, StageReservedException {
+    private void setStage(Player player, Stage stage, List<String> args) throws CommandException {
         Cuboid region;
         try {
             region = WorldEditHandler.getSelectedArea(player);
@@ -417,7 +412,7 @@ public class StageSetCommand extends BaseCommand {
         sendMessage(player, "&a'&6" + stage.getName() + "&a'のステージエリアの'&6init&a'をセーブしました！");
     }
 
-    private void setBase(Player player, Stage game, List<String> args) throws CommandException, StageReservedException {
+    private void setBase(Player player, Stage game, List<String> args) throws CommandException {
         if (args.size() < 2) {
             throw new CommandException("&c引数が足りません！設定するチームを指定してください！");
         }
