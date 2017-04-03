@@ -63,7 +63,7 @@ public class StageDashboardCommand extends BaseCommand {
         DashboardBuilder builder = DashboardBuilder
                 .newBuilder("Stage Overview")
                 .key("Name").value(stage.getName())
-                .buttonRun("select").append("select").append(stage.getName()).create()
+                .buttonRun("select").append("stage select").append(stage.getName()).create()
                 .buttonRun("delete").append("stage delete").append(stage.getName()).create().br()
                 .key("State").value(stage.isAvailable())
                 .buttonRun("switch").append("stage set available").append(!stage.isAvailable()).create().space()
