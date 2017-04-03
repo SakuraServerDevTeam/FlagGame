@@ -14,13 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package syam.flaggame.command;
+package syam.flaggame.command.stage;
 
 import java.util.List;
 import syam.flaggame.FlagGame;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import syam.flaggame.command.BaseCommand;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
@@ -30,15 +31,15 @@ import syam.flaggame.util.Actions;
 import syam.flaggame.util.Cuboid;
 import syam.flaggame.util.WorldEditHandler;
 
-public class SelectCommand extends BaseCommand {
+public class StageSelectCommand extends BaseCommand {
 
-    public SelectCommand(FlagGame plugin) {
+    public StageSelectCommand(FlagGame plugin) {
         super(
                 plugin,
                 true,
                 0,
                 "[stage] <- select exist stage",
-                "select"
+                "stage select"
         );
     
     }

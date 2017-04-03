@@ -130,15 +130,15 @@ public class FGSignListener implements Listener {
     }
 
     private void onClickAtStageSign(Player player, Sign sign) {
-        plugin.getServer().dispatchCommand(player, "f sinfo " + sign.getLine(2));
+        plugin.getServer().dispatchCommand(player, "flaggame:flag stage info " + sign.getLine(2));
     }
 
     private void onClickAtJoinSign(Player player, Sign sign) {
-        plugin.getServer().dispatchCommand(player, "f join " + sign.getLine(2));
+        plugin.getServer().dispatchCommand(player, "flaggame:flag join " + sign.getLine(2));
     }
 
     private void onClickAtWatchSign(Player player, Sign sign) {
-        plugin.getServer().dispatchCommand(player, "f watch " + sign.getLine(2));
+        plugin.getServer().dispatchCommand(player, "flaggame:flag watch " + sign.getLine(2));
     }
 
 }

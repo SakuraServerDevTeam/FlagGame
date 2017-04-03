@@ -16,6 +16,9 @@
  */
 package syam.flaggame;
 
+import syam.flaggame.command.stage.StageSetCommand;
+import syam.flaggame.command.stage.StageInfoCommand;
+import syam.flaggame.command.stage.StageSelectCommand;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -51,6 +54,9 @@ import syam.flaggame.command.area.message.*;
 import syam.flaggame.command.area.permission.*;
 import syam.flaggame.command.objective.*;
 import syam.flaggame.command.queue.ConfirmQueue;
+import syam.flaggame.command.stage.StageCreateCommand;
+import syam.flaggame.command.stage.StageDashboardCommand;
+import syam.flaggame.command.stage.StageDeleteCommand;
 import syam.flaggame.listener.*;
 import syam.flaggame.game.StageManager;
 import syam.flaggame.player.PlayerManager;
@@ -269,7 +275,6 @@ public class FlagGame extends JavaPlugin {
     private void registerCommands() {
         Stream.<Function<FlagGame, ? extends BaseCommand>>of(HelpCommand::new,
                 DashboardCommand::new,
-                SInfoCommand::new,
                 PInfoCommand::new,
                 ListCommand::new,
                 JoinCommand::new,
@@ -279,13 +284,16 @@ public class FlagGame extends JavaPlugin {
                 ReadyCommand::new,
                 StartCommand::new,
                 CloseCommand::new,
-                StageCommand::new,
-                SelectCommand::new,
-                SetCommand::new,
                 TpCommand::new,
                 SaveCommand::new,
                 ReloadCommand::new,
                 RateCommand::new,
+                StageInfoCommand::new,
+                StageDashboardCommand::new,
+                StageCreateCommand::new,
+                StageDeleteCommand::new,
+                StageSelectCommand::new,
+                StageSetCommand::new,
                 AreaDeleteCommand::new,
                 AreaListCommand::new,
                 AreaDataListCommand::new,

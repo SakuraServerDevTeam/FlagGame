@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package syam.flaggame.command;
+package syam.flaggame.command.stage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +28,7 @@ import org.bukkit.entity.Player;
 
 import jp.llv.flaggame.reception.TeamColor;
 import jp.llv.flaggame.rollback.StageDataType;
+import syam.flaggame.command.BaseCommand;
 import syam.flaggame.game.Configables;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.exception.StageReservedException;
@@ -39,19 +40,20 @@ import syam.flaggame.util.Actions;
 import syam.flaggame.util.Cuboid;
 import syam.flaggame.util.WorldEditHandler;
 
-public class SetCommand extends BaseCommand {
+public class StageSetCommand extends BaseCommand {
 
     /*
      * TODO: 設定によってコンソールから実行可能にする Confiable列挙にbePlayer (boolean)
      * を追加するか、ConfigType.Area
      */
-    public SetCommand(FlagGame plugin) {
+    public StageSetCommand(FlagGame plugin) {
         super(
                 plugin,
                 true,
-                0,
+                1,
                 "<option> [value] <- set option",
-                "set"
+                Perms.STAGE_CONFIG_SET,
+                "stage set"
         );
 
     }
