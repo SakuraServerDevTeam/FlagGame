@@ -16,6 +16,7 @@
  */
 package syam.flaggame;
 
+import syam.flaggame.command.stage.StageListCommand;
 import syam.flaggame.command.stage.StageSetCommand;
 import syam.flaggame.command.stage.StageInfoCommand;
 import syam.flaggame.command.stage.StageSelectCommand;
@@ -274,7 +275,6 @@ public class FlagGame extends JavaPlugin {
 
     private void registerCommands() {
         Stream.<Function<FlagGame, ? extends BaseCommand>>of(HelpCommand::new,
-                DashboardCommand::new,
                 PInfoCommand::new,
                 ListCommand::new,
                 JoinCommand::new,
@@ -290,20 +290,22 @@ public class FlagGame extends JavaPlugin {
                 RateCommand::new,
                 StageInfoCommand::new,
                 StageDashboardCommand::new,
+                StageListCommand::new,
                 StageCreateCommand::new,
                 StageDeleteCommand::new,
                 StageSelectCommand::new,
                 StageSetCommand::new,
-                AreaDeleteCommand::new,
+                AreaDashboardCommand::new,
                 AreaListCommand::new,
+                AreaSelectCommand::new,
+                AreaSetCommand::new,
+                AreaInitCommand::new,
+                AreaDeleteCommand::new,
                 AreaDataListCommand::new,
                 AreaDataSaveCommand::new,
                 AreaDataLoadCommand::new,
                 AreaDataDeleteCommand::new,
                 AreaDataTimingCommand::new,
-                AreaSelectCommand::new,
-                AreaSetCommand::new,
-                AreaInitCommand::new,
                 AreaPermissionListCommand::new,
                 AreaPermissionDashboardCommand::new,
                 AreaPermissionSetCommand::new,

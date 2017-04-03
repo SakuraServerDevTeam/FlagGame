@@ -38,8 +38,7 @@ public class AreaDashboardCommand extends AreaCommand {
                 1,
                 "<id> <- show information about areas",
                 Perms.STAGE_CONFIG_CHECK,
-                "area dashboard",
-                "area d"
+                "area dashboard"
         );
     }
 
