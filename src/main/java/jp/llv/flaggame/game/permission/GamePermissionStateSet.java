@@ -49,11 +49,15 @@ public class GamePermissionStateSet {
     
     public void setState(TeamColor team, GamePermissionState state) {
         Objects.requireNonNull(team);
-        if (state == null) {
+        if (state == null || state == GamePermissionState.DEFAULT) {
             values.remove(team);
         } else {
             values.put(team, state);
         }
+    }
+    
+    public boolean isAllDefault() {
+        return values.isEmpty();
     }
     
 }

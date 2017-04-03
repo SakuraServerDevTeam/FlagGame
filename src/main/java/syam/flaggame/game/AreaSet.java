@@ -132,8 +132,8 @@ public class AreaSet {
         return GamePermissionState.DEFAULT.isPositive();
     }
 
-    /*package*/ Map<String, Cuboid> getAreaMap() {
-        return areas;
+    public Map<String, Cuboid> getAreaMap() {
+        return Collections.unmodifiableMap(areas);
     }
 
     /*package*/ void setAreaMap(Map<String, Cuboid> map) {

@@ -21,10 +21,11 @@ import org.bukkit.entity.Player;
 import java.util.Set;
 import syam.flaggame.FlagGame;
 import org.bukkit.permissions.Permissible;
+import syam.flaggame.command.dashboard.DashboardBuilder;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
-import syam.flaggame.util.Actions;
+import syam.flaggame.util.Cuboid;
 
 /**
  *
@@ -45,16 +46,17 @@ public class AreaListCommand extends AreaCommand {
     @Override
     public void execute(List<String> args, Player player, Stage stage) throws CommandException {
         Set<String> areas = stage.getAreas().getAreas();
-        Actions.message(player, "&a ===============&b AreaList(" + areas.size() + ") &a===============");
-        if (areas.isEmpty()) {
-            Actions.message(player, " &7定義済みのエリアがありません");
-        } else {
-            for (String id : areas) {
-                int size = stage.getAreas().getArea(id).getArea();
-                Actions.message(player, "&6" + id + "&7(サイズ:" + size + ")");
-            }
-        }
-        Actions.message(player, "&a ============================================");
+        DashboardBuilder.newBuilder("Areas", areas.size())
+                .appendList(areas, (d, id) -> {
+                    Cuboid area = stage.getAreas().getArea(id);
+                    d.key(id).value("size").value(area.getArea())
+                            .buttonRun("show").append("area dashboard").append(id).create()
+                            .buttonRun("select").append("area select").append(id).create()
+                            .buttonRun("init").append("area init").append(id).create()
+                            .buttonRun("set").append("area set").append(id).create()
+                            .buttonRun("delete").append("area delete").append(id).create();
+                }).buttonSuggest("set new").append("area set").create()
+                .sendTo(player);
     }
 
     @Override

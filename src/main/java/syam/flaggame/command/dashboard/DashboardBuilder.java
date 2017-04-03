@@ -180,11 +180,15 @@ public class DashboardBuilder {
         return this;
     }
 
-    public DashboardBuilder key(Object key) {
+    public DashboardBuilder key(ChatColor color, Object key) {
         if (!head) {
             space();
         }
-        return green(key).gray(SEPARATOR).space();
+        return text(color, key).gray(SEPARATOR).space();
+    }
+
+    public DashboardBuilder key(Object key) {
+        return key(ChatColor.GREEN, key);
     }
 
     public DashboardBuilder value(Object value) {

@@ -16,7 +16,8 @@
  */
 package jp.llv.flaggame.game.permission;
 
-import org.bukkit.ChatColor;
+import jp.llv.flaggame.util.StringUtil;
+import net.md_5.bungee.api.ChatColor;
 
 /**
  *
@@ -46,7 +47,11 @@ public enum GamePermissionState {
     }
 
     public String format() {
-        return color + toString().toLowerCase();
+        return StringUtil.capitalize(name());
+    }
+
+    public ChatColor getColor() {
+        return color;
     }
 
     public static GamePermissionState of(String name) {

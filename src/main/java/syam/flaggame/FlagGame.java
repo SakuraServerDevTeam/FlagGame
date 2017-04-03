@@ -48,6 +48,7 @@ import syam.flaggame.command.*;
 import syam.flaggame.command.area.*;
 import syam.flaggame.command.area.data.*;
 import syam.flaggame.command.area.message.*;
+import syam.flaggame.command.area.permission.*;
 import syam.flaggame.command.objective.*;
 import syam.flaggame.command.queue.ConfirmQueue;
 import syam.flaggame.listener.*;
@@ -266,8 +267,7 @@ public class FlagGame extends JavaPlugin {
     }
 
     private void registerCommands() {
-        Stream.<Function<FlagGame, ? extends BaseCommand>>of(
-                HelpCommand::new,
+        Stream.<Function<FlagGame, ? extends BaseCommand>>of(HelpCommand::new,
                 DashboardCommand::new,
                 SInfoCommand::new,
                 PInfoCommand::new,
@@ -287,7 +287,6 @@ public class FlagGame extends JavaPlugin {
                 ReloadCommand::new,
                 RateCommand::new,
                 AreaDeleteCommand::new,
-                AreaPermitCommand::new,
                 AreaListCommand::new,
                 AreaDataListCommand::new,
                 AreaDataSaveCommand::new,
@@ -297,7 +296,10 @@ public class FlagGame extends JavaPlugin {
                 AreaSelectCommand::new,
                 AreaSetCommand::new,
                 AreaInitCommand::new,
-                AreaTestCommand::new,
+                AreaPermissionListCommand::new,
+                AreaPermissionDashboardCommand::new,
+                AreaPermissionSetCommand::new,
+                AreaPermissionTestCommand::new,
                 AreaMessageAddCommand::new,
                 AreaMessageDeleteCommand::new,
                 AreaMessageListCommand::new,

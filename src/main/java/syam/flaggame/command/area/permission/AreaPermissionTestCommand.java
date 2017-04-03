@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package syam.flaggame.command.area;
+package syam.flaggame.command.area.permission;
 
 import java.util.List;
 import org.bukkit.entity.Player;
@@ -26,6 +26,7 @@ import jp.llv.flaggame.reception.TeamColor;
 import org.bukkit.Location;
 import syam.flaggame.FlagGame;
 import org.bukkit.permissions.Permissible;
+import syam.flaggame.command.area.AreaCommand;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.AreaInfo;
 import syam.flaggame.game.Stage;
@@ -36,9 +37,9 @@ import syam.flaggame.util.Actions;
  *
  * @author SakuraServerDev
  */
-public class AreaTestCommand extends AreaCommand {
+public class AreaPermissionTestCommand extends AreaCommand {
 
-    public AreaTestCommand(FlagGame plugin) {
+    public AreaPermissionTestCommand(FlagGame plugin) {
         super(
                 plugin,
                 1,

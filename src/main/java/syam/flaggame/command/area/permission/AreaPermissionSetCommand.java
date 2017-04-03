@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package syam.flaggame.command.area;
+package syam.flaggame.command.area.permission;
 
 import java.util.List;
 import org.bukkit.entity.Player;
@@ -25,6 +25,7 @@ import jp.llv.flaggame.game.permission.GamePermissionState;
 import jp.llv.flaggame.reception.TeamColor;
 import syam.flaggame.FlagGame;
 import org.bukkit.permissions.Permissible;
+import syam.flaggame.command.area.AreaCommand;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.AreaInfo;
 import syam.flaggame.game.Stage;
@@ -34,13 +35,13 @@ import syam.flaggame.permission.Perms;
  *
  * @author toyblocks
  */
-public class AreaPermitCommand extends AreaCommand {
+public class AreaPermissionSetCommand extends AreaCommand {
 
-    public AreaPermitCommand(FlagGame plugin) {
+    public AreaPermissionSetCommand(FlagGame plugin) {
         super(
                 plugin,
                 3,
-                "<id> <permission> <teamcolor> [state] <- load region",
+                "<id> <permission> <teamcolor> <state> <- load region",
                 "area permit",
                 "ap"
         );
@@ -68,21 +69,15 @@ public class AreaPermitCommand extends AreaCommand {
         } catch (IllegalArgumentException ex) {
             throw new CommandException("&cそのチーム色は存在しません！", ex);
         }
-
-        if (args.size() == 3) {
-            GamePermissionState state = info.getPermission(permission).getState(target);
-            sendMessage(player, "&aステージ'&6" + stage.getName() + "&a'のエリア'&6" + id + "&a'での権限'&6" + permission.toString() + "&a'は状態'" + state.format() + "&a'です！");
-        } else {
-            GamePermissionState state;
-            try {
-                state = GamePermissionState.of(args.get(3));
-            } catch (IllegalArgumentException ex) {
-                String values = Arrays.stream(GamePermissionState.values()).map(e -> e.toString().toLowerCase()).collect(Collectors.joining("/"));
-                throw new CommandException("&cその状態は存在しません！\n&c" + values, ex);
-            }
-            info.getPermission(permission).setState(target, state);
-            sendMessage(player, "&aステージ'&6" + stage.getName() + "&a'のエリア'&6" + id + "&a'での権限'&6" + permission.toString() + "&a'を状態'" + state.format() + "&a'に変更しました！");
+        GamePermissionState state;
+        try {
+            state = GamePermissionState.of(args.get(3));
+        } catch (IllegalArgumentException ex) {
+            String values = Arrays.stream(GamePermissionState.values()).map(e -> e.toString().toLowerCase()).collect(Collectors.joining("/"));
+            throw new CommandException("&cその状態は存在しません！\n&c" + values, ex);
         }
+        info.getPermission(permission).setState(target, state);
+        sendMessage(player, "&aステージ'&6" + stage.getName() + "&a'のエリア'&6" + id + "&a'での権限'&6" + permission.toString() + "&a'を状態'" + state.format() + "&a'に変更しました！");
     }
 
     @Override
