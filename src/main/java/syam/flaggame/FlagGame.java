@@ -206,16 +206,6 @@ public class FlagGame extends JavaPlugin {
         if (this.receptions != null) {
             this.receptions.closeAll("&cDisabled");
         }
-
-        // ゲームデータを保存
-        if (stages != null) {
-            try {
-                stages.saveStages();
-            } catch (DatabaseException ex) {
-                getLogger().log(Level.WARNING, "Failed to save stages!", ex);
-                return;
-            }
-        }
         
         // タスクをすべて止める
         getServer().getScheduler().cancelTasks(this);

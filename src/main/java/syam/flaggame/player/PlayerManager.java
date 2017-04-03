@@ -61,6 +61,7 @@ public class PlayerManager implements Iterable<GamePlayer> {
     public PlayerManager(FlagGame plugin) {
         this.plugin = plugin;
         this.plugin.getServer().getPluginManager().registerEvents(new OnlinePlayerListener(), plugin);
+        new StageSaveRemindTask(plugin).runTaskTimer(plugin, 1200L, 1200L);
         Bukkit.getOnlinePlayers()
                 .forEach(p -> this.players.put(p.getUniqueId(), new GamePlayer(this, p)));
     }
