@@ -70,14 +70,14 @@ public class ObjectiveManageCommand extends ObjectiveCommand {
 
     private void setFlag(Player player, Stage game, List<String> args) throws CommandException {
         // 引数チェック
-        if (args.size() < 2) {
+        if (args.size() < 1) {
             throw new CommandException("&c引数が足りません！フラッグの得点を指定してください！");
         }
 
         // フラッグタイプチェック
         double type;
         try {
-            type = Double.parseDouble(args.get(1));
+            type = Double.parseDouble(args.get(0));
         } catch (NumberFormatException ex) {
             throw new CommandException("フラッグの得点を正しく指定してください!", ex);
         }
@@ -90,23 +90,23 @@ public class ObjectiveManageCommand extends ObjectiveCommand {
     }
 
     private void setNexus(Player player, Stage stage, List<String> args) throws CommandException {
-        if (args.size() < 2) {
+        if (args.size() < 1) {
             throw new CommandException("&c引数が足りません！目標の得点を正しく指定してください!");
         }
 
         double point;
         try {
-            point = Double.parseDouble(args.get(1));
+            point = Double.parseDouble(args.get(0));
         } catch (NumberFormatException ex) {
             throw new CommandException("目標の得点を正しく指定してください!", ex);
         }
 
         TeamColor color;
-        if (args.size() < 3) {
+        if (args.size() < 2) {
             color = null;
         } else {
             try {
-                color = TeamColor.of(args.get(2));
+                color = TeamColor.of(args.get(1));
             } catch (IllegalArgumentException ex) {
                 throw new CommandException("目標のチーム色を正しく指定してください!", ex);
             }
@@ -121,16 +121,16 @@ public class ObjectiveManageCommand extends ObjectiveCommand {
     }
 
     private void setBannerSpawner(Player player, Stage stage, List<String> args) throws CommandException {
-        if (args.size() < 3) {
+        if (args.size() < 2) {
             throw new CommandException("&c引数が足りません! バナーの得点と耐久度を正しく指定してください!");
         }
 
         byte point, hp;
         try {
-            point = Byte.parseByte(args.get(1));
-            hp = Byte.parseByte(args.get(2));
+            point = Byte.parseByte(args.get(0));
+            hp = Byte.parseByte(args.get(1));
         } catch (NumberFormatException ex) {
-            throw new CommandException("&c数値フォーマットが異常です!");
+            throw new CommandException("&c数値フォーマットが異常です!", ex);
         }
 
         GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
@@ -143,11 +143,11 @@ public class ObjectiveManageCommand extends ObjectiveCommand {
 
     private void setBannerSlot(Player player, Stage stage, List<String> args) throws CommandException {
         TeamColor color;
-        if (args.size() < 2) {
+        if (args.size() < 1) {
             color = null;
         } else {
             try {
-                color = TeamColor.of(args.get(1));
+                color = TeamColor.of(args.get(0));
             } catch (IllegalArgumentException ex) {
                 throw new CommandException("目標のチーム色を正しく指定してください!", ex);
             }
