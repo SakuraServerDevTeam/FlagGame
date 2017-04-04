@@ -27,7 +27,7 @@ import org.bukkit.entity.Player;
  */
 public abstract class ExpRecord extends PlayerRecord {
     
-    private static final String FIELD_EXP = "exp";
+    public static final String FIELD_EXP = "exp";
     
     public ExpRecord(UUID game, double x, double y, double z, UUID player, double exp) {
         super(game, x, y, z, player);

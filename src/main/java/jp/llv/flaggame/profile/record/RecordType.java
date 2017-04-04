@@ -71,5 +71,10 @@ public enum RecordType {
         RecordType type = valueOf(typeString.toUpperCase());
         return type.read(document);
     }
+
+    @Override
+    public String toString() {
+        return name().toLowerCase();
+    }
     
 }

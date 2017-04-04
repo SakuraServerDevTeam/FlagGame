@@ -28,7 +28,7 @@ import syam.flaggame.ConfigurationManager;
  */
 public class StageRateRecord extends ExpRecord {
 
-    private static final String FIELD_RATE = "rate";
+    private static final String FIELD_RATE = ScoreRecord.FIELD_SCORE;
     
     public StageRateRecord(UUID game, double x, double y, double z, UUID player, double exp, int rate) {
         super(game, x, y, z, player, exp);

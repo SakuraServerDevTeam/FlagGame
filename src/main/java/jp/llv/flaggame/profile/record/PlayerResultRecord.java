@@ -28,7 +28,7 @@ import org.bukkit.entity.Player;
  */
 public abstract class PlayerResultRecord extends ExpRecord {
     
-    private final String FIELD_VIBE = "vibe";
+    public static final String FIELD_VIBE = "vibe";
 
     public PlayerResultRecord(UUID game, double x, double y, double z, UUID player, double exp, double vive) {
         super(game, x, y, z, player, exp);

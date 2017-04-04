@@ -16,6 +16,11 @@
  */
 package jp.llv.flaggame.database.mongo;
 
+import static jp.llv.flaggame.database.mongo.MongoViews.PIPELINE_GAME_HISTORY;
+import static jp.llv.flaggame.database.mongo.MongoViews.PIPELINE_PLAYER_EXP;
+import static jp.llv.flaggame.database.mongo.MongoViews.PIPELINE_PLAYER_STATS;
+import static jp.llv.flaggame.database.mongo.MongoViews.PIPELINE_PLAYER_VIBE;
+import static jp.llv.flaggame.database.mongo.MongoViews.PIPELINE_STAGE_STATS;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.async.client.MongoClient;
@@ -27,6 +32,7 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.connection.ClusterSettings;
 import java.util.Collections;
+import java.util.logging.Level;
 import jp.llv.flaggame.database.Database;
 import jp.llv.flaggame.database.DatabaseCallback;
 import jp.llv.flaggame.database.DatabaseException;
@@ -45,11 +51,18 @@ import syam.flaggame.game.StageBsonConverter;
  * @author toyblocks
  */
 public class MongoDB implements Database {
-
-    private static final String ID = "_id";
+    
+    public static final String VIEW_PLAYER_STATS = "player_stats";
+    public static final String VIEW_PLAYER_EXP = "player_exp";
+    public static final String VIEW_PLAYER_VIBE = "player_vibe";
+    public static final String VIEW_STAGE_STATS = "stage_stats";
+    public static final String VIEW_GAME_HISTORY = "game_history";
+    public static final String COLLECTION_STAGE = "stages";
+    public static final String COLLECTION_RECORD = "records";
+    public static final String FIELD_ID = "_id";
+    public static final String FIELD_COUNT = "count";
+    
     private static final String SET = "$set";
-    private static final String COLLECTION_STAGE = "stages";
-    private static final String COLLECTION_RECORD = "records";
 
     private final FlagGame plugin;
     private final ConfigurationManager config;
@@ -84,6 +97,7 @@ public class MongoDB implements Database {
             );
         }
         database = client.getDatabase(config.getDatabaseDbname());
+        MongoViews.createViews(database, plugin.getLogger());
     }
 
     @Override
@@ -125,8 +139,7 @@ public class MongoDB implements Database {
         try {
             MongoCollection<BsonValue> coll = getStageCollection();
             BsonDocument bson = StageBsonConverter.writeStage(stage);
-            coll.updateOne(
-                    Filters.eq(ID, bson.get(ID)),
+            coll.updateOne(Filters.eq(FIELD_ID, bson.get(FIELD_ID)),
                     new BsonDocument(SET, bson),
                     new UpdateOptions().upsert(true),
                     new MongoDBErrorCallback<>(callback)
@@ -139,8 +152,7 @@ public class MongoDB implements Database {
     @Override
     public void deleteStage(Stage stage, DatabaseCallback<Void, DatabaseException> callback) {
         try {
-            getStageCollection().deleteOne(
-                    Filters.eq(ID, stage.getName()),
+            getStageCollection().deleteOne(Filters.eq(FIELD_ID, stage.getName()),
                     new MongoDBErrorCallback<>(callback)
             );
         } catch (DatabaseException ex) {

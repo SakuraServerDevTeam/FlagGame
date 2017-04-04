@@ -28,7 +28,7 @@ import syam.flaggame.ConfigurationManager;
  */
 public abstract class PlayerRecord extends LocationRecord {
     
-    private static final String FIELD_PLAYER = "player";
+    public static final String FIELD_PLAYER = "player";
     
     public PlayerRecord(UUID game, double x, double y, double z, UUID player) {
         super(game, x, y, z);

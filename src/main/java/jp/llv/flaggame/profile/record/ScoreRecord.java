@@ -27,7 +27,7 @@ import org.bukkit.entity.Player;
  */
 public abstract class ScoreRecord extends PlayerRecord {
     
-    private static final String FIELD_SCORE = "score";
+    public static final String FIELD_SCORE = "score";
     
     public ScoreRecord(UUID game, double x, double y, double z, UUID player, double score) {
         super(game, x, y, z, player);
