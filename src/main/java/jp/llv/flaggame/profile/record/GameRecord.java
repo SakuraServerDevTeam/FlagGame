@@ -50,8 +50,8 @@ public abstract class GameRecord extends Document {
 
     public Document toDocument() {
         Document result = new Document();
-        result.putAll(this);
         result.put(RecordType.FIELD_TYPE, getType().name().toLowerCase());
+        result.putAll(this);
         return result;
     }
 
