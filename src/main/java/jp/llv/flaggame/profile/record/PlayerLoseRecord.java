@@ -18,20 +18,25 @@ package jp.llv.flaggame.profile.record;
 
 import java.util.UUID;
 import org.bson.Document;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 /**
  *
  * @author toyblocks
  */
-public class PlayerLoseRecord extends ExpRecord {
+public class PlayerLoseRecord extends PlayerResultRecord {
 
-    public PlayerLoseRecord(UUID game, double x, double y, double z, UUID player, double score) {
-        super(game, x, y, z, player, score);
+    public PlayerLoseRecord(UUID game, double x, double y, double z, UUID player, double exp, double vive) {
+        super(game, x, y, z, player, exp, vive);
     }
 
-    public PlayerLoseRecord(UUID game, Player player, double score) {
-        super(game, player, score);
+    public PlayerLoseRecord(UUID game, UUID player, Location location, double exp, double vive) {
+        super(game, player, location, exp, vive);
+    }
+
+    public PlayerLoseRecord(UUID game, Player player, double exp, double vive) {
+        super(game, player, exp, vive);
     }
 
     /*package*/ PlayerLoseRecord(Document base) {

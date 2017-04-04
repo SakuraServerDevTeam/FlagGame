@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2017 SakuraServerDev
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,35 +17,36 @@
 package jp.llv.flaggame.profile.record;
 
 import java.util.UUID;
+import org.bson.BsonDouble;
 import org.bson.Document;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 /**
  *
- * @author toyblocks
+ * @author SakuraServerDev
  */
-public class PlayerDrawRecord extends PlayerResultRecord {
+public abstract class PlayerResultRecord extends ExpRecord {
+    
+    private final String FIELD_VIBE = "vibe";
 
-    public PlayerDrawRecord(UUID game, double x, double y, double z, UUID player, double exp, double vive) {
-        super(game, x, y, z, player, exp, vive);
+    public PlayerResultRecord(UUID game, double x, double y, double z, UUID player, double exp, double vive) {
+        super(game, x, y, z, player, exp);
+        super.put(FIELD_VIBE, new BsonDouble(vive));
     }
 
-    public PlayerDrawRecord(UUID game, UUID player, Location location, double exp, double vive) {
-        super(game, player, location, exp, vive);
+    public PlayerResultRecord(UUID game, UUID player, Location location, double exp, double vive) {
+        super(game, player, location, exp);
+        super.put(FIELD_VIBE, new BsonDouble(vive));
     }
 
-    public PlayerDrawRecord(UUID game, Player player, double exp, double vive) {
-        super(game, player, exp, vive);
+    public PlayerResultRecord(UUID game, Player player, double exp, double vive) {
+        super(game, player, exp);
+        super.put(FIELD_VIBE, new BsonDouble(vive));
     }
 
-    /*package*/ PlayerDrawRecord(Document base) {
+    /*package*/ PlayerResultRecord(Document base) {
         super(base);
-    }
-
-    @Override
-    public RecordType getType() {
-        return RecordType.DRAW;
     }
     
 }

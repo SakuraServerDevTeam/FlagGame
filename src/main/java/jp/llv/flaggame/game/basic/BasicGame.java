@@ -366,18 +366,19 @@ public class BasicGame implements Game {
         Set<GamePlayer> winnerPlayers = winnerTeams.stream()
                 .flatMap(c -> getTeam(c).getPlayers().stream())
                 .collect(Collectors.toSet());
-        // condition point
-        Map<GamePlayer, Double> conditions = this.getRecordStream().groupingBy(
+        // vibe
+        Map<GamePlayer, Double> vibes = this.getRecordStream().groupingBy(
                 PlayerRecord.class, r -> getPlayer(r.getPlayer()),
                 Collectors.summingDouble(t -> t.getExp(plugin.getConfigs()))
         ).entrySet().stream()
                 .collect(StreamUtil.deviation(Map.Entry::getValue, (e, v) -> MapUtils.tuple(e.getKey(), v)))
                 .collect(StreamUtil.toMap());
         // experience point
-        Map<GamePlayer, Double> exps = conditions.entrySet().stream()
+        Map<GamePlayer, Double> exps = vibes.entrySet().stream()
                 .map(expCalcurator.calcurate(winnerPlayers, this.stage.getGameTime(), this.reception.size()))
                 .collect(StreamUtil.toMap());
         OptionalDouble maxExp = exps.entrySet().stream().mapToDouble(Map.Entry::getValue).max();
+        Set<GamePlayer> maxExps = MapUtils.getKeyByValue(exps, maxExp.orElse(Double.NaN));
         // kill point
         Map<GamePlayer, Long> kills = this.getRecordStream().groupingBy(
                 PlayerKillRecord.class, r -> getPlayer(r.getPlayer()),
@@ -417,8 +418,8 @@ public class BasicGame implements Game {
         if (!maxCapturers.isEmpty()) {
             GamePlayer.sendMessage(this.plugin.getPlayers(),
                     "&6戦略家: "
-                    + maxCapturers.stream().map(GamePlayer::getColoredName).collect(Collectors.joining(", "))
-                    + "(&6" + maxCaptures.getAsDouble() + "exp&f)"
+                    + maxExps.stream().map(GamePlayer::getColoredName).collect(Collectors.joining(", "))
+                    + "(&6" + maxExp.getAsDouble() + "exp&f)"
             );
         }
         if (!maxPointers.isEmpty()) {
@@ -467,13 +468,13 @@ public class BasicGame implements Game {
                     : spawn;
             if (winnerTeams.isEmpty()) {
                 player.sendTitle("&6試合終了: 引き分け", author, 0, 60, 20);
-                getRecordStream().push(new PlayerDrawRecord(getID(), loc.getX(), loc.getY(), loc.getZ(), player.getUUID(), exps.get(player)));
+                getRecordStream().push(new PlayerDrawRecord(getID(), player.getUUID(), loc, exps.get(player), vibes.get(player)));
             } else if (winnerPlayers.contains(player)) {
                 player.sendTitle("&a試合終了: 勝利", author, 0, 60, 20);
-                getRecordStream().push(new PlayerWinRecord(getID(), loc.getX(), loc.getY(), loc.getZ(), player.getUUID(), exps.get(player)));
+                getRecordStream().push(new PlayerWinRecord(getID(), player.getUUID(), loc, exps.get(player), vibes.get(player)));
             } else {
                 player.sendTitle("&c試合終了: 敗北", author, 0, 60, 20);
-                getRecordStream().push(new PlayerLoseRecord(getID(), loc.getX(), loc.getY(), loc.getZ(), player.getUUID(), exps.get(player)));
+                getRecordStream().push(new PlayerDrawRecord(getID(), player.getUUID(), loc, exps.get(player), vibes.get(player)));
             }
             if (player.isOnline()) {
                 player.getPlayer().teleport(spawn);
