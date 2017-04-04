@@ -16,11 +16,6 @@
  */
 package jp.llv.flaggame.database.mongo;
 
-import static jp.llv.flaggame.database.mongo.MongoViews.PIPELINE_GAME_HISTORY;
-import static jp.llv.flaggame.database.mongo.MongoViews.PIPELINE_PLAYER_EXP;
-import static jp.llv.flaggame.database.mongo.MongoViews.PIPELINE_PLAYER_STATS;
-import static jp.llv.flaggame.database.mongo.MongoViews.PIPELINE_PLAYER_VIBE;
-import static jp.llv.flaggame.database.mongo.MongoViews.PIPELINE_STAGE_STATS;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.async.client.MongoClient;
@@ -32,7 +27,6 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.connection.ClusterSettings;
 import java.util.Collections;
-import java.util.logging.Level;
 import jp.llv.flaggame.database.Database;
 import jp.llv.flaggame.database.DatabaseCallback;
 import jp.llv.flaggame.database.DatabaseException;
@@ -57,8 +51,8 @@ public class MongoDB implements Database {
     public static final String VIEW_PLAYER_VIBE = "player_vibe";
     public static final String VIEW_STAGE_STATS = "stage_stats";
     public static final String VIEW_GAME_HISTORY = "game_history";
-    public static final String COLLECTION_STAGE = "stages";
-    public static final String COLLECTION_RECORD = "records";
+    public static final String COLLECTION_STAGE = "stage";
+    public static final String COLLECTION_RECORD = "record";
     public static final String FIELD_ID = "_id";
     public static final String FIELD_COUNT = "count";
     
