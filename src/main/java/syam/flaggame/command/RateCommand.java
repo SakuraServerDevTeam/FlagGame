@@ -60,7 +60,7 @@ public class RateCommand extends BaseCommand {
         if (rate < 0 || 5 < rate) {
             throw new CommandException("&c0-5の整数値で評価してください！");
         }
-        reception.getRecordStream().push(new StageRateRecord(reception.getID(), player, rate));
+        reception.getRecordStream().push(new StageRateRecord(reception.getID(), player, plugin.getConfigs().getScoreRate(), rate));
         reception.leave(gplayer);
         sendMessage(sender, "&a投票への協力ありがとうございました！");
     }

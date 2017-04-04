@@ -17,6 +17,7 @@
 package jp.llv.flaggame.profile.record;
 
 import java.util.UUID;
+import org.bson.BsonInt32;
 import org.bson.Document;
 import org.bukkit.entity.Player;
 import syam.flaggame.ConfigurationManager;
@@ -25,14 +26,18 @@ import syam.flaggame.ConfigurationManager;
  *
  * @author toyblocks
  */
-public class StageRateRecord extends ScoreRecord {
+public class StageRateRecord extends ExpRecord {
 
-    public StageRateRecord(UUID game, double x, double y, double z, UUID player, double score) {
-        super(game, x, y, z, player, score);
+    private static final String FIELD_RATE = "rate";
+    
+    public StageRateRecord(UUID game, double x, double y, double z, UUID player, double exp, int rate) {
+        super(game, x, y, z, player, exp);
+        super.put(FIELD_RATE, new BsonInt32(rate));
     }
 
-    public StageRateRecord(UUID game, Player player, double score) {
-        super(game, player, score);
+    public StageRateRecord(UUID game, Player player, double exp, int rate) {
+        super(game, player, exp);
+        super.put(FIELD_RATE, new BsonInt32(rate));
     }
 
     public StageRateRecord(Document base) {

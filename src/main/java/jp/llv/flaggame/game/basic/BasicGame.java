@@ -74,6 +74,9 @@ import syam.flaggame.player.GamePlayer;
 import syam.flaggame.util.Actions;
 import jp.llv.flaggame.profile.ExpCalcurator;
 import jp.llv.flaggame.profile.record.BannerKeepRecord;
+import jp.llv.flaggame.profile.record.PlayerDrawRecord;
+import jp.llv.flaggame.profile.record.PlayerLoseRecord;
+import jp.llv.flaggame.profile.record.PlayerWinRecord;
 import jp.llv.flaggame.rollback.SerializeTask;
 import syam.flaggame.game.AreaInfo;
 import syam.flaggame.game.objective.BannerSlot;
@@ -268,7 +271,6 @@ public class BasicGame implements Game {
                 onFinishing.offer(task::cancel);
             }
         }
-        
 
         //各種処理系開始
         BGListener playerListener = new BGPlayerListener(plugin, this);
@@ -435,14 +437,6 @@ public class BasicGame implements Game {
         this.plugin.getServer().getPluginManager()
                 .callEvent(new jp.llv.flaggame.events.GameFinishedEvent(this));
 
-        for (GamePlayer g : this.reception.getPlayers()) {
-            if (g.getPlayer().isOnline()) {
-                g.getPlayer().teleport(this.stage.getSpawn(g.getTeam().get().getColor()));
-                g.getPlayer().getInventory().clear();
-                g.resetTabName();
-            }
-        }
-
         BaseComponent[] rateMessage = new ComponentBuilder("クリックでステージの評価にご協力ください: ").color(ChatColor.GOLD)
                 .append("❤").color(ChatColor.GREEN)
                 .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/f rate 0"))
@@ -466,16 +460,25 @@ public class BasicGame implements Game {
         GamePlayer.sendMessage(this, rateMessage);
 
         String author = "".equals(stage.getAuthor()) ? "" : "presented by " + stage.getAuthor();
-        if (winnerTeams.isEmpty()) {
-            for (GamePlayer player : this) {
+        for (GamePlayer player : this) {
+            Location spawn = stage.getSpawn(player.getTeam().get().getColor());
+            Location loc = player.isOnline()
+                    ? player.getPlayer().getLocation()
+                    : spawn;
+            if (winnerTeams.isEmpty()) {
                 player.sendTitle("&6試合終了: 引き分け", author, 0, 60, 20);
-            }
-        } else {
-            for (GamePlayer player : winnerPlayers) {
+                getRecordStream().push(new PlayerDrawRecord(getID(), loc.getX(), loc.getY(), loc.getZ(), player.getUUID(), exps.get(player)));
+            } else if (winnerPlayers.contains(player)) {
                 player.sendTitle("&a試合終了: 勝利", author, 0, 60, 20);
-            }
-            for (GamePlayer player : getPlayersNotIn(winnerPlayers)) {
+                getRecordStream().push(new PlayerWinRecord(getID(), loc.getX(), loc.getY(), loc.getZ(), player.getUUID(), exps.get(player)));
+            } else {
                 player.sendTitle("&c試合終了: 敗北", author, 0, 60, 20);
+                getRecordStream().push(new PlayerLoseRecord(getID(), loc.getX(), loc.getY(), loc.getZ(), player.getUUID(), exps.get(player)));
+            }
+            if (player.isOnline()) {
+                player.getPlayer().teleport(spawn);
+                player.getPlayer().getInventory().clear();
+                player.resetTabName();
             }
         }
 

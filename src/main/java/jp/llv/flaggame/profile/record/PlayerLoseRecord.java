@@ -24,7 +24,7 @@ import org.bukkit.entity.Player;
  *
  * @author toyblocks
  */
-public class PlayerLoseRecord extends ScoreRecord {
+public class PlayerLoseRecord extends ExpRecord {
 
     public PlayerLoseRecord(UUID game, double x, double y, double z, UUID player, double score) {
         super(game, x, y, z, player, score);

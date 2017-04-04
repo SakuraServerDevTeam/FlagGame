@@ -16,7 +16,6 @@
  */
 package jp.llv.flaggame.profile.record;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
