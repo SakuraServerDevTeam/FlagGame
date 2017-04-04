@@ -474,7 +474,7 @@ public class BasicGame implements Game {
                 getRecordStream().push(new PlayerWinRecord(getID(), player.getUUID(), loc, exps.get(player), vibes.get(player)));
             } else {
                 player.sendTitle("&c試合終了: 敗北", author, 0, 60, 20);
-                getRecordStream().push(new PlayerDrawRecord(getID(), player.getUUID(), loc, exps.get(player), vibes.get(player)));
+                getRecordStream().push(new PlayerLoseRecord(getID(), player.getUUID(), loc, exps.get(player), vibes.get(player)));
             }
             if (player.isOnline()) {
                 player.getPlayer().teleport(spawn);
