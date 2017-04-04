@@ -14,32 +14,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package syam.flaggame.player;
-
-import net.md_5.bungee.api.ChatMessageType;
-import org.bukkit.scheduler.BukkitRunnable;
-import syam.flaggame.FlagGame;
+package jp.llv.flaggame.database;
 
 /**
  *
  * @author SakuraServerDev
+ * @param <T> result type
+ * @param <E> exception type
  */
-public class StageSaveRemindTask extends BukkitRunnable {
+@FunctionalInterface
+public interface DatabaseResult<T, E extends Throwable> {
 
-    private final FlagGame plugin;
-
-    public StageSaveRemindTask(FlagGame plugin) {
-        this.plugin = plugin;
+    T get() throws E;
+    
+    default void test() throws E {
+        get();
     }
 
-    @Override
-    public void run() {
-        plugin.getPlayers().getPlayers().stream()
-                .filter(p -> p.getSetupSession().isPresent())
-                .forEach(p -> {
-                    p.sendTitle("", "現在ステージ編集中です", 10, 10, 10);
-                    p.sendMessage(ChatMessageType.ACTION_BAR, "忘れずに保存してください");
-                });
+    static <T, E extends Throwable> DatabaseResult<T, E> success(T result) {
+        return () -> result;
+    }
+
+    static <T, E extends Throwable> DatabaseResult<T, E> fail(E error) {
+        return () -> {
+            throw error;
+        };
     }
 
 }

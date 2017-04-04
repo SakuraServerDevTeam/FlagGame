@@ -16,9 +16,6 @@
  */
 package jp.llv.flaggame.database;
 
-import java.util.Collection;
-import java.util.UUID;
-import jp.llv.flaggame.profile.GameRecordStream;
 import syam.flaggame.game.Stage;
 
 /**
@@ -35,19 +32,15 @@ public interface Database extends AutoCloseable {
         } catch (DatabaseException ex) {
         }
     }
-    
+
     boolean isConnected();
-    
-    GameRecordStream getGameProgile(UUID game) throws DatabaseException;
-    
-    void saveGameProfile(GameRecordStream profile) throws DatabaseException;
-    
-    Collection<UUID> getGames() throws DatabaseException;
-    
-    Collection<Stage> loadStages() throws DatabaseException;
-    
-    void saveStages(Collection<Stage> stages) throws DatabaseException;
-    
+
+    void loadStages(DatabaseCallback<Stage, RuntimeException> consumer, DatabaseCallback<Void, DatabaseException> callback);
+
+    void saveStage(Stage stage, DatabaseCallback<Void, DatabaseException> callback);
+
+    void deleteStage(Stage stage, DatabaseCallback<Void, DatabaseException> callback);
+
     @Override
     public void close() throws DatabaseException;
 

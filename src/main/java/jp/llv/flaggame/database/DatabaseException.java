@@ -16,11 +16,13 @@
  */
 package jp.llv.flaggame.database;
 
+import java.io.IOException;
+
 /**
  *
  * @author toyblocks
  */
-public class DatabaseException extends Exception {
+public class DatabaseException extends IOException {
 
     public DatabaseException() {
     }

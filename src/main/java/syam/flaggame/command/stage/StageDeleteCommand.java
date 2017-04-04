@@ -17,6 +17,8 @@
 package syam.flaggame.command.stage;
 
 import java.util.List;
+import java.util.logging.Level;
+import jp.llv.flaggame.database.DatabaseException;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.FlagGame;
@@ -80,10 +82,19 @@ public class StageDeleteCommand extends BaseCommand {
                 return;
             }
 
-            // ゲームリストから削除
-            plugin.getStages().removeStage(args.get(0));
-            Actions.message(player, "&aステージ'" + args.get(0) + "'を削除しました！");
-            plugin.getDynmap().updateRegions();
+            plugin.getDatabases()
+                    .orElseThrow(() -> new CommandException("&cデータベースへの接続に失敗しました！"))
+                    .deleteStage(stage, result -> {
+                        try {
+                            result.test();
+                            plugin.getStages().removeStage(stage);
+                            Actions.message(player, "&aステージ'" + args.get(0) + "'を削除しました！");
+                            plugin.getDynmap().updateRegions();
+                        } catch (DatabaseException ex) {
+                            Actions.message(player, "&cステージ'" + args.get(0) + "'の削除に失敗しました！");
+                            plugin.getLogger().log(Level.WARNING, "Failed to delete stage", ex);
+                        }
+                    });
         }
 
     }

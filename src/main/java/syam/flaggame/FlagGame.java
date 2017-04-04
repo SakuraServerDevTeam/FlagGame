@@ -30,7 +30,7 @@ import java.util.logging.Level;
 import java.util.stream.Stream;
 import jp.llv.flaggame.database.Database;
 import jp.llv.flaggame.database.DatabaseException;
-import jp.llv.flaggame.database.MongoDB;
+import jp.llv.flaggame.database.mongo.MongoDB;
 import jp.llv.flaggame.game.GameManager;
 import jp.llv.flaggame.reception.EvenRequiredRealtimeTeamingReception;
 import jp.llv.flaggame.reception.RealtimeTeamingReception;
@@ -55,9 +55,7 @@ import syam.flaggame.command.area.message.*;
 import syam.flaggame.command.area.permission.*;
 import syam.flaggame.command.objective.*;
 import syam.flaggame.command.queue.ConfirmQueue;
-import syam.flaggame.command.stage.StageCreateCommand;
-import syam.flaggame.command.stage.StageDashboardCommand;
-import syam.flaggame.command.stage.StageDeleteCommand;
+import syam.flaggame.command.stage.*;
 import syam.flaggame.listener.*;
 import syam.flaggame.game.StageManager;
 import syam.flaggame.player.PlayerManager;
@@ -175,13 +173,17 @@ public class FlagGame extends JavaPlugin {
 
         // ゲームデータ読み込み
         debug.startTimer("load games");
-        try {
-            stages.loadStages();
-        } catch (DatabaseException ex) {
-            getLogger().log(Level.WARNING, "Failed to connect database!", ex);
-            getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
+        database.loadStages(stage -> {
+            stages.addStage(stage.get());
+            getLogger().log(Level.INFO, "Loaded stage ''{0}''", stage.get().getName());
+        }, result -> {
+            try {
+                result.test();
+                getLogger().log(Level.INFO, "Finished loading stages!");
+            } catch (DatabaseException ex) {
+                getLogger().log(Level.WARNING, "Failed to load stage!", ex);
+            }
+        });
         debug.endTimer("load games");
 
         // dynmapフック
@@ -206,7 +208,7 @@ public class FlagGame extends JavaPlugin {
         if (this.receptions != null) {
             this.receptions.closeAll("&cDisabled");
         }
-        
+
         // タスクをすべて止める
         getServer().getScheduler().cancelTasks(this);
 
@@ -275,7 +277,6 @@ public class FlagGame extends JavaPlugin {
                 StartCommand::new,
                 CloseCommand::new,
                 TpCommand::new,
-                SaveCommand::new,
                 ReloadCommand::new,
                 RateCommand::new,
                 StageInfoCommand::new,
@@ -285,6 +286,7 @@ public class FlagGame extends JavaPlugin {
                 StageDeleteCommand::new,
                 StageSelectCommand::new,
                 StageSetCommand::new,
+                StageSaveCommand::new,
                 AreaDashboardCommand::new,
                 AreaListCommand::new,
                 AreaSelectCommand::new,
@@ -357,7 +359,7 @@ public class FlagGame extends JavaPlugin {
     public ConfigurationManager getConfigs() {
         return config;
     }
-    
+
     public World getGameWorld() {
         return getServer().getWorld(config.getGameWorld());
     }

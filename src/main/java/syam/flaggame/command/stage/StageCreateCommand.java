@@ -68,7 +68,7 @@ public class StageCreateCommand extends BaseCommand {
         // 新規ゲーム登録
         stage.setAvailable(false);
         stage.setProtected(false);
-        this.plugin.getStages().addStage(args.get(0), stage);
+        this.plugin.getStages().addStage(stage);
 
         GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
         gPlayer.createSetupSession(stage);
