@@ -31,8 +31,10 @@ import jp.llv.flaggame.database.Database;
 import jp.llv.flaggame.database.DatabaseCallback;
 import jp.llv.flaggame.database.DatabaseException;
 import jp.llv.flaggame.database.DatabaseResult;
+import jp.llv.flaggame.profile.RecordStream;
 import org.bson.BsonDocument;
 import org.bson.BsonValue;
+import org.bson.Document;
 import syam.flaggame.ConfigurationManager;
 import syam.flaggame.FlagGame;
 import syam.flaggame.game.Stage;
@@ -47,6 +49,7 @@ public class MongoDB implements Database {
     private static final String ID = "_id";
     private static final String SET = "$set";
     private static final String COLLECTION_STAGE = "stages";
+    private static final String COLLECTION_RECORD = "records";
 
     private final FlagGame plugin;
     private final ConfigurationManager config;
@@ -140,6 +143,23 @@ public class MongoDB implements Database {
                     Filters.eq(ID, stage.getName()),
                     new MongoDBErrorCallback<>(callback)
             );
+        } catch (DatabaseException ex) {
+            callback.call(DatabaseResult.fail(ex));
+        }
+    }
+
+    private MongoCollection<Document> getRecordCollection() throws DatabaseException {
+        if (database == null) {
+            throw new DatabaseException("Not connected");
+        }
+        return database.getCollection(COLLECTION_RECORD);
+    }
+
+    @Override
+    public void saveReocrds(RecordStream records, DatabaseCallback<Void, DatabaseException> callback) {
+        try {
+            MongoCollection<Document> coll = getRecordCollection();
+            coll.insertMany(records.getDocuments(), new MongoDBErrorCallback<>(callback));
         } catch (DatabaseException ex) {
             callback.call(DatabaseResult.fail(ex));
         }

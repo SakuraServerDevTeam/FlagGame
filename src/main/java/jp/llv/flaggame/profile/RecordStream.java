@@ -16,7 +16,6 @@
  */
 package jp.llv.flaggame.profile;
 
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +27,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import jp.llv.flaggame.profile.record.GameRecord;
 import jp.llv.flaggame.profile.record.PlayerRecord;
+import org.bson.Document;
 
 /**
  *
@@ -35,7 +35,11 @@ import jp.llv.flaggame.profile.record.PlayerRecord;
  */
 public interface RecordStream extends Iterable<GameRecord> {
 
-    Collection<GameRecord> getRecords();
+    List<GameRecord> getRecords();
+    
+    default List<Document> getDocuments() {
+        return stream().map(GameRecord::toDocument).collect(Collectors.toList());
+    }
 
     @Override
     default Iterator<GameRecord> iterator() {

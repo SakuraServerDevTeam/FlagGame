@@ -18,7 +18,6 @@ package jp.llv.flaggame.profile;
 
 import java.util.LinkedList;
 import jp.llv.flaggame.profile.record.GameRecord;
-import java.util.Queue;
 import java.util.UUID;
 
 /**
@@ -28,7 +27,7 @@ import java.util.UUID;
 public class GameRecordStream implements RecordStream {
     
     private final UUID game;
-    private final Queue<GameRecord> records = new LinkedList<>();
+    private final LinkedList<GameRecord> records = new LinkedList<>();
 
     public GameRecordStream(UUID id) {
         this.game = id;
@@ -39,7 +38,7 @@ public class GameRecordStream implements RecordStream {
     }
 
     @Override
-    public Queue<GameRecord> getRecords() {
+    public LinkedList<GameRecord> getRecords() {
         return records;
     }
     

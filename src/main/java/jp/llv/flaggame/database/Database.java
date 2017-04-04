@@ -16,6 +16,7 @@
  */
 package jp.llv.flaggame.database;
 
+import jp.llv.flaggame.profile.RecordStream;
 import syam.flaggame.game.Stage;
 
 /**
@@ -34,12 +35,14 @@ public interface Database extends AutoCloseable {
     }
 
     boolean isConnected();
-
+    
     void loadStages(DatabaseCallback<Stage, RuntimeException> consumer, DatabaseCallback<Void, DatabaseException> callback);
 
     void saveStage(Stage stage, DatabaseCallback<Void, DatabaseException> callback);
 
     void deleteStage(Stage stage, DatabaseCallback<Void, DatabaseException> callback);
+
+    void saveReocrds(RecordStream records, DatabaseCallback<Void, DatabaseException> callback);
 
     @Override
     public void close() throws DatabaseException;
