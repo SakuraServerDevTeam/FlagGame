@@ -478,7 +478,7 @@ public class BasicGame implements Game {
         this.state = State.FINISHED;
 
         while (!this.onFinishing.isEmpty()) {
-            this.onFinishing.peek().run();
+            this.onFinishing.poll().run();
         }
 
         for (GamePlayer g : this.reception.getPlayers()) {
