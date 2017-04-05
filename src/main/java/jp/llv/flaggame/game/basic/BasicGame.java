@@ -363,6 +363,9 @@ public class BasicGame implements Game {
         );
         OptionalDouble maxTeamPoint = teamPoints.entrySet().stream().mapToDouble(Map.Entry::getValue).max();
         Set<TeamColor> winnerTeams = MapUtils.getKeyByValue(teamPoints, maxTeamPoint.orElse(Double.NaN));
+        if (winnerTeams.size() == teams.size()) {
+            winnerTeams.clear(); // at least one team lose
+        }
         Set<GamePlayer> winnerPlayers = winnerTeams.stream()
                 .flatMap(c -> getTeam(c).getPlayers().stream())
                 .collect(Collectors.toSet());
