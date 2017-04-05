@@ -38,7 +38,7 @@ public class PlayerInfoCommand extends BaseCommand {
                 true,
                 0,
                 " <- show your internal information",
-                "player info"
+                "info"
         );
     }
 

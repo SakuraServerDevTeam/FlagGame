@@ -38,7 +38,7 @@ public class PlayerExpCommand extends BaseCommand {
                 false,
                 0,
                 "[player] <- show specified player's exp",
-                "player exp"
+                "exp"
         );
     }
 

@@ -39,8 +39,7 @@ public class AreaInitCommand extends AreaCommand {
                 plugin,
                 1,
                 "<id> <- init region",
-                "area init",
-                "ai"
+                "init"
         );
     }
 

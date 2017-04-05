@@ -37,8 +37,7 @@ public class AreaSelectCommand extends AreaCommand {
                 plugin,
                 1,
                 "<id> <- select region",
-                "area select",
-                "asel"
+                "select"
         );
     }
 

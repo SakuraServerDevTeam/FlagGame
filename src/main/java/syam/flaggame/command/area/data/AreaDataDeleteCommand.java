@@ -37,7 +37,7 @@ public class AreaDataDeleteCommand extends AreaCommand {
                 2, 
                 "<id> <name>", 
                 Perms.STAGE_CONFIG_SET, 
-                "area data delete"
+                "delete"
         );
     }
 

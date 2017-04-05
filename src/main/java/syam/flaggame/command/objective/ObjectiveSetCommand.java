@@ -40,7 +40,7 @@ public class ObjectiveSetCommand extends ObjectiveCommand {
                 0,
                 "[option...] <- enable objective locate tool",
                 Perms.SET,
-                "objective set"
+                "set"
         );
     }
 

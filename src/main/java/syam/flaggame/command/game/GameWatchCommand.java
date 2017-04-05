@@ -42,7 +42,7 @@ public class GameWatchCommand extends BaseCommand {
                 true,
                 0,
                 "[stage] <- watch the game",
-                "game watch"
+                "watch"
         );
     
     }

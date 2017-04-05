@@ -38,8 +38,7 @@ public class AreaMessageListCommand extends AreaCommand {
                 0,
                 "<id> <- show a list of messages",
                 Perms.STAGE_CONFIG_CHECK,
-                "area message list",
-                "aml"
+                "list"
         );
     }
 

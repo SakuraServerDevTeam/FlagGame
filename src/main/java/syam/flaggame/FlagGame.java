@@ -16,10 +16,6 @@
  */
 package syam.flaggame;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.logging.Level;
@@ -36,8 +32,6 @@ import jp.llv.flaggame.reception.ReceptionManager;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.World;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -45,16 +39,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import syam.flaggame.command.*;
-import syam.flaggame.command.area.*;
-import syam.flaggame.command.area.data.*;
-import syam.flaggame.command.area.message.*;
-import syam.flaggame.command.area.permission.*;
-import syam.flaggame.command.objective.*;
-import syam.flaggame.command.player.*;
-import syam.flaggame.command.queue.ConfirmQueue;
-import syam.flaggame.command.stage.*;
-import syam.flaggame.command.game.*;
+import syam.flaggame.queue.ConfirmQueue;
 import syam.flaggame.listener.*;
 import syam.flaggame.game.StageManager;
 import syam.flaggame.player.PlayerManager;
@@ -74,8 +59,6 @@ public class FlagGame extends JavaPlugin {
      * 
      * 参加チームの選択
      */
-    // ** Commands **
-    private final List<BaseCommand> commands = new ArrayList<>();
 
     // ** Private classes **
     private FlagConfig config;
@@ -145,7 +128,8 @@ public class FlagGame extends JavaPlugin {
 
         // コマンド登録
         debug.startTimer("commands");
-        registerCommands();
+        FlagCommandRegistry.ROOT.initialize(this);
+        this.getCommand("flag").setExecutor(FlagCommandRegistry.ROOT);
         queue = new ConfirmQueue(this);
         debug.endTimer("commands");
 
@@ -205,8 +189,6 @@ public class FlagGame extends JavaPlugin {
      */
     @Override
     public void onDisable() {
-        commands.clear();
-
         if (this.receptions != null) {
             this.receptions.closeAll("&cDisabled");
         }
@@ -267,57 +249,6 @@ public class FlagGame extends JavaPlugin {
         }, 20L);
     }
 
-    private void registerCommands() {
-        Stream.<Function<FlagGame, ? extends BaseCommand>>of(HelpCommand::new,
-                GameListCommand::new,
-                GameJoinCommand::new,
-                GameLeaveCommand::new,
-                GameWatchCommand::new,
-                ConfirmCommand::new,
-                GameReadyCommand::new,
-                GameStartCommand::new,
-                GameCloseCommand::new,
-                TpCommand::new,
-                ReloadCommand::new,
-                StageRateCommand::new,
-                PlayerInfoCommand::new,
-                PlayerStatsCommand::new,
-                PlayerExpCommand::new,
-                PlayerVibeCommand::new,
-                StageInfoCommand::new,
-                StageStatsCommand::new,
-                StageDashboardCommand::new,
-                StageListCommand::new,
-                StageCreateCommand::new,
-                StageDeleteCommand::new,
-                StageSelectCommand::new,
-                StageSetCommand::new,
-                StageSaveCommand::new,
-                AreaDashboardCommand::new,
-                AreaListCommand::new,
-                AreaSelectCommand::new,
-                AreaSetCommand::new,
-                AreaInitCommand::new,
-                AreaDeleteCommand::new,
-                AreaDataListCommand::new,
-                AreaDataSaveCommand::new,
-                AreaDataLoadCommand::new,
-                AreaDataDeleteCommand::new,
-                AreaDataTimingCommand::new,
-                AreaPermissionListCommand::new,
-                AreaPermissionDashboardCommand::new,
-                AreaPermissionSetCommand::new,
-                AreaPermissionTestCommand::new,
-                AreaMessageAddCommand::new,
-                AreaMessageDeleteCommand::new,
-                AreaMessageListCommand::new,
-                AreaMessageTimingCommand::new,
-                ObjectiveSetCommand::new,
-                ObjectiveDeleteCommand::new,
-                ObjectiveListCommand::new
-        ).map(f -> f.apply(this)).forEach(this.commands::add);
-    }
-
     private void registerListeners() {
         Stream.<Function<FlagGame, ? extends Listener>>of(
                 FGPlayerListener::new,
@@ -325,36 +256,6 @@ public class FlagGame extends JavaPlugin {
                 FGEntityListener::new,
                 FGSignListener::new
         ).map(l -> l.apply(this)).forEach(l -> this.getServer().getPluginManager().registerEvents(l, this));
-    }
-
-    /*
-     * コマンドが呼ばれた
-     */
-    @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String args[]) {
-        if (cmd.getName().equalsIgnoreCase("flag")) {
-            if (args.length == 0) {
-                new HelpCommand(this).run(sender, args, commandLabel);
-                return true;
-            }
-
-            String flatarg = String.join(" ", args).toLowerCase();
-            for (BaseCommand command : commands) {
-                if (flatarg.startsWith(command.getName())) {
-                    return command.run(sender, args, command.getName());
-                }
-            }
-            for (BaseCommand command : commands) {
-                for (String alias : command.getAliases()) {
-                    if (flatarg.startsWith(alias)) {
-                        return command.run(sender, args, alias);
-                    }
-                }
-            }
-            new HelpCommand(this).run(sender, args, commandLabel);
-            return true;
-        }
-        return false;
     }
 
     /**
@@ -386,15 +287,6 @@ public class FlagGame extends JavaPlugin {
      */
     public Optional<Database> getDatabases() {
         return this.database.isConnected() ? Optional.of(this.database) : Optional.empty();
-    }
-
-    /**
-     * コマンドリストを返す
-     *
-     * @return {@code List<BaseCommand>}
-     */
-    public Collection<BaseCommand> getCommands() {
-        return Collections.unmodifiableCollection(this.commands);
     }
 
     /**

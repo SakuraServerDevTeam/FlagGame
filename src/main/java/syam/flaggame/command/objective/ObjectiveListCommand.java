@@ -44,7 +44,7 @@ public class ObjectiveListCommand extends ObjectiveCommand {
                 0,
                 "<- show objective list",
                 Perms.STAGE_CONFIG_CHECK,
-                "objective list"
+                "list"
         );
     }
 

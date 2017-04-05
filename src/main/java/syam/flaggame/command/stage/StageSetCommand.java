@@ -52,7 +52,7 @@ public class StageSetCommand extends BaseCommand {
                 1,
                 "<option> [value] <- set option",
                 Perms.STAGE_CONFIG_SET,
-                "stage set"
+                "set"
         );
 
     }

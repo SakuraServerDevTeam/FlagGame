@@ -39,7 +39,7 @@ public class StageRateCommand extends BaseCommand {
                 true,
                 1,
                 "<rate> <- rate the stage",
-                "stage rate"
+                "rate"
         );
     }
 

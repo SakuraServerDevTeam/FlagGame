@@ -37,7 +37,7 @@ public class StageInfoCommand extends BaseCommand {
                 false,
                 0,
                 "[stage] <- show stage info",
-                "stage info"
+                "info"
         );
     
     }

@@ -41,7 +41,7 @@ public class GameCloseCommand extends BaseCommand {
                 false,
                 1,
                 "<reception> [reason] <- close the reception",
-                "game close"
+                "close"
         );
     }
 

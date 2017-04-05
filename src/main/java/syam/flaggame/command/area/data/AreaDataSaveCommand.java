@@ -45,7 +45,7 @@ public class AreaDataSaveCommand extends AreaCommand {
                 plugin,
                 3,
                 "<id> <target> <name> <- save region",
-                "area data save"
+                "save"
         );
     }
 

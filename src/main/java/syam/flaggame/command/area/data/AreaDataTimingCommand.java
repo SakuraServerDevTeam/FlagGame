@@ -40,7 +40,7 @@ public class AreaDataTimingCommand extends AreaCommand {
                 plugin,
                 3,
                 "<id> <name> [timing] <- schedule rollback",
-                "area data timing"
+                "timing"
         );
     }
 

@@ -41,7 +41,7 @@ public class PlayerStatsCommand extends BaseCommand {
                 false,
                 0,
                 "[player] <- show specified player's stats",
-                "player stats"
+                "stats"
         );
     }
 

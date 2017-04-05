@@ -44,7 +44,7 @@ public class AreaPermissionDashboardCommand extends AreaCommand {
                 2,
                 "<id> <permission> <- show information about permissions", 
                 Perms.STAGE_CONFIG_CHECK, 
-                "area permission dashboard"
+                "dashboard", "d"
         );
     }
 

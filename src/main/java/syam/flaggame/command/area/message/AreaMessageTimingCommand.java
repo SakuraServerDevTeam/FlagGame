@@ -39,8 +39,7 @@ public class AreaMessageTimingCommand extends AreaCommand {
                 3,
                 "<id> <index> <timing> <- set message timing",
                 Perms.STAGE_CONFIG_SET,
-                "area message timing",
-                "amt"
+                "timing"
         );
     }
 

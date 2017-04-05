@@ -44,8 +44,7 @@ public class AreaPermissionTestCommand extends AreaCommand {
                 plugin,
                 1,
                 "<permission> [color] <- select region",
-                "area test",
-                "at"
+                "test"
         );
     }
 

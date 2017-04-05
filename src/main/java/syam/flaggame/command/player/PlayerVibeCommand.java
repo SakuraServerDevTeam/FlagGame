@@ -38,7 +38,7 @@ public class PlayerVibeCommand extends BaseCommand {
                 false,
                 0,
                 "[player] <- show specified player's vibe",
-                "player vibe"
+                "vibe"
         );
     }
 

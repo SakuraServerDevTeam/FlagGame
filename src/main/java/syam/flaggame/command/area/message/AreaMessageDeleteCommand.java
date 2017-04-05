@@ -37,8 +37,7 @@ public class AreaMessageDeleteCommand extends AreaCommand {
                 1,
                 "<id> <index> <- delete message",
                 Perms.STAGE_CONFIG_SET,
-                "area message delete",
-                "amd"
+                "delete"
         );
     }
 

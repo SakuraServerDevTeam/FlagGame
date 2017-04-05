@@ -39,7 +39,7 @@ public class StageSelectCommand extends BaseCommand {
                 true,
                 0,
                 "[stage] <- select exist stage",
-                "stage select"
+                "select"
         );
     
     }

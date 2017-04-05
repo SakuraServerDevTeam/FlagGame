@@ -43,7 +43,7 @@ public class StageDashboardCommand extends BaseCommand {
                 1,
                 "<stage> <- show information about a stage",
                 Perms.STAGE_CONFIG_CHECK,
-                "stage dashboard"
+                "dashboard", "d"
         );
     }
 

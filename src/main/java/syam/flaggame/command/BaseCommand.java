@@ -60,18 +60,12 @@ public abstract class BaseCommand {
         this(plugin, bePlayer, argLength, usage, null, name, aliases);
     }
 
-    public boolean run(CommandSender sender, String[] preArgs, String cmd) {
+    public final boolean run(CommandSender sender, String[] preArgs, String cmd) {
         List<String> args = new ArrayList<>(Arrays.asList(preArgs));
-
-        // 引数からコマンドの部分を取り除く
-        // (コマンド名に含まれる半角スペースをカウント、リストの先頭から順にループで取り除く)
-        for (int i = 0; i < cmd.split(" ").length && !args.isEmpty(); i++) {
-            args.remove(0);
-        }
 
         // 引数の長さチェック
         if (argLength > args.size()) {
-            sendUsage(sender);
+            sendUsage(sender, cmd.substring(cmd.lastIndexOf(" ")  + 1, cmd.length()));
             return true;
         }
 
@@ -93,7 +87,7 @@ public abstract class BaseCommand {
 
         // 実行
         try {
-            execute(args, sender, player);
+            execute(args, cmd, sender, player);
         } catch (PermissionException ex) {
             Actions.message(sender, "&cYou don't have permission to use this!");
         } catch (CommandException ex) {
@@ -105,7 +99,15 @@ public abstract class BaseCommand {
         }
         return true;
     }
+    
+    public final List<String> complete(CommandSender sender, String[] preArgs, String cmd) {
+        return null;
+    }
 
+    public void execute(List<String> args, String label, CommandSender sender, Player player) throws CommandException {
+        this.execute(args, sender, player);
+    }
+    
     /**
      * コマンドを実際に実行する
      *
@@ -114,7 +116,9 @@ public abstract class BaseCommand {
      * @param player the player who executed this command - equal to sender
      * @throws CommandException
      */
-    public abstract void execute(List<String> args, CommandSender sender, Player player) throws CommandException;
+    public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
+        throw new CommandException("&cThis command is not implemented yet.");
+    }
 
     /**
      * コマンド実行に必要な権限を持っているか検証する
@@ -126,15 +130,15 @@ public abstract class BaseCommand {
         return permission == null ? true : permission.has(target);
     }
 
-    public String getName() {
+    public final String getName() {
         return this.name;
     }
 
-    public String getUsage() {
+    public final String getUsage() {
         return usage;
     }
 
-    public String[] getAliases() {
+    public final String[] getAliases() {
         return aliases.clone();
     }
 
@@ -142,12 +146,13 @@ public abstract class BaseCommand {
      * コマンドの使い方を送信する
      *
      * @param sendTo target
+     * @param label command arguments before this command name
      */
-    public void sendUsage(CommandSender sendTo) {
-        Actions.message(sendTo, "&c" + BaseCommand.COMMAND_PREFIX + name + " " + usage);
+    public final void sendUsage(CommandSender sendTo, String label) {
+        Actions.message(sendTo, "&7/" + label + "&c " + name + "&7 " + usage);
     }
 
-    public void sendMessage(CommandSender sender, String message) {
+    protected final void sendMessage(CommandSender sender, String message) {
         Actions.sendPrefixedMessage(sender, message);
     }
 

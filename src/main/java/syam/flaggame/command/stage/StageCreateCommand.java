@@ -23,7 +23,6 @@ import syam.flaggame.FlagGame;
 import syam.flaggame.command.BaseCommand;
 import syam.flaggame.event.StageCreateEvent;
 import syam.flaggame.exception.CommandException;
-import syam.flaggame.exception.StageReservedException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.player.GamePlayer;
@@ -42,7 +41,7 @@ public class StageCreateCommand extends BaseCommand {
                 1,
                 "<stage> <- create stage",
                 Perms.CREATE,
-                "stage create"
+                "create"
         );
 
     }

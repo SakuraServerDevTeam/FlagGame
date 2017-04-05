@@ -41,7 +41,7 @@ public class AreaPermissionListCommand extends AreaCommand {
                 1,
                 "<id> <- show a list of permissions",
                 Perms.STAGE_CONFIG_CHECK,
-                "area permission list"
+                "list"
         );
     }
 

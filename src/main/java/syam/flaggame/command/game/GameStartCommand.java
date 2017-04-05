@@ -38,7 +38,7 @@ public class GameStartCommand extends BaseCommand {
                 false,
                 0,
                 "[stage] <- start game",
-                "game start"
+                "start"
         );
     
     }

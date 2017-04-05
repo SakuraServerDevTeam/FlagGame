@@ -41,7 +41,7 @@ public class StageListCommand extends BaseCommand {
                 0,
                 "<- show information about stages",
                 Perms.STAGE_CONFIG_CHECK,
-                "stage list"
+                "list"
         );
     }
 

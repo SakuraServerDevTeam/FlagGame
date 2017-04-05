@@ -23,7 +23,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.FlagGame;
 import syam.flaggame.command.BaseCommand;
-import syam.flaggame.command.queue.Queueable;
+import syam.flaggame.queue.Queueable;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.exception.StageReservedException;
 import syam.flaggame.game.Stage;
@@ -43,7 +43,7 @@ public class StageDeleteCommand extends BaseCommand {
                 1,
                 "<stage> <- management stages",
                 Perms.DELETE,
-                "stage delete"
+                "delete"
         );
 
     }

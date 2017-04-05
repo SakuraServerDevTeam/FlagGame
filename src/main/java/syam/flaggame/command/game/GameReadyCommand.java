@@ -37,7 +37,7 @@ public class GameReadyCommand extends BaseCommand {
                 false,
                 1,
                 "<reception-type> [optional args...] <- ready game",
-                "game ready"
+                "ready"
         );
     }
 

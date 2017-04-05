@@ -40,7 +40,7 @@ public class AreaDataListCommand extends AreaCommand {
                 1,
                 "<id> <- show a list of area data",
                 Perms.STAGE_CONFIG_CHECK,
-                "area data list"
+                "list"
         );
     }
 

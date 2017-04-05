@@ -44,7 +44,7 @@ public class StageStatsCommand extends BaseCommand {
                 1,
                 "[stage] <- show stage stats",
                 Perms.STAGE_STAT,
-                "stage stats"
+                "stats"
         );
     }
 

@@ -39,7 +39,7 @@ public class GameListCommand extends BaseCommand {
                 false,
                 0,
                 " <- show a list of receptions",
-                "game list"
+                "list"
         );
     }
 

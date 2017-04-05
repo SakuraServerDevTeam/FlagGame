@@ -40,8 +40,7 @@ public class AreaMessageAddCommand extends AreaCommand {
                 3,
                 "<id> <type> <message> <- add message",
                 Perms.STAGE_CONFIG_SET,
-                "area message add",
-                "ama"
+                "add"
         );
     }
 

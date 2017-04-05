@@ -40,7 +40,7 @@ public class GameLeaveCommand extends BaseCommand {
                 true,
                 0,
                 "<leave> <- leave the game",
-                "game leave"
+                "leave"
         );
     }
 
