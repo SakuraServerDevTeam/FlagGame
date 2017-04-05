@@ -30,9 +30,9 @@ import syam.flaggame.player.GamePlayer;
  *
  * @author Toyblocks
  */
-public class PInfoCommand extends BaseCommand {
+public class PlayerInfoCommand extends BaseCommand {
 
-    public PInfoCommand(FlagGame plugin) {
+    public PlayerInfoCommand(FlagGame plugin) {
         super(
                 plugin,
                 true,

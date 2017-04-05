@@ -32,16 +32,15 @@ import syam.flaggame.util.Actions;
  *
  * @author SakuraServerDev
  */
-public class ObjectiveManageCommand extends ObjectiveCommand {
+public class ObjectiveSetCommand extends ObjectiveCommand {
 
-    public ObjectiveManageCommand(FlagGame plugin) {
+    public ObjectiveSetCommand(FlagGame plugin) {
         super(
                 plugin,
                 0,
                 "[option...] <- enable objective locate tool",
                 Perms.SET,
-                "objective manage",
-                "obj manage", "omanage"
+                "objective set"
         );
     }
 

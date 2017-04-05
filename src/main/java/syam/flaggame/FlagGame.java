@@ -16,11 +16,6 @@
  */
 package syam.flaggame;
 
-import syam.flaggame.command.player.PInfoCommand;
-import syam.flaggame.command.stage.StageListCommand;
-import syam.flaggame.command.stage.StageSetCommand;
-import syam.flaggame.command.stage.StageInfoCommand;
-import syam.flaggame.command.stage.StageSelectCommand;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -56,6 +51,7 @@ import syam.flaggame.command.area.data.*;
 import syam.flaggame.command.area.message.*;
 import syam.flaggame.command.area.permission.*;
 import syam.flaggame.command.objective.*;
+import syam.flaggame.command.player.*;
 import syam.flaggame.command.queue.ConfirmQueue;
 import syam.flaggame.command.stage.*;
 import syam.flaggame.listener.*;
@@ -272,7 +268,6 @@ public class FlagGame extends JavaPlugin {
 
     private void registerCommands() {
         Stream.<Function<FlagGame, ? extends BaseCommand>>of(HelpCommand::new,
-                PInfoCommand::new,
                 ListCommand::new,
                 JoinCommand::new,
                 LeaveCommand::new,
@@ -284,7 +279,12 @@ public class FlagGame extends JavaPlugin {
                 TpCommand::new,
                 ReloadCommand::new,
                 RateCommand::new,
+                PlayerInfoCommand::new,
+                PlayerStatsCommand::new,
+                PlayerExpCommand::new,
+                PlayerVibeCommand::new,
                 StageInfoCommand::new,
+                StageStatsCommand::new,
                 StageDashboardCommand::new,
                 StageListCommand::new,
                 StageCreateCommand::new,
@@ -311,7 +311,7 @@ public class FlagGame extends JavaPlugin {
                 AreaMessageDeleteCommand::new,
                 AreaMessageListCommand::new,
                 AreaMessageTimingCommand::new,
-                ObjectiveManageCommand::new,
+                ObjectiveSetCommand::new,
                 ObjectiveDeleteCommand::new,
                 ObjectiveListCommand::new
         ).map(f -> f.apply(this)).forEach(this.commands::add);

@@ -90,7 +90,8 @@ public class ProfileManager implements Listener {
             });
             database.loadPlayerExp(uuid, result -> {
                 try {
-                    profile.setExp(result.get());
+                    Long value = result.get();
+                    profile.setExp(value == null ? 0 : value);
                     int newLevel = profile.getLevel().orElse(Integer.MIN_VALUE);
                     Player player = plugin.getServer().getPlayer(uuid);
                     if (oldLevel < newLevel && player != null) {
@@ -106,7 +107,8 @@ public class ProfileManager implements Listener {
             });
             database.loadPlayerVibe(uuid, result -> {
                 try {
-                    profile.setVibe(result.get());
+                    Double value = result.get();
+                    profile.setVibe(value == null ? 0 : value);
                 } catch (DatabaseException | NullPointerException ex) {
                     plugin.getLogger().log(Level.WARNING, "Failed to load player vibe", ex);
                 }

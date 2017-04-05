@@ -39,7 +39,13 @@ public enum Perms {
     /* 特殊系 */
     IGNORE_PROTECT("ignoreWorldProtect"), SIGN("admin.sign"),
     //new Configuration
-    STAGE_CONFIG_CHECK("config.stage.check"), STAGE_CONFIG_SET("config.stage.set");
+    STAGE_CONFIG_CHECK("config.stage.check"), STAGE_CONFIG_SET("config.stage.set"),
+    // stats 
+    PLAYER_STAT_SELF("user.stat.self"), PLAYER_STAT_OTHER("user.stat.other"),
+    PLAYER_EXP_SELF("user.exp.self"), PLAYER_EXP_OTHER("user.exp.other"), 
+    PLAYER_VIBE_SELF("user.vibe.self"), PLAYER_VIBE_OTHER("user.vibe.other"),
+    STAGE_STAT("stage.stat"),
+    ;
 
     // ノードヘッダー
     final String HEADER = "flag.";
