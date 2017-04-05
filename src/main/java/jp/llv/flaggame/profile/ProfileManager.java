@@ -98,7 +98,7 @@ public class ProfileManager implements Listener {
                         OnelineBuilder.newBuilder().info("あなたのレベルが")
                                 .value(oldLevel).info("から")
                                 .value(newLevel).info("まで上がりました！ 次のレベルまでの必要経験値は")
-                                .value(profile.getExpRequiredToLevelUp()).info("です！")
+                                .value(profile.getExpRequiredToLevelUp().getAsLong()).info("です！")
                                 .sendTo(player);
                     }
                 } catch (DatabaseException | NullPointerException ex) {
