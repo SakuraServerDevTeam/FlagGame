@@ -119,7 +119,7 @@ public class FlagGame extends JavaPlugin {
 
         // loadconfig
         try {
-            config.loadConfig(true);
+            config.loadConfig();
         } catch (Exception ex) {
             this.getLogger().log(Level.WARNING, "an error occured while trying to load the config file.", ex);
         }

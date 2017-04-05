@@ -41,7 +41,7 @@ public class ReloadCommand extends BaseCommand {
     @Override
     public void execute(List<String> args, CommandSender sender, Player player) {
         try {
-            plugin.getConfigs().loadConfig(false);
+            plugin.getConfigs().loadConfig();
         } catch (Exception ex) {
             plugin.getLogger().log(Level.WARNING, "an error occured while trying to load the config file.", ex);
             return;

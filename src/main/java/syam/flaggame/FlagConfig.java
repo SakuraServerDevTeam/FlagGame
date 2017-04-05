@@ -93,9 +93,8 @@ public class FlagConfig {
     /**
      * 設定をファイルから読み込む
      *
-     * @param initialLoad 初回ロードかどうか
      */
-    public void loadConfig(boolean initialLoad) {
+    public void loadConfig() {
         // ディレクトリ作成
         createDirs();
 
