@@ -23,7 +23,6 @@ import org.bukkit.entity.Player;
 import syam.flaggame.FlagGame;
 import syam.flaggame.command.dashboard.OnelineBuilder;
 import syam.flaggame.exception.CommandException;
-import syam.flaggame.exception.StageReservedException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
 
@@ -39,8 +38,7 @@ public class ObjectiveDeleteCommand extends ObjectiveCommand {
                 3,
                 "<x> <y> <z> <- delete objective located there",
                 Perms.STAGE_CONFIG_SET,
-                "objective delete",
-                "obj delete", "odel"
+                "objective delete"
         );
     }
 
