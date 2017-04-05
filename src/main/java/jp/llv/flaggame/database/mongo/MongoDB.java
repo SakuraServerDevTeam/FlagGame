@@ -45,7 +45,7 @@ import jp.llv.flaggame.util.MapUtils;
 import org.bson.BsonDocument;
 import org.bson.BsonValue;
 import org.bson.Document;
-import syam.flaggame.ConfigurationManager;
+import syam.flaggame.FlagConfig;
 import syam.flaggame.FlagGame;
 import syam.flaggame.game.Stage;
 import syam.flaggame.game.StageBsonConverter;
@@ -70,11 +70,11 @@ public class MongoDB implements Database {
     private static final char FIELD_SEPARATOR = '.';
 
     private final FlagGame plugin;
-    private final ConfigurationManager config;
+    private final FlagConfig config;
     private MongoClient client;
     private MongoDatabase database;
 
-    public MongoDB(FlagGame plugin, ConfigurationManager config) {
+    public MongoDB(FlagGame plugin, FlagConfig config) {
         this.plugin = plugin;
         this.config = config;
     }

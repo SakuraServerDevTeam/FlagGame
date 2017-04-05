@@ -20,7 +20,7 @@ import java.util.UUID;
 import org.bson.Document;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import syam.flaggame.ConfigurationManager;
+import syam.flaggame.FlagConfig;
 
 /**
  *
@@ -58,7 +58,7 @@ public abstract class PlayerRecord extends LocationRecord {
      * @param config plugin configuration.
      * @return weight.
      */
-    public double getExpWeight(ConfigurationManager config) {
+    public double getExpWeight(FlagConfig config) {
         return 0D;
     }
     

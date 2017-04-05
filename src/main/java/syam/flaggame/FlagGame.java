@@ -77,7 +77,7 @@ public class FlagGame extends JavaPlugin {
     private final List<BaseCommand> commands = new ArrayList<>();
 
     // ** Private classes **
-    private ConfigurationManager config;
+    private FlagConfig config;
     private Debug debug;
     private ConfirmQueue queue;
 
@@ -110,7 +110,7 @@ public class FlagGame extends JavaPlugin {
         PluginManager pluginManager = getServer().getPluginManager();
 
         try {
-            config = new ConfigurationManager(this);
+            config = new FlagConfig(this);
         } catch (IllegalStateException ex) {
             this.getPluginLoader().disablePlugin(this);
             return;
@@ -361,7 +361,7 @@ public class FlagGame extends JavaPlugin {
      *
      * @return ConfigurationManager
      */
-    public ConfigurationManager getConfigs() {
+    public FlagConfig getConfigs() {
         return config;
     }
 

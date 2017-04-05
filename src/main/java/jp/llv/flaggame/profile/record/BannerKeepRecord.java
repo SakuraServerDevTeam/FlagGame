@@ -20,7 +20,7 @@ import java.util.UUID;
 import org.bson.Document;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import syam.flaggame.ConfigurationManager;
+import syam.flaggame.FlagConfig;
 
 /**
  *
@@ -55,7 +55,7 @@ public class BannerKeepRecord extends ScoreRecord {
     }
 
     @Override
-    public double getExpWeight(ConfigurationManager config) {
+    public double getExpWeight(FlagConfig config) {
         return getScore() * config.getScoreBannerKeep();
     }
     

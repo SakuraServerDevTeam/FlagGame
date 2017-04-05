@@ -19,7 +19,7 @@ package jp.llv.flaggame.profile.record;
 import java.util.UUID;
 import org.bson.Document;
 import org.bukkit.entity.Player;
-import syam.flaggame.ConfigurationManager;
+import syam.flaggame.FlagConfig;
 
 /**
  *
@@ -45,7 +45,7 @@ public class LogoutRecord extends PlayerRecord {
     }
 
     @Override
-    public double getExpWeight(ConfigurationManager config) {
+    public double getExpWeight(FlagConfig config) {
         return config.getScoreGameExit();
     }
     

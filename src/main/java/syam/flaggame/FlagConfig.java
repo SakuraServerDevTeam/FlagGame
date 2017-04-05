@@ -34,7 +34,7 @@ import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 
-public class ConfigurationManager {
+public class FlagConfig {
 
     // Logger
     private static final String DEFAULT_DETAIL_DIRECTORY = "plugins/FlagGame/detail/";
@@ -85,7 +85,7 @@ public class ConfigurationManager {
      *
      * @param plugin
      */
-    public ConfigurationManager(FlagGame plugin) {
+    public FlagConfig(FlagGame plugin) {
         this.plugin = plugin;
         this.pluginDir = plugin.getDataFolder();
     }
