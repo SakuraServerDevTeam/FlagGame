@@ -45,7 +45,7 @@ public class LoginRecord extends PlayerRecord {
     }
 
     @Override
-    public double getExp(ConfigurationManager config) {
+    public double getExpWeight(ConfigurationManager config) {
         return config.getScoreGameJoin();
     }
     

@@ -66,11 +66,11 @@ score:
     join: 10.0
     exit: -10.0
   combat:
-    kill: 0.5
+    kill: 1
     death: 0.0
   flag:
     place: 1.0
-    last_place: 5.0
+    last_place: 3.0
     break: 1.0
   banner:
     deploy: 3.0
@@ -78,8 +78,8 @@ score:
     keep: 3.0
     steal: 0.25
   nexus:
-    break: 1.0
-  rate: 5.0
+    break: 0.5
+  rate: 50.0
 
 #==================#
 #   DO NOT TOUCH   #

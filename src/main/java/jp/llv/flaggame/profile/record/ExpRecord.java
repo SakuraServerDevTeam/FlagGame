@@ -48,6 +48,10 @@ public abstract class ExpRecord extends PlayerRecord {
         super(base);
     }
     
+    /**
+     * Gets actual experience point the player earned.
+     * @return actual experience point.
+     */
     public double getExp() {
         return super.getDouble(FIELD_EXP);
     }

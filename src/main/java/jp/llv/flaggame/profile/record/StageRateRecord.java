@@ -50,7 +50,7 @@ public class StageRateRecord extends ExpRecord {
     }
 
     @Override
-    public double getExp(ConfigurationManager config) {
+    public double getExpWeight(ConfigurationManager config) {
         return config.getScoreRate();
     }
     

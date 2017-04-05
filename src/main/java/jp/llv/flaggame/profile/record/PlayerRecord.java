@@ -53,10 +53,19 @@ public abstract class PlayerRecord extends LocationRecord {
         return (UUID) super.get(FIELD_PLAYER);
     }
 
-    public double getExp(ConfigurationManager config) {
+    /**
+     * Gets weight for experience calcuration.
+     * @param config plugin configuration.
+     * @return weight.
+     */
+    public double getExpWeight(ConfigurationManager config) {
         return 0D;
     }
     
+    /**
+     * Gets actual game point the player earned.
+     * @return actual game point.
+     */
     public double getGamePoint() {
         return 0D;
     }
