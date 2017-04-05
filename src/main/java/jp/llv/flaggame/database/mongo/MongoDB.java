@@ -114,6 +114,8 @@ public class MongoDB implements Database {
     public void close() {
         if (client != null) {
             client.close();
+            database = null;
+            client = null;
         }
     }
 
