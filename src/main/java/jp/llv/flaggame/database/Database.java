@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2017 SakuraServerDev
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,11 @@
  */
 package jp.llv.flaggame.database;
 
+import java.util.Map;
+import java.util.UUID;
 import jp.llv.flaggame.profile.RecordStream;
+import jp.llv.flaggame.profile.StatEntry;
+import jp.llv.flaggame.profile.record.RecordType;
 import syam.flaggame.game.Stage;
 
 /**
@@ -35,7 +39,7 @@ public interface Database extends AutoCloseable {
     }
 
     boolean isConnected();
-    
+
     void loadStages(DatabaseCallback<Stage, RuntimeException> consumer, DatabaseCallback<Void, DatabaseException> callback);
 
     void saveStage(Stage stage, DatabaseCallback<Void, DatabaseException> callback);
@@ -43,6 +47,14 @@ public interface Database extends AutoCloseable {
     void deleteStage(Stage stage, DatabaseCallback<Void, DatabaseException> callback);
 
     void saveReocrds(RecordStream records, DatabaseCallback<Void, DatabaseException> callback);
+
+    void loadPlayerStat(UUID player, DatabaseCallback<Map.Entry<RecordType, StatEntry>, RuntimeException> consumer, DatabaseCallback<Void, DatabaseException> callback);
+
+    void loadPlayerExp(UUID player, DatabaseCallback<Long, DatabaseException> callback);
+
+    void loadPlayerVibe(UUID player, DatabaseCallback<Double, DatabaseException> callback);
+
+    void loadStageStat(String stage, DatabaseCallback<Map.Entry<RecordType, StatEntry>, RuntimeException> consumer, DatabaseCallback<Void, DatabaseException> callback);
 
     @Override
     public void close() throws DatabaseException;

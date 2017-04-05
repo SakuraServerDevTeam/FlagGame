@@ -168,6 +168,8 @@ public class RealtimeTeamingReception implements GameReception {
         plugin.getDatabases().get().saveReocrds(records, result -> {
             try {
                 result.test();
+                plugin.getProfiles().loadPlayerProfiles(this, true);
+                plugin.getProfiles().loadStageProfile(stage);
             } catch (DatabaseException ex) {
                 plugin.getLogger().log(Level.WARNING, "Failed to save records", ex);
             }
@@ -300,6 +302,8 @@ public class RealtimeTeamingReception implements GameReception {
         plugin.getDatabases().get().saveReocrds(records, result -> {
             try {
                 result.test();
+                plugin.getProfiles().loadPlayerProfiles(this, true);
+                plugin.getProfiles().loadStageProfile(stage);
             } catch (DatabaseException ex) {
                 plugin.getLogger().log(Level.WARNING, "Failed to save records", ex);
             }

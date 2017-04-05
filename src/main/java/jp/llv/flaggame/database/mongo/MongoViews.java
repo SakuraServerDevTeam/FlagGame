@@ -16,7 +16,6 @@
  */
 package jp.llv.flaggame.database.mongo;
 
-import com.mongodb.async.client.MongoDatabase;
 import static jp.llv.flaggame.profile.record.GameRecord.FIELD_TIME;
 import static jp.llv.flaggame.profile.record.GameRecord.FIELD_GAME;
 import static jp.llv.flaggame.profile.record.GameStartRecord.FIELD_STAGE;
@@ -40,7 +39,6 @@ import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Sorts.orderBy;
 import static com.mongodb.client.model.Sorts.descending;
 import static com.mongodb.client.model.Projections.fields;
-import java.util.ArrayList;
 import static jp.llv.flaggame.database.mongo.MongoDB.FIELD_ID;
 import static jp.llv.flaggame.database.mongo.MongoDB.COLLECTION_RECORD;
 import static jp.llv.flaggame.database.mongo.MongoDB.FIELD_COUNT;
@@ -49,6 +47,8 @@ import static jp.llv.flaggame.database.mongo.MongoDB.VIEW_PLAYER_EXP;
 import static jp.llv.flaggame.database.mongo.MongoDB.VIEW_PLAYER_STATS;
 import static jp.llv.flaggame.database.mongo.MongoDB.VIEW_PLAYER_VIBE;
 import static jp.llv.flaggame.database.mongo.MongoDB.VIEW_STAGE_STATS;
+import com.mongodb.async.client.MongoDatabase;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -62,12 +62,6 @@ import org.bson.BsonInt32;
 import org.bson.BsonString;
 import org.bson.Document;
 import org.bson.conversions.Bson;
-import static com.mongodb.client.model.Aggregates.group;
-import static com.mongodb.client.model.Aggregates.unwind;
-import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Sorts.orderBy;
-import static com.mongodb.client.model.Sorts.descending;
-import static com.mongodb.client.model.Projections.fields;
 
 /**
  *

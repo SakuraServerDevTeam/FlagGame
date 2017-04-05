@@ -27,11 +27,21 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.connection.ClusterSettings;
 import java.util.Collections;
+import java.util.Map;
+import java.util.UUID;
 import jp.llv.flaggame.database.Database;
 import jp.llv.flaggame.database.DatabaseCallback;
 import jp.llv.flaggame.database.DatabaseException;
 import jp.llv.flaggame.database.DatabaseResult;
 import jp.llv.flaggame.profile.RecordStream;
+import jp.llv.flaggame.profile.StatEntry;
+import jp.llv.flaggame.profile.record.ExpRecord;
+import jp.llv.flaggame.profile.record.GameStartRecord;
+import jp.llv.flaggame.profile.record.PlayerRecord;
+import jp.llv.flaggame.profile.record.PlayerResultRecord;
+import jp.llv.flaggame.profile.record.RecordType;
+import jp.llv.flaggame.profile.record.ScoreRecord;
+import jp.llv.flaggame.util.MapUtils;
 import org.bson.BsonDocument;
 import org.bson.BsonValue;
 import org.bson.Document;
@@ -45,7 +55,7 @@ import syam.flaggame.game.StageBsonConverter;
  * @author toyblocks
  */
 public class MongoDB implements Database {
-    
+
     public static final String VIEW_PLAYER_STATS = "player_stats";
     public static final String VIEW_PLAYER_EXP = "player_exp";
     public static final String VIEW_PLAYER_VIBE = "player_vibe";
@@ -55,8 +65,9 @@ public class MongoDB implements Database {
     public static final String COLLECTION_RECORD = "record";
     public static final String FIELD_ID = "_id";
     public static final String FIELD_COUNT = "count";
-    
+
     private static final String SET = "$set";
+    private static final char FIELD_SEPARATOR = '.';
 
     private final FlagGame plugin;
     private final ConfigurationManager config;
@@ -169,6 +180,58 @@ public class MongoDB implements Database {
         } catch (DatabaseException ex) {
             callback.call(DatabaseResult.fail(ex));
         }
+    }
+
+    @Override
+    public void loadPlayerStat(UUID player, DatabaseCallback<Map.Entry<RecordType, StatEntry>, RuntimeException> consumer, DatabaseCallback<Void, DatabaseException> callback) {
+        if (database == null) {
+            callback.call(DatabaseResult.fail(new DatabaseException("Not connected")));
+            return;
+        }
+        MongoCollection<Document> coll = database.getCollection(VIEW_PLAYER_STATS);
+        coll.find(new Document(FIELD_ID + FIELD_SEPARATOR + PlayerRecord.FIELD_PLAYER, player))
+                .map(d -> MapUtils.tuple(
+                        RecordType.of(d.getString(RecordType.FIELD_TYPE)),
+                        new StatEntry(d.getInteger(FIELD_COUNT, 0), d.getDouble(ScoreRecord.FIELD_SCORE))
+                )).forEach(new MongoDBResultCallback<>(consumer), new MongoDBErrorCallback<>(callback));
+    }
+
+    @Override
+    public void loadPlayerExp(UUID player, DatabaseCallback<Long, DatabaseException> callback) {
+        if (database == null) {
+            callback.call(DatabaseResult.fail(new DatabaseException("Not connected")));
+            return;
+        }
+        MongoCollection<Document> coll = database.getCollection(VIEW_PLAYER_EXP);
+        coll.find(new Document(FIELD_ID, player))
+                .map(d -> d.getLong(ExpRecord.FIELD_EXP))
+                .first(new MongoDBCallback<>(callback));
+    }
+
+    @Override
+    public void loadPlayerVibe(UUID player, DatabaseCallback<Double, DatabaseException> callback) {
+        if (database == null) {
+            callback.call(DatabaseResult.fail(new DatabaseException("Not connected")));
+            return;
+        }
+        MongoCollection<Document> coll = database.getCollection(VIEW_PLAYER_VIBE);
+        coll.find(new Document(FIELD_ID, player))
+                .map(d -> d.getDouble(PlayerResultRecord.FIELD_VIBE))
+                .first(new MongoDBCallback<>(callback));
+    }
+
+    @Override
+    public void loadStageStat(String stage, DatabaseCallback<Map.Entry<RecordType, StatEntry>, RuntimeException> consumer, DatabaseCallback<Void, DatabaseException> callback) {
+        if (database == null) {
+            callback.call(DatabaseResult.fail(new DatabaseException("Not connected")));
+            return;
+        }
+        MongoCollection<Document> coll = database.getCollection(VIEW_STAGE_STATS);
+        coll.find(new Document(FIELD_ID + FIELD_SEPARATOR + GameStartRecord.FIELD_STAGE, stage))
+                .map(d -> MapUtils.tuple(
+                        RecordType.of(d.getString(RecordType.FIELD_TYPE)),
+                        new StatEntry(d.getInteger(FIELD_COUNT, 0), d.getDouble(ScoreRecord.FIELD_SCORE))
+                )).forEach(new MongoDBResultCallback<>(consumer), new MongoDBErrorCallback<>(callback));
     }
 
 }

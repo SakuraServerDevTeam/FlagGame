@@ -65,16 +65,20 @@ public enum RecordType {
     public GameRecord read(Document document) {
         return constructor.apply(document);
     }
-    
-    public static GameRecord load(Document document) {
-        String typeString = document.getString(FIELD_TYPE);
-        RecordType type = valueOf(typeString.toUpperCase());
-        return type.read(document);
-    }
 
     @Override
     public String toString() {
         return name().toLowerCase();
+    }
+    
+    public static GameRecord load(Document document) {
+        String typeString = document.getString(FIELD_TYPE);
+        RecordType type = of(typeString);
+        return type.read(document);
+    }
+    
+    public static RecordType of(String name) {
+        return valueOf(name.toUpperCase());
     }
     
 }

@@ -16,6 +16,10 @@
  */
 package jp.llv.flaggame.profile;
 
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
+import java.util.OptionalLong;
+
 /**
  *
  * @author SakuraServerDev
@@ -25,20 +29,40 @@ public class PlayerProfile extends ProfileBase {
     private static final double LEVEL_UP_FACTOR = 1.1;
     private static final double LEVEL_UP_FACTOR_LOG = Math.log10(LEVEL_UP_FACTOR);
     
-    private double exp;
-    private double vibe;
+    private Long exp;
+    private Double vibe;
     
-    public double getExp() {
-        return exp;
+    public OptionalLong getExp() {
+        return exp == null ? OptionalLong.empty() : OptionalLong.of(exp);
     }
     
-    public static int getLevel(double exp) {
+    public OptionalInt getLevel() {
+        return exp == null ? OptionalInt.empty() : OptionalInt.of((int) getLevel(exp));
+    }
+    
+    public OptionalLong getExpRequiredToLevelUp() {
+        return exp == null ? OptionalLong.empty() : OptionalLong.of(getExpRequired(getLevel(exp) + 1) - exp);
+    }
+    
+    public OptionalDouble getVibe() {
+        return vibe == null ? OptionalDouble.empty() : OptionalDouble.of(vibe);
+    }
+
+    /*package*/ void setExp(long exp) {
+        this.exp = exp;
+    }
+
+    /*package*/ void setVibe(double vibe) {
+        this.vibe = vibe;
+    }
+    
+    public static double getLevel(long exp) {
         // 2log[1.1]((exp/1000)+1) + 1
-        return (int) (Math.floor((Math.log10((exp / 1000.0) + 1.0) / LEVEL_UP_FACTOR_LOG)) * 2.0) + 1;
+        return (Math.floor((Math.log10((exp / 1000.0) + 1.0) / LEVEL_UP_FACTOR_LOG)) * 2.0) + 1;
     }
     
-    public double getVibe() {
-        return vibe;
+    public static long getExpRequired(double level) {
+        return (long) (1000.0 * (Math.pow(LEVEL_UP_FACTOR, (level - 1) / 2) - 1));
     }
 
 }

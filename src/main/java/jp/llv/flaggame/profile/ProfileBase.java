@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import jp.llv.flaggame.profile.record.RecordType;
 
 /**
@@ -27,21 +28,16 @@ import jp.llv.flaggame.profile.record.RecordType;
  * @author SakuraServerDev
  */
 public abstract class ProfileBase {
-    
+
     private final Map<RecordType, StatEntry> stats = Collections.synchronizedMap(new EnumMap<>(RecordType.class));
 
-    public StatEntry getStat(RecordType type) {
+    public Optional<StatEntry> getStat(RecordType type) {
         Objects.requireNonNull(type);
-        synchronized (stats) {
-            if (!stats.containsKey(type)) {
-                stats.put(type, new StatEntry());
-            }
-            return stats.get(type);
-        }
+        return Optional.ofNullable(stats.get(type));
     }
-    
+
     /*package*/ void setStat(RecordType type, StatEntry entry) {
         stats.put(type, entry);
     }
-    
+
 }

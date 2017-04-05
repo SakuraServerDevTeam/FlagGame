@@ -32,6 +32,7 @@ import jp.llv.flaggame.database.Database;
 import jp.llv.flaggame.database.DatabaseException;
 import jp.llv.flaggame.database.mongo.MongoDB;
 import jp.llv.flaggame.game.GameManager;
+import jp.llv.flaggame.profile.ProfileManager;
 import jp.llv.flaggame.reception.EvenRequiredRealtimeTeamingReception;
 import jp.llv.flaggame.reception.RealtimeTeamingReception;
 import jp.llv.flaggame.reception.ReceptionManager;
@@ -87,6 +88,7 @@ public class FlagGame extends JavaPlugin {
     private ReceptionManager receptions;
     private GameManager games;
     private StageManager stages;
+    private ProfileManager profiles;
 
     // ** Variable **
     // プレイヤーデータベース
@@ -164,6 +166,7 @@ public class FlagGame extends JavaPlugin {
 
         debug.startTimer("managers");
         players = new PlayerManager(this);
+        profiles = new ProfileManager(this);
         receptions = new ReceptionManager(this);
         receptions.addType("rt", RealtimeTeamingReception::new);
         receptions.addType("ert", EvenRequiredRealtimeTeamingReception::new);
@@ -176,6 +179,7 @@ public class FlagGame extends JavaPlugin {
         database.loadStages(stage -> {
             stages.addStage(stage.get());
             getLogger().log(Level.INFO, "Loaded stage ''{0}''", stage.get().getName());
+            profiles.loadStageProfile(stage.get().getName());
         }, result -> {
             try {
                 result.test();
@@ -406,6 +410,10 @@ public class FlagGame extends JavaPlugin {
 
     public PlayerManager getPlayers() {
         return players;
+    }
+
+    public ProfileManager getProfiles() {
+        return profiles;
     }
 
     public ReceptionManager getReceptions() {
