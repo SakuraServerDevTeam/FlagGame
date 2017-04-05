@@ -197,7 +197,7 @@ public class MongoDB implements Database {
         coll.find(new Document(FIELD_ID + FIELD_SEPARATOR + PlayerRecord.FIELD_PLAYER, player))
                 .map(d -> MapUtils.tuple(
                         RecordType.of(d.get(FIELD_ID, Document.class).getString(RecordType.FIELD_TYPE)),
-                        new StatEntry(d.getInteger(FIELD_COUNT, 0), d.getDouble(ScoreRecord.FIELD_SCORE))
+                        new StatEntry(d.getInteger(FIELD_COUNT, 0), getDouble(d, ScoreRecord.FIELD_SCORE))
                 )).forEach(new MongoDBResultCallback<>(consumer), new MongoDBErrorCallback<>(callback));
     }
 
@@ -233,14 +233,21 @@ public class MongoDB implements Database {
         }
         MongoCollection<Document> coll = database.getCollection(VIEW_STAGE_STATS);
         coll.find(new Document(FIELD_ID + FIELD_SEPARATOR + GameStartRecord.FIELD_STAGE, stage))
-                .map(d -> {
-                    System.out.println(d);
-                    return d;
-                })
                 .map(d -> MapUtils.tuple(
                         RecordType.of(d.get(FIELD_ID, Document.class).getString(RecordType.FIELD_TYPE)),
-                        new StatEntry(d.getInteger(FIELD_COUNT, 0), d.getDouble(ScoreRecord.FIELD_SCORE))
+                        new StatEntry(d.getInteger(FIELD_COUNT, 0), getDouble(d, ScoreRecord.FIELD_SCORE))
                 )).forEach(new MongoDBResultCallback<>(consumer), new MongoDBErrorCallback<>(callback));
+    }
+    
+    private static Double getDouble(Document doc, String key) {
+        Object obj = doc.get(key);
+        if (obj instanceof Integer) {
+            return ((Integer) obj).doubleValue();
+        } else if (obj instanceof Double) {
+            return (Double) obj;
+        } else {
+            return null;
+        }
     }
 
 }
