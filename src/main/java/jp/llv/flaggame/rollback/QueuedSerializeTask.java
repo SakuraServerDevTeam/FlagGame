@@ -33,6 +33,9 @@ public class QueuedSerializeTask extends SerializeTask {
 
     @Override
     public void step() throws RollbackException {
+        if (queue.isEmpty()) {
+            return;
+        }
         SerializeTask task = queue.getFirst();
         task.step();
         if (task.isFinished()) {

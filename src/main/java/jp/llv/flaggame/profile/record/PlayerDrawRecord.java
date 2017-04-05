@@ -18,20 +18,25 @@ package jp.llv.flaggame.profile.record;
 
 import java.util.UUID;
 import org.bson.Document;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 /**
  *
  * @author toyblocks
  */
-public class PlayerDrawRecord extends ScoreRecord {
+public class PlayerDrawRecord extends PlayerResultRecord {
 
-    public PlayerDrawRecord(UUID game, double x, double y, double z, UUID player, double score) {
-        super(game, x, y, z, player, score);
+    public PlayerDrawRecord(UUID game, double x, double y, double z, UUID player, long exp, double vive) {
+        super(game, x, y, z, player, exp, vive);
     }
 
-    public PlayerDrawRecord(UUID game, Player player, double score) {
-        super(game, player, score);
+    public PlayerDrawRecord(UUID game, UUID player, Location location, long exp, double vive) {
+        super(game, player, location, exp, vive);
+    }
+
+    public PlayerDrawRecord(UUID game, Player player, long exp, double vive) {
+        super(game, player, exp, vive);
     }
 
     /*package*/ PlayerDrawRecord(Document base) {

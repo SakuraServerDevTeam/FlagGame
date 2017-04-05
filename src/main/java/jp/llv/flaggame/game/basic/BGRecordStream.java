@@ -16,7 +16,9 @@
  */
 package jp.llv.flaggame.game.basic;
 
-import jp.llv.flaggame.profile.GameRecordStream;
+import java.util.Iterator;
+import java.util.List;
+import jp.llv.flaggame.profile.RecordStream;
 import jp.llv.flaggame.profile.record.GameRecord;
 import jp.llv.flaggame.profile.record.PlayerRecord;
 import org.bukkit.entity.Player;
@@ -27,20 +29,21 @@ import syam.flaggame.player.GamePlayer;
  *
  * @author SakuraServerDev
  */
-public class BGRecordStream extends GameRecordStream {
+public class BGRecordStream implements RecordStream {
     
     private final FlagGame plugin;
     private final BasicGame game;
-    
-    public BGRecordStream(FlagGame plugin, BasicGame game) {
-        super(game.getID());
+    private final RecordStream base;
+
+    public BGRecordStream(FlagGame plugin, BasicGame game, RecordStream base) {
         this.plugin = plugin;
         this.game = game;
+        this.base = base;
     }
 
     @Override
     public void push(GameRecord record) {
-        super.push(record);
+        base.push(record);
         if (!(record instanceof PlayerRecord)) {
             return;
         }
@@ -51,11 +54,16 @@ public class BGRecordStream extends GameRecordStream {
         }
         Player player = gplayer.getPlayer();
         float sum = player.getLevel() + player.getExp();
-        sum += pr.getExp(plugin.getConfigs());
+        sum += pr.getExpWeight(plugin.getConfigs());
         int level = (int) sum;
         float exp = sum - level;
         player.setLevel(level);
         player.setExp(exp);
+    }
+
+    @Override
+    public List<GameRecord> getRecords() {
+        return base.getRecords();
     }
     
 }

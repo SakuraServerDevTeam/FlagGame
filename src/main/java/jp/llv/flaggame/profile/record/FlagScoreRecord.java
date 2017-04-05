@@ -55,7 +55,7 @@ public class FlagScoreRecord extends ScoreRecord {
     }
 
     @Override
-    public double getExp(ConfigurationManager config) {
+    public double getExpWeight(ConfigurationManager config) {
         return getScore() * config.getScoreFlagLastPlace();
     }
     

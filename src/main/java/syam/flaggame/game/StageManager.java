@@ -23,9 +23,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
-import jp.llv.flaggame.database.DatabaseException;
-import jp.llv.flaggame.rollback.RollbackException;
-import org.bukkit.World;
 import syam.flaggame.FlagGame;
 
 /**
@@ -36,7 +33,7 @@ import syam.flaggame.FlagGame;
 public class StageManager implements Iterable<Stage> {
 
     private final FlagGame plugin;
-    private final HashMap<String, Stage> stages = new HashMap<>();
+    private final Map<String, Stage> stages = Collections.synchronizedMap(new HashMap<>());
 
     public StageManager(FlagGame plugin) {
         this.plugin = plugin;
@@ -54,20 +51,19 @@ public class StageManager implements Iterable<Stage> {
     /**
      * ステージとステージ名を紐付けでマッピングする
      *
-     * @param stageName ステージ名
      * @param stage ステージインスタンス
      */
-    public void addStage(String stageName, Stage stage) {
-        stages.put(stageName, stage);
+    public void addStage(Stage stage) {
+        stages.put(stage.getName(), stage);
     }
 
     /**
      * 指定したステージをマップから削除する
      *
-     * @param stageName 削除するステージ名
+     * @param stage 削除するステージ
      */
-    public void removeStage(String stageName) {
-        stages.remove(stageName);
+    public void removeStage(Stage stage) {
+        stages.remove(stage.getName());
     }
 
     /**
@@ -123,47 +119,6 @@ public class StageManager implements Iterable<Stage> {
     @Override
     public Iterator<Stage> iterator() {
         return this.getStages().values().iterator();
-    }
-
-    public void saveStages() throws DatabaseException {
-        if (!plugin.getDatabases().isPresent()) {
-            throw new DatabaseException("Not connected");
-        }
-        World gameWorld = plugin.getServer().getWorld(plugin.getConfigs().getGameWorld());
-        for (Stage stage : stages.values()) {
-            for (String area : stage.getAreas().getAreas()) {
-                AreaInfo info = stage.getAreas().getAreaInfo(area);
-                for (AreaInfo.RollbackData rollback : info.getRollbacks().values()) {
-                    try {
-                        rollback.setData(rollback.getTarget().write(plugin, gameWorld));
-                    } catch (RollbackException ex) {
-                        throw new DatabaseException(ex);
-                    }
-                }
-            }
-        }
-        plugin.getDatabases().get().saveStages(stages.values());
-    }
-
-    public void loadStages() throws DatabaseException {
-        if (!plugin.getDatabases().isPresent()) {
-            throw new DatabaseException("Not connected");
-        }
-        stages.clear();
-        World gameWorld = plugin.getServer().getWorld(plugin.getConfigs().getGameWorld());
-        for (Stage stage : plugin.getDatabases().get().loadStages()) {
-            stages.put(stage.getName(), stage);
-            for (String area : stage.getAreas().getAreas()) {
-                AreaInfo info = stage.getAreas().getAreaInfo(area);
-                for (AreaInfo.RollbackData rollback : info.getRollbacks().values()) {
-                    try {
-                        rollback.getTarget().read(plugin, gameWorld, rollback.getData());
-                    } catch (RollbackException ex) {
-                        throw new DatabaseException(ex);
-                    }
-                }
-            }
-        }
     }
 
 }

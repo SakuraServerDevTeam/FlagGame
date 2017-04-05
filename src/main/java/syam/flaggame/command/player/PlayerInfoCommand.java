@@ -14,13 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package syam.flaggame.command;
+package syam.flaggame.command.player;
 
 import java.util.List;
 import syam.flaggame.FlagGame;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import syam.flaggame.command.BaseCommand;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.player.GamePlayer;
@@ -29,15 +30,15 @@ import syam.flaggame.player.GamePlayer;
  *
  * @author Toyblocks
  */
-public class PInfoCommand extends BaseCommand {
+public class PlayerInfoCommand extends BaseCommand {
 
-    public PInfoCommand(FlagGame plugin) {
+    public PlayerInfoCommand(FlagGame plugin) {
         super(
                 plugin,
                 true,
                 0,
                 " <- show your internal information",
-                "pinfo"
+                "player info"
         );
     }
 

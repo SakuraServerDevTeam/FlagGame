@@ -88,10 +88,14 @@ public class StreamUtil {
                 double average = sum / count;
                 double variance = (squaredSum / count) - (average * average);
                 double deviation = Math.sqrt(variance);
-                return list.stream().map(v
-                        -> valueMapper.apply(v,
-                                (keyMapper.applyAsDouble(v) - average) / deviation
-                        ));
+                if (deviation == 0.0) { // all values are the same
+                    return list.stream().map(v -> valueMapper.apply(v, 0.0));
+                } else {
+                    return list.stream().map(v
+                            -> valueMapper.apply(v,
+                                    (keyMapper.applyAsDouble(v) - average) / deviation
+                            ));
+                }
             }
         }
         return Collector.of(

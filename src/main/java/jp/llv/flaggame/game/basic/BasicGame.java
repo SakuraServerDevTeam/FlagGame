@@ -38,7 +38,7 @@ import jp.llv.flaggame.game.Game;
 import jp.llv.flaggame.game.HitpointTask;
 import jp.llv.flaggame.game.ObjectiveEffectTask;
 import jp.llv.flaggame.game.permission.StagePermissionListener;
-import jp.llv.flaggame.profile.DeviationBasedExpCalcurator;
+import jp.llv.flaggame.game.DeviationBasedExpCalcurator;
 import jp.llv.flaggame.profile.record.FlagCaptureRecord;
 import jp.llv.flaggame.profile.record.FlagScoreRecord;
 import jp.llv.flaggame.profile.record.GameStartRecord;
@@ -72,8 +72,11 @@ import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.player.GamePlayer;
 import syam.flaggame.util.Actions;
-import jp.llv.flaggame.profile.ExpCalcurator;
+import jp.llv.flaggame.game.ExpCalcurator;
 import jp.llv.flaggame.profile.record.BannerKeepRecord;
+import jp.llv.flaggame.profile.record.PlayerDrawRecord;
+import jp.llv.flaggame.profile.record.PlayerLoseRecord;
+import jp.llv.flaggame.profile.record.PlayerWinRecord;
 import jp.llv.flaggame.rollback.SerializeTask;
 import syam.flaggame.game.AreaInfo;
 import syam.flaggame.game.objective.BannerSlot;
@@ -98,7 +101,7 @@ public class BasicGame implements Game {
     private State state = State.PREPARATION;
     private long expectedFinishAt = 0;
 
-    private final BGRecordStream records;
+    private BGRecordStream records;
     private final ExpCalcurator expCalcurator = new DeviationBasedExpCalcurator();
 
     public BasicGame(FlagGame plugin, GameReception reception, Stage stage, Collection<Team> ts) {
@@ -117,7 +120,7 @@ public class BasicGame implements Game {
         ts.forEach(t -> {
             this.teams.put(t.getColor(), t);
         });
-        this.records = new BGRecordStream(plugin, this);
+        this.records = new BGRecordStream(plugin, this, reception.getRecordStream());
     }
 
     public BasicGame(FlagGame plugin, GameReception reception, Stage stage, Team... teams) {
@@ -268,7 +271,6 @@ public class BasicGame implements Game {
                 onFinishing.offer(task::cancel);
             }
         }
-        
 
         //各種処理系開始
         BGListener playerListener = new BGPlayerListener(plugin, this);
@@ -361,21 +363,26 @@ public class BasicGame implements Game {
         );
         OptionalDouble maxTeamPoint = teamPoints.entrySet().stream().mapToDouble(Map.Entry::getValue).max();
         Set<TeamColor> winnerTeams = MapUtils.getKeyByValue(teamPoints, maxTeamPoint.orElse(Double.NaN));
+        if (winnerTeams.size() == teams.size()) {
+            winnerTeams.clear(); // at least one team lose
+        }
         Set<GamePlayer> winnerPlayers = winnerTeams.stream()
                 .flatMap(c -> getTeam(c).getPlayers().stream())
                 .collect(Collectors.toSet());
-        // condition point
-        Map<GamePlayer, Double> conditions = this.getRecordStream().groupingBy(
+        // vibe
+        Map<GamePlayer, Double> vibes = this.getRecordStream().groupingBy(
                 PlayerRecord.class, r -> getPlayer(r.getPlayer()),
-                Collectors.summingDouble(t -> t.getExp(plugin.getConfigs()))
+                Collectors.summingDouble(t -> t.getExpWeight(plugin.getConfigs()))
         ).entrySet().stream()
                 .collect(StreamUtil.deviation(Map.Entry::getValue, (e, v) -> MapUtils.tuple(e.getKey(), v)))
                 .collect(StreamUtil.toMap());
         // experience point
-        Map<GamePlayer, Double> exps = conditions.entrySet().stream()
+        Map<GamePlayer, Long> exps = vibes.entrySet().stream()
                 .map(expCalcurator.calcurate(winnerPlayers, this.stage.getGameTime(), this.reception.size()))
+                .map(e -> MapUtils.tuple(e.getKey(), e.getValue().longValue()))
                 .collect(StreamUtil.toMap());
         OptionalDouble maxExp = exps.entrySet().stream().mapToDouble(Map.Entry::getValue).max();
+        Set<GamePlayer> maxExps = MapUtils.getKeyByValue(exps, maxExp.orElse(Double.NaN));
         // kill point
         Map<GamePlayer, Long> kills = this.getRecordStream().groupingBy(
                 PlayerKillRecord.class, r -> getPlayer(r.getPlayer()),
@@ -386,7 +393,7 @@ public class BasicGame implements Game {
         // capture point
         Map<GamePlayer, Double> captures = this.getRecordStream().groupingBy(
                 FlagCaptureRecord.class, r -> getPlayer(r.getPlayer()),
-                Collectors.summingDouble(t -> t.getExp(plugin.getConfigs()))
+                Collectors.summingDouble(t -> t.getExpWeight(plugin.getConfigs()))
         );
         OptionalDouble maxCaptures = captures.entrySet().stream().mapToDouble(Map.Entry::getValue).max();
         Set<GamePlayer> maxCapturers = MapUtils.getKeyByValue(captures, maxCaptures.orElse(Double.NaN));
@@ -415,8 +422,8 @@ public class BasicGame implements Game {
         if (!maxCapturers.isEmpty()) {
             GamePlayer.sendMessage(this.plugin.getPlayers(),
                     "&6戦略家: "
-                    + maxCapturers.stream().map(GamePlayer::getColoredName).collect(Collectors.joining(", "))
-                    + "(&6" + maxCaptures.getAsDouble() + "exp&f)"
+                    + maxExps.stream().map(GamePlayer::getColoredName).collect(Collectors.joining(", "))
+                    + "(&6" + maxExp.getAsDouble() + "exp&f)"
             );
         }
         if (!maxPointers.isEmpty()) {
@@ -427,58 +434,41 @@ public class BasicGame implements Game {
             );
         }
 
-        points.entrySet().forEach(e -> e.getKey().sendMessage("&aあなたの獲得得点(β): &6" + e.getValue()));
-        exps.entrySet().forEach(e -> e.getKey().sendMessage("&aあなたの経験値(β): &6" + e.getValue()));
-
         this.bossbars.stream().forEach(BossBar::removeAll);
 
         this.plugin.getServer().getPluginManager()
                 .callEvent(new jp.llv.flaggame.events.GameFinishedEvent(this));
 
-        for (GamePlayer g : this.reception.getPlayers()) {
-            if (g.getPlayer().isOnline()) {
-                g.getPlayer().teleport(this.stage.getSpawn(g.getTeam().get().getColor()));
-                g.getPlayer().getInventory().clear();
-                g.resetTabName();
-            }
-        }
-
-        BaseComponent[] rateMessage = new ComponentBuilder("クリックでステージの評価にご協力ください: ").color(ChatColor.GOLD)
-                .append("❤").color(ChatColor.GREEN)
-                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/f rate 0"))
-                .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("1.根本的問題がある").color(ChatColor.RED).create()))
-                .append("❤").color(ChatColor.GREEN)
-                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/f rate 1"))
-                .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("2.多くの問題がある").color(ChatColor.RED).create()))
-                .append("❤").color(ChatColor.GREEN)
-                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/f rate 2"))
-                .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("3.改善の余地がある").color(ChatColor.GOLD).create()))
-                .append("❤").color(ChatColor.GREEN)
-                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/f rate 3"))
-                .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("4.個人的に楽しめた").color(ChatColor.GOLD).create()))
-                .append("❤").color(ChatColor.GREEN)
-                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/f rate 4"))
-                .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("5.チームで楽しめた").color(ChatColor.GREEN).create()))
-                .append("❤").color(ChatColor.GREEN)
-                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/f rate 5"))
-                .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("6.全員が楽しめた").color(ChatColor.GREEN).create()))
-                .create();
-        GamePlayer.sendMessage(this, rateMessage);
-
         String author = "".equals(stage.getAuthor()) ? "" : "presented by " + stage.getAuthor();
-        if (winnerTeams.isEmpty()) {
-            for (GamePlayer player : this) {
+        for (GamePlayer player : this) {
+            Location spawn = stage.getSpawn(player.getTeam().get().getColor());
+            Location loc = player.isOnline()
+                    ? player.getPlayer().getLocation()
+                    : spawn;
+            double point = points.getOrDefault(player, 0.0);
+            long exp = exps.getOrDefault(player, 0L);
+            double vibe = vibes.getOrDefault(player, 0.0);
+            player.sendMessage("&aあなたの獲得得点(β): &6" + point);
+            player.sendMessage("&aあなたの獲得経験値: &6" + exp);
+            player.sendMessage("&aあなたのチョーシ変化量(β): &6" + vibe);
+            if (winnerTeams.isEmpty()) {
                 player.sendTitle("&6試合終了: 引き分け", author, 0, 60, 20);
-            }
-        } else {
-            for (GamePlayer player : winnerPlayers) {
+                getRecordStream().push(new PlayerDrawRecord(getID(), player.getUUID(), loc, exp, vibe));
+            } else if (winnerPlayers.contains(player)) {
                 player.sendTitle("&a試合終了: 勝利", author, 0, 60, 20);
-            }
-            for (GamePlayer player : getPlayersNotIn(winnerPlayers)) {
+                getRecordStream().push(new PlayerWinRecord(getID(), player.getUUID(), loc, exp, vibe));
+            } else {
                 player.sendTitle("&c試合終了: 敗北", author, 0, 60, 20);
+                getRecordStream().push(new PlayerLoseRecord(getID(), player.getUUID(), loc, exp, vibe));
+            }
+            if (player.isOnline()) {
+                player.getPlayer().teleport(spawn);
+                player.getPlayer().getInventory().clear();
+                player.resetTabName();
             }
         }
 
+        this.records = null; // after this, access via reception
         reception.stop("The game has finished");
     }
 
@@ -491,7 +481,7 @@ public class BasicGame implements Game {
         this.state = State.FINISHED;
 
         while (!this.onFinishing.isEmpty()) {
-            this.onFinishing.peek().run();
+            this.onFinishing.poll().run();
         }
 
         for (GamePlayer g : this.reception.getPlayers()) {
@@ -506,6 +496,7 @@ public class BasicGame implements Game {
         GamePlayer.sendMessage(this.reception.getPlayers(), "&2フラッグゲーム'&6" + this.stage.getName() + "&2'は強制終了されました: "
                                                             + message);
 
+        this.records = null; // after this, access via reception
         this.reception.stop("The game has finished");
     }
 

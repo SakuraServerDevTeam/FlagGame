@@ -28,6 +28,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.logging.Level;
+import jp.llv.flaggame.database.DatabaseException;
 import jp.llv.flaggame.game.Game;
 import jp.llv.flaggame.game.basic.BasicGame;
 import jp.llv.flaggame.profile.GameRecordStream;
@@ -58,7 +60,7 @@ import syam.flaggame.util.Actions;
  */
 @ReceptionFor(BasicGame.class)
 public class RealtimeTeamingReception implements GameReception {
-    
+
     protected final FlagGame plugin;
     private final UUID id;
     protected final Map<TeamColor, Set<GamePlayer>> players = new EnumMap<>(TeamColor.class);
@@ -66,9 +68,9 @@ public class RealtimeTeamingReception implements GameReception {
     private Stage.Reservation stageReservation;
     private BasicGame game;
     private State state = State.READY;
-    private final RecordStream records;
+    private RecordStream records;
     private SerializeTask initialTask;
-    
+
     public RealtimeTeamingReception(FlagGame plugin, UUID id, List<String> args) {
         this.plugin = plugin;
         this.id = id;
@@ -79,38 +81,38 @@ public class RealtimeTeamingReception implements GameReception {
                 .orElseThrow(() -> new IllegalArgumentException("No such stage"));
         this.records = new GameRecordStream(id);
     }
-    
+
     @Override
     public Collection<GamePlayer> getPlayers() {
         Set<GamePlayer> result = new HashSet<>();
         this.players.values().stream().forEach(result::addAll);
         return Collections.unmodifiableSet(result);
     }
-    
+
     @Override
     public void open(List<String> args) throws CommandException {
         if (this.getState() != State.READY) {
             throw new CommandException("&cこの募集は既に開始されました!");
         }
-        
+
         try {
             this.stage.validate();
         } catch (NullPointerException ex) {
             throw new CommandException("&cそのステージは設定が無効です!");
         }
-        
+
         try {
             this.stageReservation = stage.reserve(this);
         } catch (StageReservedException ex) {
             throw new CommandException("&cそのステージは既に使用中です!", ex);
         }
-        
+
         for (TeamColor color : this.stage.getSpawns().keySet()) {
             this.players.put(color, new HashSet<>());
         }
-        
+
         initialTask = stage.getInitialTask(plugin, ex -> {
-            
+
         });
         String etr = Actions.getTimeString(ConvertUtils.toMiliseconds(initialTask.getEstimatedTickRemaining()));
         GamePlayer.sendMessage(plugin.getPlayers(), "&a'&6" + stage.getName() + "&a'をロードしています...");
@@ -126,7 +128,7 @@ public class RealtimeTeamingReception implements GameReception {
         if (stage.getPrize() <= 0) {
             awardMsg = "&7なし";
         }
-        
+
         this.state = State.OPENED;
         this.records.push(new ReceptionOpenRecord(this.id));
         GamePlayer.sendMessage(this.plugin.getPlayers(), "&2フラッグゲーム'&6" + this.getName() + "&2'の参加受付が開始されました！");
@@ -137,18 +139,18 @@ public class RealtimeTeamingReception implements GameReception {
                 .append("して参加してください！").color(ChatColor.DARK_GREEN).create();
         GamePlayer.sendMessage(this.plugin.getPlayers(), message);
     }
-    
+
     @Override
     @SuppressWarnings("deprecation")
     public void close(String reason) {
         if (getState().toGameState() != Game.State.FINISHED) {
             this.stop(reason);
         }
-        
+
         if (initialTask != null) {
             initialTask.cancel();
         }
-        
+
         for (GamePlayer p : this.getPlayers()) {
             for (Set<GamePlayer> team : this.players.values()) {
                 if (team.contains(p)) {
@@ -157,12 +159,24 @@ public class RealtimeTeamingReception implements GameReception {
                 }
             }
         }
-        
+
         this.plugin.getReceptions().remove(this);
         this.state = State.CLOSED;
+        this.plugin.getServer().getPluginManager()
+                .callEvent(new jp.llv.flaggame.events.ReceptionClosedEvent(reason, this));
         this.records.push(new ReceptionCloseRecord(this.id));
+        plugin.getDatabases().get().saveReocrds(records, result -> {
+            try {
+                result.test();
+                plugin.getProfiles().loadPlayerProfiles(this, true);
+                plugin.getProfiles().loadStageProfile(stage);
+            } catch (DatabaseException ex) {
+                plugin.getLogger().log(Level.WARNING, "Failed to save records", ex);
+            }
+        });
+        this.records = null;
     }
-    
+
     @Override
     public void join(GamePlayer player, List<String> args) throws CommandException {
         if (this.getState() != State.OPENED) {
@@ -181,7 +195,7 @@ public class RealtimeTeamingReception implements GameReception {
                 .orElseThrow(() -> new CommandException("&c参加可能チームがありません!"));
         List<TeamColor> can = m.get(min);
         TeamColor color = can.get((int) (Math.random() * can.size()));
-        
+
         double cost = stage.getEntryFee();
         // 参加料チェック
         if (cost > 0.0) {
@@ -196,7 +210,7 @@ public class RealtimeTeamingReception implements GameReception {
                 player.sendMessage("&c参加料として " + Actions.formatMoney(cost) + "Coin を支払いました！");
             }
         }
-        
+
         this.players.get(color).add(player);
         player.join(this, args);
         this.records.push(new PlayerEntryRecord(id, player.getPlayer()));
@@ -205,13 +219,13 @@ public class RealtimeTeamingReception implements GameReception {
         GamePlayer.sendMessage(this.plugin.getPlayers(), color.getChatColor() + player.getName() + "&aが'&6"
                                                          + this.getName() + "&a'で開催予定のゲームに参加しました(&6" + count + "人目&a)");
     }
-    
+
     @Override
     public void leave(GamePlayer player) {
         if (this.getState() == State.STARTED) {
             throw new IllegalStateException();
         }
-        
+
         for (Set<GamePlayer> team : this.players.values()) {
             if (team.contains(player)) {
                 team.remove(player);
@@ -226,16 +240,16 @@ public class RealtimeTeamingReception implements GameReception {
                 return;
             }
         }
-        
+
         throw new IllegalArgumentException("That player is not joined");
     }
-    
+
     @Override
     public void start(List<String> args) throws CommandException {
         if (this.getState() != State.OPENED) {
             throw new IllegalStateException();
         }
-        
+
         if (initialTask != null && !initialTask.isFinished()) {
             throw new CommandException("&cステージの初期化が完了していません！");
         }
@@ -257,7 +271,7 @@ public class RealtimeTeamingReception implements GameReception {
         this.state = State.STARTING;
         GamePlayer.sendMessage(this.plugin.getPlayers(), "&2フラッグゲーム'&6" + this.getName() + "&2'の参加受付が終了しました！");
     }
-    
+
     @Override
     public void stop(String reason) throws IllegalStateException {
         if (this.getState() == State.STARTED) {
@@ -268,12 +282,12 @@ public class RealtimeTeamingReception implements GameReception {
             stageReservation.release();
             stageReservation = null;
         }
-        
+
         this.records.stream(PlayerWinRecord.class)
                 .map(PlayerWinRecord::getPlayer)
                 .forEach(uuid -> {
                     GamePlayer player = plugin.getPlayers().getPlayer(uuid);
-                    if (player == null) {
+                    if (player == null || stage.getPrize() <= 0.0) {
                         return;
                     }
                     if (Actions.addMoney(uuid, stage.getPrize())) {
@@ -282,23 +296,58 @@ public class RealtimeTeamingReception implements GameReception {
                         player.sendMessage("&c報酬受け取りにエラーが発生しました。管理人までご連絡ください。");
                     }
                 });
+        if (!plugin.getDatabases().isPresent()) {
+            return;
+        }
+        plugin.getDatabases().get().saveReocrds(records, result -> {
+            try {
+                result.test();
+                plugin.getProfiles().loadPlayerProfiles(this, true);
+                plugin.getProfiles().loadStageProfile(stage);
+            } catch (DatabaseException ex) {
+                plugin.getLogger().log(Level.WARNING, "Failed to save records", ex);
+            }
+        });
+        records = new GameRecordStream(id);
+
+        BaseComponent[] rateMessage = new ComponentBuilder("クリックでステージの評価にご協力ください: ").color(ChatColor.GOLD)
+                .append("❤").color(ChatColor.GREEN)
+                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/f rate 0"))
+                .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("1.根本的問題がある").color(ChatColor.RED).create()))
+                .append("❤").color(ChatColor.GREEN)
+                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/f rate 1"))
+                .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("2.多くの問題がある").color(ChatColor.RED).create()))
+                .append("❤").color(ChatColor.GREEN)
+                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/f rate 2"))
+                .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("3.改善の余地がある").color(ChatColor.GOLD).create()))
+                .append("❤").color(ChatColor.GREEN)
+                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/f rate 3"))
+                .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("4.個人的に楽しめた").color(ChatColor.GOLD).create()))
+                .append("❤").color(ChatColor.GREEN)
+                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/f rate 4"))
+                .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("5.チームで楽しめた").color(ChatColor.GREEN).create()))
+                .append("❤").color(ChatColor.GREEN)
+                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/f rate 5"))
+                .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("6.全員が楽しめた").color(ChatColor.GREEN).create()))
+                .create();
+        GamePlayer.sendMessage(this, rateMessage);
     }
-    
+
     @Override
     public Optional<Game> getGame() {
         return Optional.ofNullable(this.game);
     }
-    
+
     @Override
     public UUID getID() {
         return this.id;
     }
-    
+
     @Override
     public String getName() {
         return this.stage.getName();
     }
-    
+
     @Override
     public State getState() {
         //まずゲームと状態を同期
@@ -315,30 +364,30 @@ public class RealtimeTeamingReception implements GameReception {
         }
         return this.state;
     }
-    
+
     @Override
     public double getEntryFee() {
         return 0;
     }
-    
+
     @Override
     public double getMaxAward() {
         return 0;
     }
-    
+
     @Override
     public Iterator<GamePlayer> iterator() {
         return this.getPlayers().iterator();
     }
-    
+
     @Override
     public RecordStream getRecordStream() {
         return this.records;
     }
-    
+
     @Override
     public Optional<Stage> getStage() {
         return Optional.of(stage);
     }
-    
+
 }

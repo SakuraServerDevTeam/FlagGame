@@ -180,6 +180,7 @@ public class GamePlayer {
         } else if (this.session.getSelectedStage().isReserved()) {
             this.session = null;
             sendMessage("&c占有されたためにステージ選択が解除されました！");
+            return Optional.empty();
         }
         return Optional.of(this.session);
     }

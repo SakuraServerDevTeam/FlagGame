@@ -16,6 +16,7 @@
  */
 package syam.flaggame.player;
 
+import net.md_5.bungee.api.ChatMessageType;
 import org.bukkit.scheduler.BukkitRunnable;
 import syam.flaggame.FlagGame;
 
@@ -35,7 +36,10 @@ public class StageSaveRemindTask extends BukkitRunnable {
     public void run() {
         plugin.getPlayers().getPlayers().stream()
                 .filter(p -> p.getSetupSession().isPresent())
-                .forEach(p -> p.sendTitle("現在ステージ編集中です", "忘れずに保存してください", 10, 10, 01));
+                .forEach(p -> {
+                    p.sendTitle("", "現在ステージ編集中です", 10, 10, 10);
+                    p.sendMessage(ChatMessageType.ACTION_BAR, "忘れずに保存してください");
+                });
     }
 
 }

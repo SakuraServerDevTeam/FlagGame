@@ -16,10 +16,6 @@
  */
 package syam.flaggame;
 
-import syam.flaggame.command.stage.StageListCommand;
-import syam.flaggame.command.stage.StageSetCommand;
-import syam.flaggame.command.stage.StageInfoCommand;
-import syam.flaggame.command.stage.StageSelectCommand;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -30,8 +26,9 @@ import java.util.logging.Level;
 import java.util.stream.Stream;
 import jp.llv.flaggame.database.Database;
 import jp.llv.flaggame.database.DatabaseException;
-import jp.llv.flaggame.database.MongoDB;
+import jp.llv.flaggame.database.mongo.MongoDB;
 import jp.llv.flaggame.game.GameManager;
+import jp.llv.flaggame.profile.ProfileManager;
 import jp.llv.flaggame.reception.EvenRequiredRealtimeTeamingReception;
 import jp.llv.flaggame.reception.RealtimeTeamingReception;
 import jp.llv.flaggame.reception.ReceptionManager;
@@ -54,10 +51,9 @@ import syam.flaggame.command.area.data.*;
 import syam.flaggame.command.area.message.*;
 import syam.flaggame.command.area.permission.*;
 import syam.flaggame.command.objective.*;
+import syam.flaggame.command.player.*;
 import syam.flaggame.command.queue.ConfirmQueue;
-import syam.flaggame.command.stage.StageCreateCommand;
-import syam.flaggame.command.stage.StageDashboardCommand;
-import syam.flaggame.command.stage.StageDeleteCommand;
+import syam.flaggame.command.stage.*;
 import syam.flaggame.listener.*;
 import syam.flaggame.game.StageManager;
 import syam.flaggame.player.PlayerManager;
@@ -89,6 +85,7 @@ public class FlagGame extends JavaPlugin {
     private ReceptionManager receptions;
     private GameManager games;
     private StageManager stages;
+    private ProfileManager profiles;
 
     // ** Variable **
     // プレイヤーデータベース
@@ -166,6 +163,7 @@ public class FlagGame extends JavaPlugin {
 
         debug.startTimer("managers");
         players = new PlayerManager(this);
+        profiles = new ProfileManager(this);
         receptions = new ReceptionManager(this);
         receptions.addType("rt", RealtimeTeamingReception::new);
         receptions.addType("ert", EvenRequiredRealtimeTeamingReception::new);
@@ -175,13 +173,18 @@ public class FlagGame extends JavaPlugin {
 
         // ゲームデータ読み込み
         debug.startTimer("load games");
-        try {
-            stages.loadStages();
-        } catch (DatabaseException ex) {
-            getLogger().log(Level.WARNING, "Failed to connect database!", ex);
-            getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
+        database.loadStages(stage -> {
+            stages.addStage(stage.get());
+            getLogger().log(Level.INFO, "Loaded stage ''{0}''", stage.get().getName());
+            profiles.loadStageProfile(stage.get().getName());
+        }, result -> {
+            try {
+                result.test();
+                getLogger().log(Level.INFO, "Finished loading stages!");
+            } catch (DatabaseException ex) {
+                getLogger().log(Level.WARNING, "Failed to load stage!", ex);
+            }
+        });
         debug.endTimer("load games");
 
         // dynmapフック
@@ -206,7 +209,7 @@ public class FlagGame extends JavaPlugin {
         if (this.receptions != null) {
             this.receptions.closeAll("&cDisabled");
         }
-        
+
         // タスクをすべて止める
         getServer().getScheduler().cancelTasks(this);
 
@@ -265,7 +268,6 @@ public class FlagGame extends JavaPlugin {
 
     private void registerCommands() {
         Stream.<Function<FlagGame, ? extends BaseCommand>>of(HelpCommand::new,
-                PInfoCommand::new,
                 ListCommand::new,
                 JoinCommand::new,
                 LeaveCommand::new,
@@ -275,16 +277,21 @@ public class FlagGame extends JavaPlugin {
                 StartCommand::new,
                 CloseCommand::new,
                 TpCommand::new,
-                SaveCommand::new,
                 ReloadCommand::new,
                 RateCommand::new,
+                PlayerInfoCommand::new,
+                PlayerStatsCommand::new,
+                PlayerExpCommand::new,
+                PlayerVibeCommand::new,
                 StageInfoCommand::new,
+                StageStatsCommand::new,
                 StageDashboardCommand::new,
                 StageListCommand::new,
                 StageCreateCommand::new,
                 StageDeleteCommand::new,
                 StageSelectCommand::new,
                 StageSetCommand::new,
+                StageSaveCommand::new,
                 AreaDashboardCommand::new,
                 AreaListCommand::new,
                 AreaSelectCommand::new,
@@ -304,7 +311,7 @@ public class FlagGame extends JavaPlugin {
                 AreaMessageDeleteCommand::new,
                 AreaMessageListCommand::new,
                 AreaMessageTimingCommand::new,
-                ObjectiveManageCommand::new,
+                ObjectiveSetCommand::new,
                 ObjectiveDeleteCommand::new,
                 ObjectiveListCommand::new
         ).map(f -> f.apply(this)).forEach(this.commands::add);
@@ -357,7 +364,7 @@ public class FlagGame extends JavaPlugin {
     public ConfigurationManager getConfigs() {
         return config;
     }
-    
+
     public World getGameWorld() {
         return getServer().getWorld(config.getGameWorld());
     }
@@ -404,6 +411,10 @@ public class FlagGame extends JavaPlugin {
 
     public PlayerManager getPlayers() {
         return players;
+    }
+
+    public ProfileManager getProfiles() {
+        return profiles;
     }
 
     public ReceptionManager getReceptions() {

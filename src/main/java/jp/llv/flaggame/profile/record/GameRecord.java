@@ -26,8 +26,8 @@ import org.bson.Document;
  */
 public abstract class GameRecord extends Document {
 
-    private static final String FIELD_TIME = "time";
-    private static final String FIELD_GAME = "game";
+    public static final String FIELD_TIME = "time";
+    public static final String FIELD_GAME = "game";
 
     public GameRecord(UUID game) {
         super.put(FIELD_TIME, new Date());
@@ -47,5 +47,12 @@ public abstract class GameRecord extends Document {
     }
 
     public abstract RecordType getType();
+
+    public Document toDocument() {
+        Document result = new Document();
+        result.put(RecordType.FIELD_TYPE, getType().toString());
+        result.putAll(this);
+        return result;
+    }
 
 }

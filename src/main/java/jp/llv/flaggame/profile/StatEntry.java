@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2017 SakuraServerDev
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,18 +16,34 @@
  */
 package jp.llv.flaggame.profile;
 
-import java.util.Map;
-import java.util.Set;
-import java.util.function.UnaryOperator;
-import syam.flaggame.player.GamePlayer;
-
 /**
  *
- * @author toyblocks
+ * @author SakuraServerDev
  */
-@FunctionalInterface
-public interface ExpCalcurator {
+public class StatEntry {
     
-    UnaryOperator<Map.Entry<GamePlayer, Double>> calcurate(Set<GamePlayer> winners, long gametime, int players);
+    private int count;
+    private double sum;
+
+    public StatEntry(int count, double sum) {
+        this.sum = sum;
+        this.count = count;
+    }
+
+    public StatEntry() {
+        this(0, 0D);
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public double getSum() {
+        return sum;
+    }
+    
+    public double getAverage() {
+        return sum / count;
+    }
     
 }

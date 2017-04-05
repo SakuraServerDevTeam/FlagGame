@@ -27,14 +27,14 @@ public class ReceptionClosedEvent extends ReceptionEvent {
     
     private static final HandlerList handlers = new HandlerList();
 
-    private final Cause cause;
+    private final String cause;
 
-    public ReceptionClosedEvent(Cause cause, GameReception reception) {
+    public ReceptionClosedEvent(String cause, GameReception reception) {
         super(reception);
         this.cause = cause;
     }
 
-    public Cause getCause() {
+    public String getCause() {
         return cause;
     }
     
@@ -45,10 +45,6 @@ public class ReceptionClosedEvent extends ReceptionEvent {
     
     public static HandlerList getHandlerList() {
         return handlers;
-    }
-    
-    public enum Cause {
-        CANCELLED, FAILED, SUSPENDED, FINISHED;
     }
     
 }

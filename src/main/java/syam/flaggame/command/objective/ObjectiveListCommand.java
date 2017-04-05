@@ -44,8 +44,7 @@ public class ObjectiveListCommand extends ObjectiveCommand {
                 0,
                 "<- show objective list",
                 Perms.STAGE_CONFIG_CHECK,
-                "objective list",
-                "obj list", "olist"
+                "objective list"
         );
     }
 
@@ -84,7 +83,7 @@ public class ObjectiveListCommand extends ObjectiveCommand {
                             .buttonRun("delete").append("objective delete")
                             .append(obj.getType())
                             .append(loc.getBlockX()).append(loc.getBlockY()).append(loc.getBlockZ()).create();
-                }).buttonSuggest("enable manager").append("objective manage flag").create()
+                }).buttonSuggest("enable manager").append("objective set flag").create()
                 .sendTo(player);
     }
 
@@ -98,7 +97,7 @@ public class ObjectiveListCommand extends ObjectiveCommand {
                             .buttonRun("delete").append("objective delete")
                             .append(obj.getType())
                             .append(loc.getBlockX()).append(loc.getBlockY()).append(loc.getBlockZ()).create();
-                }).buttonRun("enable manager").append("objective manage chest").create()
+                }).buttonRun("enable manager").append("objective set chest").create()
                 .sendTo(player);
     }
 
@@ -117,7 +116,7 @@ public class ObjectiveListCommand extends ObjectiveCommand {
                             .buttonRun("delete").append("objective delete")
                             .append(obj.getType())
                             .append(loc.getBlockX()).append(loc.getBlockY()).append(loc.getBlockZ()).create();
-                }).buttonSuggest("enable manager").append("objective manage banner_slot").create()
+                }).buttonSuggest("enable manager").append("objective set banner_slot").create()
                 .sendTo(player);
     }
 
@@ -134,7 +133,7 @@ public class ObjectiveListCommand extends ObjectiveCommand {
                             .buttonRun("delete").append("objective delete")
                             .append(obj.getType())
                             .append(loc.getBlockX()).append(loc.getBlockY()).append(loc.getBlockZ()).create();
-                }).buttonSuggest("enable manager").append("objective manage banner_spawner").create()
+                }).buttonSuggest("enable manager").append("objective set banner_spawner").create()
                 .sendTo(player);
     }
 
@@ -154,7 +153,7 @@ public class ObjectiveListCommand extends ObjectiveCommand {
                             .buttonRun("delete").append("objective delete")
                             .append(obj.getType())
                             .append(loc.getBlockX()).append(loc.getBlockY()).append(loc.getBlockZ()).create();
-                }).buttonSuggest("enable manager").append("objective manage nexus").create()
+                }).buttonSuggest("enable manager").append("objective set nexus").create()
                 .sendTo(player);
     }
 
