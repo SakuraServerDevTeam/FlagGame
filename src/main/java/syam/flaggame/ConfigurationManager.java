@@ -296,8 +296,8 @@ public class ConfigurationManager {
         return scoreNexusBreak;
     }
 
-    public double getScoreRate() {
-        return scoreRate;
+    public long getScoreRate() {
+        return (long) scoreRate;
     }
 
     // 設定 getter ここまで

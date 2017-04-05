@@ -27,15 +27,15 @@ import org.bukkit.entity.Player;
  */
 public class PlayerLoseRecord extends PlayerResultRecord {
 
-    public PlayerLoseRecord(UUID game, double x, double y, double z, UUID player, double exp, double vive) {
+    public PlayerLoseRecord(UUID game, double x, double y, double z, UUID player, long exp, double vive) {
         super(game, x, y, z, player, exp, vive);
     }
 
-    public PlayerLoseRecord(UUID game, UUID player, Location location, double exp, double vive) {
+    public PlayerLoseRecord(UUID game, UUID player, Location location, long exp, double vive) {
         super(game, player, location, exp, vive);
     }
 
-    public PlayerLoseRecord(UUID game, Player player, double exp, double vive) {
+    public PlayerLoseRecord(UUID game, Player player, long exp, double vive) {
         super(game, player, exp, vive);
     }
 

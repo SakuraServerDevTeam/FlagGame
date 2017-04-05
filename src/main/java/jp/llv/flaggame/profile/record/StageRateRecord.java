@@ -30,12 +30,12 @@ public class StageRateRecord extends ExpRecord {
 
     private static final String FIELD_RATE = ScoreRecord.FIELD_SCORE;
     
-    public StageRateRecord(UUID game, double x, double y, double z, UUID player, double exp, int rate) {
+    public StageRateRecord(UUID game, double x, double y, double z, UUID player, long exp, int rate) {
         super(game, x, y, z, player, exp);
         super.put(FIELD_RATE, new BsonInt32(rate));
     }
 
-    public StageRateRecord(UUID game, Player player, double exp, int rate) {
+    public StageRateRecord(UUID game, Player player, long exp, int rate) {
         super(game, player, exp);
         super.put(FIELD_RATE, new BsonInt32(rate));
     }

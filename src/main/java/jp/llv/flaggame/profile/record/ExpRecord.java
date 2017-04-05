@@ -29,17 +29,17 @@ public abstract class ExpRecord extends PlayerRecord {
     
     public static final String FIELD_EXP = "exp";
     
-    public ExpRecord(UUID game, double x, double y, double z, UUID player, double exp) {
+    public ExpRecord(UUID game, double x, double y, double z, UUID player, long exp) {
         super(game, x, y, z, player);
         super.put(FIELD_EXP, exp);
     }
 
-    public ExpRecord(UUID game, UUID player, Location location, double exp) {
+    public ExpRecord(UUID game, UUID player, Location location, long exp) {
         super(game, player, location);
         super.put(FIELD_EXP, exp);
     }
 
-    public ExpRecord(UUID game, Player player, double exp) {
+    public ExpRecord(UUID game, Player player, long exp) {
         super(game, player);
         super.put(FIELD_EXP, exp);
     }

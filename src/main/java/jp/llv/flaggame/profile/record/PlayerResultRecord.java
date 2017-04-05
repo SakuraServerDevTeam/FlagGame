@@ -30,17 +30,17 @@ public abstract class PlayerResultRecord extends ExpRecord {
     
     public static final String FIELD_VIBE = "vibe";
 
-    public PlayerResultRecord(UUID game, double x, double y, double z, UUID player, double exp, double vive) {
+    public PlayerResultRecord(UUID game, double x, double y, double z, UUID player, long exp, double vive) {
         super(game, x, y, z, player, exp);
         super.put(FIELD_VIBE, new BsonDouble(vive));
     }
 
-    public PlayerResultRecord(UUID game, UUID player, Location location, double exp, double vive) {
+    public PlayerResultRecord(UUID game, UUID player, Location location, long exp, double vive) {
         super(game, player, location, exp);
         super.put(FIELD_VIBE, new BsonDouble(vive));
     }
 
-    public PlayerResultRecord(UUID game, Player player, double exp, double vive) {
+    public PlayerResultRecord(UUID game, Player player, long exp, double vive) {
         super(game, player, exp);
         super.put(FIELD_VIBE, new BsonDouble(vive));
     }

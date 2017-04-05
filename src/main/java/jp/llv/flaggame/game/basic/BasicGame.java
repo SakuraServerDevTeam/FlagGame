@@ -446,7 +446,7 @@ public class BasicGame implements Game {
                     ? player.getPlayer().getLocation()
                     : spawn;
             double point = points.getOrDefault(player, 0.0);
-            double exp = exps.getOrDefault(player, 0L);
+            long exp = exps.getOrDefault(player, 0L);
             double vibe = vibes.getOrDefault(player, 0.0);
             player.sendMessage("&aあなたの獲得得点(β): &6" + point);
             player.sendMessage("&aあなたの獲得経験値: &6" + exp);
