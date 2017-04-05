@@ -16,6 +16,7 @@
  */
 package syam.flaggame;
 
+import syam.flaggame.command.player.PInfoCommand;
 import syam.flaggame.command.stage.StageListCommand;
 import syam.flaggame.command.stage.StageSetCommand;
 import syam.flaggame.command.stage.StageInfoCommand;
