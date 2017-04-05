@@ -14,69 +14,59 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package syam.flaggame.command;
+package syam.flaggame.command.game;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import jp.llv.flaggame.reception.GameReception;
 import syam.flaggame.FlagGame;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import syam.flaggame.command.BaseCommand;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.permission.Perms;
-import syam.flaggame.player.GamePlayer;
+import syam.flaggame.util.Actions;
 
-/**
- *
- * @author Toyblocks
- */
-public class ListCommand extends BaseCommand {
+public class GameReadyCommand extends BaseCommand {
 
-    public ListCommand(FlagGame plugin) {
+    public GameReadyCommand(FlagGame plugin) {
         super(
                 plugin,
                 false,
-                0,
-                " <- show a list of receptions",
-                "list"
+                1,
+                "<reception-type> [optional args...] <- ready game",
+                "game ready"
         );
     }
 
     @Override
     public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
-        GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
+        if (args.size() < 1) {
+            throw new CommandException("&c募集方法を入力してください!");
+        }
+        List<String> readyArgs = new ArrayList<>(args);
+        readyArgs.remove(0);
 
-        if (this.plugin.getReceptions().getReceptions().isEmpty()) {
-            gPlayer.sendMessage("&c現在有効な参加受付はありません");
-            return;
+        GameReception reception;
+        try {
+            reception = this.plugin.getReceptions().newReception(args.get(0), readyArgs);
+        } catch (IllegalArgumentException ex) {
+            throw new CommandException("&c"+ex.getMessage(), ex);
         }
-        for (GameReception r : this.plugin.getReceptions()) {
-            gPlayer.sendMessage("&" + getColorCodeOf(r.getState()) + r.getName() + "&e(" + r.getID() + ")");
+        
+        try {
+            reception.open(Collections.EMPTY_LIST);
+        } catch(CommandException ex) {
+            reception.close("Failed to initialize");
+            throw ex;
         }
-    }
-
-    private static char getColorCodeOf(GameReception.State state) {
-        switch (state) {
-            case READY:
-                return '7';
-            case OPENED:
-                return 'a';
-            case STARTING:
-                return 'f';
-            case STARTED:
-                return '6';
-            case FINISHED:
-                return 'b';
-            case CLOSED:
-                return 'c';
-            default:
-                throw new RuntimeException();
-        }
+        Actions.sendPrefixedMessage(sender, "&a受付'" + reception.getID() + "'の募集が開始されました");
     }
 
     @Override
     public boolean hasPermission(Permissible target) {
-        return Perms.LIST.has(target);
+        return Perms.READY.has(target);
     }
-
 }

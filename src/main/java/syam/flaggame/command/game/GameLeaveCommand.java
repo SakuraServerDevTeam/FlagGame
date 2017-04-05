@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package syam.flaggame.command;
+package syam.flaggame.command.game;
 
 import java.util.List;
 import jp.llv.flaggame.reception.GameReception;
@@ -26,21 +26,21 @@ import syam.flaggame.FlagGame;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import syam.flaggame.command.BaseCommand;
 
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.player.GamePlayer;
 
-public class LeaveCommand extends BaseCommand {
+public class GameLeaveCommand extends BaseCommand {
 
-    public LeaveCommand(FlagGame plugin) {
+    public GameLeaveCommand(FlagGame plugin) {
         super(
                 plugin,
                 true,
                 0,
                 "<leave> <- leave the game",
-                "leave",
-                "l"
+                "game leave"
         );
     }
 

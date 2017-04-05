@@ -16,7 +16,6 @@
  */
 package syam.flaggame;
 
-import syam.flaggame.command.stage.StageRateCommand;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -55,6 +54,7 @@ import syam.flaggame.command.objective.*;
 import syam.flaggame.command.player.*;
 import syam.flaggame.command.queue.ConfirmQueue;
 import syam.flaggame.command.stage.*;
+import syam.flaggame.command.game.*;
 import syam.flaggame.listener.*;
 import syam.flaggame.game.StageManager;
 import syam.flaggame.player.PlayerManager;
@@ -269,14 +269,14 @@ public class FlagGame extends JavaPlugin {
 
     private void registerCommands() {
         Stream.<Function<FlagGame, ? extends BaseCommand>>of(HelpCommand::new,
-                ListCommand::new,
-                JoinCommand::new,
-                LeaveCommand::new,
-                WatchCommand::new,
+                GameListCommand::new,
+                GameJoinCommand::new,
+                GameLeaveCommand::new,
+                GameWatchCommand::new,
                 ConfirmCommand::new,
-                ReadyCommand::new,
-                StartCommand::new,
-                CloseCommand::new,
+                GameReadyCommand::new,
+                GameStartCommand::new,
+                GameCloseCommand::new,
                 TpCommand::new,
                 ReloadCommand::new,
                 StageRateCommand::new,

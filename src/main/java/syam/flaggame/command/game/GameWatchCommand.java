@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package syam.flaggame.command;
+package syam.flaggame.command.game;
 
 import java.util.List;
 import java.util.Collection;
@@ -26,6 +26,7 @@ import syam.flaggame.FlagGame;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import syam.flaggame.command.BaseCommand;
 import syam.flaggame.exception.CommandException;
 
 import syam.flaggame.game.Stage;
@@ -33,15 +34,15 @@ import syam.flaggame.permission.Perms;
 import syam.flaggame.player.GamePlayer;
 import syam.flaggame.util.Actions;
 
-public class WatchCommand extends BaseCommand {
+public class GameWatchCommand extends BaseCommand {
 
-    public WatchCommand(FlagGame plugin) {
+    public GameWatchCommand(FlagGame plugin) {
         super(
                 plugin,
                 true,
                 0,
                 "[stage] <- watch the game",
-                "watch"
+                "game watch"
         );
     
     }
