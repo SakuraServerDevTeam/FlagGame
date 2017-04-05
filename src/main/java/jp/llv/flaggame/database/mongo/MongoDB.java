@@ -196,7 +196,7 @@ public class MongoDB implements Database {
         MongoCollection<Document> coll = database.getCollection(VIEW_PLAYER_STATS);
         coll.find(new Document(FIELD_ID + FIELD_SEPARATOR + PlayerRecord.FIELD_PLAYER, player))
                 .map(d -> MapUtils.tuple(
-                        RecordType.of(d.getString(FIELD_ID + FIELD_SEPARATOR + RecordType.FIELD_TYPE)),
+                        RecordType.of(d.get(FIELD_ID, Document.class).getString(RecordType.FIELD_TYPE)),
                         new StatEntry(d.getInteger(FIELD_COUNT, 0), d.getDouble(ScoreRecord.FIELD_SCORE))
                 )).forEach(new MongoDBResultCallback<>(consumer), new MongoDBErrorCallback<>(callback));
     }
@@ -238,7 +238,7 @@ public class MongoDB implements Database {
                     return d;
                 })
                 .map(d -> MapUtils.tuple(
-                        RecordType.of(d.getString(FIELD_ID + FIELD_SEPARATOR + RecordType.FIELD_TYPE)),
+                        RecordType.of(d.get(FIELD_ID, Document.class).getString(RecordType.FIELD_TYPE)),
                         new StatEntry(d.getInteger(FIELD_COUNT, 0), d.getDouble(ScoreRecord.FIELD_SCORE))
                 )).forEach(new MongoDBResultCallback<>(consumer), new MongoDBErrorCallback<>(callback));
     }
