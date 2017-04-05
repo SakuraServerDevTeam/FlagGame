@@ -59,7 +59,7 @@ public class PlayerVibeCommand extends BaseCommand {
         OnelineBuilder.newBuilder()
                 .value(target.getName()).info("のチョーシは")
                 .value(profile.getVibe().orElseThrow(() -> new CommandException("&c対象のプロファイルがが読み込まれていません！")))
-                .info("です！");
+                .info("です！").sendTo(sender);
     }
 
 }

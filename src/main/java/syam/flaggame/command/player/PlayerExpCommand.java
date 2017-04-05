@@ -61,7 +61,7 @@ public class PlayerExpCommand extends BaseCommand {
                 .value(profile.getLevel().orElseThrow(() -> new CommandException("&c対象のプロファイルがが読み込まれていません！")))
                 .info("で、次のレベルまでの必要経験値は")
                 .value(profile.getExpRequiredToLevelUp().orElseThrow(() -> new CommandException("&c対象のプロファイルがが読み込まれていません！")))
-                .info("です！");
+                .info("です！").sendTo(sender);
     }
 
 }
