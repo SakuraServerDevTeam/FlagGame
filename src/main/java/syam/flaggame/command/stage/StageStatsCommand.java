@@ -75,7 +75,8 @@ public class StageStatsCommand extends BaseCommand {
         COMBAT(Stat.KILL, Stat.DEATH),
         FLAG(Stat.FLAG_CAPTURE, Stat.FLAG_BREAK, Stat.FLAG_SCORE),
         NEXUS(Stat.NEXUS_BREAK),
-        BANNER(Stat.BANNER_HOLD, Stat.BANNER_STEAL, Stat.BANNER_DEPLOY, Stat.BANNER_KEEP),
+        BANNER_1(Stat.BANNER_HOLD, Stat.BANNER_STEAL),
+        BANNER_2(Stat.BANNER_DEPLOY, Stat.BANNER_KEEP),
         RATE(Stat.RATE),;
 
         private final Stat[] stats;
@@ -122,8 +123,8 @@ public class StageStatsCommand extends BaseCommand {
         public void appendTo(DashboardBuilder dashboard, StageProfile profile, int gameCount) {
             double count = profile.getStat(record).map(e -> (double) e.getCount()).orElse(Double.NaN);
             dashboard.key(StringUtil.capitalize(name()))
-                    .value(count == Double.NaN ? "N/A" : count).space()
-                    .gray('(').value(count == Double.NaN ? "N/A" : count / gameCount).gray(')');
+                    .value(Double.isNaN(count) ? "N/A" : count).space()
+                    .gray('(').gray(Double.isNaN(count) ? "N/A" : count / gameCount).gray(')');
         }
 
     }
