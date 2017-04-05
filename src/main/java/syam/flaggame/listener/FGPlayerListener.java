@@ -39,7 +39,7 @@ import syam.flaggame.game.objective.Nexus;
 import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.material.Banner;
-import syam.flaggame.command.dashboard.OnelineBuilder;
+import jp.llv.flaggame.util.OnelineBuilder;
 import syam.flaggame.exception.ObjectiveCollisionException;
 import syam.flaggame.game.objective.ObjectiveType;
 import syam.flaggame.game.Stage;

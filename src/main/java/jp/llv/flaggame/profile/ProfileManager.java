@@ -30,7 +30,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import syam.flaggame.FlagGame;
-import syam.flaggame.command.dashboard.OnelineBuilder;
+import jp.llv.flaggame.util.OnelineBuilder;
 import syam.flaggame.game.Stage;
 import syam.flaggame.player.GamePlayer;
 

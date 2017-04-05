@@ -22,7 +22,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.FlagGame;
 import syam.flaggame.command.BaseCommand;
-import syam.flaggame.command.dashboard.OnelineBuilder;
+import jp.llv.flaggame.util.OnelineBuilder;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.permission.Perms;
 

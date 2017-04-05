@@ -27,7 +27,7 @@ import jp.llv.flaggame.util.StringUtil;
 import org.bukkit.entity.Player;
 import syam.flaggame.FlagGame;
 import syam.flaggame.command.area.AreaCommand;
-import syam.flaggame.command.dashboard.DashboardBuilder;
+import jp.llv.flaggame.util.DashboardBuilder;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;

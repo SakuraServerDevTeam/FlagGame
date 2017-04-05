@@ -21,7 +21,7 @@ import org.bukkit.entity.Player;
 import java.util.Set;
 import syam.flaggame.FlagGame;
 import org.bukkit.permissions.Permissible;
-import syam.flaggame.command.dashboard.DashboardBuilder;
+import jp.llv.flaggame.util.DashboardBuilder;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package syam.flaggame.command.dashboard;
+package jp.llv.flaggame.util;
 
 import java.util.Objects;
 import java.util.function.Function;

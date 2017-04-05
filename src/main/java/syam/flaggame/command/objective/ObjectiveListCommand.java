@@ -23,7 +23,7 @@ import org.bukkit.Location;
 import syam.flaggame.game.objective.Flag;
 import org.bukkit.entity.Player;
 import syam.flaggame.FlagGame;
-import syam.flaggame.command.dashboard.DashboardBuilder;
+import jp.llv.flaggame.util.DashboardBuilder;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.game.objective.BannerSlot;
