@@ -310,24 +310,25 @@ public class RealtimeTeamingReception implements GameReception {
         });
         records = new GameRecordStream(id);
 
+        String rateCommand = "/flaggame:flag stage rate ";
         BaseComponent[] rateMessage = new ComponentBuilder("クリックでステージの評価にご協力ください: ").color(ChatColor.GOLD)
                 .append("❤").color(ChatColor.GREEN)
-                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/f rate 0"))
+                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, rateCommand + 0))
                 .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("1.根本的問題がある").color(ChatColor.RED).create()))
                 .append("❤").color(ChatColor.GREEN)
-                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/f rate 1"))
+                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, rateCommand + 1))
                 .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("2.多くの問題がある").color(ChatColor.RED).create()))
                 .append("❤").color(ChatColor.GREEN)
-                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/f rate 2"))
+                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, rateCommand + 2))
                 .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("3.改善の余地がある").color(ChatColor.GOLD).create()))
                 .append("❤").color(ChatColor.GREEN)
-                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/f rate 3"))
+                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, rateCommand + 3))
                 .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("4.個人的に楽しめた").color(ChatColor.GOLD).create()))
                 .append("❤").color(ChatColor.GREEN)
-                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/f rate 4"))
+                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, rateCommand + 4))
                 .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("5.チームで楽しめた").color(ChatColor.GREEN).create()))
                 .append("❤").color(ChatColor.GREEN)
-                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/f rate 5"))
+                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, rateCommand + 5))
                 .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("6.全員が楽しめた").color(ChatColor.GREEN).create()))
                 .create();
         GamePlayer.sendMessage(this, rateMessage);

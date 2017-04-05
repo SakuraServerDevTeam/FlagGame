@@ -16,6 +16,7 @@
  */
 package syam.flaggame;
 
+import syam.flaggame.command.stage.StageRateCommand;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -278,7 +279,7 @@ public class FlagGame extends JavaPlugin {
                 CloseCommand::new,
                 TpCommand::new,
                 ReloadCommand::new,
-                RateCommand::new,
+                StageRateCommand::new,
                 PlayerInfoCommand::new,
                 PlayerStatsCommand::new,
                 PlayerExpCommand::new,

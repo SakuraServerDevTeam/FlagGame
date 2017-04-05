@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package syam.flaggame.command;
+package syam.flaggame.command.stage;
 
 import java.util.List;
 import jp.llv.flaggame.profile.record.StageRateRecord;
@@ -23,6 +23,7 @@ import syam.flaggame.FlagGame;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import syam.flaggame.command.BaseCommand;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.player.GamePlayer;
 
@@ -30,15 +31,15 @@ import syam.flaggame.player.GamePlayer;
  *
  * @author SakuraServerDev
  */
-public class RateCommand extends BaseCommand {
+public class StageRateCommand extends BaseCommand {
     
-    public RateCommand(FlagGame plugin) {
+    public StageRateCommand(FlagGame plugin) {
         super(
                 plugin,
                 true,
                 1,
                 "<rate> <- rate the stage",
-                "rate"
+                "stage rate"
         );
     }
 
