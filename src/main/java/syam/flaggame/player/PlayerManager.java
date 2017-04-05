@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import jp.llv.flaggame.events.GameFinishedEvent;
+import jp.llv.flaggame.events.GamePlayerUnloadEvent;
 import jp.llv.flaggame.game.Game;
 import jp.llv.flaggame.reception.GameReception;
 import org.bukkit.Bukkit;
@@ -144,6 +145,7 @@ public class PlayerManager implements Iterable<GamePlayer> {
                 }
                 entry.leave(player); // remove from the reception
             }
+            plugin.getServer().getPluginManager().callEvent(new GamePlayerUnloadEvent(player));
             it.remove(); // otherwise remove player
         }
     }
