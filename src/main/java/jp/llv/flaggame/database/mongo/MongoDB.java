@@ -174,6 +174,9 @@ public class MongoDB implements Database {
 
     @Override
     public void saveReocrds(RecordStream records, DatabaseCallback<Void, DatabaseException> callback) {
+        if (records.getRecords().isEmpty()) {
+            return;
+        }
         try {
             MongoCollection<Document> coll = getRecordCollection();
             coll.insertMany(records.getDocuments(), new MongoDBErrorCallback<>(callback));
@@ -191,7 +194,7 @@ public class MongoDB implements Database {
         MongoCollection<Document> coll = database.getCollection(VIEW_PLAYER_STATS);
         coll.find(new Document(FIELD_ID + FIELD_SEPARATOR + PlayerRecord.FIELD_PLAYER, player))
                 .map(d -> MapUtils.tuple(
-                        RecordType.of(d.getString(RecordType.FIELD_TYPE)),
+                        RecordType.of(d.getString(FIELD_ID + FIELD_SEPARATOR + RecordType.FIELD_TYPE)),
                         new StatEntry(d.getInteger(FIELD_COUNT, 0), d.getDouble(ScoreRecord.FIELD_SCORE))
                 )).forEach(new MongoDBResultCallback<>(consumer), new MongoDBErrorCallback<>(callback));
     }
@@ -204,7 +207,7 @@ public class MongoDB implements Database {
         }
         MongoCollection<Document> coll = database.getCollection(VIEW_PLAYER_EXP);
         coll.find(new Document(FIELD_ID, player))
-                .map(d -> d.getLong(ExpRecord.FIELD_EXP))
+                .map(d -> d == null ? null : d.getLong(ExpRecord.FIELD_EXP))
                 .first(new MongoDBCallback<>(callback));
     }
 
@@ -216,7 +219,7 @@ public class MongoDB implements Database {
         }
         MongoCollection<Document> coll = database.getCollection(VIEW_PLAYER_VIBE);
         coll.find(new Document(FIELD_ID, player))
-                .map(d -> d.getDouble(PlayerResultRecord.FIELD_VIBE))
+                .map(d -> d == null ? null : d.getDouble(PlayerResultRecord.FIELD_VIBE))
                 .first(new MongoDBCallback<>(callback));
     }
 
@@ -229,7 +232,7 @@ public class MongoDB implements Database {
         MongoCollection<Document> coll = database.getCollection(VIEW_STAGE_STATS);
         coll.find(new Document(FIELD_ID + FIELD_SEPARATOR + GameStartRecord.FIELD_STAGE, stage))
                 .map(d -> MapUtils.tuple(
-                        RecordType.of(d.getString(RecordType.FIELD_TYPE)),
+                        RecordType.of(d.getString(FIELD_ID + FIELD_SEPARATOR + RecordType.FIELD_TYPE)),
                         new StatEntry(d.getInteger(FIELD_COUNT, 0), d.getDouble(ScoreRecord.FIELD_SCORE))
                 )).forEach(new MongoDBResultCallback<>(consumer), new MongoDBErrorCallback<>(callback));
     }
