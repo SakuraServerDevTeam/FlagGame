@@ -55,14 +55,13 @@ public class PlayerProfile extends ProfileBase {
     /*package*/ void setVibe(double vibe) {
         this.vibe = vibe;
     }
-    
-    public static double getLevel(long exp) {
-        // 2log[1.1]((exp/1000)+1) + 1
-        return (Math.floor((Math.log10((exp / 1000.0) + 1.0) / LEVEL_UP_FACTOR_LOG)) * 2.0) + 1;
+
+    public static long getLevel(long exp) {
+        return (long) Math.floor((((Math.log10((exp / 1000.0) + 1.0) / LEVEL_UP_FACTOR_LOG)) * 2.0) + 1.0);
     }
-    
-    public static long getExpRequired(double level) {
-        return (long) (1000.0 * (Math.pow(LEVEL_UP_FACTOR, (level - 1) / 2) - 1));
+
+    public static long getExpRequired(long level) {
+        return (long) Math.ceil(1000.0 * (Math.pow(LEVEL_UP_FACTOR, (level - 1.0) * 0.5) - 1));
     }
 
 }
