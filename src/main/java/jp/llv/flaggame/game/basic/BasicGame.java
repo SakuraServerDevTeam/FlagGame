@@ -38,7 +38,7 @@ import jp.llv.flaggame.game.Game;
 import jp.llv.flaggame.game.HitpointTask;
 import jp.llv.flaggame.game.ObjectiveEffectTask;
 import jp.llv.flaggame.game.permission.StagePermissionListener;
-import jp.llv.flaggame.profile.DeviationBasedExpCalcurator;
+import jp.llv.flaggame.game.DeviationBasedExpCalcurator;
 import jp.llv.flaggame.profile.record.FlagCaptureRecord;
 import jp.llv.flaggame.profile.record.FlagScoreRecord;
 import jp.llv.flaggame.profile.record.GameStartRecord;
@@ -72,7 +72,7 @@ import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.player.GamePlayer;
 import syam.flaggame.util.Actions;
-import jp.llv.flaggame.profile.ExpCalcurator;
+import jp.llv.flaggame.game.ExpCalcurator;
 import jp.llv.flaggame.profile.record.BannerKeepRecord;
 import jp.llv.flaggame.profile.record.PlayerDrawRecord;
 import jp.llv.flaggame.profile.record.PlayerLoseRecord;
@@ -369,7 +369,7 @@ public class BasicGame implements Game {
         // vibe
         Map<GamePlayer, Double> vibes = this.getRecordStream().groupingBy(
                 PlayerRecord.class, r -> getPlayer(r.getPlayer()),
-                Collectors.summingDouble(t -> t.getExp(plugin.getConfigs()))
+                Collectors.summingDouble(t -> t.getExpWeight(plugin.getConfigs()))
         ).entrySet().stream()
                 .collect(StreamUtil.deviation(Map.Entry::getValue, (e, v) -> MapUtils.tuple(e.getKey(), v)))
                 .collect(StreamUtil.toMap());
@@ -390,7 +390,7 @@ public class BasicGame implements Game {
         // capture point
         Map<GamePlayer, Double> captures = this.getRecordStream().groupingBy(
                 FlagCaptureRecord.class, r -> getPlayer(r.getPlayer()),
-                Collectors.summingDouble(t -> t.getExp(plugin.getConfigs()))
+                Collectors.summingDouble(t -> t.getExpWeight(plugin.getConfigs()))
         );
         OptionalDouble maxCaptures = captures.entrySet().stream().mapToDouble(Map.Entry::getValue).max();
         Set<GamePlayer> maxCapturers = MapUtils.getKeyByValue(captures, maxCaptures.orElse(Double.NaN));

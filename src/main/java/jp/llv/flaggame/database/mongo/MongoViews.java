@@ -62,6 +62,12 @@ import org.bson.BsonInt32;
 import org.bson.BsonString;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import static com.mongodb.client.model.Aggregates.group;
+import static com.mongodb.client.model.Aggregates.unwind;
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Sorts.orderBy;
+import static com.mongodb.client.model.Sorts.descending;
+import static com.mongodb.client.model.Projections.fields;
 
 /**
  *

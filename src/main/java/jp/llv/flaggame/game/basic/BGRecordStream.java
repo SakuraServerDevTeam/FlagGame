@@ -54,7 +54,7 @@ public class BGRecordStream implements RecordStream {
         }
         Player player = gplayer.getPlayer();
         float sum = player.getLevel() + player.getExp();
-        sum += pr.getExp(plugin.getConfigs());
+        sum += pr.getExpWeight(plugin.getConfigs());
         int level = (int) sum;
         float exp = sum - level;
         player.setLevel(level);
