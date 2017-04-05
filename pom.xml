@@ -88,7 +88,7 @@
                 </executions>
             </plugin>
             <!-- Maven Source -->
-            <plugin>
+            <!-- plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
                 <version>2.2</version>
@@ -101,7 +101,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin -->
             <!-- Maven Site -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -114,7 +114,7 @@
                 </configuration>
             </plugin>
             <!-- JavaDoc -->
-            <plugin>
+            <!-- plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>2.10.3</version>
@@ -130,7 +130,7 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin -->
         </plugins>
 
         <!-- Resources -->
