@@ -162,6 +162,8 @@ public class RealtimeTeamingReception implements GameReception {
 
         this.plugin.getReceptions().remove(this);
         this.state = State.CLOSED;
+        this.plugin.getServer().getPluginManager()
+                .callEvent(new jp.llv.flaggame.events.ReceptionClosedEvent(reason, this));
         this.records.push(new ReceptionCloseRecord(this.id));
         plugin.getDatabases().get().saveReocrds(records, result -> {
             try {
