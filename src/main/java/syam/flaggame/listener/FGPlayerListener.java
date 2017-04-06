@@ -174,13 +174,8 @@ public class FGPlayerListener implements Listener {
             for (GameReception reception : this.plugin.getReceptions()) {
                 // 待機中ゲーム
                 if (reception.getState().toGameState() == Game.State.PREPARATION) {
-                    // 賞金系メッセージ
-                    String entryFeeMsg = reception.getEntryFee() > 0 ? reception.getEntryFee() + "Coin" : "Free";
-                    String awardMsg = reception.getMaxAward() > 0 ? reception.getMaxAward() + "Coin" : "None";
-
                     Actions.message(player, "&b* ===================================");
                     Actions.sendPrefixedMessage(player, "&2フラッグゲーム'&6" + reception.getName() + "&2'の参加受付が行われています！");
-                    Actions.sendPrefixedMessage(player, "&2 参加料:&6 " + entryFeeMsg + "&2   賞金:&6 " + awardMsg);
                     Actions.sendPrefixedMessage(player, "&2 '&6/flag join " + reception.getID() + "&2' コマンドで参加してください！");
                     Actions.message(player, "&b* ===================================");
 

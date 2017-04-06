@@ -25,7 +25,6 @@ import jp.llv.flaggame.database.DatabaseException;
 import jp.llv.flaggame.database.mongo.MongoDB;
 import jp.llv.flaggame.game.GameManager;
 import jp.llv.flaggame.profile.ProfileManager;
-import jp.llv.flaggame.reception.EvenRequiredRealtimeTeamingReception;
 import jp.llv.flaggame.reception.RealtimeTeamingReception;
 import jp.llv.flaggame.reception.ReceptionManager;
 
@@ -151,7 +150,6 @@ public class FlagGame extends JavaPlugin {
         profiles = new ProfileManager(this);
         receptions = new ReceptionManager(this);
         receptions.addType("rt", RealtimeTeamingReception::new);
-        receptions.addType("ert", EvenRequiredRealtimeTeamingReception::new);
         games = new GameManager(this);
         stages = new StageManager(this);
         debug.endTimer("managers");

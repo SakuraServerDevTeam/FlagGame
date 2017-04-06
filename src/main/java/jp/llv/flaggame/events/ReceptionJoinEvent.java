@@ -31,25 +31,14 @@ public class ReceptionJoinEvent extends GamePlayerEvent implements Cancellable {
     
     private final GameReception reception;
     private boolean cancel = false;
-    
-    private double entryFee;
 
-    public ReceptionJoinEvent(GamePlayer player, GameReception reception, double entryFee) {
+    public ReceptionJoinEvent(GamePlayer player, GameReception reception) {
         super(player);
         this.reception = reception;
-        this.entryFee = entryFee;
     }
 
     public GameReception getReception() {
         return reception;
-    }
-
-    public double getEntryFee() {
-        return entryFee;
-    }
-
-    public void setEntryFee(double entryFee) {
-        this.entryFee = entryFee >= 0 ? entryFee : 0;
     }
 
     @Override
