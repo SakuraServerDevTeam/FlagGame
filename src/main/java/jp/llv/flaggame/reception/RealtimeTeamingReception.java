@@ -18,6 +18,8 @@ package jp.llv.flaggame.reception;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -40,9 +42,21 @@ import syam.flaggame.util.Actions;
  */
 @ReceptionFor(BasicGame.class)
 public class RealtimeTeamingReception extends ReceptionBase<BasicGame> implements GameReception {
+    
+    protected final Map<TeamColor, Set<GamePlayer>> players = new EnumMap<>(TeamColor.class);
 
     public RealtimeTeamingReception(FlagGame plugin, UUID id, List<String> args) {
         super(plugin, id, args);
+        for (TeamColor color : stage.getSpawns().keySet()) {
+            this.players.put(color, new HashSet<>());
+        }
+    }
+    
+    @Override
+    public Collection<GamePlayer> getPlayers() {
+        Set<GamePlayer> result = new HashSet<>();
+        this.players.values().stream().forEach(result::addAll);
+        return Collections.unmodifiableSet(result);
     }
 
     @Override

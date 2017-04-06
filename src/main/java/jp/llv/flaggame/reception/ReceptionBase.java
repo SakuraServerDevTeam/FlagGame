@@ -61,8 +61,6 @@ public abstract class ReceptionBase<G extends Game> implements GameReception {
     
     private RecordStream records;
     
-    protected final Map<TeamColor, Set<GamePlayer>> players = new EnumMap<>(TeamColor.class);
-    
     protected G game;
     protected final Stage stage;
     private Stage.Reservation stageReservation;
@@ -77,13 +75,6 @@ public abstract class ReceptionBase<G extends Game> implements GameReception {
         this.stage = plugin.getStages().getStage(args.get(0))
                 .orElseThrow(() -> new IllegalArgumentException("No such stage"));
         this.records = new GameRecordStream(id);
-    }
-    
-    @Override
-    public Collection<GamePlayer> getPlayers() {
-        Set<GamePlayer> result = new HashSet<>();
-        this.players.values().stream().forEach(result::addAll);
-        return Collections.unmodifiableSet(result);
     }
 
     @Override
@@ -162,10 +153,6 @@ public abstract class ReceptionBase<G extends Game> implements GameReception {
             throw new CommandException("&cそのステージは既に使用中です!", ex);
         }
 
-        for (TeamColor color : this.stage.getSpawns().keySet()) {
-            this.players.put(color, new HashSet<>());
-        }
-
         initialTask = stage.getInitialTask(plugin, ex -> {
 
         });
@@ -206,13 +193,9 @@ public abstract class ReceptionBase<G extends Game> implements GameReception {
             initialTask.cancel();
         }
 
-        for (GamePlayer p : this.getPlayers()) {
-            for (Set<GamePlayer> team : this.players.values()) {
-                if (team.contains(p)) {
-                    team.remove(p);
-                    p.leave(this);
-                }
-            }
+        for (GamePlayer p : getPlayers()) {
+            p.getTeam().ifPresent(t -> t.remove(p));
+            p.leave(this);
         }
 
         this.plugin.getReceptions().remove(this);
