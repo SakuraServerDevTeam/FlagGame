@@ -40,6 +40,7 @@ public abstract class SerializeTask extends BukkitRunnable {
         if (isFinished()) {
             callback.accept(null);
         }
+        this.runTaskTimer(plugin, delay, 1L);
     }
 
     @Override
