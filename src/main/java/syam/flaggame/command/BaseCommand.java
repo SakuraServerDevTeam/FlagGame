@@ -65,7 +65,7 @@ public abstract class BaseCommand {
 
         // 引数の長さチェック
         if (argLength > args.size()) {
-            sendUsage(sender, cmd.substring(cmd.lastIndexOf(" ")  + 1, cmd.length()));
+            sendUsage(sender, cmd.substring(0, cmd.lastIndexOf(" ")));
             return true;
         }
 
