@@ -129,8 +129,8 @@ public class ValueSortedMap<K, V> implements Map<K, V> {
         return new ValueSortedMap<>(Comparator.naturalOrder());
     }
 
-    public static <K extends Comparable<? super K>, V> ValueSortedMap<K, V> newInstance(Comparator<? super V> comparator) {
-        return new ValueSortedMap<>(comparator, Comparator.naturalOrder());
+    public static <K, V> ValueSortedMap<K, V> newInstance(Comparator<? super V> comparator) {
+        return new ValueSortedMap<>(comparator);
     }
 
 }

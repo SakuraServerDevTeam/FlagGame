@@ -32,7 +32,6 @@ import syam.flaggame.command.BaseCommand;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.player.GamePlayer;
-import syam.flaggame.util.Actions;
 
 public class GameJoinCommand extends BaseCommand {
 
@@ -82,7 +81,7 @@ public class GameJoinCommand extends BaseCommand {
         }
 
         // Call event
-        ReceptionJoinEvent joinEvent = new ReceptionJoinEvent(gPlayer, reception, reception.getEntryFee());
+        ReceptionJoinEvent joinEvent = new ReceptionJoinEvent(gPlayer, reception);
         plugin.getServer().getPluginManager().callEvent(joinEvent);
         if (joinEvent.isCancelled()) {
             return;
@@ -92,19 +91,6 @@ public class GameJoinCommand extends BaseCommand {
             currentReception.leave(gPlayer);
         }
         reception.join(gPlayer, joinArgs);
-
-        // 参加料チェック
-        double cost = joinEvent.getEntryFee();
-        if (cost > 0) {
-            if (!Actions.checkMoney(player.getUniqueId(), cost)) {// 所持金確認
-                throw new CommandException("&c参加するためには参加料 " + cost + "Coin が必要です！");
-            }
-            if (!Actions.takeMoney(player.getUniqueId(), cost)) {// 引き落とし
-                throw new CommandException("&c参加料の引き落としにエラーが発生しました。管理人までご連絡ください。");
-            } else {
-                Actions.message(player, "&c参加料として " + cost + "Coin を支払いました！");
-            }
-        }
     }
 
     @Override

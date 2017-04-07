@@ -65,25 +65,21 @@ public interface GameReception extends Iterable<GamePlayer> {
 
     GameReception.State getState();
 
-    double getEntryFee();
-
-    double getMaxAward();
-
     Collection<GamePlayer> getPlayers();
-    
+
     default int size() {
         return this.getPlayers().size();
     }
 
     default Optional<Class<? extends Game>> getGameType() {
-        return  Optional.ofNullable(this.getClass().getAnnotation(ReceptionFor.class)).map(ReceptionFor::value);
+        return Optional.ofNullable(this.getClass().getAnnotation(ReceptionFor.class)).map(ReceptionFor::value);
     }
-    
+
     @Override
     public default Iterator<GamePlayer> iterator() {
         return this.getPlayers().iterator();
     }
-    
+
     RecordStream getRecordStream();
 
     public static enum State {
@@ -94,8 +90,8 @@ public interface GameReception extends Iterable<GamePlayer> {
         FINISHED(Game.State.FINISHED),
         CLOSED(Game.State.FINISHED),
         ;
-            
-            private final Game.State state;
+
+        private final Game.State state;
 
         private State(Game.State state) {
             this.state = state;
