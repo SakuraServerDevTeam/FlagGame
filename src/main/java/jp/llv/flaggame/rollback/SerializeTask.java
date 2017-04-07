@@ -24,8 +24,8 @@ import org.bukkit.scheduler.BukkitRunnable;
  *
  * @author SakuraServerDev
  */
-public abstract class  SerializeTask extends BukkitRunnable {
-    
+public abstract class SerializeTask extends BukkitRunnable {
+
     private final Consumer<RollbackException> callback;
 
     public SerializeTask(Consumer<RollbackException> callback) {
@@ -40,14 +40,13 @@ public abstract class  SerializeTask extends BukkitRunnable {
         if (isFinished()) {
             callback.accept(null);
         }
-        this.runTaskTimer(plugin, delay, 1L);
     }
-    
+
     @Override
     public final void run() {
         try {
             step();
-        } catch(RollbackException ex) {
+        } catch (RollbackException ex) {
             callback.accept(ex);
             super.cancel();
         }
@@ -62,13 +61,17 @@ public abstract class  SerializeTask extends BukkitRunnable {
         if (!isFinished()) {
             this.callback.accept(new RollbackException("Task has been cancelled"));
         }
-        super.cancel();
+        try {
+            super.cancel();
+        } catch (IllegalStateException ex) {
+            // already cancelled
+        }
     }
-    
+
     public abstract void step() throws RollbackException;
-    
+
     public abstract boolean isFinished();
-    
+
     public abstract long getEstimatedTickRemaining();
 
     public static class CompletedSerializeTask extends SerializeTask {
@@ -118,5 +121,5 @@ public abstract class  SerializeTask extends BukkitRunnable {
         }
 
     }
-    
+
 }

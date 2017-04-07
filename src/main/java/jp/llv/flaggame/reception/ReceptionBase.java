@@ -16,15 +16,9 @@
  */
 package jp.llv.flaggame.reception;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 import jp.llv.flaggame.database.DatabaseException;
@@ -154,7 +148,7 @@ public abstract class ReceptionBase<G extends Game> implements GameReception {
         }
 
         initialTask = stage.getInitialTask(plugin, ex -> {
-
+            plugin.getLogger().log(Level.WARNING, "Failed to initialize the stage", ex);
         });
         String etr = Actions.getTimeString(ConvertUtils.toMiliseconds(initialTask.getEstimatedTickRemaining()));
         GamePlayer.sendMessage(plugin.getPlayers(), "&a'&6" + stage.getName() + "&a'をロードしています...");

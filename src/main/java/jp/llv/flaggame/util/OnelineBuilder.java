@@ -19,6 +19,7 @@ package jp.llv.flaggame.util;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.command.CommandSender;
+import syam.flaggame.player.GamePlayer;
 import syam.flaggame.util.Actions;
 
 /**
@@ -27,7 +28,7 @@ import syam.flaggame.util.Actions;
  * @author SakuraServerDev
  */
 public class OnelineBuilder {
-    
+
     private static final char QUOTE = '\'';
 
     private final TextBuilder<BaseComponent[]> text = TextBuilder.newBuilder();
@@ -53,7 +54,7 @@ public class OnelineBuilder {
         text.red(obj);
         return this;
     }
-    
+
     public OnelineBuilder value(Object obj) {
         if (!inValue) {
             text.gray(QUOTE);
@@ -62,16 +63,22 @@ public class OnelineBuilder {
         text.gold(obj);
         return this;
     }
-    
+
     public BaseComponent[] create() {
         if (inValue) {
             text.gray(QUOTE);
         }
         return text.create();
     }
-    
-    public void sendTo(CommandSender target) {
-        Actions.sendPrefixedMessage(target, ChatMessageType.CHAT, create());
+
+    public void sendTo(CommandSender... targets) {
+        for (CommandSender target : targets) {
+            Actions.sendPrefixedMessage(target, ChatMessageType.CHAT, create());
+        }
+    }
+
+    public void sendTo(Iterable<GamePlayer> players) {
+        GamePlayer.sendMessage(players, create());
     }
 
     public static OnelineBuilder newBuilder() {

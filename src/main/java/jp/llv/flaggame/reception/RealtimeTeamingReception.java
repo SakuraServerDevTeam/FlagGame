@@ -42,7 +42,7 @@ import syam.flaggame.util.Actions;
  */
 @ReceptionFor(BasicGame.class)
 public class RealtimeTeamingReception extends ReceptionBase<BasicGame> implements GameReception {
-    
+
     protected final Map<TeamColor, Set<GamePlayer>> players = new EnumMap<>(TeamColor.class);
 
     public RealtimeTeamingReception(FlagGame plugin, UUID id, List<String> args) {
@@ -51,7 +51,7 @@ public class RealtimeTeamingReception extends ReceptionBase<BasicGame> implement
             this.players.put(color, new HashSet<>());
         }
     }
-    
+
     @Override
     public Collection<GamePlayer> getPlayers() {
         Set<GamePlayer> result = new HashSet<>();
@@ -100,6 +100,10 @@ public class RealtimeTeamingReception extends ReceptionBase<BasicGame> implement
         int count = this.players.entrySet().stream().map(Map.Entry::getValue).mapToInt(Set::size).sum();
         GamePlayer.sendMessage(this.plugin.getPlayers(), color.getChatColor() + player.getName() + "&aが'&6"
                                                          + this.getName() + "&a'で開催予定のゲームに参加しました(&6" + count + "人目&a)");
+        if (count >= (players.size() * stage.getTeamLimit())) {
+            GamePlayer.sendMessage(this.plugin.getPlayers(), "&2フラッグゲーム'&6" + this.getName() + "&2'の参加受付が終了しました！");
+            start(Collections.emptyList());
+        }
     }
 
     @Override

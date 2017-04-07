@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import jp.llv.flaggame.game.Game;
 import jp.llv.flaggame.util.TriFunction;
@@ -38,23 +37,10 @@ public class ReceptionManager implements Iterable<GameReception> {
 
     private final FlagGame plugin;
 
-    private final Map<String, TriFunction<FlagGame, UUID, List<String>, GameReception>> receptionConstructors = new HashMap<>();
     private final Map<UUID, GameReception> receptions = new HashMap<>();
 
     public ReceptionManager(FlagGame plugin) {
         this.plugin = plugin;
-    }
-
-    public void addType(String name, TriFunction<FlagGame, UUID, List<String>, GameReception> constructor) {
-        this.receptionConstructors.put(name, constructor);
-    }
-
-    public void addType(String name, BiFunction<FlagGame, UUID, GameReception> constructor) {
-        this.addType(name, (f, i, a) -> constructor.apply(f, i));
-    }
-
-    public Collection<String> getTypes() {
-        return Collections.unmodifiableSet(this.receptionConstructors.keySet());
     }
 
     public Collection<GameReception> getReceptions() {
@@ -90,11 +76,12 @@ public class ReceptionManager implements Iterable<GameReception> {
         if (this.receptions.containsKey(id)) {
             throw new IllegalStateException("A reception with the id already exists");
         }
-        TriFunction<FlagGame, UUID, List<String>, GameReception> constructor = this.receptionConstructors.get(receptionType);
-        if (constructor == null) {
-            throw new IllegalArgumentException("No such registered reception-type");
+        GameReception reception;
+        try {
+            reception = ReceptionType.of(receptionType).newInstance(plugin, id, args);
+        } catch(IllegalArgumentException ex) {
+            throw new IllegalArgumentException("No such registered reception-type", ex);
         }
-        GameReception reception = constructor.apply(this.plugin, id, args);
         this.receptions.put(id, reception);
         return reception;
     }

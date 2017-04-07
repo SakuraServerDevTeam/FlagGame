@@ -149,7 +149,6 @@ public class FlagGame extends JavaPlugin {
         players = new PlayerManager(this);
         profiles = new ProfileManager(this);
         receptions = new ReceptionManager(this);
-        receptions.addType("rt", RealtimeTeamingReception::new);
         games = new GameManager(this);
         stages = new StageManager(this);
         debug.endTimer("managers");
