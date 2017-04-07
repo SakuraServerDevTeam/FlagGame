@@ -62,7 +62,6 @@ public class GameReadyCommand extends BaseCommand {
             reception.close("Failed to initialize");
             throw ex;
         }
-        Actions.sendPrefixedMessage(sender, "&a受付'" + reception.getID() + "'の募集が開始されました");
     }
 
     @Override
