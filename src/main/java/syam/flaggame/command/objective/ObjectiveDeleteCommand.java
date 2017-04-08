@@ -37,8 +37,9 @@ public class ObjectiveDeleteCommand extends ObjectiveCommand {
                 plugin,
                 3,
                 "<x> <y> <z> <- delete objective located there",
-                Perms.STAGE_CONFIG_SET,
-                "delete"
+                Perms.OBJECTIVE_DELETE,
+                "delete",
+                "del"
         );
     }
 

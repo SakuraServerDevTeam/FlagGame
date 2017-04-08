@@ -40,8 +40,9 @@ public class StageListCommand extends BaseCommand {
                 false,
                 0,
                 "<- show information about stages",
-                Perms.STAGE_CONFIG_CHECK,
-                "list"
+                Perms.STAGE_LIST,
+                "list",
+                "l"
         );
     }
 

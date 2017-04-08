@@ -38,7 +38,7 @@ public class AreaMessageTimingCommand extends AreaCommand {
                 plugin,
                 3,
                 "<id> <index> <timing> <- set message timing",
-                Perms.STAGE_CONFIG_SET,
+                Perms.AREA_MESSAGE_TIMING,
                 "timing"
         );
     }

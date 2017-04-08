@@ -42,8 +42,9 @@ public class StageDashboardCommand extends BaseCommand {
                 false,
                 1,
                 "<stage> <- show information about a stage",
-                Perms.STAGE_CONFIG_CHECK,
-                "dashboard", "d"
+                Perms.STAGE_DASHBOARD,
+                "dashboard",
+                "d"
         );
     }
 

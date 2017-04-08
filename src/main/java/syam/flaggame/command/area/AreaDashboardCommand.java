@@ -37,7 +37,7 @@ public class AreaDashboardCommand extends AreaCommand {
                 plugin,
                 1,
                 "<id> <- show information about areas",
-                Perms.STAGE_CONFIG_CHECK,
+                Perms.AREA_DASHBOARD,
                 "dashboard", "d"
         );
     }

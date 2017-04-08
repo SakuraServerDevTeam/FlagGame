@@ -26,7 +26,6 @@ import jp.llv.flaggame.rollback.StageDataType;
 import jp.llv.flaggame.util.ConvertUtils;
 import org.bukkit.entity.Player;
 import syam.flaggame.FlagGame;
-import org.bukkit.permissions.Permissible;
 import syam.flaggame.command.area.AreaCommand;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.AreaInfo;
@@ -45,6 +44,7 @@ public class AreaDataSaveCommand extends AreaCommand {
                 plugin,
                 3,
                 "<id> <target> <name> <- save region",
+                Perms.AREA_DATA_SAVE,
                 "save"
         );
     }
@@ -98,11 +98,6 @@ public class AreaDataSaveCommand extends AreaCommand {
                                             + savename + "&a'をセーブしています...");
         Actions.sendPrefixedMessage(player, "&aこれにはおよそ"+etr+"間かかる予定です...");
         task.start(plugin);
-    }
-
-    @Override
-    public boolean hasPermission(Permissible target) {
-        return Perms.STAGE_CONFIG_SET.has(target);
     }
 
 }

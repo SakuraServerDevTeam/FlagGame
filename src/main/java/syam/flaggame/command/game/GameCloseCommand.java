@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.UUID;
 import jp.llv.flaggame.reception.GameReception;
 import syam.flaggame.FlagGame;
-import org.bukkit.permissions.Permissible;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.command.BaseCommand;
@@ -40,7 +39,8 @@ public class GameCloseCommand extends BaseCommand {
                 plugin,
                 false,
                 1,
-                "<reception> [reason] <- close the reception",
+                "<game> [reason] <- close the reception",
+                Perms.GAME_CLOSE,
                 "close"
         );
     }
@@ -64,11 +64,6 @@ public class GameCloseCommand extends BaseCommand {
         }
         reception.close(args.size() < 2 ? sender.getName()+"Closed":args.get(1));
         gPlayer.sendMessage("&a成功しました!");
-    }
-
-    @Override
-    public boolean hasPermission(Permissible target) {
-        return Perms.CLOSE.has(target);
     }
     
 }

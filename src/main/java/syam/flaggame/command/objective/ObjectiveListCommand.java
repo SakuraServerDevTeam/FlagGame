@@ -43,8 +43,9 @@ public class ObjectiveListCommand extends ObjectiveCommand {
                 plugin,
                 0,
                 "<- show objective list",
-                Perms.STAGE_CONFIG_CHECK,
-                "list"
+                Perms.OBJECTIVE_LIST,
+                "list",
+                "l"
         );
     }
 

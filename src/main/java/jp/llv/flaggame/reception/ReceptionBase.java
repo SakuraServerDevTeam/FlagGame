@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 import jp.llv.flaggame.database.DatabaseException;
 import jp.llv.flaggame.game.Game;
 import jp.llv.flaggame.profile.GameRecordStream;
@@ -39,6 +40,7 @@ import syam.flaggame.FlagGame;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.exception.StageReservedException;
 import syam.flaggame.game.Stage;
+import syam.flaggame.permission.Perms;
 import syam.flaggame.player.GamePlayer;
 import syam.flaggame.util.Actions;
 
@@ -52,9 +54,9 @@ public abstract class ReceptionBase<G extends Game> implements GameReception {
     protected final FlagGame plugin;
     protected final UUID id;
     private State state = State.READY;
-    
+
     private RecordStream records;
-    
+
     protected G game;
     protected final Stage stage;
     private Stage.Reservation stageReservation;
@@ -102,7 +104,7 @@ public abstract class ReceptionBase<G extends Game> implements GameReception {
         }
         return this.state;
     }
-    
+
     protected void setState(State state) {
         if (this.state.ordinal() >= state.ordinal()) {
             throw new IllegalStateException("This reception is already state; " + this.state);
@@ -124,7 +126,7 @@ public abstract class ReceptionBase<G extends Game> implements GameReception {
     public Optional<Stage> getStage() {
         return Optional.of(stage);
     }
-    
+
     protected boolean isStageInitialized() {
         return initialTask != null && initialTask.isFinished();
     }
@@ -171,7 +173,7 @@ public abstract class ReceptionBase<G extends Game> implements GameReception {
         GamePlayer.sendMessage(this.plugin.getPlayers(), "&2 参加料:&6 " + entryFeeMsg + "&2   賞金:&6 " + awardMsg);
         BaseComponent[] message = new ComponentBuilder("ここをクリック").bold(true).color(ChatColor.GOLD).bold(false)
                 .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("クリックして参加申し込みします").color(ChatColor.GOLD).create()))
-                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/flag join " + this.getID()))
+                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/flag game join " + this.getID()))
                 .append("して参加してください！").color(ChatColor.DARK_GREEN).create();
         GamePlayer.sendMessage(this.plugin.getPlayers(), message);
     }
@@ -277,7 +279,12 @@ public abstract class ReceptionBase<G extends Game> implements GameReception {
                 .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, rateCommand + 5))
                 .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("6.全員が楽しめた").color(ChatColor.GREEN).create()))
                 .create();
-        GamePlayer.sendMessage(this, rateMessage);
+        GamePlayer.sendMessage(
+                getPlayers().stream().filter(g -> g.isOnline())
+                .filter(g -> Perms.STAGE_RATE.has(g.getPlayer()))
+                .collect(Collectors.toSet()),
+                rateMessage
+        );
     }
 
 }

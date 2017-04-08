@@ -45,7 +45,7 @@ public class StageSaveCommand extends BaseCommand {
                 false,
                 0,
                 "[stage] <- save the stage",
-                Perms.SAVE,
+                Perms.STAGE_SAVE,
                 "save"
         );
     }

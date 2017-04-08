@@ -22,7 +22,6 @@ import jp.llv.flaggame.game.permission.GamePermission;
 import jp.llv.flaggame.game.permission.GamePermissionState;
 
 import syam.flaggame.FlagGame;
-import org.bukkit.permissions.Permissible;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -51,7 +50,7 @@ public class StageSetCommand extends BaseCommand {
                 true,
                 1,
                 "<option> [value] <- set option",
-                Perms.STAGE_CONFIG_SET,
+                Perms.STAGE_SET,
                 "set"
         );
 
@@ -452,10 +451,5 @@ public class StageSetCommand extends BaseCommand {
         }
 
         Actions.message(player, "&6 " + String.join("/", col).toLowerCase());
-    }
-
-    @Override
-    public boolean hasPermission(Permissible target) {
-        return Perms.SET.has(target);
     }
 }

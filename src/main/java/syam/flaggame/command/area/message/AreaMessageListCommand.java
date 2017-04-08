@@ -37,8 +37,9 @@ public class AreaMessageListCommand extends AreaCommand {
                 plugin,
                 0,
                 "<id> <- show a list of messages",
-                Perms.STAGE_CONFIG_CHECK,
-                "list"
+                Perms.AREA_MESSAGE_LIST,
+                "list",
+                "l"
         );
     }
 

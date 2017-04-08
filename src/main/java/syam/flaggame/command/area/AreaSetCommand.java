@@ -19,7 +19,6 @@ package syam.flaggame.command.area;
 import java.util.List;
 import org.bukkit.entity.Player;
 import syam.flaggame.FlagGame;
-import org.bukkit.permissions.Permissible;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
@@ -37,6 +36,7 @@ public class AreaSetCommand extends AreaCommand {
                 plugin,
                 1,
                 "<id> <- set region",
+                Perms.AREA_SET,
                 "set"
         );
     }
@@ -52,11 +52,6 @@ public class AreaSetCommand extends AreaCommand {
         }
         stage.getAreas().setArea(id, region);
         sendMessage(player, "&a'&6" + stage.getName() + "&a'の'&6" + id + "&a'エリアを設定しました！");
-    }
-
-    @Override
-    public boolean hasPermission(Permissible target) {
-        return Perms.STAGE_CONFIG_SET.has(target);
     }
 
 }

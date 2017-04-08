@@ -25,26 +25,64 @@ import syam.flaggame.exception.PermissionException;
  * @author syam(syamn)
  */
 public enum Perms {
-    /* 権限ノード */
-
- /* コマンド系 */
-    // User Commands
-    SINFO("user.stageinfo"), LIST("user.list"), JOIN("user.join"), LEAVE_GAME("user.leave.game"), LEAVE_READY("user.leave.ready"), LEAVE_SPECTATE("user.leave.spectate"), WATCH("user.watch"),
-    // Admin Commands
-    PINFO("user.playerinfo"), READY("admin.ready"), CLOSE("admin.close"), SELECT("admin.select"), START("admin.start"), TP("admin.tp"), ROLLBACK("admin.rollback"),
-    // Setup Commands
-    CREATE("admin.setup.create"), DELETE("admin.setup.delete"), SET("admin.setup.set"), CHECK("admin.setup.check"),
-    // System Commands
-    SAVE("admin.save"), RELOAD("admin.reload"),
-    /* 特殊系 */
-    IGNORE_PROTECT("ignoreWorldProtect"), SIGN("admin.sign"),
-    //new Configuration
-    STAGE_CONFIG_CHECK("config.stage.check"), STAGE_CONFIG_SET("config.stage.set"),
-    // stats 
-    PLAYER_STAT_SELF("user.stat.self"), PLAYER_STAT_OTHER("user.stat.other"),
-    PLAYER_EXP_SELF("user.exp.self"), PLAYER_EXP_OTHER("user.exp.other"), 
-    PLAYER_VIBE_SELF("user.vibe.self"), PLAYER_VIBE_OTHER("user.vibe.other"),
-    STAGE_STAT("stage.stat"),
+    
+    RELOAD("reload"),
+    TP("tp"),
+    
+    IGNORE_PROTECT("ignoreprotect"),
+    SIGN("sign"),
+    
+    AREA_DASHBOARD("area.dashboard"),
+    AREA_DELETE("area.delete"),
+    AREA_INIT("area.init"),
+    AREA_LIST("area.list"),
+    AREA_SELECT("area.select"),
+    AREA_SET("area.set"),
+    
+    AREA_DATA_DELETE("area.data.delete"),
+    AREA_DATA_LIST("area.data.list"),
+    AREA_DATA_LOAD("area.data.load"),
+    AREA_DATA_SAVE("area.data.save"),
+    AREA_DATA_TIMING("area.data.timing"),
+    
+    AREA_MESSAGE_ADD("area.message.add"),
+    AREA_MESSAGE_DELETE("area.message.delete"),
+    AREA_MESSAGE_LIST("area.message.list"),
+    AREA_MESSAGE_TIMING("area.message.timing"),
+    
+    AREA_PERMISSION_DASHBOARD("area.permission.dashboard"),
+    AREA_PERMISSION_LIST("area.permission.list"),
+    AREA_PERMISSION_SET("area.permission.set"),
+    AREA_PERMISSION_TEST("area.permission.test"),
+    
+    GAME_CLOSE("game.close"),
+    GAME_JOIN("game.join"),
+    GAME_LEAVE_SPECTATE("game.leave.spectate"), GAME_LEAVE_READY("game.leave.ready"),
+    GAME_LEAVE_FINISHED("game.leave.finished"),
+    GAME_LIST("game.list"),
+    GAME_READY("game.ready"),
+    GAME_START("game.start"),
+    GAME_WATCH("game.watch"),
+    
+    STAGE_CREATE("stage.create"),
+    STAGE_DASHBOARD("stage.dashboard"),
+    STAGE_DELETE("stage.delete"),
+    STAGE_INFO("stage.info"),
+    STAGE_LIST("stage.list"),
+    STAGE_RATE("stage.rate"),
+    STAGE_SAVE("stage.save"),
+    STAGE_SELECT("stage.select"),
+    STAGE_SET("stage.set"),
+    STAGE_STATS("stage.stats"),
+    
+    OBJECTIVE_LIST("objective.list"),
+    OBJECTIVE_DELETE("objective.delete"),
+    OBJECTIVE_SET("objective.set"),
+    
+    PLAYER_INFO("player.info"),
+    PLAYER_STATS_SELF("player.stats.self"), PLAYER_STATS_OTHER("player.stats.other"),
+    PLAYER_EXP_SELF("player.exp.self"), PLAYER_EXP_OTHER("player.exp.other"),
+    PLAYER_VIBE_SELF("player.vibe.self"), PLAYER_VIBE_OTHER("player.vibe.other"),
     ;
 
     // ノードヘッダー
@@ -73,7 +111,7 @@ public enum Perms {
         }
         return perm.hasPermission(this.node);
     }
-    
+
     public void requireTo(Permissible perm) throws PermissionException {
         if (perm == null || !perm.hasPermission(node)) {
             throw new PermissionException("Not enough permission");

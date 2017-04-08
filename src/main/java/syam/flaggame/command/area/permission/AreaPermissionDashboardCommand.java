@@ -43,8 +43,9 @@ public class AreaPermissionDashboardCommand extends AreaCommand {
                 plugin, 
                 2,
                 "<id> <permission> <- show information about permissions", 
-                Perms.STAGE_CONFIG_CHECK, 
-                "dashboard", "d"
+                Perms.AREA_PERMISSION_DASHBOARD, 
+                "dashboard",
+                "d"
         );
     }
 

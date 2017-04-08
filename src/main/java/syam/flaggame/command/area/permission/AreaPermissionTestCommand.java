@@ -25,7 +25,6 @@ import jp.llv.flaggame.game.permission.GamePermissionState;
 import jp.llv.flaggame.reception.TeamColor;
 import org.bukkit.Location;
 import syam.flaggame.FlagGame;
-import org.bukkit.permissions.Permissible;
 import syam.flaggame.command.area.AreaCommand;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.AreaInfo;
@@ -44,6 +43,7 @@ public class AreaPermissionTestCommand extends AreaCommand {
                 plugin,
                 1,
                 "<permission> [color] <- select region",
+                Perms.AREA_PERMISSION_TEST,
                 "test"
         );
     }
@@ -90,11 +90,6 @@ public class AreaPermissionTestCommand extends AreaCommand {
                                 + state.format() + "&a'に設定されています。");
         Actions.message(player, "&aこの権限は" + cause);
         Actions.message(player, "&a ============================================");
-    }
-
-    @Override
-    public boolean hasPermission(Permissible target) {
-        return Perms.STAGE_CONFIG_CHECK.has(target);
     }
 
 }

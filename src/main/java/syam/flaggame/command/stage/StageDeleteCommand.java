@@ -41,9 +41,10 @@ public class StageDeleteCommand extends BaseCommand {
                 plugin,
                 true,
                 1,
-                "<stage> <- management stages",
-                Perms.DELETE,
-                "delete"
+                "<stage> <- delete a specified stage",
+                Perms.STAGE_DELETE,
+                "delete",
+                "del"
         );
 
     }

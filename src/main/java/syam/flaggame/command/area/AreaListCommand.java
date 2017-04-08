@@ -20,7 +20,6 @@ import java.util.List;
 import org.bukkit.entity.Player;
 import java.util.Set;
 import syam.flaggame.FlagGame;
-import org.bukkit.permissions.Permissible;
 import jp.llv.flaggame.util.DashboardBuilder;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
@@ -38,7 +37,9 @@ public class AreaListCommand extends AreaCommand {
                 plugin,
                 0,
                 "<- show a list of areas",
-                "list"
+                Perms.AREA_LIST,
+                "list",
+                "l"
         );
     }
 
@@ -56,11 +57,6 @@ public class AreaListCommand extends AreaCommand {
                             .buttonRun("delete").append("area delete").append(id).create();
                 }).buttonSuggest("set new").append("area set").create()
                 .sendTo(player);
-    }
-
-    @Override
-    public boolean hasPermission(Permissible target) {
-        return Perms.STAGE_CONFIG_CHECK.has(target);
     }
 
 }

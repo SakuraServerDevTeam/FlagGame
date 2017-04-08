@@ -19,7 +19,6 @@ package syam.flaggame.command;
 import java.util.List;
 import java.util.logging.Level;
 import syam.flaggame.FlagGame;
-import org.bukkit.permissions.Permissible;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.permission.Perms;
@@ -33,6 +32,7 @@ public class ReloadCommand extends BaseCommand {
                 false,
                 0,
                 "<- reload config.yml",
+                Perms.RELOAD,
                 "reload"
         );
     
@@ -49,9 +49,5 @@ public class ReloadCommand extends BaseCommand {
 
         Actions.message(sender, "&aConfiguration reloaded!");
     }
-
-    @Override
-    public boolean hasPermission(Permissible target) {
-        return Perms.RELOAD.has(target);
-    }
+    
 }

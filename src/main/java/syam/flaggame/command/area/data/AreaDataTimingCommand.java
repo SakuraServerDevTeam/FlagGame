@@ -18,10 +18,8 @@ package syam.flaggame.command.area.data;
 
 import java.util.List;
 import org.bukkit.entity.Player;
-import java.util.Map;
 import jp.llv.flaggame.util.ConvertUtils;
 import syam.flaggame.FlagGame;
-import org.bukkit.permissions.Permissible;
 import syam.flaggame.command.area.AreaCommand;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.AreaInfo;
@@ -40,6 +38,7 @@ public class AreaDataTimingCommand extends AreaCommand {
                 plugin,
                 3,
                 "<id> <name> [timing] <- schedule rollback",
+                Perms.AREA_DATA_TIMING,
                 "timing"
         );
     }
@@ -82,11 +81,6 @@ public class AreaDataTimingCommand extends AreaCommand {
                         + "&a'にスケジュールしました！"
             );
         }
-    }
-
-    @Override
-    public boolean hasPermission(Permissible target) {
-        return Perms.STAGE_CONFIG_SET.has(target);
     }
 
 }

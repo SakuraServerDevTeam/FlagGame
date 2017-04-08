@@ -19,7 +19,6 @@ package syam.flaggame.command.game;
 import java.util.List;
 import jp.llv.flaggame.reception.GameReception;
 import syam.flaggame.FlagGame;
-import org.bukkit.permissions.Permissible;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.command.BaseCommand;
@@ -39,7 +38,9 @@ public class GameListCommand extends BaseCommand {
                 false,
                 0,
                 " <- show a list of receptions",
-                "list"
+                Perms.GAME_LIST,
+                "list",
+                "l"
         );
     }
 
@@ -74,10 +75,4 @@ public class GameListCommand extends BaseCommand {
                 throw new RuntimeException();
         }
     }
-
-    @Override
-    public boolean hasPermission(Permissible target) {
-        return Perms.LIST.has(target);
-    }
-
 }

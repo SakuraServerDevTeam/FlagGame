@@ -18,7 +18,6 @@ package syam.flaggame.command.stage;
 
 import java.util.List;
 import syam.flaggame.FlagGame;
-import org.bukkit.permissions.Permissible;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.command.BaseCommand;
@@ -39,7 +38,9 @@ public class StageSelectCommand extends BaseCommand {
                 true,
                 0,
                 "[stage] <- select exist stage",
-                "select"
+                Perms.STAGE_SELECT,
+                "select",
+                "sel"
         );
     
     }
@@ -80,10 +81,5 @@ public class StageSelectCommand extends BaseCommand {
         }
         Cuboid stageArea = stage.getAreas().getStageArea();
         return WorldEditHandler.setSelectedArea(player, stageArea);
-    }
-
-    @Override
-    public boolean hasPermission(Permissible target) {
-        return Perms.SELECT.has(target);
     }
 }

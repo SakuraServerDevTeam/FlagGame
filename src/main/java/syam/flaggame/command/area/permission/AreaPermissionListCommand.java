@@ -40,8 +40,9 @@ public class AreaPermissionListCommand extends AreaCommand {
                 plugin,
                 1,
                 "<id> <- show a list of permissions",
-                Perms.STAGE_CONFIG_CHECK,
-                "list"
+                Perms.AREA_PERMISSION_LIST,
+                "list",
+                "l"
         );
     }
 

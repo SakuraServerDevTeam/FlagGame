@@ -49,10 +49,10 @@ public class PlayerStatsCommand extends BaseCommand {
     public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
         Player target = null;
         if (args.size() >= 1) {
-            Perms.PLAYER_STAT_OTHER.requireTo(sender);
+            Perms.PLAYER_STATS_OTHER.requireTo(sender);
             target = plugin.getServer().getPlayer(args.get(0));
         } else if (player != null) {
-            Perms.PLAYER_STAT_SELF.requireTo(sender);
+            Perms.PLAYER_STATS_SELF.requireTo(sender);
             target = player;
         }
         if (target == null) {

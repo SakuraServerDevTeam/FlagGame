@@ -126,7 +126,7 @@ public abstract class BaseCommand {
      * @param target target to check permission
      * @return trueなら権限あり、falseなら権限なし
      */
-    public boolean hasPermission(Permissible target) {
+    public final boolean hasPermission(Permissible target) {
         return permission == null ? true : permission.has(target);
     }
 

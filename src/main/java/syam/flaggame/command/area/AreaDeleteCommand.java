@@ -19,7 +19,6 @@ package syam.flaggame.command.area;
 import java.util.List;
 import org.bukkit.entity.Player;
 import syam.flaggame.FlagGame;
-import org.bukkit.permissions.Permissible;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
@@ -36,7 +35,9 @@ public class AreaDeleteCommand extends AreaCommand {
                 plugin,
                 1,
                "<id> <- delete region",
-                "delete"
+                Perms.AREA_DELETE,
+                "delete",
+                "del"
         );
     }
 
@@ -49,11 +50,6 @@ public class AreaDeleteCommand extends AreaCommand {
         }
         stage.getAreas().removeArea(id);
         sendMessage(player, "&aエリアを削除しました！");
-    }
-
-    @Override
-    public boolean hasPermission(Permissible target) {
-        return Perms.STAGE_CONFIG_SET.has(target);
     }
     
 }

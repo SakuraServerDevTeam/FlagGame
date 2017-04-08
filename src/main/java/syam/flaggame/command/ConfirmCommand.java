@@ -18,7 +18,6 @@ package syam.flaggame.command;
 
 import java.util.List;
 import syam.flaggame.FlagGame;
-import org.bukkit.permissions.Permissible;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.exception.CommandException;
@@ -47,9 +46,5 @@ public class ConfirmCommand extends BaseCommand {
             throw new CommandException("&cあなたの実行待ちコマンドはありません！");
         }
     }
-
-    @Override
-    public boolean hasPermission(Permissible target) {
-        return true;
-    }
+    
 }

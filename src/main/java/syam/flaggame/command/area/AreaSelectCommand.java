@@ -19,7 +19,6 @@ package syam.flaggame.command.area;
 import java.util.List;
 import org.bukkit.entity.Player;
 import syam.flaggame.FlagGame;
-import org.bukkit.permissions.Permissible;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
@@ -37,7 +36,9 @@ public class AreaSelectCommand extends AreaCommand {
                 plugin,
                 1,
                 "<id> <- select region",
-                "select"
+                Perms.AREA_SELECT,
+                "select",
+                "sel"
         );
     }
 
@@ -52,11 +53,6 @@ public class AreaSelectCommand extends AreaCommand {
             throw new CommandException("&cエリア選択に失敗しました！");
         }
         sendMessage(player, "&aエリアを選択しました！");
-    }
-
-    @Override
-    public boolean hasPermission(Permissible target) {
-        return Perms.SELECT.has(target);
     }
 
 }

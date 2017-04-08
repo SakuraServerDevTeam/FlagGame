@@ -36,8 +36,9 @@ public class AreaDataDeleteCommand extends AreaCommand {
                 plugin,
                 2, 
                 "<id> <name>", 
-                Perms.STAGE_CONFIG_SET, 
-                "delete"
+                Perms.AREA_DATA_DELETE, 
+                "delete",
+                "del"
         );
     }
 

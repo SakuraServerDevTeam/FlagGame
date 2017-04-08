@@ -23,7 +23,6 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import syam.flaggame.FlagGame;
-import org.bukkit.permissions.Permissible;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.command.BaseCommand;
@@ -39,7 +38,7 @@ public class GameLeaveCommand extends BaseCommand {
                 plugin,
                 true,
                 0,
-                "<leave> <- leave the game",
+                "<- leave the game",
                 "leave"
         );
     }
@@ -54,7 +53,7 @@ public class GameLeaveCommand extends BaseCommand {
         // ゲームに参加していないプレイヤー
         if (!gPlayer.getEntry().isPresent()) {
             // check permission
-            if (!Perms.LEAVE_SPECTATE.has(sender)) {
+            if (!Perms.GAME_LEAVE_SPECTATE.has(sender)) {
                 throw new CommandException("&cあなたはゲームに参加していません");
             }
             // ゲームワールド内
@@ -67,7 +66,7 @@ public class GameLeaveCommand extends BaseCommand {
             GameReception reception = gPlayer.getEntry().get();
             switch (reception.getState().toGameState()) {
                 case PREPARATION:
-                    if (!Perms.LEAVE_READY.has(sender)) {
+                    if (!Perms.GAME_LEAVE_READY.has(sender)) {
                         throw new CommandException("&cゲームのエントリーを取り消す権限がありません");
                     }
                     reception.leave(gPlayer);
@@ -76,7 +75,7 @@ public class GameLeaveCommand extends BaseCommand {
                 case STARTED:
                     throw new CommandException("&cゲーム中に退場することはできません！");
                 case FINISHED:
-                    if (!Perms.LEAVE_GAME.has(sender)) {
+                    if (!Perms.GAME_LEAVE_FINISHED.has(sender)) {
                         throw new CommandException("&cゲームのエントリーを破棄する権限がありません");
                     }
                     reception.leave(gPlayer);
@@ -94,10 +93,5 @@ public class GameLeaveCommand extends BaseCommand {
             gPlayer.getPlayer().teleport(def, TeleportCause.PLUGIN);
             gPlayer.sendMessage("&aゲームワールドのスポーン地点に戻りました！");
         }
-    }
-
-    @Override
-    public boolean hasPermission(Permissible target) {
-        return (Perms.LEAVE_GAME.has(target) || Perms.LEAVE_READY.has(target) || Perms.LEAVE_SPECTATE.has(target));
     }
 }

@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.List;
 import jp.llv.flaggame.reception.GameReception;
 import syam.flaggame.FlagGame;
-import org.bukkit.permissions.Permissible;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.command.BaseCommand;
@@ -38,6 +37,7 @@ public class GameStartCommand extends BaseCommand {
                 false,
                 0,
                 "[stage] <- start game",
+                Perms.GAME_START,
                 "start"
         );
     
@@ -71,10 +71,4 @@ public class GameStartCommand extends BaseCommand {
 
         reception.start(startArgs);
     }
-
-    @Override
-    public boolean hasPermission(Permissible target) {
-        return Perms.START.has(target);
-    }
-
 }

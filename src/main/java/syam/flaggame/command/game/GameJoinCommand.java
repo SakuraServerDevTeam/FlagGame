@@ -24,7 +24,6 @@ import jp.llv.flaggame.events.ReceptionJoinEvent;
 import jp.llv.flaggame.game.Game;
 import jp.llv.flaggame.reception.GameReception;
 import syam.flaggame.FlagGame;
-import org.bukkit.permissions.Permissible;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.command.BaseCommand;
@@ -41,7 +40,9 @@ public class GameJoinCommand extends BaseCommand {
                 true,
                 0,
                 "[game] <- join the game",
-                "join"
+                Perms.GAME_JOIN,
+                "join",
+                "j"
         );
     }
 
@@ -91,10 +92,5 @@ public class GameJoinCommand extends BaseCommand {
             currentReception.leave(gPlayer);
         }
         reception.join(gPlayer, joinArgs);
-    }
-
-    @Override
-    public boolean hasPermission(Permissible target) {
-        return Perms.JOIN.has(target);
     }
 }

@@ -20,11 +20,11 @@ import java.util.List;
 import jp.llv.flaggame.profile.record.StageRateRecord;
 import jp.llv.flaggame.reception.GameReception;
 import syam.flaggame.FlagGame;
-import org.bukkit.permissions.Permissible;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.command.BaseCommand;
 import syam.flaggame.exception.CommandException;
+import syam.flaggame.permission.Perms;
 import syam.flaggame.player.GamePlayer;
 
 /**
@@ -39,6 +39,7 @@ public class StageRateCommand extends BaseCommand {
                 true,
                 1,
                 "<rate> <- rate the stage",
+                Perms.STAGE_RATE,
                 "rate"
         );
     }
@@ -64,11 +65,6 @@ public class StageRateCommand extends BaseCommand {
         reception.getRecordStream().push(new StageRateRecord(reception.getID(), player, plugin.getConfigs().getScoreRate(), rate));
         reception.leave(gplayer);
         sendMessage(sender, "&a投票への協力ありがとうございました！");
-    }
-
-    @Override
-    public boolean hasPermission(Permissible target) {
-        return true;
     }
     
 }

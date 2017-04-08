@@ -75,7 +75,7 @@ public class FGPlayerListener implements Listener {
               && gPlayer.getSetupSession().isPresent()
               && event.getHand() == EquipmentSlot.HAND
               && player.getInventory().getItemInMainHand().getTypeId() == plugin.getConfigs().getToolID()
-              && Perms.SET.has(player))) {
+              && Perms.STAGE_SET.has(player))) {
             return;
         }
         SetupSession sess = gPlayer.getSetupSession().get();

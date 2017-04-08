@@ -23,7 +23,6 @@ import jp.llv.flaggame.game.Game;
 import org.bukkit.Location;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import syam.flaggame.FlagGame;
-import org.bukkit.permissions.Permissible;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.command.BaseCommand;
@@ -42,6 +41,7 @@ public class GameWatchCommand extends BaseCommand {
                 true,
                 0,
                 "[stage] <- watch the game",
+                Perms.GAME_WATCH,
                 "watch"
         );
     
@@ -86,10 +86,5 @@ public class GameWatchCommand extends BaseCommand {
         player.teleport(specSpawn, TeleportCause.PLUGIN);
         Actions.message(player, "&aステージ'" + stage.getName() + "'の観戦者スポーン地点へ移動しました！");
         Actions.message(player, "&2 '&6/flag leave&2' コマンドで元の地点へ戻ることができます！");
-    }
-
-    @Override
-    public boolean hasPermission(Permissible target) {
-        return Perms.WATCH.has(target);
     }
 }

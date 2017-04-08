@@ -39,7 +39,7 @@ public class AreaMessageAddCommand extends AreaCommand {
                 plugin,
                 3,
                 "<id> <type> <message> <- add message",
-                Perms.STAGE_CONFIG_SET,
+                Perms.AREA_MESSAGE_ADD,
                 "add"
         );
     }

@@ -39,8 +39,8 @@ public class StageCreateCommand extends BaseCommand {
                 plugin,
                 true,
                 1,
-                "<stage> <- create stage",
-                Perms.CREATE,
+                "<stage> <- create a stage",
+                Perms.STAGE_CREATE,
                 "create"
         );
 

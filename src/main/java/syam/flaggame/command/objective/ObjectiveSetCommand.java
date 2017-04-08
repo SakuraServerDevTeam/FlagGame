@@ -39,7 +39,7 @@ public class ObjectiveSetCommand extends ObjectiveCommand {
                 plugin,
                 0,
                 "[option...] <- enable objective locate tool",
-                Perms.SET,
+                Perms.OBJECTIVE_SET,
                 "set"
         );
     }

@@ -37,6 +37,7 @@ public class StageInfoCommand extends BaseCommand {
                 false,
                 0,
                 "[stage] <- show stage info",
+                Perms.STAGE_INFO,
                 "info"
         );
     
@@ -90,10 +91,5 @@ public class StageInfoCommand extends BaseCommand {
 
             Actions.message(sender, "&a ================================================");
         }
-    }
-
-    @Override
-    public boolean hasPermission(Permissible target) {
-        return Perms.SINFO.has(target);
     }
 }

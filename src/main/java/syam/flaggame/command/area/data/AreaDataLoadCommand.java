@@ -23,7 +23,6 @@ import jp.llv.flaggame.rollback.StageData;
 import jp.llv.flaggame.util.ConvertUtils;
 import org.bukkit.entity.Player;
 import syam.flaggame.FlagGame;
-import org.bukkit.permissions.Permissible;
 import syam.flaggame.command.area.AreaCommand;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.AreaInfo;
@@ -42,6 +41,7 @@ public class AreaDataLoadCommand extends AreaCommand {
                 plugin,
                 2,
                 "<id> <name> <- load region",
+                Perms.AREA_DATA_LOAD,
                 "load"
         );
     }
@@ -78,11 +78,6 @@ public class AreaDataLoadCommand extends AreaCommand {
                                             + savename + "&a'をロードしています...");
         Actions.sendPrefixedMessage(player, "&aこれにはおよそ"+etr+"間かかる予定です...");
         task.start(plugin);
-    }
-
-    @Override
-    public boolean hasPermission(Permissible target) {
-        return Perms.ROLLBACK.has(target);
     }
 
 }

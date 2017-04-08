@@ -21,13 +21,11 @@ import java.util.Collections;
 import java.util.List;
 import jp.llv.flaggame.reception.GameReception;
 import syam.flaggame.FlagGame;
-import org.bukkit.permissions.Permissible;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.command.BaseCommand;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.permission.Perms;
-import syam.flaggame.util.Actions;
 
 public class GameReadyCommand extends BaseCommand {
 
@@ -37,6 +35,7 @@ public class GameReadyCommand extends BaseCommand {
                 false,
                 1,
                 "<reception-type> [optional args...] <- ready game",
+                Perms.GAME_READY,
                 "ready"
         );
     }
@@ -62,10 +61,5 @@ public class GameReadyCommand extends BaseCommand {
             reception.close("Failed to initialize");
             throw ex;
         }
-    }
-
-    @Override
-    public boolean hasPermission(Permissible target) {
-        return Perms.READY.has(target);
     }
 }

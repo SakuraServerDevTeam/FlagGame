@@ -39,8 +39,9 @@ public class AreaDataListCommand extends AreaCommand {
                 plugin,
                 1,
                 "<id> <- show a list of area data",
-                Perms.STAGE_CONFIG_CHECK,
-                "list"
+                Perms.AREA_LIST,
+                "list",
+                "l"
         );
     }
 

@@ -24,7 +24,6 @@ import jp.llv.flaggame.game.permission.GamePermission;
 import jp.llv.flaggame.game.permission.GamePermissionState;
 import jp.llv.flaggame.reception.TeamColor;
 import syam.flaggame.FlagGame;
-import org.bukkit.permissions.Permissible;
 import syam.flaggame.command.area.AreaCommand;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.AreaInfo;
@@ -42,6 +41,7 @@ public class AreaPermissionSetCommand extends AreaCommand {
                 plugin,
                 3,
                 "<id> <permission> <teamcolor> <state> <- load region",
+                Perms.AREA_PERMISSION_SET,
                 "set"
         );
     }
@@ -77,11 +77,6 @@ public class AreaPermissionSetCommand extends AreaCommand {
         }
         info.getPermission(permission).setState(target, state);
         sendMessage(player, "&aステージ'&6" + stage.getName() + "&a'のエリア'&6" + id + "&a'での権限'&6" + permission.toString() + "&a'を状態'" + state.format() + "&a'に変更しました！");
-    }
-
-    @Override
-    public boolean hasPermission(Permissible target) {
-        return Perms.STAGE_CONFIG_SET.has(target);
     }
 
 }

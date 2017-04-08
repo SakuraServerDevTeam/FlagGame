@@ -63,9 +63,5 @@ public class HelpCommand extends BaseCommand {
         }
         Actions.message(sender, "&c===================================");
     }
-
-    @Override
-    public boolean hasPermission(Permissible target) {
-        return true;
-    }
+    
 }

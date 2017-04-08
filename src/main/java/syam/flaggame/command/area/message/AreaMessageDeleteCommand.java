@@ -36,8 +36,9 @@ public class AreaMessageDeleteCommand extends AreaCommand {
                 plugin,
                 1,
                 "<id> <index> <- delete message",
-                Perms.STAGE_CONFIG_SET,
-                "delete"
+                Perms.AREA_MESSAGE_DELETE,
+                "delete",
+                "del"
         );
     }
 
@@ -56,7 +57,7 @@ public class AreaMessageDeleteCommand extends AreaCommand {
         if (index < 0 || info.getMessages().size() <= index) {
             throw new CommandException("&c無効なインデックスです！");
         }
-        AreaInfo.MessageData data = info.getMessages().get(index);
+        AreaInfo.MessageData data = info.getMessages().get(index - 1);
         sendMessage(player, "&a'&6" + stage.getName() + "&a'の'&6"
                             + args.get(0) + "&a'エリアのメッセージ'&6"
                             + data.getMessage() + "&a'を削除しました！"
