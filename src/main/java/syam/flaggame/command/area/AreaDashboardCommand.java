@@ -47,6 +47,9 @@ public class AreaDashboardCommand extends AreaCommand {
         String id = args.get(0);
         Cuboid area = stage.getAreas().getArea(id);
         AreaInfo info = stage.getAreas().getAreaInfo(id);
+        if (area == null) {
+            throw new CommandException("&cその名前のエリアは存在しません！");
+        }
         DashboardBuilder.newBuilder("Area Overview", stage.getName())
                 .key("ID").value(id)
                 .buttonRun("show").append("area dashboard").append(id).create()
