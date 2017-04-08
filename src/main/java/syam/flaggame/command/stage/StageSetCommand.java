@@ -430,6 +430,7 @@ public class StageSetCommand extends BaseCommand {
         }
         game.getAreas().setArea(id, area);
         AreaInfo info = game.getAreas().getAreaInfo(id);
+        System.out.println(info);
         info.getPermission(GamePermission.DOOR).setState(team, GamePermissionState.ALLOW);
         info.getPermission(GamePermission.CONTAINER).setState(team, GamePermissionState.ALLOW);
         info.getPermission(GamePermission.GODMODE).setState(team, GamePermissionState.ALLOW);

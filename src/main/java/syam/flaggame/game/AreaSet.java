@@ -49,10 +49,7 @@ public class AreaSet {
     public void setArea(String name, Cuboid area) {
         Objects.requireNonNull(area);
         this.areas.put(name, area);
-        AreaInfo info = getAreaInfo(name);
-        if (info != null) {
-            info.removeRollbacks();
-        }
+        getAreaInfo(name).removeRollbacks();
     }
 
     public void setStageArea(Cuboid area) {
