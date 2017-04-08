@@ -46,6 +46,7 @@ public enum GamePermission {
     DAMAGE,
     CONTAINER,
     DOOR,
+    WALL_KICK,
     ;
     
     public static GamePermission of(String name) {

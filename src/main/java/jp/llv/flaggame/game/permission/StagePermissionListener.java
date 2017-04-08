@@ -16,6 +16,7 @@
  */
 package jp.llv.flaggame.game.permission;
 
+import jp.llv.flaggame.events.PlayerWallKickEvent;
 import jp.llv.flaggame.game.Game;
 import jp.llv.flaggame.reception.Team;
 import jp.llv.flaggame.reception.TeamColor;
@@ -294,6 +295,16 @@ public class StagePermissionListener implements Listener {
             color = TeamColor.WHITE;
         }
         event.setCancelled(!hasPermission(event.getEntity().getLocation(), color, GamePermission.ENTITY_DAMAGE));
+    }
+    
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void on(PlayerWallKickEvent event) {
+        GamePlayer gplayer = plugin.getPlayers().getPlayer(event.getPlayer());
+        if (!game.getReception().hasReceived(gplayer)) {
+            return;
+        }
+        TeamColor color = gplayer.getTeam().map(Team::getColor).orElse(TeamColor.WHITE);
+        event.setCancelled(!hasPermission(event.getPlayer().getLocation(), color, GamePermission.WALL_KICK));
     }
 
     private boolean hasPermission(Location loc, TeamColor color, GamePermission type) {

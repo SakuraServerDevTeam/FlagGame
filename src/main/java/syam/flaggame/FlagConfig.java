@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
 
 public class FlagConfig {
 
@@ -43,7 +44,7 @@ public class FlagConfig {
     private static final List<String> DEFAULT_DISABLED_COMMANDS = Arrays.asList("/spawn", "/home", "/setspawn");
     private static final List<String> DEFAULT_PERMISSIONS = Arrays.asList("vault", "superperms", "ops");
 
-    private static final double VERSION = 0.6D;
+    private static final double VERSION = 0.7;
 
     private final FlagGame plugin;
     private final File pluginDir;
@@ -54,6 +55,10 @@ public class FlagConfig {
     private boolean isProtected = true;
     private boolean isDebug = false;
     private boolean useDynmap = false;
+    
+    private double wallKickPowerXZ = 0.75;
+    private double wallKickPowerY = 0.6;
+    
     /* Games Configs */
     private int startCountdownInSec = 10;
     private boolean useFlagEffects = true;
@@ -111,12 +116,16 @@ public class FlagConfig {
         // Check config.yml version
         checkver(plugin.getConfig().getDouble("Version", VERSION));
 
+        FileConfiguration config = plugin.getConfig();
+        
         /* Basic Configs */
         toolID = plugin.getConfig().getInt("ToolID", 269);
         gameWorld = plugin.getConfig().getString("WorldName", DEFAULT_WORLD_NAME);
         isProtected = plugin.getConfig().getBoolean("WorldProtect", true);
         isDebug = plugin.getConfig().getBoolean("Debug", false);
         useDynmap = plugin.getConfig().getBoolean("UseDynmap", false);
+        wallKickPowerXZ = config.getDouble("WallKick.PowerXZ", wallKickPowerXZ);
+        wallKickPowerY = config.getDouble("WallKick.PowerY", wallKickPowerY);
         /* Games Configs */
         startCountdownInSec = plugin.getConfig().getInt("StartCountdownInSec", 10);
         useFlagEffects = plugin.getConfig().getBoolean("UseFlagEffects", true);
@@ -185,6 +194,14 @@ public class FlagConfig {
 
     public boolean getUseDynmap() {
         return this.useDynmap;
+    }
+
+    public double getWallKickPowerXZ() {
+        return wallKickPowerXZ;
+    }
+
+    public double getWallKickPowerY() {
+        return wallKickPowerY;
     }
 
     /* Games Configs */

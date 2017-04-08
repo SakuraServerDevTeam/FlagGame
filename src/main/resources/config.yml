@@ -15,12 +15,14 @@ WorldProtect: false
 Debug: false
 # Use dynmap layer for show stage information?
 UseDynmap: false
+# Power of wall kick
+WallKick:
+  PowerXZ: 0.75
+  PowerY: 0.6
 
 #==================#
 #   Games Config   #
 #==================#
-# Countdown time(sec) when starting the game
-StartCountdownInSec: 10
 # If it true, Play effects when place/break flag
 UseFlagEffects: true
 # If it true, Kills player when logout during the game
@@ -85,4 +87,4 @@ score:
 #   DO NOT TOUCH   #
 #==================#
 # Do not touch this option! It is a check if you are running the recent configuration version
-Version: 0.6
+Version: 0.7

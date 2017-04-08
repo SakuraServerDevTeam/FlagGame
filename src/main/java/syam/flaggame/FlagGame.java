@@ -248,6 +248,7 @@ public class FlagGame extends JavaPlugin {
 
     private void registerListeners() {
         Stream.<Function<FlagGame, ? extends Listener>>of(
+                FGActionListener::new,
                 FGPlayerListener::new,
                 FGBlockListener::new,
                 FGEntityListener::new,
