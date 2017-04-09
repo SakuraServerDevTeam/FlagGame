@@ -111,7 +111,7 @@ public class ObjectiveListCommand extends ObjectiveCommand {
                     if (obj.getColor() == null) {
                         d.value("全チーム");
                     } else {
-                        d.text(obj.getColor().getBungeeChatColor(), obj.getColor().getTeamName());
+                        d.text(obj.getColor().getBungeeChatColor(), obj.getColor().getName());
                     }
                     d.buttonTp("tp", player, loc)
                             .buttonRun("delete").append("objective delete")
@@ -148,7 +148,7 @@ public class ObjectiveListCommand extends ObjectiveCommand {
                     if (obj.getColor() == null) {
                         d.white("全チーム");
                     } else {
-                        d.text(obj.getColor().getBungeeChatColor(), obj.getColor().getTeamName());
+                        d.text(obj.getColor().getBungeeChatColor(), obj.getColor().getName());
                     }
                     d.buttonTp("tp", player, loc)
                             .buttonRun("delete").append("objective delete")
