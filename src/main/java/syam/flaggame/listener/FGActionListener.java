@@ -52,7 +52,7 @@ public class FGActionListener implements Listener {
             || player.isOnGround()
             || face.getModY() != 0
             || !Perms.WALL_KICK.has(player)
-            || (event.getItem() != null && event.getItem().getType().isBlock())
+            || (event.getItem() != null && event.getItem().getType().isOccluding())
             || !wallBlock.getType().isSolid()
             || wallBlock.getLocation().add(0.5, 0.5, 0.5).distanceSquared(player.getLocation()) > 1) {
             return;
