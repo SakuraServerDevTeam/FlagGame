@@ -36,6 +36,7 @@ import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
@@ -296,7 +297,7 @@ public class StagePermissionListener implements Listener {
         }
         event.setCancelled(!hasPermission(event.getEntity().getLocation(), color, GamePermission.ENTITY_DAMAGE));
     }
-    
+
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void on(PlayerWallKickEvent event) {
         GamePlayer gplayer = plugin.getPlayers().getPlayer(event.getPlayer());
@@ -305,6 +306,22 @@ public class StagePermissionListener implements Listener {
         }
         TeamColor color = gplayer.getTeam().map(Team::getColor).orElse(TeamColor.WHITE);
         event.setCancelled(!hasPermission(event.getPlayer().getLocation(), color, GamePermission.WALL_KICK));
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void on(EntityDamageEvent event) {
+        if (!(event.getEntity() instanceof Player)) {
+            return;
+        }
+        Player player = (Player) event.getEntity();
+        GamePlayer gplayer = plugin.getPlayers().getPlayer(player);
+        if (!game.getReception().hasReceived(gplayer)) {
+            return;
+        }
+        if (event.getCause() == EntityDamageEvent.DamageCause.FALL) {
+            TeamColor color = gplayer.getTeam().map(Team::getColor).orElse(TeamColor.WHITE);
+            event.setCancelled(hasPermission(player.getLocation(), color, GamePermission.FEATHER_FALL));
+        }
     }
 
     private boolean hasPermission(Location loc, TeamColor color, GamePermission type) {
