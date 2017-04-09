@@ -103,7 +103,7 @@ public class BGBlockListener extends BGListener {
         @SuppressWarnings("deprecation")
         TeamColor placedTeamColor = TeamColor.getByColorData(b.getData());
 
-        if (placedTeamColor != placerTeam.getColor()) {
+        if (placedTeamColor != placerTeam.getType()) {
             gplayer.sendMessage(ChatMessageType.ACTION_BAR, "&c味方チーム以外のフラッグは設置できません!");
             event.setCancelled(true);
             return;
@@ -148,7 +148,7 @@ public class BGBlockListener extends BGListener {
             return;
         }
         HeldBanner banner = game.getBannerHeld(gplayer).get();
-        if (s.getColor() != gplayer.getTeam().get().getColor()) {
+        if (s.getColor() != gplayer.getTeam().get().getType()) {
             gplayer.sendMessage(ChatMessageType.ACTION_BAR, "&c敵チームのスロットにバナーを設置することはできません！");
             return;
         }
@@ -180,7 +180,7 @@ public class BGBlockListener extends BGListener {
         Team placerTeam = gplayer.getTeam().get();
         @SuppressWarnings("deprecation")
         TeamColor brokenTeamColor = TeamColor.getByColorData(event.getBlock().getData());
-        if (placerTeam.getColor() == brokenTeamColor) {
+        if (placerTeam.getType() == brokenTeamColor) {
             gplayer.sendMessage(ChatMessageType.ACTION_BAR, "&c味方チームのフラッグは破壊できません!");
             event.setCancelled(true);
             return;
@@ -223,7 +223,7 @@ public class BGBlockListener extends BGListener {
 
         if (broken != null) {
             GamePlayer.sendMessage(breaker, ChatMessageType.ACTION_BAR,
-                    gplayer.getColoredName() + "&aが" + broken.getColor().getRichName() + "の&6" + f.getPoint() + "p目標&aを破壊しました!");
+                    gplayer.getColoredName() + "&aが" + broken.getType().getRichName() + "の&6" + f.getPoint() + "p目標&aを破壊しました!");
             GamePlayer.sendMessage(broken, ChatMessageType.ACTION_BAR,
                     gplayer.getColoredName() + "&aに" + f.getPoint() + "p目標&aを破壊されました!");
         } else {

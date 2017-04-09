@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import jp.llv.flaggame.reception.GameReception;
 import jp.llv.flaggame.reception.Team;
-import jp.llv.flaggame.reception.TeamColor;
+import jp.llv.flaggame.reception.TeamType;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.player.GamePlayer;
@@ -53,7 +53,7 @@ public interface Game extends Iterable<GamePlayer> {
 
     GameReception getReception();
 
-    Team getTeam(TeamColor color);
+    Team getTeam(TeamType type);
 
     Collection<Team> getTeams();
 

@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import jp.llv.flaggame.reception.TeamColor;
+import jp.llv.flaggame.reception.TeamType;
 
 /**
  *
@@ -39,20 +40,20 @@ public class GamePermissionStateSet {
         this.values = new HashMap<>(values);
     }
     
-    public GamePermissionState getState(TeamColor team) {
-        return values.containsKey(team) ? values.get(team) : GamePermissionState.DEFAULT;
+    public GamePermissionState getState(TeamType team) {
+        return values.containsKey(team.toColor()) ? values.get(team.toColor()) : GamePermissionState.DEFAULT;
     }
     
     public Map<TeamColor, GamePermissionState> getState() {
         return Collections.unmodifiableMap(this.values);
     }
     
-    public void setState(TeamColor team, GamePermissionState state) {
+    public void setState(TeamType team, GamePermissionState state) {
         Objects.requireNonNull(team);
         if (state == null || state == GamePermissionState.DEFAULT) {
-            values.remove(team);
+            values.remove(team.toColor());
         } else {
-            values.put(team, state);
+            values.put(team.toColor(), state);
         }
     }
     

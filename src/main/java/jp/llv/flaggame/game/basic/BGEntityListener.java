@@ -103,9 +103,9 @@ public class BGEntityListener extends BGListener {
 
         // Disallow damage in basements
         AreaSet as = game.getStage().getAreas();
-        if (as.getAreaInfo(player.getLocation(), a -> a.getPermission(GamePermission.GODMODE).getState(gp.getTeam().get().getColor()))) {
+        if (as.getAreaInfo(player.getLocation(), a -> a.getPermission(GamePermission.GODMODE).getState(gp.getTeam().get().getType()))) {
             event.setCancelled(true);
-            if (!as.getAreaInfo(damager.getLocation(), a -> a.getPermission(GamePermission.GODMODE).getState(gd.getTeam().get().getColor()))) {
+            if (!as.getAreaInfo(damager.getLocation(), a -> a.getPermission(GamePermission.GODMODE).getState(gd.getTeam().get().getType()))) {
                 damager.damage(event.getDamage(), player);
             }
             return;

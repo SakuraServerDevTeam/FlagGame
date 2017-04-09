@@ -20,6 +20,7 @@ import jp.llv.flaggame.events.PlayerWallKickEvent;
 import jp.llv.flaggame.game.Game;
 import jp.llv.flaggame.reception.Team;
 import jp.llv.flaggame.reception.TeamColor;
+import jp.llv.flaggame.reception.TeamType;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -72,7 +73,7 @@ public class StagePermissionListener implements Listener {
         if (!game.getReception().hasReceived(gplayer)) {
             return;
         }
-        TeamColor color = gplayer.getTeam().map(Team::getColor).orElse(TeamColor.WHITE);
+        TeamType color = gplayer.getTeam().map(Team::getType).orElse(TeamColor.WHITE);
         event.setCancelled(!hasPermission(event.getBlock().getLocation(), color, GamePermission.BREAK));
     }
 
@@ -82,7 +83,7 @@ public class StagePermissionListener implements Listener {
         if (!game.getReception().hasReceived(gplayer)) {
             return;
         }
-        TeamColor color = gplayer.getTeam().map(Team::getColor).orElse(TeamColor.WHITE);
+        TeamType color = gplayer.getTeam().map(Team::getType).orElse(TeamColor.WHITE);
         event.setCancelled(!hasPermission(event.getBlock().getLocation(), color, GamePermission.PLACE));
     }
 
@@ -92,7 +93,7 @@ public class StagePermissionListener implements Listener {
         if (!game.getReception().hasReceived(gplayer)) {
             return;
         }
-        TeamColor color = gplayer.getTeam().map(Team::getColor).orElse(TeamColor.WHITE);
+        TeamType color = gplayer.getTeam().map(Team::getType).orElse(TeamColor.WHITE);
         event.setCancelled(!hasPermission(event.getBlockClicked().getLocation(), color, GamePermission.BUCKET_FILL));
     }
 
@@ -102,7 +103,7 @@ public class StagePermissionListener implements Listener {
         if (!game.getReception().hasReceived(gplayer)) {
             return;
         }
-        TeamColor color = gplayer.getTeam().map(Team::getColor).orElse(TeamColor.WHITE);
+        TeamType color = gplayer.getTeam().map(Team::getType).orElse(TeamColor.WHITE);
         event.setCancelled(!hasPermission(event.getBlockClicked().getLocation(), color, GamePermission.BUCKET_EMPTY));
     }
 
@@ -112,7 +113,7 @@ public class StagePermissionListener implements Listener {
         if (!game.getReception().hasReceived(gplayer)) {
             return;
         }
-        TeamColor color = gplayer.getTeam().map(Team::getColor).orElse(TeamColor.WHITE);
+        TeamType color = gplayer.getTeam().map(Team::getType).orElse(TeamColor.WHITE);
         event.setCancelled(!hasPermission(event.getEntity().getLocation(), color, GamePermission.SHEAR));
     }
 
@@ -158,7 +159,7 @@ public class StagePermissionListener implements Listener {
         if (!game.getReception().hasReceived(gplayer)) {
             return;
         }
-        TeamColor color = gplayer.getTeam().map(Team::getColor).orElse(TeamColor.WHITE);
+        TeamType color = gplayer.getTeam().map(Team::getType).orElse(TeamColor.WHITE);
         event.setCancelled(!hasPermission(event.getBlock().getLocation(), color, GamePermission.IGNITE));
     }
 
@@ -182,7 +183,7 @@ public class StagePermissionListener implements Listener {
                 if (!game.getReception().hasReceived(gplayer)) {
                     return;
                 }
-                TeamColor color = gplayer.getTeam().map(Team::getColor).orElse(TeamColor.WHITE);
+                TeamType color = gplayer.getTeam().map(Team::getType).orElse(TeamColor.WHITE);
                 event.setCancelled(!hasPermission(loc, color, GamePermission.HANGING_BREAK));
                 return;
             }
@@ -200,7 +201,7 @@ public class StagePermissionListener implements Listener {
         if (!game.getReception().hasReceived(gplayer)) {
             return;
         }
-        TeamColor color = gplayer.getTeam().map(Team::getColor).orElse(TeamColor.WHITE);
+        TeamType color = gplayer.getTeam().map(Team::getType).orElse(TeamColor.WHITE);
         event.setCancelled(!hasPermission(event.getEntity().getLocation(), color, GamePermission.HANGING_PLACE));
     }
 
@@ -214,7 +215,7 @@ public class StagePermissionListener implements Listener {
         if (!game.getReception().hasReceived(gplayer)) {
             return;
         }
-        TeamColor color = gplayer.getTeam().map(Team::getColor).orElse(TeamColor.WHITE);
+        TeamType color = gplayer.getTeam().map(Team::getType).orElse(TeamColor.WHITE);
         event.setCancelled(!hasPermission(event.getWhoClicked().getLocation(), color, GamePermission.HANGING_PLACE));
     }
 
@@ -224,7 +225,7 @@ public class StagePermissionListener implements Listener {
         if (!game.getReception().hasReceived(gplayer)) {
             return;
         }
-        TeamColor color = gplayer.getTeam().map(Team::getColor).orElse(TeamColor.WHITE);
+        TeamType color = gplayer.getTeam().map(Team::getType).orElse(TeamColor.WHITE);
         event.setCancelled(!hasPermission(event.getRightClicked().getLocation(), color, GamePermission.ARMOR_STAND));
     }
 
@@ -234,11 +235,11 @@ public class StagePermissionListener implements Listener {
         if (!areas.hasStageArea() || !areas.getStageArea().contains(event.getEntered().getLocation())) {
             return;
         }
-        TeamColor color;
+        TeamType color;
         if (event.getEntered() instanceof Player) {
             Player player = (Player) event.getEntered();
             GamePlayer gplayer = plugin.getPlayers().getPlayer(player);
-            color = gplayer.getTeam().map(Team::getColor).orElse(TeamColor.WHITE);
+            color = gplayer.getTeam().map(Team::getType).orElse(TeamColor.WHITE);
         } else {
             color = TeamColor.WHITE;
         }
@@ -251,11 +252,11 @@ public class StagePermissionListener implements Listener {
         if (!areas.hasStageArea() || !areas.getStageArea().contains(event.getExited().getLocation())) {
             return;
         }
-        TeamColor color;
+        TeamType color;
         if (event.getExited() instanceof Player) {
             Player player = (Player) event.getExited();
             GamePlayer gplayer = plugin.getPlayers().getPlayer(player);
-            color = gplayer.getTeam().map(Team::getColor).orElse(TeamColor.WHITE);
+            color = gplayer.getTeam().map(Team::getType).orElse(TeamColor.WHITE);
         } else {
             color = TeamColor.WHITE;
         }
@@ -268,11 +269,11 @@ public class StagePermissionListener implements Listener {
         if (!areas.hasStageArea() || !areas.getStageArea().contains(event.getAttacker().getLocation())) {
             return;
         }
-        TeamColor color;
+        TeamType color;
         if (event.getAttacker() instanceof Player) {
             Player player = (Player) event.getAttacker();
             GamePlayer gplayer = plugin.getPlayers().getPlayer(player);
-            color = gplayer.getTeam().map(Team::getColor).orElse(TeamColor.WHITE);
+            color = gplayer.getTeam().map(Team::getType).orElse(TeamColor.WHITE);
         } else {
             color = TeamColor.WHITE;
         }
@@ -287,11 +288,11 @@ public class StagePermissionListener implements Listener {
             || !areas.getStageArea().contains(event.getEntity().getLocation())) {
             return;
         }
-        TeamColor color;
+        TeamType color;
         if (event.getDamager() instanceof Player) {
             Player player = (Player) event.getDamager();
             GamePlayer gplayer = plugin.getPlayers().getPlayer(player);
-            color = gplayer.getTeam().map(Team::getColor).orElse(TeamColor.WHITE);
+            color = gplayer.getTeam().map(Team::getType).orElse(TeamColor.WHITE);
         } else {
             color = TeamColor.WHITE;
         }
@@ -304,7 +305,7 @@ public class StagePermissionListener implements Listener {
         if (!game.getReception().hasReceived(gplayer)) {
             return;
         }
-        TeamColor color = gplayer.getTeam().map(Team::getColor).orElse(TeamColor.WHITE);
+        TeamType color = gplayer.getTeam().map(Team::getType).orElse(TeamColor.WHITE);
         event.setCancelled(!hasPermission(event.getPlayer().getLocation(), color, GamePermission.WALL_KICK));
     }
 
@@ -319,12 +320,12 @@ public class StagePermissionListener implements Listener {
             return;
         }
         if (event.getCause() == EntityDamageEvent.DamageCause.FALL) {
-            TeamColor color = gplayer.getTeam().map(Team::getColor).orElse(TeamColor.WHITE);
+            TeamType color = gplayer.getTeam().map(Team::getType).orElse(TeamColor.WHITE);
             event.setCancelled(hasPermission(player.getLocation(), color, GamePermission.FEATHER_FALL));
         }
     }
 
-    private boolean hasPermission(Location loc, TeamColor color, GamePermission type) {
+    private boolean hasPermission(Location loc, TeamType color, GamePermission type) {
         return game.getStage().getAreas().getAreaInfo(loc, a -> a.getPermission(type).getState(color));
     }
 

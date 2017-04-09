@@ -92,7 +92,7 @@ public class FGSignListener implements Listener {
                 return;
             }
 
-            if (gplayer.getTeam().get().getColor() != signTeam) {
+            if (gplayer.getTeam().get().getType() != signTeam) {
                 Actions.message(player, "&cこれはあなたのチームの看板ではありません！");
                 return;
             }

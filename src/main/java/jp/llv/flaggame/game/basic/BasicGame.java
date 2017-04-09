@@ -66,7 +66,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 import syam.flaggame.FlagGame;
-import jp.llv.flaggame.reception.TeamColor;
 import jp.llv.flaggame.util.StreamUtil;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
@@ -77,6 +76,7 @@ import jp.llv.flaggame.profile.record.BannerKeepRecord;
 import jp.llv.flaggame.profile.record.PlayerDrawRecord;
 import jp.llv.flaggame.profile.record.PlayerLoseRecord;
 import jp.llv.flaggame.profile.record.PlayerWinRecord;
+import jp.llv.flaggame.reception.TeamType;
 import jp.llv.flaggame.rollback.SerializeTask;
 import syam.flaggame.game.AreaInfo;
 import syam.flaggame.game.objective.BannerSlot;
@@ -92,7 +92,7 @@ public class BasicGame implements Game {
     private final FlagGame plugin;
     private final GameReception reception;
     private final Stage stage;
-    private final Map<TeamColor, Team> teams;
+    private final Map<TeamType, Team> teams;
     private final Map<GamePlayer, HeldBanner> heldBanners = new HashMap<>();
 
     private final Queue<Runnable> onFinishing = new LinkedList<>();
@@ -116,9 +116,9 @@ public class BasicGame implements Game {
         this.plugin = plugin;
         this.reception = reception;
         this.stage = stage;
-        this.teams = new EnumMap<>(TeamColor.class);
+        this.teams = new HashMap<>();
         ts.forEach(t -> {
-            this.teams.put(t.getColor(), t);
+            this.teams.put(t.getType(), t);
         });
         this.records = new BGRecordStream(plugin, this, reception.getRecordStream());
     }
@@ -202,7 +202,7 @@ public class BasicGame implements Game {
                 "&2ゲーム'&6" + this.reception.getName() + "&2'が始まりました！",
                 "&2開催ステージ: '&6" + this.stage.getName() + "&2' &f| &2制限時間: " + Actions.getTimeString(this.stage.getGameTime()),
                 this.getTeams().stream()
-                .map(t -> t.getColor().getRichName() + "&f" + t.getPlayers().size() + "人&r").collect(Collectors.joining(", "))
+                .map(t -> t.getType().getRichName() + "&f" + t.getPlayers().size() + "人&r").collect(Collectors.joining(", "))
         );
         this.stage.getSpecSpawn().ifPresent(l -> {
             BaseComponent[] message = new ComponentBuilder("ここをクリック").bold(true).color(ChatColor.GOLD).bold(false)
@@ -357,12 +357,12 @@ public class BasicGame implements Game {
         OptionalDouble maxPoint = points.entrySet().stream().mapToDouble(Map.Entry::getValue).max();
         Set<GamePlayer> maxPointers = MapUtils.getKeyByValue(points, maxPoint.orElse(Double.NaN));
         // game point (a team)
-        Map<TeamColor, Double> teamPoints = MapUtils.remap(points,
-                p -> p.getTeam().get().getColor(),
+        Map<TeamType, Double> teamPoints = MapUtils.remap(points,
+                p -> p.getTeam().get().getType(),
                 Collectors.summingDouble(d -> d)
         );
         OptionalDouble maxTeamPoint = teamPoints.entrySet().stream().mapToDouble(Map.Entry::getValue).max();
-        Set<TeamColor> winnerTeams = MapUtils.getKeyByValue(teamPoints, maxTeamPoint.orElse(Double.NaN));
+        Set<TeamType> winnerTeams = MapUtils.getKeyByValue(teamPoints, maxTeamPoint.orElse(Double.NaN));
         if (winnerTeams.size() == teams.size()) {
             winnerTeams.clear(); // at least one team lose
         }
@@ -400,14 +400,14 @@ public class BasicGame implements Game {
 
         GamePlayer.sendMessage(this.plugin.getPlayers(), "&2フラッグゲーム'&6" + this.stage.getName() + "&2'が終わりました!");
         GamePlayer.sendMessage(this.plugin.getPlayers(), teamPoints.entrySet().stream()
-                .map(e -> e.getKey().getRichName() + "得点: &6" + e.getValue() + e.getKey().getChatColor() + "点")
+                .map(e -> e.getKey().getRichName() + "得点: &6" + e.getValue() + e.getKey().toColor().getChatColor()+ "点")
                 .collect(Collectors.joining(", "))
         );
         if (winnerTeams.isEmpty()) {
             GamePlayer.sendMessage(this.plugin.getPlayers(), "このゲームは引き分けです!");
         } else {
             GamePlayer.sendMessage(this.plugin.getPlayers(), winnerTeams.stream()
-                    .map(TeamColor::getRichName)
+                    .map(TeamType::getRichName)
                     .collect(Collectors.joining(", ")) + "の勝利です！"
             );
         }
@@ -441,7 +441,7 @@ public class BasicGame implements Game {
 
         String author = "".equals(stage.getAuthor()) ? "" : "presented by " + stage.getAuthor();
         for (GamePlayer player : this) {
-            Location spawn = stage.getSpawn(player.getTeam().get().getColor());
+            Location spawn = stage.getSpawn(player.getTeam().get().getType());
             Location loc = player.isOnline()
                     ? player.getPlayer().getLocation()
                     : spawn;
@@ -486,7 +486,7 @@ public class BasicGame implements Game {
 
         for (GamePlayer g : this.reception.getPlayers()) {
             if (g.getPlayer().isOnline()) {
-                g.getPlayer().teleport(this.stage.getSpawn(g.getTeam().get().getColor()));
+                g.getPlayer().teleport(this.stage.getSpawn(g.getTeam().get().getType()));
                 g.getPlayer().setFallDistance(0f);
                 g.getPlayer().getInventory().clear();
                 g.resetTabName();
@@ -520,8 +520,8 @@ public class BasicGame implements Game {
     }
 
     @Override
-    public Team getTeam(TeamColor color) {
-        return this.teams.get(color);
+    public Team getTeam(TeamType type) {
+        return this.teams.get(type);
     }
 
     public void setBannerHeld(GamePlayer player, HeldBanner banner) {

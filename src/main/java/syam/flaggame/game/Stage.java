@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
 import jp.llv.flaggame.reception.GameReception;
 import org.bukkit.Location;
 import jp.llv.flaggame.reception.TeamColor;
+import jp.llv.flaggame.reception.TeamType;
 import jp.llv.flaggame.rollback.QueuedSerializeTask;
 import jp.llv.flaggame.rollback.RollbackException;
 import jp.llv.flaggame.rollback.SerializeTask;
@@ -160,11 +161,11 @@ public class Stage {
         }
     }
     
-    public Location getSpawn(TeamColor team) {
-        if (team == null || !spawnMap.containsKey(team)) {
+    public Location getSpawn(TeamType team) {
+        if (team == null || !spawnMap.containsKey(team.toColor())) {
             return null;
         }
-        return spawnMap.get(team).clone();
+        return spawnMap.get(team.toColor()).clone();
     }
     
     public Map<TeamColor, Location> getSpawns() {
@@ -342,8 +343,6 @@ public class Stage {
      * ステージの有効/無効を設定する
      *
      * @param available
-     * @throws syam.flaggame.exception.StageReservedException when this stage is
-     * being used
      */
     public void setAvailable(boolean available) {
         this.available = available;

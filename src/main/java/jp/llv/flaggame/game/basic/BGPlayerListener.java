@@ -36,7 +36,7 @@ import org.bukkit.material.Openable;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import syam.flaggame.FlagGame;
-import jp.llv.flaggame.reception.TeamColor;
+import jp.llv.flaggame.reception.TeamType;
 import org.bukkit.block.BlockState;
 import org.bukkit.event.EventHandler;
 import syam.flaggame.player.GamePlayer;
@@ -70,7 +70,7 @@ public class BGPlayerListener extends BGListener {
         Block block = event.getClickedBlock();
         BlockState state = block.getState();
         AreaSet area = game.getStage().getAreas();
-        TeamColor color = gplayer.getTeam().get().getColor();
+        TeamType color = gplayer.getTeam().get().getType();
         Location loc = block.getLocation();
         if ((state instanceof InventoryHolder && !area.getAreaInfo(loc, a -> a.getPermission(GamePermission.CONTAINER).getState(color)))
                 || (state.getData() instanceof Openable && !area.getAreaInfo(loc, a -> a.getPermission(GamePermission.DOOR).getState(color)))) {
@@ -90,11 +90,11 @@ public class BGPlayerListener extends BGListener {
             return;
         }
 
-        TeamColor color = gplayer.getTeam().get().getColor();
+        TeamType color = gplayer.getTeam().get().getType();
         gplayer.sendMessage("&c[*]&6このゲームはあと &a" + Actions.getTimeString(this.game.getRemainTime()) + "&6 残っています！");
         Location loc = this.game.getStage().getSpawn(color);
         event.setRespawnLocation(loc);
-        player.getInventory().setHelmet(new ItemStack(Material.WOOL, 1, (short) 0, color.getBlockData()));
+        player.getInventory().setHelmet(new ItemStack(Material.WOOL, 1, (short) 0, color.toColor().getBlockData()));
         player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, this.plugin.getConfigs().getGodModeTime(), 4));
     }
 
