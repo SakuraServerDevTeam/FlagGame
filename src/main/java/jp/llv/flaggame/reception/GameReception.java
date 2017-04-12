@@ -17,10 +17,12 @@
 package jp.llv.flaggame.reception;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import jp.llv.flaggame.game.Game;
 import jp.llv.flaggame.profile.RecordStream;
 import syam.flaggame.exception.CommandException;
@@ -46,15 +48,17 @@ public interface GameReception extends Iterable<GamePlayer> {
     }
 
     void start(List<String> args) throws CommandException;
+    
+    Optional<? extends Game> getGame(GamePlayer player);
+    
+    Collection<? extends Game> getGames();
 
-    Optional<Game> getGame();
-
-    default Optional<Stage> getStage() {
-        return this.getGame().map(Game::getStage);
+    default Optional<Stage> getStage(GamePlayer player) {
+        return this.getGame(player).map(Game::getStage);
     }
-
-    default Optional<Collection<Team>> getTeams() {
-        return this.getGame().map(Game::getTeams);
+    
+    default Collection<Stage> getStages() {
+        return getGames().stream().map(g -> g.getStage()).collect(Collectors.toSet());
     }
 
     void stop(String reason) throws IllegalStateException;

@@ -41,7 +41,7 @@ import syam.flaggame.util.Actions;
  * @author Toyblocks
  */
 @ReceptionFor(BasicGame.class)
-public class RealtimeTeamingReception extends ReceptionBase<BasicGame> implements GameReception {
+public class RealtimeTeamingReception extends SingleGameReception<BasicGame> implements GameReception {
 
     protected final Map<TeamColor, Set<GamePlayer>> players = new EnumMap<>(TeamColor.class);
 

@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import jp.llv.flaggame.reception.GameReception;
+import jp.llv.flaggame.reception.StandardReception;
 import syam.flaggame.FlagGame;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -50,7 +51,7 @@ public class GameReadyCommand extends BaseCommand {
 
         GameReception reception;
         try {
-            reception = this.plugin.getReceptions().newReception(args.get(0), readyArgs);
+            reception = this.plugin.getReceptions().newReception(StandardReception.of(args.get(0)), readyArgs);
         } catch (IllegalArgumentException ex) {
             throw new CommandException("&c"+ex.getMessage(), ex);
         }

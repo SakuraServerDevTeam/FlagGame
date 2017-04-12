@@ -16,7 +16,6 @@
  */
 package syam.flaggame.player;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -32,7 +31,6 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
-import jp.llv.flaggame.reception.TeamColor;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.util.Actions;
@@ -83,7 +81,7 @@ public class GamePlayer {
         }
         return p;
     }
-    
+
     public boolean isOnline() {
         return Bukkit.getPlayer(this.player) != null;
     }
@@ -129,19 +127,19 @@ public class GamePlayer {
         return Optional.ofNullable(this.reception);
     }
 
-    public Optional<Game> getGame() {
-        return this.getEntry().flatMap(GameReception::getGame);
+    public Optional<? extends Game> getGame() {
+        return getEntry().flatMap(r -> r.getGame(this));
     }
 
     public Optional<Stage> getStage() {
-        return this.getEntry().flatMap(GameReception::getStage);
+        return getEntry().flatMap(r -> r.getStage(this));
     }
 
     public Optional<Team> getTeam() {
-        return this.getEntry().flatMap(GameReception::getTeams)
-                .map(Collection::stream)
-                .map(s -> s.filter(t -> t.hasJoined(this)))
-                .flatMap(s -> s.findAny());
+        return getGame().map(Game::getTeams)
+                .flatMap(teams
+                        -> teams.stream().filter(t -> t.hasJoined(this)).findAny()
+                );
     }
 
     public void setTpBackLocation(Location tpBack) {
@@ -215,7 +213,7 @@ public class GamePlayer {
         return Objects.equals(this.player, other.player);
     }
 
-    public void sendMessage(ChatMessageType type, String ... messages) {
+    public void sendMessage(ChatMessageType type, String... messages) {
         if (!this.isOnline()) {
             return;
         }
@@ -224,7 +222,7 @@ public class GamePlayer {
             Actions.sendPrefixedMessage(p, type, message);
         }
     }
-    
+
     public void sendMessage(String... messages) {
         sendMessage(ChatMessageType.CHAT, messages);
     }
@@ -240,14 +238,14 @@ public class GamePlayer {
     public void sendMessage(BaseComponent... message) {
         sendMessage(ChatMessageType.CHAT, message);
     }
-    
+
     public void playSound(Sound sound) {
         if (!this.isOnline()) {
             return;
         }
         this.getPlayer().playSound(this.getPlayer().getLocation(), sound, 1f, 1f);
     }
-    
+
     public void sendTitle(String title, String sub, int in, int stay, int out) {
         if (!this.isOnline()) {
             return;
@@ -280,7 +278,7 @@ public class GamePlayer {
     public static void sendMessage(Iterable<? extends GamePlayer> players, BaseComponent... message) {
         sendMessage(players, ChatMessageType.CHAT, message);
     }
-    
+
     public static void playSound(Iterable<? extends GamePlayer> players, Sound sound) {
         for (GamePlayer p : players) {
             if (p == null) {
@@ -289,7 +287,7 @@ public class GamePlayer {
             p.playSound(sound);
         }
     }
-    
+
     public static void sendTitle(Iterable<? extends GamePlayer> players, String title, String subTitle, int in, int stay, int out) {
         for (GamePlayer p : players) {
             if (p == null) {

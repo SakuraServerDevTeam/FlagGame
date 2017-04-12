@@ -45,7 +45,7 @@ import syam.flaggame.util.Actions;
  * @author Toyblocks
  */
 @ReceptionFor(BasicGame.class)
-public class MatchingReception extends ReceptionBase<BasicGame> implements GameReception {
+public class MatchingReception extends SingleGameReception<BasicGame> implements GameReception {
 
     protected final Set<GamePlayer> players = new HashSet<>();
 

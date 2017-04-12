@@ -16,6 +16,8 @@
  */
 package jp.llv.flaggame.reception;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -49,7 +51,7 @@ import syam.flaggame.util.Actions;
  * @author SakuraServerDev
  * @param <G> game type this reception manage
  */
-public abstract class ReceptionBase<G extends Game> implements GameReception {
+public abstract class SingleGameReception<G extends Game> implements GameReception {
 
     protected final FlagGame plugin;
     protected final UUID id;
@@ -62,7 +64,7 @@ public abstract class ReceptionBase<G extends Game> implements GameReception {
     private Stage.Reservation stageReservation;
     private SerializeTask initialTask;
 
-    public ReceptionBase(FlagGame plugin, UUID id, List<String> args) {
+    public SingleGameReception(FlagGame plugin, UUID id, List<String> args) {
         this.plugin = plugin;
         this.id = id;
         if (args.size() < 1) {
@@ -71,11 +73,6 @@ public abstract class ReceptionBase<G extends Game> implements GameReception {
         this.stage = plugin.getStages().getStage(args.get(0))
                 .orElseThrow(() -> new IllegalArgumentException("No such stage"));
         this.records = new GameRecordStream(id);
-    }
-
-    @Override
-    public Optional<Game> getGame() {
-        return Optional.ofNullable(this.game);
     }
 
     @Override
@@ -89,12 +86,18 @@ public abstract class ReceptionBase<G extends Game> implements GameReception {
     }
 
     @Override
+    public Optional<? extends Game> getGame(GamePlayer player) {
+        return Optional.ofNullable(game);
+    }
+
+    @Override
+    public Collection<? extends Game> getGames() {
+        return game == null ? Collections.emptySet() : Collections.singleton(game);
+    }
+
+    @Override
     public State getState() {
         //まずゲームと状態を同期
-        if (this.state == State.OPENED
-            && this.getGame().map(Game::getState).map(Game.State.STARTED::equals).orElse(Boolean.FALSE)) {
-            this.state = State.STARTED;
-        }
         if (this.state == State.STARTING
             && this.game.getState() != Game.State.PREPARATION) {
             this.state = State.STARTED;
@@ -120,11 +123,6 @@ public abstract class ReceptionBase<G extends Game> implements GameReception {
     @Override
     public RecordStream getRecordStream() {
         return this.records;
-    }
-
-    @Override
-    public Optional<Stage> getStage() {
-        return Optional.of(stage);
     }
 
     protected boolean isStageInitialized() {

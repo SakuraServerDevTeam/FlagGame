@@ -40,9 +40,7 @@ public class GameManager implements Iterable<Game> {
 
     public Collection<Game> getGames() {
         return this.receptions.getReceptions().stream()
-                .map(GameReception::getGame)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
+                .flatMap(r -> r.getGames().stream())
                 .collect(Collectors.toSet());
     }
     
@@ -50,11 +48,6 @@ public class GameManager implements Iterable<Game> {
         return this.getGames().stream()
                 .filter(g -> g.getState() == state)
                 .collect(Collectors.toSet());
-    }
-    
-    @Deprecated
-    public Optional<Game> getGame(String id) {
-        return this.receptions.getReception(id).flatMap(GameReception::getGame);
     }
 
     @Override
