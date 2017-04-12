@@ -16,6 +16,8 @@
  */
 package jp.llv.flaggame.reception;
 
+import net.md_5.bungee.api.ChatColor;
+
 /**
  *
  * @author SakuraServerDev
@@ -24,7 +26,9 @@ public interface TeamType {
     
     String getName();
 
-    String getRichName();
+    default String getRichName() {
+        return toColor().getChatColor() + this.getName() + ChatColor.RESET;
+    }
     
     TeamColor toColor();
     

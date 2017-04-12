@@ -26,7 +26,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import jp.llv.flaggame.game.Game;
-import jp.llv.flaggame.util.TriFunction;
 import syam.flaggame.FlagGame;
 
 /**
@@ -51,7 +50,7 @@ public class ReceptionManager implements Iterable<GameReception> {
         return this.receptions.values().stream()
                 .filter(r -> r.getState() == state).collect(Collectors.toSet());
     }
-    
+
     public Collection<GameReception> getReceptions(Game.State state) {
         return this.receptions.values().stream()
                 .filter(r -> r.getState().toGameState() == state).collect(Collectors.toSet());
@@ -62,36 +61,31 @@ public class ReceptionManager implements Iterable<GameReception> {
         UUID uuid;
         try {
             uuid = UUID.fromString(id);
-        } catch(IllegalArgumentException ex) {
+        } catch (IllegalArgumentException ex) {
             return Optional.empty();
         }
         return getReception(uuid);
     }
-    
+
     public Optional<GameReception> getReception(UUID uuid) {
         return Optional.ofNullable(this.receptions.get(uuid));
     }
 
-    public GameReception newReception(String receptionType, UUID id, List<String> args) {
+    public <R extends GameReception> R newReception(ReceptionType<? extends R> type, UUID id, List<String> args) {
         if (this.receptions.containsKey(id)) {
             throw new IllegalStateException("A reception with the id already exists");
         }
-        GameReception reception;
-        try {
-            reception = ReceptionType.of(receptionType).newInstance(plugin, id, args);
-        } catch(IllegalArgumentException ex) {
-            throw new IllegalArgumentException("No such registered reception-type", ex);
-        }
+        R reception = type.newInstance(plugin, id, args);
         this.receptions.put(id, reception);
         return reception;
     }
-    
-    public GameReception newReception(String receptionType, List<String> args) {
+
+    public <R extends GameReception> R newReception(ReceptionType<? extends R> type, List<String> args) {
         UUID id;
         do {
             id = generateNewID();
         } while (this.receptions.containsKey(id));
-        return this.newReception(receptionType, id, args);
+        return this.newReception(type, id, args);
     }
 
     /*package*/ void remove(GameReception reception) {
@@ -107,7 +101,7 @@ public class ReceptionManager implements Iterable<GameReception> {
             it.next().getValue().stop(reason);
         }
     }
-    
+
     public void closeAll(String reason) {
         for (Iterator<Map.Entry<UUID, GameReception>> it = this.receptions.entrySet().iterator(); it.hasNext();) {
             it.next().getValue().close(reason);

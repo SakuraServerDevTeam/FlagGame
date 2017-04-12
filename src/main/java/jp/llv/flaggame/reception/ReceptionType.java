@@ -18,50 +18,19 @@ package jp.llv.flaggame.reception;
 
 import java.util.List;
 import java.util.UUID;
-import jp.llv.flaggame.util.TriFunction;
 import syam.flaggame.FlagGame;
 
 /**
  *
  * @author SakuraServerDev
+ * @param <R> reception class this type creates.
  */
-public enum ReceptionType {
+public interface ReceptionType<R extends GameReception> {
 
-    REALTIME(
-            RealtimeTeamingReception::new,
-            "realtime", "rt"
-    ),
-    MATCHING(
-            MatchingReception::new,
-            "matching", "ma"
-    ),;
-
-    private final String name;
-    private final String[] aliases;
-    private final TriFunction<FlagGame, UUID, List<String>, GameReception> constructor;
-
-    private ReceptionType(TriFunction<FlagGame, UUID, List<String>, GameReception> constructor, String name, String... aliases) {
-        this.name = name;
-        this.aliases = aliases;
-        this.constructor = constructor;
-    }
+    String getName();
     
-    public GameReception newInstance(FlagGame plugin, UUID id, List<String> args) {
-        return constructor.apply(plugin, id, args);
-    }
+    String[] getAliases();
     
-    public static ReceptionType of(String name) {
-        for (ReceptionType type : values()) {
-            if (type.name.equalsIgnoreCase(name)) {
-                return type;
-            }
-            for (String alias : type.aliases) {
-                if (alias.equalsIgnoreCase(name)) {
-                    return type;
-                }
-            }
-        }
-        throw new IllegalArgumentException();
-    }
+    R newInstance(FlagGame plugin, UUID id, List<String> args);
 
 }

@@ -75,11 +75,6 @@ public enum TeamColor implements TeamType {
     }
 
     @Override
-    public String getRichName() {
-        return this.getChatColor() + this.getName() + "&r";
-    }
-
-    @Override
     public TeamColor toColor() {
         return this;
     }
