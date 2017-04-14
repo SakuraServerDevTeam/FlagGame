@@ -17,12 +17,15 @@
 package syam.flaggame.command.stage;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.FlagGame;
 import syam.flaggame.command.BaseCommand;
 import syam.flaggame.event.StageCreateEvent;
 import syam.flaggame.exception.CommandException;
+import syam.flaggame.exception.ReservedException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.player.GamePlayer;
@@ -70,7 +73,11 @@ public class StageCreateCommand extends BaseCommand {
         this.plugin.getStages().addStage(stage);
 
         GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
-        gPlayer.createSetupSession(stage);
+        try {
+            gPlayer.createSetupSession(stage);
+        } catch (ReservedException ex) {
+            throw new CommandException("&c そのステージは'" + ex.getReservable().getReserver().getName() + "'に占有されています！", ex);
+        }
 
         // update dynmap
         plugin.getDynmap().updateRegions();

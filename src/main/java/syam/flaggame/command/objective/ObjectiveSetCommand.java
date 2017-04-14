@@ -23,6 +23,8 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import syam.flaggame.FlagGame;
 import syam.flaggame.exception.CommandException;
+import syam.flaggame.exception.FlagGameException;
+import syam.flaggame.exception.ReservedException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.player.GamePlayer;
@@ -45,7 +47,7 @@ public class ObjectiveSetCommand extends ObjectiveCommand {
     }
 
     @Override
-    public void execute(List<String> args, Player player, Stage stage, ObjectiveType type) throws CommandException {
+    public void execute(List<String> args, Player player, Stage stage, ObjectiveType type) throws FlagGameException {
         switch (type) {
             case FLAG:
                 setFlag(player, stage, args);
@@ -67,7 +69,7 @@ public class ObjectiveSetCommand extends ObjectiveCommand {
         }
     }
 
-    private void setFlag(Player player, Stage game, List<String> args) throws CommandException {
+    private void setFlag(Player player, Stage game, List<String> args) throws CommandException, ReservedException {
         // 引数チェック
         if (args.size() < 1) {
             throw new CommandException("&c引数が足りません！フラッグの得点を指定してください！");
@@ -88,7 +90,7 @@ public class ObjectiveSetCommand extends ObjectiveCommand {
         Actions.message(player, "&aフラッグ管理モードを開始しました。選択ツール: " + tool);
     }
 
-    private void setNexus(Player player, Stage stage, List<String> args) throws CommandException {
+    private void setNexus(Player player, Stage stage, List<String> args) throws CommandException, ReservedException {
         if (args.size() < 1) {
             throw new CommandException("&c引数が足りません！目標の得点を正しく指定してください!");
         }
@@ -119,7 +121,7 @@ public class ObjectiveSetCommand extends ObjectiveCommand {
         Actions.message(player, "&a目標管理モードを開始しました。選択ツール: " + tool);
     }
 
-    private void setBannerSpawner(Player player, Stage stage, List<String> args) throws CommandException {
+    private void setBannerSpawner(Player player, Stage stage, List<String> args) throws CommandException, ReservedException {
         if (args.size() < 2) {
             throw new CommandException("&c引数が足りません! バナーの得点と耐久度を正しく指定してください!");
         }
@@ -140,7 +142,7 @@ public class ObjectiveSetCommand extends ObjectiveCommand {
         Actions.message(player, "&aバナースポナー管理モードを開始しました。選択ツール: " + tool);
     }
 
-    private void setBannerSlot(Player player, Stage stage, List<String> args) throws CommandException {
+    private void setBannerSlot(Player player, Stage stage, List<String> args) throws CommandException, ReservedException {
         TeamColor color;
         if (args.size() < 1) {
             color = null;
@@ -159,7 +161,7 @@ public class ObjectiveSetCommand extends ObjectiveCommand {
         Actions.message(player, "&aスロット管理モードを開始しました。選択ツール: " + tool);
     }
 
-    private void setChest(Player player, Stage game, List<String> args) {
+    private void setChest(Player player, Stage game, List<String> args) throws ReservedException {
         // マネージャーセット
         GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
         gPlayer.createSetupSession(game).setSetting(ObjectiveType.CHEST);

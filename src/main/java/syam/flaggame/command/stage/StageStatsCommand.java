@@ -55,7 +55,7 @@ public class StageStatsCommand extends BaseCommand {
             stage = plugin.getStages().getStage(args.get(0)).orElse(null);
         } else if (player != null) {
             GamePlayer gplayer = plugin.getPlayers().getPlayer(player);
-            stage = gplayer.getSetupSession().map(s -> s.getSelectedStage()).orElse(null);
+            stage = gplayer.getSetupSession().map(s -> s.getSelected(Stage.class)).orElse(null);
         }
         if (stage == null) {
             throw new CommandException("&cステージを指定してください！");

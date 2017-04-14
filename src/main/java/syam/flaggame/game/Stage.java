@@ -33,8 +33,9 @@ import jp.llv.flaggame.rollback.QueuedSerializeTask;
 import jp.llv.flaggame.rollback.RollbackException;
 import jp.llv.flaggame.rollback.SerializeTask;
 import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.session.SimpleReservable;
 import syam.flaggame.exception.ObjectiveCollisionException;
-import syam.flaggame.exception.StageReservedException;
+import syam.flaggame.exception.ReservedException;
 import syam.flaggame.game.objective.Objective;
 import syam.flaggame.util.Cuboid;
 
@@ -43,12 +44,9 @@ import syam.flaggame.util.Cuboid;
  *
  * @author syam(syamn)
  */
-public class Stage {
+public class Stage extends SimpleReservable<Stage> {
     
     public static final Pattern NAME_REGEX = Pattern.compile("^[a-z0-9](?:[a-z0-9_-]*[a-z0-9])?$");
-
-    // 開始中のゲーム
-    private GameReception reception;
 
     // ***** ステージデータ *****
     private final String stageName;
@@ -72,7 +70,7 @@ public class Stage {
     // 地点・エリア
     private boolean protect = true;
     private final Map<TeamColor, Location> spawnMap = Collections.synchronizedMap(new EnumMap<>(TeamColor.class));
-    private AreaSet areas = new AreaSet();
+    private final AreaSet areas = new AreaSet();
     private Location specSpawn = null;
     
     // stage description
@@ -139,7 +137,7 @@ public class Stage {
         return Collections.unmodifiableMap(result);
     }
     
-    public void addObjectives(Collection<? extends Objective> objectives) throws StageReservedException, ObjectiveCollisionException {
+    public void addObjectives(Collection<? extends Objective> objectives) throws ReservedException, ObjectiveCollisionException {
         for (Objective objective : objectives) {
             addObjective(objective);
         }
@@ -173,9 +171,6 @@ public class Stage {
     }
     
     public void setSpawns(Map<TeamColor, Location> spawns) {
-        if (this.isReserved()) {
-            throw new IllegalStateException("This stage has been reserved!");
-        }
         this.spawnMap.clear();
         this.spawnMap.putAll(spawns);
     }
@@ -358,52 +353,17 @@ public class Stage {
         return this.available;
     }
     
-    public boolean isReserved() {
-        return this.reception != null;
-    }
-    
-    /**
-     * Reserve this reception.
-     * @param reception reception going to use this reception, or null.
-     * @return reservation object for release this stage.
-     * @throws StageReservedException if this stage has already reserved.
-     */
-    public Reservation reserve(GameReception reception) throws StageReservedException {
-        if (this.isReserved()) {
-            throw new StageReservedException();
-        }
-        this.reception = reception;
-        return new Reservation(this);
-    }
-    
-    private void release() {
-        this.reception = null;
-    }
-    
     public Optional<GameReception> getReception() {
-        return Optional.ofNullable(this.reception);
+        if (!isReserved() && getReserver() instanceof GameReception) {
+            return Optional.of((GameReception) getReserver());
+        } else {
+            return Optional.empty();
+        }
     }
     
     public void validate() throws NullPointerException {
         if (!available || spawnMap.isEmpty()) {
             throw new NullPointerException();
-        }
-    }
-    
-    public static final class Reservation {
-        
-        private Stage reserved;
-        
-        private Reservation(Stage stage) {
-            this.reserved = stage;
-        }
-        
-        public void release() {
-            if (this.reserved == null) {
-                throw new IllegalStateException("This reservation is invalid");
-            }
-            this.reserved.release();
-            this.reserved = null;
         }
     }
     

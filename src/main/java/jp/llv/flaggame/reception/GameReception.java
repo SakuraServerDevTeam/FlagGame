@@ -17,7 +17,6 @@
 package jp.llv.flaggame.reception;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +24,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import jp.llv.flaggame.game.Game;
 import jp.llv.flaggame.profile.RecordStream;
-import syam.flaggame.exception.CommandException;
+import jp.llv.flaggame.api.session.Reserver;
+import syam.flaggame.exception.FlagGameException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.player.GamePlayer;
 
@@ -33,13 +33,13 @@ import syam.flaggame.player.GamePlayer;
  *
  * @author Toyblocks
  */
-public interface GameReception extends Iterable<GamePlayer> {
+public interface GameReception extends Reserver, Iterable<GamePlayer> {
 
-    void open(List<String> args) throws CommandException;
+    void open(List<String> args) throws FlagGameException;
 
     void close(String reason);
 
-    void join(GamePlayer player, List<String> args) throws CommandException;
+    void join(GamePlayer player, List<String> args) throws FlagGameException;
 
     void leave(GamePlayer player);
 
@@ -47,7 +47,7 @@ public interface GameReception extends Iterable<GamePlayer> {
         return this.getPlayers().contains(player);
     }
 
-    void start(List<String> args) throws CommandException;
+    void start(List<String> args) throws FlagGameException;
     
     Optional<? extends Game> getGame(GamePlayer player);
     
@@ -64,8 +64,6 @@ public interface GameReception extends Iterable<GamePlayer> {
     void stop(String reason) throws IllegalStateException;
 
     UUID getID();
-
-    String getName();
 
     GameReception.State getState();
 

@@ -22,6 +22,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.command.BaseCommand;
 import syam.flaggame.exception.CommandException;
+import syam.flaggame.exception.FlagGameException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.player.GamePlayer;
@@ -46,7 +47,7 @@ public class StageSelectCommand extends BaseCommand {
     }
 
     @Override
-    public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
+    public void execute(List<String> args, CommandSender sender, Player player) throws FlagGameException {
         GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
         if (args.size() >= 1) {
             // flag select (ステージ名) - 選択
@@ -58,7 +59,7 @@ public class StageSelectCommand extends BaseCommand {
             }
             
             // 既に選択中のステージと同じステージでない限りはセッションを作成
-            if (gPlayer.getSetupSession().map(SetupSession::getSelectedStage).orElse(null) != stage) {
+            if (gPlayer.getSetupSession().map(SetupSession::getSelected).orElse(null) != stage) {
                 gPlayer.createSetupSession(stage);
             }
 

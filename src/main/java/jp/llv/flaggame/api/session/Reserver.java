@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2017 SakuraServerDev
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14,19 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package syam.flaggame.queue;
-
-import java.util.List;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import syam.flaggame.exception.FlagGameException;
+package jp.llv.flaggame.api.session;
 
 /**
- * Queueable (Queueable.java)
  *
- * @author syam(syamn)
+ * @author SakuraServerDev
  */
-public interface Queueable {
-
-    void executeQueue(List<String> args, CommandSender sender, Player player) throws FlagGameException;
+public interface Reserver {
+    
+    String getName();
+    
 }

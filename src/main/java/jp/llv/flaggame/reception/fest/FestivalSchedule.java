@@ -23,13 +23,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import jp.llv.flaggame.api.session.SimpleReservable;
 import jp.llv.flaggame.reception.TeamColor;
 
 /**
  *
  * @author SakuraServerDev
  */
-public class FestivalSchedule {
+public class FestivalSchedule extends SimpleReservable<FestivalSchedule> {
 
     private final String name;
     private final Map<TeamColor, String> teams = new HashMap<>();

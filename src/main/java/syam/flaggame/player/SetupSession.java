@@ -16,9 +16,10 @@
  */
 package syam.flaggame.player;
 
+import java.util.Objects;
 import jp.llv.flaggame.reception.TeamColor;
+import jp.llv.flaggame.api.session.Reservable;
 import syam.flaggame.game.objective.ObjectiveType;
-import syam.flaggame.game.Stage;
 
 /**
  *
@@ -26,22 +27,32 @@ import syam.flaggame.game.Stage;
  */
 public class SetupSession {
 
-    private final Stage stage;
+    private final Reservable.Reservation<?> selected;
     private ObjectiveType setting;
 
     private TeamColor color = null;
     private Double point = null;
     private Byte hp = null;
 
-    /*package*/ SetupSession(Stage stage) {
-        if (stage == null) {
-            throw new NullPointerException();
-        }
-        this.stage = stage;
+    /*package*/ SetupSession(Reservable.Reservation<?> selected) {
+        Objects.requireNonNull(selected);
+        this.selected = selected;
     }
 
-    public Stage getSelectedStage() {
-        return this.stage;
+    public Reservable<?> getSelected() {
+        return this.selected.getReservable();
+    }
+    
+    public <T extends Reservable<T>> T getSelected(Class<T> clazz) {
+        if (clazz.isInstance(selected)) {
+            return (T) selected;
+        } else {
+            return null;
+        }
+    }
+    
+    /*package*/ Reservable.Reservation<?> getReservation() {
+        return selected;
     }
 
     public ObjectiveType getSetting() {

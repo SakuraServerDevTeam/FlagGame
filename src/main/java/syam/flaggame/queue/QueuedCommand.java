@@ -22,6 +22,7 @@ import java.util.List;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.exception.CommandException;
+import syam.flaggame.exception.FlagGameException;
 
 import syam.flaggame.util.Actions;
 
@@ -47,7 +48,7 @@ public class QueuedCommand {
         this.requestDate = Calendar.getInstance();
     }
 
-    public void execute() throws CommandException {
+    public void execute() throws FlagGameException {
         // タイムアウトチェック
         this.requestDate.add(13, this.timeoutSec);
         if (!this.requestDate.after(Calendar.getInstance())) {

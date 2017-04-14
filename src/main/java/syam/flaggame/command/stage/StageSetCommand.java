@@ -73,7 +73,10 @@ public class StageSetCommand extends BaseCommand {
         // ゲーム取得
         GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
         Stage stage = gPlayer.getSetupSession()
-                .orElseThrow(() -> new CommandException("&c先に編集するゲームを選択してください")).getSelectedStage();
+                .orElseThrow(() -> new CommandException("&c先に編集するゲームを選択してください")).getSelected(Stage.class);
+        if (stage == null) {
+            throw new CommandException("&cあなたはステージを選択していません！");
+        }
 
         // 設定可能項目名を回す
         Configables conf;

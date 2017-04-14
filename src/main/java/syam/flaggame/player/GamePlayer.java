@@ -31,11 +31,13 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
+import jp.llv.flaggame.api.session.Reserver;
 import syam.flaggame.exception.CommandException;
+import syam.flaggame.exception.ReservedException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.util.Actions;
 
-public class GamePlayer {
+public class GamePlayer implements Reserver {
 
     // プレイヤーデータ
     private final UUID player;
@@ -62,6 +64,7 @@ public class GamePlayer {
         this.name = player.getName();
     }
 
+    @Override
     public String getName() {
         return this.name;
     }
@@ -175,25 +178,20 @@ public class GamePlayer {
     public Optional<SetupSession> getSetupSession() {
         if (this.session == null) {
             return Optional.empty();
-        } else if (this.session.getSelectedStage().isReserved()) {
-            this.session = null;
-            sendMessage("&c占有されたためにステージ選択が解除されました！");
-            return Optional.empty();
+        } else {
+            return Optional.of(this.session);
         }
-        return Optional.of(this.session);
     }
 
-    public SetupSession createSetupSession(Stage stage) {
-        if (stage == null) {
-            throw new NullPointerException("Stage can't be null.");
-        } else if (stage.isReserved()) {
-            throw new IllegalStateException("The stage is in use.");
-        }
-        return this.session = new SetupSession(stage);
+    public SetupSession createSetupSession(Stage stage) throws ReservedException {
+        Objects.requireNonNull(stage);
+        return session = new SetupSession(stage.reserve(this));
     }
 
     public void destroySetupSession() {
-        this.session = null;
+        Objects.requireNonNull(session);
+        session.getReservation().release();
+        session = null;
     }
 
     @Override

@@ -19,6 +19,7 @@ package syam.flaggame.command;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -26,7 +27,9 @@ import org.bukkit.entity.Player;
 import syam.flaggame.FlagGame;
 import org.bukkit.permissions.Permissible;
 import syam.flaggame.exception.CommandException;
+import syam.flaggame.exception.FlagGameException;
 import syam.flaggame.exception.PermissionException;
+import syam.flaggame.exception.ReservedException;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.util.Actions;
 
@@ -91,23 +94,27 @@ public abstract class BaseCommand {
         } catch (PermissionException ex) {
             Actions.message(sender, "&cYou don't have permission to use this!");
         } catch (CommandException ex) {
-            Throwable error = ex;
-            while (error instanceof CommandException) {
-                Actions.message(sender, error.getMessage());
-                error = error.getCause();
-            }
+            Actions.message(sender, ex.getMessage());
+        } catch (ReservedException ex) {
+            Actions.message(sender, "&c そのステージは'" + ex.getReservable().getReserver().getName() + "'に占有されています！");
+        } catch (FlagGameException ex) {
+            Actions.message(sender, "&cAn unhandled plugin error has occured.");
+            plugin.getLogger().log(Level.WARNING, "Failed to handle command", ex);
+        } catch (Exception ex) {
+            Actions.message(sender, "&cAn unexpected plugin error has occured.");
+            plugin.getLogger().log(Level.WARNING, "Failed to handle command", ex);
         }
         return true;
     }
-    
+
     public final List<String> complete(CommandSender sender, String[] preArgs, String cmd) {
         return null;
     }
 
-    public void execute(List<String> args, String label, CommandSender sender, Player player) throws CommandException {
+    public void execute(List<String> args, String label, CommandSender sender, Player player) throws FlagGameException {
         this.execute(args, sender, player);
     }
-    
+
     /**
      * コマンドを実際に実行する
      *
@@ -116,7 +123,7 @@ public abstract class BaseCommand {
      * @param player the player who executed this command - equal to sender
      * @throws CommandException
      */
-    public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
+    public void execute(List<String> args, CommandSender sender, Player player) throws FlagGameException {
         throw new CommandException("&cThis command is not implemented yet.");
     }
 

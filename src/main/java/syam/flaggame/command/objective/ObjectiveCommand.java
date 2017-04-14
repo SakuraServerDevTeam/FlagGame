@@ -25,6 +25,7 @@ import org.bukkit.entity.Player;
 import syam.flaggame.FlagGame;
 import syam.flaggame.command.BaseCommand;
 import syam.flaggame.exception.CommandException;
+import syam.flaggame.exception.FlagGameException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.player.GamePlayer;
@@ -44,11 +45,11 @@ public abstract class ObjectiveCommand extends BaseCommand {
     }
 
     @Override
-    public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
+    public void execute(List<String> args, CommandSender sender, Player player) throws FlagGameException {
         GamePlayer gplayer = plugin.getPlayers().getPlayer(player);
-        Stage stage = gplayer.getSetupSession().map(s -> s.getSelectedStage()).orElse(null);
+        Stage stage = gplayer.getSetupSession().map(s -> s.getSelected(Stage.class)).orElse(null);
         if (stage == null) {
-            throw new CommandException("&c先に編集するゲームを選択してください");
+            throw new CommandException("&cあなたはステージを選択していません！");
         }
         ObjectiveType type;
         try {
@@ -63,6 +64,6 @@ public abstract class ObjectiveCommand extends BaseCommand {
         execute(args, player, stage, type);
     }
 
-    public abstract void execute(List<String> args, Player player, Stage stage, ObjectiveType type) throws CommandException;
+    public abstract void execute(List<String> args, Player player, Stage stage, ObjectiveType type) throws FlagGameException;
 
 }

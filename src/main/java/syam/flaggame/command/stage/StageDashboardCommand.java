@@ -17,6 +17,7 @@
 package syam.flaggame.command.stage;
 
 import java.util.List;
+import jp.llv.flaggame.api.session.Reservable;
 import jp.llv.flaggame.reception.TeamColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -53,7 +54,7 @@ public class StageDashboardCommand extends BaseCommand {
         Stage stage = null;
         if (player != null) {
             GamePlayer gplayer = plugin.getPlayers().getPlayer(player);
-            stage = gplayer.getSetupSession().map(s -> s.getSelectedStage()).orElse(null);
+            stage = gplayer.getSetupSession().map(s -> s.getSelected(Stage.class)).orElse(null);
         }
         if (stage == null && !args.isEmpty()) {
             stage = plugin.getStages().getStage(args.get(0)).orElse(null);

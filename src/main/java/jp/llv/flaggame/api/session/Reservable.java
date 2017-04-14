@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2017 SakuraServerDev
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14,17 +14,39 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package syam.flaggame.exception;
+package jp.llv.flaggame.api.session;
+
+import syam.flaggame.exception.ReservedException;
 
 /**
- * An exception thrown when the accessed stage is used by someone and not able
- * to use.
  *
- * @author Toyblocks
+ * @author SakuraServerDev
+ * @param <T> reservable type
  */
-public class StageReservedException extends FlagGameException {
+public interface Reservable<T extends Reservable<T>> {
 
-    public StageReservedException() {
+    boolean isReserved();
+
+    default void testReserved() throws ReservedException {
+        if (isReserved()) {
+            throw new ReservedException();
+        }
+    }
+
+    Reservation<T> reserve(Reserver reserver) throws ReservedException;
+
+    Reserver getReserver();
+
+    interface Reservation<T extends Reservable<T>> {
+
+        Reservable<T> getReservable();
+
+        Reserver getReserver();
+
+        void release();
+
+        boolean isReleased();
+
     }
 
 }

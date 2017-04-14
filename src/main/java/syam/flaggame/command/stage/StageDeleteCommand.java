@@ -25,7 +25,7 @@ import syam.flaggame.FlagGame;
 import syam.flaggame.command.BaseCommand;
 import syam.flaggame.queue.Queueable;
 import syam.flaggame.exception.CommandException;
-import syam.flaggame.exception.StageReservedException;
+import syam.flaggame.exception.FlagGameException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.util.Actions;
@@ -50,15 +50,11 @@ public class StageDeleteCommand extends BaseCommand {
     }
 
     @Override
-    public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
+    public void execute(List<String> args, CommandSender sender, Player player) throws FlagGameException {
         Stage stage = this.plugin.getStages().getStage(args.get(0))
                 .orElseThrow(() -> new CommandException("&cその名前のステージは存在しません！"));
 
-        try {
-            stage.reserve(null); // the stage cannot be reserved, used, or nor edited
-        } catch (StageReservedException ex) {
-            throw new CommandException("&cそのステージは現在受付中または開始中のため削除できません", ex);
-        }
+        stage.reserve(null);
 
         // confirmキュー追加
         plugin.getConfirmQueue().addQueue(player, new QueuedStageDeletion(), args, 10);
@@ -70,19 +66,13 @@ public class StageDeleteCommand extends BaseCommand {
     private class QueuedStageDeletion implements Queueable {
 
         @Override
-        public void executeQueue(List<String> args, CommandSender sender, Player player) throws CommandException {
+        public void executeQueue(List<String> args, CommandSender sender, Player player) throws FlagGameException {
             if (args.size() <= 1) {
                 Actions.message(player, "&cステージ名が不正です");
                 return;
             }
             Stage stage = plugin.getStages().getStage(args.get(0))
                     .orElseThrow(() -> new CommandException("&cその名前のステージは存在しません！"));
-
-            if (stage.isReserved()) {
-                Actions.message(player, "&cそのステージは現在受付中または開始中のため削除できません");
-                return;
-            }
-
             plugin.getDatabases()
                     .orElseThrow(() -> new CommandException("&cデータベースへの接続に失敗しました！"))
                     .deleteStage(stage, result -> {

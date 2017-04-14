@@ -16,6 +16,7 @@
  */
 package syam.flaggame.listener;
 
+import jp.llv.flaggame.api.session.Reservable;
 import jp.llv.flaggame.game.Game;
 import syam.flaggame.game.objective.BannerSlot;
 import syam.flaggame.game.objective.BannerSpawner;
@@ -80,11 +81,11 @@ public class FGPlayerListener implements Listener {
         }
         SetupSession sess = gPlayer.getSetupSession().get();
         ObjectiveType conf = sess.getSetting();
-        Stage stage = sess.getSelectedStage();
-        if (stage == null) {
-            Actions.message(player, "&c先に編集するゲームを選択してください！");
-            return;
+        Reservable selected = sess.getSelected();
+        if (!(selected instanceof Stage)) {
+            Actions.message(player, "&cあなたはステージを選択していません！");
         }
+        Stage stage = (Stage) selected;
 
         Location loc = block.getLocation();
 

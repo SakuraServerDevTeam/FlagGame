@@ -14,19 +14,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package syam.flaggame.queue;
+package syam.flaggame.exception;
 
-import java.util.List;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import syam.flaggame.exception.FlagGameException;
+import jp.llv.flaggame.api.session.Reservable;
 
 /**
- * Queueable (Queueable.java)
+ * An exception thrown when the accessed reservable is used by someone and not able
+ * to use.
  *
- * @author syam(syamn)
+ * @author Toyblocks
  */
-public interface Queueable {
+public class ReservedException extends FlagGameException {
+    
+    private final Reservable reservable;
 
-    void executeQueue(List<String> args, CommandSender sender, Player player) throws FlagGameException;
+    public ReservedException(Reservable reservable) {
+        this.reservable = reservable;
+    }
+    
+    public ReservedException() {
+        this(null);
+    }
+    
+    public Reservable getReservable() {
+        return reservable;
+    }
+
 }

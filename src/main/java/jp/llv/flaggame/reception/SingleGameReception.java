@@ -40,7 +40,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import syam.flaggame.FlagGame;
 import syam.flaggame.exception.CommandException;
-import syam.flaggame.exception.StageReservedException;
+import syam.flaggame.exception.FlagGameException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.player.GamePlayer;
@@ -130,7 +130,7 @@ public abstract class SingleGameReception<G extends Game> implements GameRecepti
     }
 
     @Override
-    public void open(List<String> args) throws CommandException {
+    public void open(List<String> args) throws FlagGameException {
         if (this.getState() != State.READY) {
             throw new CommandException("&cこの募集は既に開始されました!");
         }
@@ -140,12 +140,7 @@ public abstract class SingleGameReception<G extends Game> implements GameRecepti
         } catch (NullPointerException ex) {
             throw new CommandException("&cそのステージは設定が無効です!");
         }
-
-        try {
-            this.stageReservation = stage.reserve(this);
-        } catch (StageReservedException ex) {
-            throw new CommandException("&cそのステージは既に使用中です!", ex);
-        }
+        this.stageReservation = stage.reserve(this);
 
         initialTask = stage.getInitialTask(plugin, ex -> {
             plugin.getLogger().log(Level.WARNING, "Failed to initialize the stage", ex);

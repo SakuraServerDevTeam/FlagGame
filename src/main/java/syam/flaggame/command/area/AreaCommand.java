@@ -20,6 +20,7 @@ import java.util.List;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.session.Reservable;
 import syam.flaggame.command.BaseCommand;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
@@ -46,7 +47,11 @@ public abstract class AreaCommand extends BaseCommand {
         if (!gp.getSetupSession().isPresent()) {
             throw new CommandException("&c先に編集するゲームを選択してください");
         }
-        this.execute(args, player, gp.getSetupSession().get().getSelectedStage());
+        Reservable selected = gp.getSetupSession().get().getSelected();
+        if (!(selected instanceof Stage)) {
+            throw new CommandException("&cあなたはステージを選択していません！");
+        }
+        this.execute(args, player, (Stage) selected);
     }
 
     public abstract void execute(List<String> args, Player player, Stage stage) throws CommandException;

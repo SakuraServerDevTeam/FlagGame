@@ -60,7 +60,10 @@ public class StageSaveCommand extends BaseCommand {
                 GamePlayer gplayer = plugin.getPlayers().getPlayer(player);
                 stage = gplayer.getSetupSession()
                         .orElseThrow(() -> new CommandException("&cステージを指定してください！"))
-                        .getSelectedStage();
+                        .getSelected(Stage.class);
+                if (stage == null) {
+                    throw new CommandException("&cあなたはステージを選択していません！");
+                }
                 gplayer.destroySetupSession();
                 gplayer.sendMessage("&aステージの選択を解除しました！");
             }

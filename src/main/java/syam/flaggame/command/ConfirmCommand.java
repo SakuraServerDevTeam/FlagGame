@@ -21,6 +21,7 @@ import syam.flaggame.FlagGame;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.exception.CommandException;
+import syam.flaggame.exception.FlagGameException;
 
 /**
  * ConfirmCommand (ConfirmCommand.java)
@@ -40,7 +41,7 @@ public class ConfirmCommand extends BaseCommand {
     }
 
     @Override
-    public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
+    public void execute(List<String> args, CommandSender sender, Player player) throws FlagGameException {
         boolean ran = this.plugin.getConfirmQueue().confirmQueue(sender);
         if (!ran) {
             throw new CommandException("&cあなたの実行待ちコマンドはありません！");

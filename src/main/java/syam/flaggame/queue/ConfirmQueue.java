@@ -23,6 +23,7 @@ import org.bukkit.command.CommandSender;
 
 import syam.flaggame.FlagGame;
 import syam.flaggame.exception.CommandException;
+import syam.flaggame.exception.FlagGameException;
 
 /**
  * ConfirmQueue (ConfirmQueue.java)
@@ -57,7 +58,7 @@ public class ConfirmQueue {
      * 
      * @param sender コマンド送信者
      */
-    public boolean confirmQueue(CommandSender sender) throws CommandException {
+    public boolean confirmQueue(CommandSender sender) throws FlagGameException {
         for (QueuedCommand cmd : this.queue) {
             if (cmd.getSender().equals(sender)) {
                 cmd.execute();

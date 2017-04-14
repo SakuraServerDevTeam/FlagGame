@@ -38,7 +38,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import syam.flaggame.exception.ObjectiveCollisionException;
-import syam.flaggame.exception.StageReservedException;
+import syam.flaggame.exception.ReservedException;
 import syam.flaggame.game.AreaInfo;
 import syam.flaggame.game.AreaSet;
 import syam.flaggame.game.GameMessageType;
@@ -298,7 +298,7 @@ public final class StageBsonMapper {
             stage.setDescription(bson.getString("description").getValue());
             stage.setGuide(bson.getString("guide").getValue());
             return stage;
-        } catch (StageReservedException | ObjectiveCollisionException ex) {
+        } catch (ReservedException | ObjectiveCollisionException ex) {
             throw new RuntimeException(ex);
         }
     }
