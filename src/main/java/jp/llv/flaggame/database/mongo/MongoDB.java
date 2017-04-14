@@ -33,6 +33,7 @@ import jp.llv.flaggame.database.Database;
 import jp.llv.flaggame.database.DatabaseCallback;
 import jp.llv.flaggame.database.DatabaseException;
 import jp.llv.flaggame.database.DatabaseResult;
+import jp.llv.flaggame.database.mongo.bson.FestivalBsonMapper;
 import jp.llv.flaggame.profile.RecordStream;
 import jp.llv.flaggame.profile.StatEntry;
 import jp.llv.flaggame.profile.record.ExpRecord;
@@ -48,7 +49,8 @@ import org.bson.Document;
 import syam.flaggame.FlagConfig;
 import syam.flaggame.FlagGame;
 import syam.flaggame.game.Stage;
-import syam.flaggame.game.StageBsonConverter;
+import jp.llv.flaggame.database.mongo.bson.StageBsonMapper;
+import jp.llv.flaggame.reception.fest.FestivalSchedule;
 
 /**
  *
@@ -62,6 +64,7 @@ public class MongoDB implements Database {
     public static final String VIEW_STAGE_STATS = "stage_stats";
     public static final String VIEW_GAME_HISTORY = "game_history";
     public static final String COLLECTION_STAGE = "stage";
+    public static final String COLLECTION_FESTIVAL = "festival";
     public static final String COLLECTION_RECORD = "record";
     public static final String FIELD_ID = "_id";
     public static final String FIELD_COUNT = "count";
@@ -131,7 +134,7 @@ public class MongoDB implements Database {
         try {
             getStageCollection().find()
                     .map(BsonDocument.class::cast)
-                    .map(StageBsonConverter::readStage)
+                    .map(StageBsonMapper::readStage)
                     .forEach(
                             new MongoDBResultCallback<>(consumer),
                             new MongoDBErrorCallback<>(callback)
@@ -145,7 +148,7 @@ public class MongoDB implements Database {
     public void saveStage(Stage stage, DatabaseCallback<Void, DatabaseException> callback) {
         try {
             MongoCollection<BsonValue> coll = getStageCollection();
-            BsonDocument bson = StageBsonConverter.writeStage(stage);
+            BsonDocument bson = StageBsonMapper.writeStage(stage);
             coll.updateOne(Filters.eq(FIELD_ID, bson.get(FIELD_ID)),
                     new BsonDocument(SET, bson),
                     new UpdateOptions().upsert(true),
@@ -160,6 +163,54 @@ public class MongoDB implements Database {
     public void deleteStage(Stage stage, DatabaseCallback<Void, DatabaseException> callback) {
         try {
             getStageCollection().deleteOne(Filters.eq(FIELD_ID, stage.getName()),
+                    new MongoDBErrorCallback<>(callback)
+            );
+        } catch (DatabaseException ex) {
+            callback.call(DatabaseResult.fail(ex));
+        }
+    }
+
+    private MongoCollection<BsonValue> getFestivalCollection() throws DatabaseException {
+        if (database == null) {
+            throw new DatabaseException("Not connected");
+        }
+        return database.getCollection(COLLECTION_FESTIVAL).withDocumentClass(BsonValue.class);
+    }
+
+    @Override
+    public void loadFestivals(DatabaseCallback<FestivalSchedule, RuntimeException> consumer, DatabaseCallback<Void, DatabaseException> callback) {
+        try {
+            getFestivalCollection().find()
+                    .map(BsonDocument.class::cast)
+                    .map(FestivalBsonMapper::readSchedule)
+                    .forEach(
+                            new MongoDBResultCallback<>(consumer),
+                            new MongoDBErrorCallback<>(callback)
+                    );
+        } catch (DatabaseException ex) {
+            callback.call(DatabaseResult.fail(ex));
+        }
+    }
+
+    @Override
+    public void saveFestival(FestivalSchedule festival, DatabaseCallback<Void, DatabaseException> callback) {
+        try {
+            MongoCollection<BsonValue> coll = getFestivalCollection();
+            BsonDocument bson = FestivalBsonMapper.writeSchedule(festival);
+            coll.updateOne(Filters.eq(FIELD_ID, bson.get(FIELD_ID)),
+                    new BsonDocument(SET, bson),
+                    new UpdateOptions().upsert(true),
+                    new MongoDBErrorCallback<>(callback)
+            );
+        } catch (DatabaseException ex) {
+            callback.call(DatabaseResult.fail(ex));
+        }
+    }
+
+    @Override
+    public void deleteFestival(FestivalSchedule festival, DatabaseCallback<Void, DatabaseException> callback) {
+        try {
+            getFestivalCollection().deleteOne(Filters.eq(FIELD_ID, festival.getName()),
                     new MongoDBErrorCallback<>(callback)
             );
         } catch (DatabaseException ex) {

@@ -23,7 +23,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
-import syam.flaggame.FlagGame;
 
 /**
  * StageManager (StageManager.java)
@@ -32,12 +31,7 @@ import syam.flaggame.FlagGame;
  */
 public class StageManager implements Iterable<Stage> {
 
-    private final FlagGame plugin;
     private final Map<String, Stage> stages = Collections.synchronizedMap(new HashMap<>());
-
-    public StageManager(FlagGame plugin) {
-        this.plugin = plugin;
-    }
 
     /**
      * 全ステージのマップを返す

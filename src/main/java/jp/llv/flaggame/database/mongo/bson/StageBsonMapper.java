@@ -14,16 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package syam.flaggame.game;
+package jp.llv.flaggame.database.mongo.bson;
 
+import static  jp.llv.flaggame.database.mongo.bson.BsonMapper.*;
 import jp.llv.flaggame.game.permission.GamePermission;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.BiFunction;
 import syam.flaggame.game.objective.BannerSlot;
 import syam.flaggame.game.objective.BannerSpawner;
 import syam.flaggame.game.objective.Flag;
@@ -32,7 +26,6 @@ import jp.llv.flaggame.game.permission.GamePermissionState;
 import jp.llv.flaggame.game.permission.GamePermissionStateSet;
 import jp.llv.flaggame.reception.TeamColor;
 import jp.llv.flaggame.rollback.StageDataType;
-import jp.llv.flaggame.util.TriConsumer;
 import org.bson.BsonBinary;
 import org.bson.BsonBoolean;
 import org.bson.BsonDocument;
@@ -46,76 +39,17 @@ import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import syam.flaggame.exception.ObjectiveCollisionException;
 import syam.flaggame.exception.StageReservedException;
+import syam.flaggame.game.AreaInfo;
+import syam.flaggame.game.AreaSet;
+import syam.flaggame.game.GameMessageType;
+import syam.flaggame.game.Stage;
 import syam.flaggame.game.objective.GameChest;
 import syam.flaggame.util.Cuboid;
 
-public class StageBsonConverter {
-
-    private static <E extends Enum<E>> void writeEnum(BsonDocument bson, String key, E value) {
-        if (value == null) {
-            return;
-        }
-        bson.append(key, new BsonString(value.toString()));
-    }
-
-    private static <E extends Enum<E>> E readEnum(BsonDocument bson, String key, Class<E> clazz) {
-        try {
-            return Enum.valueOf(clazz, bson.getString(key).getValue());
-        } catch (BsonInvalidOperationException ex) {
-            return null;
-        }
-    }
-
-    private static <K extends Enum<K>, V> void writeEnumMap(BsonDocument bson, String key, Map<K, ? extends V> value, TriConsumer<BsonDocument, String, V> writer) {
-        BsonDocument section = new BsonDocument();
-        for (Map.Entry<K, ? extends V> entry : value.entrySet()) {
-            writer.accept(section, entry.getKey().toString(), entry.getValue());
-        }
-        bson.append(key, section);
-    }
-
-    private static <K extends Enum<K>, V> EnumMap<K, V> readEnumMap(BsonDocument bson, String key, Class<K> clazz, BiFunction<BsonDocument, String, ? extends V> reader) {
-        BsonDocument section = bson.getDocument(key);
-        EnumMap<K, V> result = new EnumMap<>(clazz);
-        for (String k : section.keySet()) {
-            result.put(Enum.valueOf(clazz, k), reader.apply(section, k));
-        }
-        return result;
-    }
-
-    private static <V> void writeMap(BsonDocument bson, String key, Map<String, ? extends V> value, TriConsumer<BsonDocument, String, V> writer) {
-        BsonDocument section = new BsonDocument();
-        for (Map.Entry<String, ? extends V> entry : value.entrySet()) {
-            writer.accept(section, entry.getKey(), entry.getValue());
-        }
-        bson.append(key, section);
-    }
-
-    private static <V> Map<String, V> readMap(BsonDocument bson, String key, BiFunction<BsonDocument, String, ? extends V> reader) {
-        BsonDocument section = bson.getDocument(key);
-        Map<String, V> result = new HashMap<>();
-        for (String k : section.keySet()) {
-            result.put(k, reader.apply(section, k));
-        }
-        return result;
-    }
-
-    private static <T> void writeList(BsonDocument bson, String key, Collection<? extends T> value, TriConsumer<BsonDocument, String, T> writer) {
-        BsonDocument section = new BsonDocument();
-        int i = 0;
-        for (T t : value) {
-            writer.accept(section, Integer.toString(i++), t);
-        }
-        bson.append(key, section);
-    }
-
-    private static <T> List<T> readList(BsonDocument bson, String key, BiFunction<BsonDocument, String, ? extends T> reader) {
-        BsonDocument section = bson.getDocument(key);
-        List<T> result = new ArrayList<>();
-        for (String k : section.keySet()) {
-            result.add(reader.apply(section, k));
-        }
-        return result;
+public final class StageBsonMapper {
+    
+    private StageBsonMapper() {
+        throw new UnsupportedOperationException();
     }
 
     private static void writeLocation(BsonDocument bson, String key, Location value) {
@@ -205,33 +139,33 @@ public class StageBsonConverter {
 
     private static void writeAreaInfo(BsonDocument bson, String key, AreaInfo value) {
         BsonDocument section = new BsonDocument();
-        writeMap(section, "rollbacks", value.getRollbacks(), StageBsonConverter::writeRollback);
-        writeEnumMap(section, "permissions", value.getPermissions(), StageBsonConverter::writeGamePermissionStateSet);
-        writeList(section, "messages", value.getMessages(), StageBsonConverter::writeMessageData);
+        writeMap(section, "rollbacks", value.getRollbacks(), StageBsonMapper::writeRollback);
+        writeEnumMap(section, "permissions", value.getPermissions(), StageBsonMapper::writeGamePermissionStateSet);
+        writeList(section, "messages", value.getMessages(), StageBsonMapper::writeMessageData);
         bson.append(key, section);
     }
 
     private static AreaInfo readAreaInfo(BsonDocument bson, String key) {
         BsonDocument section = bson.getDocument(key);
         AreaInfo result = new AreaInfo();
-        result.setRollbacks(readMap(section, "rollbacks", StageBsonConverter::readRollback));
-        result.setPermissions(readEnumMap(section, "permissions", GamePermission.class, StageBsonConverter::readGamePermissionStateSet));
-        result.setMessages(readList(section, "messages", StageBsonConverter::readMessageData));
+        result.setRollbacks(readMap(section, "rollbacks", StageBsonMapper::readRollback));
+        result.setPermissions(readEnumMap(section, "permissions", GamePermission.class, StageBsonMapper::readGamePermissionStateSet));
+        result.setMessages(readList(section, "messages", StageBsonMapper::readMessageData));
         return result;
     }
 
     private static void writeAreaSet(BsonDocument bson, String key, AreaSet value) {
         BsonDocument section = new BsonDocument();
-        writeMap(section, "areas", value.getAreaMap(), StageBsonConverter::writeCuboid);
-        writeMap(section, "info", value.getAreaInfoMap(), StageBsonConverter::writeAreaInfo);
+        writeMap(section, "areas", value.getAreaMap(), StageBsonMapper::writeCuboid);
+        writeMap(section, "info", value.getAreaInfoMap(), StageBsonMapper::writeAreaInfo);
         bson.append(key, section);
     }
 
     private static AreaSet readAreaSet(BsonDocument bson, String key) {
         BsonDocument section = bson.getDocument(key);
         AreaSet result = new AreaSet();
-        result.setAreaMap(readMap(section, "areas", StageBsonConverter::readCuboid));
-        result.setAreaInfoMap(readMap(section, "info", StageBsonConverter::readAreaInfo));
+        result.setAreaMap(readMap(section, "areas", StageBsonMapper::readCuboid));
+        result.setAreaInfoMap(readMap(section, "info", StageBsonMapper::readAreaInfo));
         return result;
     }
 
@@ -324,14 +258,14 @@ public class StageBsonConverter {
         section.append("entryfee", new BsonDouble(value.getEntryFee()));
         section.append("prize", new BsonDouble(value.getPrize()));
         section.append("cooldown", new BsonInt64(value.getCooldown()));
-        writeEnumMap(section, "spawn", value.getSpawns(), StageBsonConverter::writeLocation);
+        writeEnumMap(section, "spawn", value.getSpawns(), StageBsonMapper::writeLocation);
         writeLocation(section, "specspawn", value.getSpecSpawn().orElse(null));
         
-        writeList(section, "flags", value.getObjectives(Flag.class).values(), StageBsonConverter::writeFlag);
-        writeList(section, "nexuses", value.getObjectives(Nexus.class).values(), StageBsonConverter::writeNexus);
-        writeList(section, "banner-spawners", value.getObjectives(BannerSlot.class).values(), StageBsonConverter::writeBannerSlot);
-        writeList(section, "banner-slots", value.getObjectives(BannerSpawner.class).values(), StageBsonConverter::writeBannerSpawner);
-        writeList(section, "containers", value.getObjectives(GameChest.class).values(), StageBsonConverter::writeGameChest);
+        writeList(section, "flags", value.getObjectives(Flag.class).values(), StageBsonMapper::writeFlag);
+        writeList(section, "nexuses", value.getObjectives(Nexus.class).values(), StageBsonMapper::writeNexus);
+        writeList(section, "banner-spawners", value.getObjectives(BannerSlot.class).values(), StageBsonMapper::writeBannerSlot);
+        writeList(section, "banner-slots", value.getObjectives(BannerSpawner.class).values(), StageBsonMapper::writeBannerSpawner);
+        writeList(section, "containers", value.getObjectives(GameChest.class).values(), StageBsonMapper::writeGameChest);
         
         writeAreaSet(section, "areas", value.getAreas());
         section.append("author", new BsonString(value.getAuthor()));
@@ -352,13 +286,13 @@ public class StageBsonConverter {
             stage.setEntryFee(bson.getDouble("entryfee").getValue());
             stage.setPrize(bson.getDouble("prize").getValue());
             stage.setCooldown(bson.getInt64("cooldown").getValue());
-            stage.setSpawns(readEnumMap(bson, "spawn", TeamColor.class, StageBsonConverter::readLocation));
+            stage.setSpawns(readEnumMap(bson, "spawn", TeamColor.class, StageBsonMapper::readLocation));
             stage.setSpecSpawn(readLocation(bson, "specspawn"));
-            stage.addObjectives(readList(bson, "flags", StageBsonConverter::readFlag));
-            stage.addObjectives(readList(bson, "nexuses", StageBsonConverter::readNexus));
-            stage.addObjectives(readList(bson, "banner-spawners", StageBsonConverter::readBannerSpawner));
-            stage.addObjectives(readList(bson, "banner-slots", StageBsonConverter::readBannerSlot));
-            stage.addObjectives(readList(bson, "containers", StageBsonConverter::readGameChest));
+            stage.addObjectives(readList(bson, "flags", StageBsonMapper::readFlag));
+            stage.addObjectives(readList(bson, "nexuses", StageBsonMapper::readNexus));
+            stage.addObjectives(readList(bson, "banner-spawners", StageBsonMapper::readBannerSpawner));
+            stage.addObjectives(readList(bson, "banner-slots", StageBsonMapper::readBannerSlot));
+            stage.addObjectives(readList(bson, "containers", StageBsonMapper::readGameChest));
             stage.setAreas(readAreaSet(bson, "areas"));
             stage.setAuthor(bson.getString("author").getValue());
             stage.setDescription(bson.getString("description").getValue());

@@ -25,8 +25,8 @@ import jp.llv.flaggame.database.DatabaseException;
 import jp.llv.flaggame.database.mongo.MongoDB;
 import jp.llv.flaggame.game.GameManager;
 import jp.llv.flaggame.profile.ProfileManager;
-import jp.llv.flaggame.reception.RealtimeTeamingReception;
 import jp.llv.flaggame.reception.ReceptionManager;
+import jp.llv.flaggame.reception.fest.FestivalManager;
 
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.World;
@@ -68,6 +68,7 @@ public class FlagGame extends JavaPlugin {
     private ReceptionManager receptions;
     private GameManager games;
     private StageManager stages;
+    private FestivalManager festivals;
     private ProfileManager profiles;
 
     // ** Variable **
@@ -150,7 +151,8 @@ public class FlagGame extends JavaPlugin {
         profiles = new ProfileManager(this);
         receptions = new ReceptionManager(this);
         games = new GameManager(this);
-        stages = new StageManager(this);
+        stages = new StageManager();
+        festivals = new FestivalManager();
         debug.endTimer("managers");
 
         // ゲームデータ読み込み
@@ -166,6 +168,11 @@ public class FlagGame extends JavaPlugin {
             } catch (DatabaseException ex) {
                 getLogger().log(Level.WARNING, "Failed to load stage!", ex);
             }
+        });
+        database.loadFestivals(festival -> {
+            
+        }, result -> {
+            
         });
         debug.endTimer("load games");
 
@@ -318,6 +325,10 @@ public class FlagGame extends JavaPlugin {
 
     public StageManager getStages() {
         return stages;
+    }
+
+    public FestivalManager getFestivals() {
+        return festivals;
     }
 
     public static FlagGame getInstance() {

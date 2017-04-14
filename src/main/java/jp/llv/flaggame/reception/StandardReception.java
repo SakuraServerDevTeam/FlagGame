@@ -18,6 +18,7 @@ package jp.llv.flaggame.reception;
 
 import java.util.List;
 import java.util.UUID;
+import jp.llv.flaggame.reception.fest.FestivalReception;
 import jp.llv.flaggame.util.TriFunction;
 import syam.flaggame.FlagGame;
 
@@ -34,6 +35,10 @@ public enum StandardReception implements ReceptionType<GameReception> {
     MATCHING(
             MatchingReception::new,
             "matching", "ma"
+    ),
+    FESTIVAL(
+            FestivalReception::new,
+            "festival", "fest", "fe"
     ),;
 
     private final String name;
@@ -55,12 +60,12 @@ public enum StandardReception implements ReceptionType<GameReception> {
     public String[] getAliases() {
         return aliases;
     }
-    
+
     @Override
     public GameReception newInstance(FlagGame plugin, UUID id, List<String> args) {
         return constructor.apply(plugin, id, args);
     }
-    
+
     public static StandardReception of(String name) {
         for (StandardReception type : values()) {
             if (type.name.equalsIgnoreCase(name)) {

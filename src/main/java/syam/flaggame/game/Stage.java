@@ -192,8 +192,9 @@ public class Stage {
         return areas;
     }
     
-    /*package*/ void setAreas(AreaSet areas) {
-        this.areas = areas;
+    public void setAreas(AreaSet areas) {
+        this.areas.setAreaInfoMap(areas.getAreaInfoMap());
+        this.areas.setAreaMap(areas.getAreaMap());
     }
     
     public void setProtected(boolean protect) {

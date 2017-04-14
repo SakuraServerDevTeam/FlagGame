@@ -24,7 +24,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import jp.llv.flaggame.game.permission.GamePermissionState;
 import jp.llv.flaggame.game.permission.GamePermissionStateSet;
+import jp.llv.flaggame.reception.TeamColor;
 import jp.llv.flaggame.rollback.StageData;
 import jp.llv.flaggame.rollback.StageDataType;
 
@@ -38,7 +40,6 @@ public class AreaInfo {
     private final Map<GamePermission, GamePermissionStateSet> permissions = new EnumMap<>(GamePermission.class);
     private final List<MessageData> messages = new ArrayList<>();
 
-    
     public RollbackData addRollback(String id) {
         if (rollbacks.containsKey(id)) {
             throw new IllegalStateException("ID duplication");
@@ -47,77 +48,83 @@ public class AreaInfo {
         rollbacks.put(id, data);
         return data;
     }
-    
+
     /*package*/ void addRollback(String name, RollbackData data) {
         rollbacks.put(name, data);
     }
-    
+
     public void removeRollback(String id) {
         rollbacks.remove(id);
     }
-    
+
     public RollbackData getRollback(String id) {
         return rollbacks.get(id);
     }
-    
+
     public Map<String, RollbackData> getRollbacks() {
         return Collections.unmodifiableMap(rollbacks);
     }
-    
+
     public List<RollbackData> getInitialRollbacks() {
         return rollbacks.values().stream().filter(r -> r.getTiming() == 0).collect(Collectors.toList());
     }
-    
+
     public List<RollbackData> getDelayedRollbacks() {
         return rollbacks.values().stream().filter(r -> r.getTiming() != 0).collect(Collectors.toList());
     }
-    
-    /*package*/ void setRollbacks(Map<String, RollbackData> map) {
+
+    public void setRollbacks(Map<String, RollbackData> map) {
         rollbacks.putAll(map);
     }
-    
+
     public void removeRollbacks() {
         rollbacks.clear();
     }
-    
+
     public GamePermissionStateSet getPermission(GamePermission type) {
         if (!permissions.containsKey(type)) {
             permissions.put(type, new GamePermissionStateSet());
         }
-        return permissions.get(type); 
+        return permissions.get(type);
     }
-    
-    /*package*/ void setPermissions(Map<GamePermission, GamePermissionStateSet> permissions) {
+
+    public void setPermissions(Map<GamePermission, GamePermissionStateSet> permissions) {
+        for (Map.Entry<GamePermission, GamePermissionStateSet> entry : permissions.entrySet()) {
+            GamePermissionStateSet dest = getPermission(entry.getKey());
+            for (Map.Entry<TeamColor, GamePermissionState> state : entry.getValue().getState().entrySet()) {
+                dest.setState(state.getKey(), state.getValue());
+            }
+        }
         this.permissions.putAll(permissions);
     }
-    
-    /*package*/ Map<GamePermission, GamePermissionStateSet> getPermissions() {
-        return this.permissions;
+
+    public Map<GamePermission, GamePermissionStateSet> getPermissions() {
+        return Collections.unmodifiableMap(permissions);
     }
-    
+
     public List<MessageData> getMessages() {
         return Collections.unmodifiableList(messages);
     }
-    
+
     public MessageData addMessage(String message) {
         MessageData data = new MessageData();
         data.setMessage(message);
         return data;
     }
-    
+
     public void removeMessage(int index) {
         this.messages.remove(index);
     }
-    
-    /*package*/ void setMessages(List<MessageData> messages) {
+
+    public void setMessages(List<MessageData> messages) {
         this.messages.addAll(messages);
     }
-    
+
     /**
      * Scheduled rollback data.
      */
     public static class RollbackData {
-        
+
         /**
          * scheduled timing. if zero, this will be handled in reception.
          * otherwise in game.
@@ -126,45 +133,45 @@ public class AreaInfo {
         private StageData target = StageDataType.NONE.newInstance();
         private byte[] data = {};
 
-        /*package*/ RollbackData() {
+        public RollbackData() {
         }
-        
+
         public StageData getTarget() {
             return target;
         }
-        
+
         public void setTarget(StageData target) {
             this.target = target;
         }
-        
+
         public long getTiming() {
             return timing;
         }
-        
+
         public void setTiming(long timing) {
             if (timing < 0) {
                 throw new IllegalArgumentException("Negative timing is not allowed");
             }
             this.timing = timing;
         }
-        
+
         public byte[] getData() {
             return data;
         }
-        
+
         public void setData(byte[] data) {
             this.data = data;
         }
-        
+
     }
-    
+
     public static class MessageData {
-        
+
         private long timing = 1L;
         private GameMessageType type = GameMessageType.CHAT;
         private String message = "";
 
-        /*package*/ MessageData() {
+        public MessageData() {
         }
 
         public long getTiming() {
@@ -193,7 +200,7 @@ public class AreaInfo {
         public void setMessage(String message) {
             this.message = message;
         }
-        
+
     }
 
 }

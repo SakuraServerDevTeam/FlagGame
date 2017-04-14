@@ -134,15 +134,15 @@ public class AreaSet {
         return Collections.unmodifiableMap(areas);
     }
 
-    /*package*/ void setAreaMap(Map<String, Cuboid> map) {
+    public void setAreaMap(Map<String, Cuboid> map) {
         areas.putAll(map);
     }
 
-    /*package*/ Map<String, AreaInfo> getAreaInfoMap() {
-        return information;
+    public Map<String, AreaInfo> getAreaInfoMap() {
+        return Collections.unmodifiableMap(information);
     }
 
-    /*package*/ void setAreaInfoMap(Map<String, AreaInfo> map) {
+    public void setAreaInfoMap(Map<String, AreaInfo> map) {
         information.putAll(map);
     }
 

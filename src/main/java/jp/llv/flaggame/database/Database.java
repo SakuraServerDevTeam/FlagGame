@@ -21,6 +21,7 @@ import java.util.UUID;
 import jp.llv.flaggame.profile.RecordStream;
 import jp.llv.flaggame.profile.StatEntry;
 import jp.llv.flaggame.profile.record.RecordType;
+import jp.llv.flaggame.reception.fest.FestivalSchedule;
 import syam.flaggame.game.Stage;
 
 /**
@@ -56,6 +57,12 @@ public interface Database extends AutoCloseable {
 
     void loadStageStat(String stage, DatabaseCallback<Map.Entry<RecordType, StatEntry>, RuntimeException> consumer, DatabaseCallback<Void, DatabaseException> callback);
 
+    void loadFestivals(DatabaseCallback<FestivalSchedule, RuntimeException> consumer, DatabaseCallback<Void, DatabaseException> callback);
+    
+    void saveFestival(FestivalSchedule festival, DatabaseCallback<Void, DatabaseException> callback);
+    
+    void deleteFestival(FestivalSchedule festival, DatabaseCallback<Void, DatabaseException> callback);
+    
     @Override
     public void close() throws DatabaseException;
 
