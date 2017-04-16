@@ -27,6 +27,7 @@ import org.bukkit.entity.Player;
 import syam.flaggame.command.BaseCommand;
 
 import syam.flaggame.exception.CommandException;
+import syam.flaggame.exception.FlagGameException;
 import syam.flaggame.permission.Perms;
 
 public class GameStartCommand extends BaseCommand {
@@ -44,7 +45,7 @@ public class GameStartCommand extends BaseCommand {
     }
 
     @Override
-    public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
+    public void execute(List<String> args, CommandSender sender, Player player) throws FlagGameException {
         GameReception reception = null;
         List<String> startArgs;
 
