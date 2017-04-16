@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Pattern;
 import jp.llv.flaggame.api.session.SimpleReservable;
 import jp.llv.flaggame.reception.TeamColor;
 
@@ -31,6 +32,8 @@ import jp.llv.flaggame.reception.TeamColor;
  * @author SakuraServerDev
  */
 public class FestivalSchedule extends SimpleReservable<FestivalSchedule> {
+    
+    public static final Pattern NAME_REGEX = Pattern.compile("^[a-z0-9](?:[a-z0-9_-]*[a-z0-9])?$");
 
     private final String name;
     private final Map<TeamColor, String> teams = new HashMap<>();
