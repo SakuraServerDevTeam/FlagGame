@@ -108,10 +108,31 @@ public abstract class BaseCommand {
     }
 
     public final List<String> complete(CommandSender sender, String[] preArgs, String cmd) {
+        List<String> args = new ArrayList<>(Arrays.asList(preArgs));
+        if (argLength > args.size()
+            || (bePlayer && !(sender instanceof Player))
+            || !hasPermission(sender)) {
+            return null;
+        }
+        try {
+            if (sender instanceof Player) {
+                return complete(args, sender, (Player) sender);
+            } else {
+                return complete(args, sender, null);
+            }
+        } catch (FlagGameException ex) {
+        } catch (Exception ex) {
+            Actions.message(sender, "&cAn unexpected plugin error has occured.");
+            plugin.getLogger().log(Level.WARNING, "Failed to complete command", ex);
+        }
         return null;
     }
 
-    public void execute(List<String> args, String label, CommandSender sender, Player player) throws FlagGameException {
+    protected List<String> complete(List<String> args, CommandSender sender, Player player) throws FlagGameException {
+        return null;
+    }
+
+    protected void execute(List<String> args, String label, CommandSender sender, Player player) throws FlagGameException {
         this.execute(args, sender, player);
     }
 
@@ -123,7 +144,7 @@ public abstract class BaseCommand {
      * @param player the player who executed this command - equal to sender
      * @throws CommandException
      */
-    public void execute(List<String> args, CommandSender sender, Player player) throws FlagGameException {
+    protected void execute(List<String> args, CommandSender sender, Player player) throws FlagGameException {
         throw new CommandException("&cThis command is not implemented yet.");
     }
 
