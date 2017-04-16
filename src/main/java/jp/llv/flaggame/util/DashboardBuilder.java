@@ -291,7 +291,7 @@ public class DashboardBuilder {
         return appendMap(contents, (t, k) -> t.green(k), valueFormatter);
     }
 
-    public <K extends CharSequence, V> DashboardBuilder appendEnumMap(Map<? extends K, ? extends V> contents,
+    public <K extends Enum<K>, V> DashboardBuilder appendEnumMap(Map<? extends K, ? extends V> contents,
                                                                       BiConsumer<DashboardBuilder, ? super V> valueFormatter) {
         return appendMap(contents, (t, k) -> t.green(k.toString().toLowerCase()), valueFormatter);
     }
