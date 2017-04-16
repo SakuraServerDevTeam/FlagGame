@@ -16,15 +16,40 @@
  */
 package jp.llv.flaggame.reception.fest;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  *
  * @author SakuraServerDev
  */
-public class FestivalManager {
+public class FestivalManager implements Iterable<FestivalSchedule> {
     
     private final Map<String, FestivalSchedule> schedules = new HashMap<>();
+
+    public Map<String, FestivalSchedule> getFestivals() {
+        return Collections.unmodifiableMap(schedules);
+    }
+
+    public void addFestival(FestivalSchedule stage) {
+        schedules.put(stage.getName(), stage);
+    }
+
+    public void removeFestival(FestivalSchedule stage) {
+        schedules.remove(stage.getName());
+    }
+
+    public Optional<FestivalSchedule> getFestival(String stageName) {
+        return Optional.ofNullable(schedules.get(stageName));
+    }
+
+    @Override
+    public Iterator<FestivalSchedule> iterator() {
+        return this.getFestivals().values().iterator();
+    }
+
     
 }
