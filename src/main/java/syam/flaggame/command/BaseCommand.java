@@ -18,6 +18,7 @@ package syam.flaggame.command;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -109,10 +110,9 @@ public abstract class BaseCommand {
 
     public final List<String> complete(CommandSender sender, String[] preArgs, String cmd) {
         List<String> args = new ArrayList<>(Arrays.asList(preArgs));
-        if (argLength > args.size()
-            || (bePlayer && !(sender instanceof Player))
+        if ((bePlayer && !(sender instanceof Player))
             || !hasPermission(sender)) {
-            return null;
+            return Collections.emptyList();
         }
         try {
             if (sender instanceof Player) {
@@ -125,11 +125,11 @@ public abstract class BaseCommand {
             Actions.message(sender, "&cAn unexpected plugin error has occured.");
             plugin.getLogger().log(Level.WARNING, "Failed to complete command", ex);
         }
-        return null;
+        return Collections.emptyList();
     }
 
     protected List<String> complete(List<String> args, CommandSender sender, Player player) throws FlagGameException {
-        return null;
+        return Collections.emptyList();
     }
 
     protected void execute(List<String> args, String label, CommandSender sender, Player player) throws FlagGameException {
