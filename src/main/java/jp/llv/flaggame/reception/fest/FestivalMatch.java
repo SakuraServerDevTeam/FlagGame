@@ -31,6 +31,11 @@ public class FestivalMatch {
     private String stage;
     private final Map<TeamColor, TeamColor> colorMapping = new EnumMap<>(TeamColor.class);
 
+    public FestivalMatch(String stage) {
+        Objects.requireNonNull(stage);
+        this.stage = stage;
+    }
+
     public String getStage() {
         return stage;
     }
