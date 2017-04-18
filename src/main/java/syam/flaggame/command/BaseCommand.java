@@ -18,6 +18,7 @@ package syam.flaggame.command;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
@@ -115,10 +116,16 @@ public abstract class BaseCommand {
             return Collections.emptyList();
         }
         try {
+            Collection<String> result;
             if (sender instanceof Player) {
-                return complete(args, sender, (Player) sender);
+                result = complete(args, sender, (Player) sender);
             } else {
-                return complete(args, sender, null);
+                result = complete(args, sender, null);
+            }
+            if (result instanceof List) {
+                return (List<String>) result;
+            } else {
+                return new ArrayList<>(result);
             }
         } catch (FlagGameException ex) {
         } catch (Exception ex) {
@@ -128,7 +135,7 @@ public abstract class BaseCommand {
         return Collections.emptyList();
     }
 
-    protected List<String> complete(List<String> args, CommandSender sender, Player player) throws FlagGameException {
+    protected Collection<String> complete(List<String> args, CommandSender sender, Player player) throws FlagGameException {
         return Collections.emptyList();
     }
 
