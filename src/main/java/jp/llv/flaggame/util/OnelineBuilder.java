@@ -16,6 +16,7 @@
  */
 package jp.llv.flaggame.util;
 
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -68,6 +69,11 @@ public class OnelineBuilder {
             inValue = true;
         }
         text.gold(obj);
+        return this;
+    }
+
+    public OnelineBuilder text(ChatColor color, Object obj) {
+        text.text(color, obj);
         return this;
     }
 
