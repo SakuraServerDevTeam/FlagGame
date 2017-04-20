@@ -18,7 +18,10 @@ package jp.llv.flaggame.util;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import syam.flaggame.player.GamePlayer;
 import syam.flaggame.util.Actions;
 
@@ -30,6 +33,10 @@ import syam.flaggame.util.Actions;
 public class OnelineBuilder {
 
     private static final char QUOTE = '\'';
+    private static final char SPACE = ' ';
+    private static final char BUTTON_PREFIX = '[';
+    private static final char BUTTON_SUFFIX = ']';
+    private static final String CLICK = "click";
 
     private final TextBuilder<BaseComponent[]> text = TextBuilder.newBuilder();
     private boolean inValue = false;
@@ -62,6 +69,44 @@ public class OnelineBuilder {
         }
         text.gold(obj);
         return this;
+    }
+
+    public OnelineBuilder space() {
+        text.text(SPACE);
+        return this;
+    }
+
+    public CommandBuilder<OnelineBuilder> buttonRun(String name) {
+        if (inValue) {
+            text.gray(QUOTE);
+            inValue = false;
+        }
+        space();
+        text.lightPurple(BUTTON_PREFIX + name + BUTTON_SUFFIX).showing().gray(CLICK).create();
+        return CommandBuilder.newBuilder(s -> {
+            text.event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, s));
+            return this;
+        });
+    }
+    
+    public OnelineBuilder buttonTp(String name, Player player, Location loc) {
+        return buttonRun("tp").append("tp").append(player.getName())
+                .append(loc.getX()).append(loc.getY()).append(loc.getZ())
+                .append(loc.getYaw()).append(loc.getPitch())
+                .append(loc.getWorld().getName()).create();
+    }
+
+    public CommandBuilder<OnelineBuilder> buttonSuggest(String name) {
+        if (inValue) {
+            text.gray(QUOTE);
+            inValue = false;
+        }
+        space();
+        text.lightPurple(BUTTON_PREFIX + name + BUTTON_SUFFIX).showing().gray(CLICK).create();
+        return CommandBuilder.newBuilder(s -> {
+            text.event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, s + SPACE));
+            return this;
+        });
     }
 
     public BaseComponent[] create() {

@@ -20,7 +20,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
-import jp.llv.flaggame.util.TriConsumer;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
