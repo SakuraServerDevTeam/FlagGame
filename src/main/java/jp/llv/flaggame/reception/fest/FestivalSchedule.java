@@ -20,12 +20,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
 import jp.llv.flaggame.api.session.SimpleReservable;
 import jp.llv.flaggame.reception.TeamColor;
+import jp.llv.flaggame.util.MapUtils;
 
 /**
  *
@@ -56,10 +58,16 @@ public class FestivalSchedule extends SimpleReservable<FestivalSchedule> {
     public String getTeam(TeamColor color) {
         return teams.get(color);
     }
+    
+    public TeamColor getTeam(String name) {
+        Iterator<TeamColor> it = MapUtils.getKeyByValue(teams, name).iterator();
+        return it.hasNext() ? it.next() : null;
+    }
 
     public void setTeam(TeamColor color, String team) {
         Objects.requireNonNull(color);
         Objects.requireNonNull(team);
+        MapUtils.removeValue(teams, name);
         teams.put(color, name);
     }
 

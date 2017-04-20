@@ -21,6 +21,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
@@ -40,11 +41,17 @@ public final class MapUtils {
     public static <K, V> Set<K> getKeyByValue(Map<? extends K, ? extends V> map, V value) {
         Set<K> result = new HashSet<>();
         for (Map.Entry<? extends K, ? extends V> e : map.entrySet()) {
-            if (e.getValue().equals(value)) {
+            if (Objects.equals(e.getValue(), value)) {
                 result.add(e.getKey());
             }
         }
         return result;
+    }
+    
+    public static <K, V> void removeValue(Map<? extends K, ? extends V> map, V value) {
+        for (K key : getKeyByValue(map, value)) {
+            map.remove(key, value);
+        }
     }
 
     public static <K, V extends Comparable<V>> LinkedHashMap<V, Set<K>> rank(Map<? extends K, ? extends V> map) {
