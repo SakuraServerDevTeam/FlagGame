@@ -37,7 +37,7 @@ public interface FlagTabCompleter {
 
     Collection<String> complete(FlagGame plugin, List<String> args, CommandSender sender)
             throws FlagGameException;
-    
+
     static Builder builder() {
         return new Builder();
     }
@@ -112,7 +112,7 @@ public interface FlagTabCompleter {
                 this.index = index;
             }
 
-            public Builder suggest(CollectionSuggestionProvider provider) {
+            public Builder suggestList(CollectionSuggestionProvider provider) {
                 if (index == null) {
                     setProvider(provider);
                 } else {
@@ -121,20 +121,20 @@ public interface FlagTabCompleter {
                 return Builder.this;
             }
 
-            public Builder suggest(ArraySuggestionProvider provider) {
-                return suggest(provider.toCollectionSuggestionProvider());
+            public Builder suggestArray(ArraySuggestionProvider provider) {
+                return suggestList(provider.toCollectionSuggestionProvider());
             }
 
-            public Builder suggest(StreamSuggestionProvider provider) {
-                return suggest(provider.toCollectionSuggestionProvider());
+            public Builder suggestStream(StreamSuggestionProvider provider) {
+                return suggestList(provider.toCollectionSuggestionProvider());
             }
 
-            public Builder suggest(Class<? extends Enum> suggestion) {
-                return suggest((ArraySuggestionProvider) (p, s, a) -> suggestion.getEnumConstants());
+            public Builder suggestEnum(Class<? extends Enum> suggestion) {
+                return suggestArray((p, s, a) -> suggestion.getEnumConstants());
             }
 
-            public Builder suggest(String... suggestion) {
-                return suggest((ArraySuggestionProvider) (p, s, a) -> suggestion);
+            public Builder suggestConst(String... suggestion) {
+                return suggestArray((p, s, a) -> suggestion);
             }
 
         }
