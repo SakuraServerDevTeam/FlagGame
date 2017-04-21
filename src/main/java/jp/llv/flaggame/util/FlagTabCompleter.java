@@ -37,6 +37,10 @@ public interface FlagTabCompleter {
 
     Collection<String> complete(FlagGame plugin, List<String> args, CommandSender sender)
             throws FlagGameException;
+    
+    static Builder builder() {
+        return new Builder();
+    }
 
     static final class Builder {
 
