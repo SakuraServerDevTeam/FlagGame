@@ -21,7 +21,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
+import jp.llv.flaggame.util.FlagTabCompleter;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -49,20 +51,26 @@ public abstract class BaseCommand {
     private final int argLength;
     private final String usage;
     private final Perms permission;
+    private final FlagTabCompleter completer;
     private final String[] aliases;
 
-    public BaseCommand(FlagGame plugin, boolean bePlayer, int argLength, String usage, Perms permission, String name, String... aliases) {
-        this.plugin = plugin;
+    public BaseCommand(FlagGame plugin, boolean bePlayer, int argLength, String usage, Perms permission, FlagTabCompleter completer, String name, String... aliases) {
+        this.plugin = Objects.requireNonNull(plugin);
         this.bePlayer = bePlayer;
         this.argLength = argLength;
-        this.usage = usage;
+        this.usage = Objects.requireNonNull(usage);
         this.permission = permission;
-        this.name = name;
-        this.aliases = aliases;
+        this.completer = completer;
+        this.name = Objects.requireNonNull(name);
+        this.aliases = Objects.requireNonNull(aliases);
+    }
+
+    public BaseCommand(FlagGame plugin, boolean bePlayer, int argLength, String usage, Perms permission, String name, String... aliases) {
+        this(plugin, bePlayer, argLength, usage, permission, null, name, aliases);
     }
 
     public BaseCommand(FlagGame plugin, boolean bePlayer, int argLength, String usage, String name, String... aliases) {
-        this(plugin, bePlayer, argLength, usage, null, name, aliases);
+        this(plugin, bePlayer, argLength, usage, null, null, name, aliases);
     }
 
     public final boolean run(CommandSender sender, String[] preArgs, String cmd) {
@@ -136,7 +144,7 @@ public abstract class BaseCommand {
     }
 
     protected Collection<String> complete(List<String> args, CommandSender sender, Player player) throws FlagGameException {
-        return Collections.emptyList();
+        return completer == null ? Collections.emptyList() : completer.complete(plugin, args, sender);
     }
 
     protected void execute(List<String> args, String label, CommandSender sender, Player player) throws FlagGameException {
