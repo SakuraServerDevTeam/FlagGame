@@ -51,10 +51,8 @@ public class StageDeleteCommand extends BaseCommand {
 
     @Override
     public void execute(List<String> args, CommandSender sender, Player player) throws FlagGameException {
-        Stage stage = this.plugin.getStages().getStage(args.get(0))
+        this.plugin.getStages().getStage(args.get(0))
                 .orElseThrow(() -> new CommandException("&cその名前のステージは存在しません！"));
-
-        stage.reserve(null);
 
         // confirmキュー追加
         plugin.getConfirmQueue().addQueue(player, new QueuedStageDeletion(), args, 10);
@@ -73,6 +71,7 @@ public class StageDeleteCommand extends BaseCommand {
             }
             Stage stage = plugin.getStages().getStage(args.get(0))
                     .orElseThrow(() -> new CommandException("&cその名前のステージは存在しません！"));
+            stage.reserve(null);
             plugin.getDatabases()
                     .orElseThrow(() -> new CommandException("&cデータベースへの接続に失敗しました！"))
                     .deleteStage(stage, result -> {
