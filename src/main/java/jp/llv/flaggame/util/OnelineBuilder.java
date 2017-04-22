@@ -63,13 +63,18 @@ public class OnelineBuilder {
         return this;
     }
 
-    public OnelineBuilder value(Object obj) {
+    public OnelineBuilder value(ChatColor color, Object obj) {
         if (!inValue) {
             text.gray(QUOTE);
             inValue = true;
         }
-        text.gold(obj);
+        text.text(color, obj);
         return this;
+    }
+    
+    
+    public OnelineBuilder value(Object obj) {
+        return value(ChatColor.GOLD, obj);
     }
 
     public OnelineBuilder text(ChatColor color, Object obj) {
