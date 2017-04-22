@@ -43,8 +43,7 @@ public final class FestivalBsonMapper {
 
     private static FestivalMatch readMatch(BsonDocument bson, String key) {
         BsonDocument section = bson.getDocument(key);
-        FestivalMatch result = new FestivalMatch();
-        result.setStage(section.getString("stage").getValue());
+        FestivalMatch result = new FestivalMatch(section.getString("stage").getValue());
         result.setColorMapping(readEnumMap(section, "colors", TeamColor.class, (b, k) -> readEnum(b, k, TeamColor.class)));
         return result;
     }
