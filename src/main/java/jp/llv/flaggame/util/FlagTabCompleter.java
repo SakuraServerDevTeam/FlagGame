@@ -41,6 +41,10 @@ public interface FlagTabCompleter {
     static Builder builder() {
         return new Builder();
     }
+    
+    static FlagTabCompleter empty() {
+        return (p, a, s) -> Collections.emptyList();
+    }
 
     static final class Builder {
 
