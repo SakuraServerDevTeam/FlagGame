@@ -50,13 +50,8 @@ public class StageSelectCommand extends BaseCommand {
     public void execute(List<String> args, CommandSender sender, Player player) throws FlagGameException {
         GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
         if (args.size() >= 1) {
-            // flag select (ステージ名) - 選択
             Stage stage = this.plugin.getStages().getStage(args.get(0))
                     .orElseThrow(() -> new CommandException("&cステージ'" + args.get(0) + "'が見つかりません！"));
-            
-            if (stage.isReserved()) {
-                throw new CommandException("&cステージは占有されています！");
-            }
             
             // 既に選択中のステージと同じステージでない限りはセッションを作成
             if (gPlayer.getSetupSession().map(SetupSession::getSelected).orElse(null) != stage) {
@@ -70,7 +65,7 @@ public class StageSelectCommand extends BaseCommand {
                 Actions.message(player, msg);
             }
         } else {
-            // flag select - 選択解除
+            gPlayer.getSetupSession().orElseThrow(() -> new CommandException("&cあなたはステージを選択していません！"));
             gPlayer.destroySetupSession();
             Actions.message(player, "&aステージの選択を解除しました！");
         }
