@@ -37,6 +37,7 @@ import jp.llv.flaggame.profile.record.PlayerTeamRecord;
 import jp.llv.flaggame.util.ValueSortedMap;
 import syam.flaggame.FlagGame;
 import syam.flaggame.exception.CommandException;
+import syam.flaggame.exception.FlagGameException;
 import syam.flaggame.player.GamePlayer;
 import syam.flaggame.util.Actions;
 
@@ -59,7 +60,7 @@ public class MatchingReception extends SingleGameReception<BasicGame> implements
     }
 
     @Override
-    public void join(GamePlayer player, List<String> args) throws CommandException {
+    public void join(GamePlayer player, List<String> args) throws FlagGameException {
         if (this.getState() != State.OPENED) {
             throw new CommandException("&cこの募集は既に終了しました!");
         }
@@ -109,7 +110,7 @@ public class MatchingReception extends SingleGameReception<BasicGame> implements
     }
 
     @Override
-    public void start(List<String> args) throws CommandException {
+    public void start(List<String> args) throws FlagGameException {
         if (this.getState() != State.OPENED) {
             throw new IllegalStateException();
         }

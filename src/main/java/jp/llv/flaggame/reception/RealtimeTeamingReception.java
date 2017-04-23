@@ -33,6 +33,7 @@ import jp.llv.flaggame.profile.record.PlayerLeaveRecord;
 import jp.llv.flaggame.profile.record.PlayerTeamRecord;
 import syam.flaggame.FlagGame;
 import syam.flaggame.exception.CommandException;
+import syam.flaggame.exception.FlagGameException;
 import syam.flaggame.player.GamePlayer;
 import syam.flaggame.util.Actions;
 
@@ -60,7 +61,7 @@ public class RealtimeTeamingReception extends SingleGameReception<BasicGame> imp
     }
 
     @Override
-    public void join(GamePlayer player, List<String> args) throws CommandException {
+    public void join(GamePlayer player, List<String> args) throws FlagGameException {
         if (this.getState() != State.OPENED) {
             throw new CommandException("&cこの募集は既に終了しました!");
         }
@@ -132,7 +133,7 @@ public class RealtimeTeamingReception extends SingleGameReception<BasicGame> imp
     }
 
     @Override
-    public void start(List<String> args) throws CommandException {
+    public void start(List<String> args) throws FlagGameException {
         if (this.getState() != State.OPENED) {
             throw new IllegalStateException();
         }

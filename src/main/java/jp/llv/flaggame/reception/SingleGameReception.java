@@ -208,10 +208,10 @@ public abstract class SingleGameReception<G extends Game> implements GameRecepti
     public abstract void leave(GamePlayer player);
 
     @Override
-    public abstract void join(GamePlayer player, List<String> args) throws CommandException;
+    public abstract void join(GamePlayer player, List<String> args) throws FlagGameException;
 
     @Override
-    public abstract void start(List<String> args) throws CommandException;
+    public abstract void start(List<String> args) throws FlagGameException;
 
     @Override
     public void stop(String reason) throws IllegalStateException {
