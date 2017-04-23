@@ -59,16 +59,20 @@ public class FestivalSchedule extends SimpleReservable<FestivalSchedule> {
         return teams.get(color);
     }
     
-    public TeamColor getTeam(String name) {
-        Iterator<TeamColor> it = MapUtils.getKeyByValue(teams, name).iterator();
+    public TeamColor getTeam(String team) {
+        Iterator<TeamColor> it = MapUtils.getKeyByValue(teams, team).iterator();
         return it.hasNext() ? it.next() : null;
     }
 
     public void setTeam(TeamColor color, String team) {
         Objects.requireNonNull(color);
         Objects.requireNonNull(team);
-        MapUtils.removeValue(teams, name);
-        teams.put(color, name);
+        MapUtils.removeValue(teams, team);
+        teams.put(color, team);
+    }
+    
+    public void removeTeam(String team) {
+        MapUtils.removeValue(teams, team);
     }
 
     public void setTeams(Map<TeamColor, String> teams) {
