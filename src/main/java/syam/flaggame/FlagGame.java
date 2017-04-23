@@ -170,9 +170,15 @@ public class FlagGame extends JavaPlugin {
             }
         });
         database.loadFestivals(festival -> {
-            
+            festivals.addFestival(festival.get());
+            getLogger().log(Level.INFO, "Loaded festival ''{0}''", festival.get().getName());
         }, result -> {
-            
+            try {
+                result.test();
+                getLogger().log(Level.INFO, "Finished loading festivals!");
+            } catch (DatabaseException ex) {
+                getLogger().log(Level.WARNING, "Failed to load festival!", ex);
+            }
         });
         debug.endTimer("load games");
 

@@ -34,16 +34,16 @@ public class FestivalManager implements Iterable<FestivalSchedule> {
         return Collections.unmodifiableMap(schedules);
     }
 
-    public void addFestival(FestivalSchedule stage) {
-        schedules.put(stage.getName(), stage);
+    public void addFestival(FestivalSchedule festival) {
+        schedules.put(festival.getName(), festival);
     }
 
-    public void removeFestival(FestivalSchedule stage) {
-        schedules.remove(stage.getName());
+    public void removeFestival(FestivalSchedule festival) {
+        schedules.remove(festival.getName());
     }
 
-    public Optional<FestivalSchedule> getFestival(String stageName) {
-        return Optional.ofNullable(schedules.get(stageName));
+    public Optional<FestivalSchedule> getFestival(String name) {
+        return Optional.ofNullable(schedules.get(name));
     }
 
     @Override
