@@ -55,7 +55,7 @@ public class FestivalSetPrizeCommand extends FestivalSetCommand {
         if (prize < 0) {
             throw new CommandException("&c値が不正です！負数は指定できません！");
         }
-        fest.setEntryFee(prize);
+        fest.setPrize(prize);
         OnelineBuilder.newBuilder()
                 .info("フェス").value(fest.getName())
                 .info("の賞金は").value(Actions.formatMoney(prize))
