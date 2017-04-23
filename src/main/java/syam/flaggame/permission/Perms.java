@@ -76,6 +76,22 @@ public enum Perms {
     STAGE_SET("stage.set"),
     STAGE_STATS("stage.stats"),
     
+    FESTIVAL_MATCH_CREATE("festival.match.create"),
+    FESTIVAL_MATCH_DELETE("festival.match.delete"),
+    FESTIVAL_MATCH_TEAM("festival.match.team"),
+    FESTIVAL_MATCH_LIST("festival.match.list"),
+    
+    FESTIVAL_CREATE("festival.create"),
+    FESTIVAL_DASHBOARD("festival.dashboard"),
+    FESTIVAL_DELETE("festival.delete"),
+    FESTIVAL_LIST("festival.list"),
+    FESTIVAL_SAVE("festival.save"),
+    FESTIVAL_SELECT("festival.select"),
+    
+    FESTIVAL_SET_ENTRYFEE("festival.entryfee"),
+    FESTIVAL_SET_PRIZE("festival.prize"),
+    FESTIVAL_SET_TEAM("festival.set.team"),
+    
     OBJECTIVE_LIST("objective.list"),
     OBJECTIVE_DELETE("objective.delete"),
     OBJECTIVE_SET("objective.set"),
