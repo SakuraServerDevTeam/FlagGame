@@ -35,22 +35,21 @@ public class SetupSession {
     private Byte hp = null;
 
     /*package*/ SetupSession(Reservable.Reservation<?> selected) {
-        Objects.requireNonNull(selected);
-        this.selected = selected;
+        this.selected = Objects.requireNonNull(selected);
     }
 
     public Reservable<?> getSelected() {
         return this.selected.getReservable();
     }
-    
+
     public <T extends Reservable<T>> T getSelected(Class<T> clazz) {
-        if (clazz.isInstance(selected)) {
-            return (T) selected;
+        if (clazz.isInstance(selected.getReservable())) {
+            return (T) selected.getReservable();
         } else {
             return null;
         }
     }
-    
+
     /*package*/ Reservable.Reservation<?> getReservation() {
         return selected;
     }
