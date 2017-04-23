@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import jp.llv.flaggame.api.session.Reservable;
 import jp.llv.flaggame.reception.GameReception;
 
 import org.bukkit.entity.Player;
@@ -32,7 +33,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import jp.llv.flaggame.api.session.Reserver;
-import syam.flaggame.exception.CommandException;
+import syam.flaggame.exception.FlagGameException;
 import syam.flaggame.exception.ReservedException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.util.Actions;
@@ -100,7 +101,7 @@ public class GamePlayer implements Reserver {
      * {@link jp.llv.flaggame.reception.GameReception#join(syam.flaggame.player.GamePlayer, java.util.List)}
      */
     @Deprecated
-    public void join(GameReception reception, List<String> args) throws CommandException {
+    public void join(GameReception reception, List<String> args) throws FlagGameException {
         /* 主たる処理は全てGameReception内で行う */
         if (!reception.hasReceived(this)) {//未参加なら参加させる
             reception.join(this, args);
@@ -183,9 +184,9 @@ public class GamePlayer implements Reserver {
         }
     }
 
-    public SetupSession createSetupSession(Stage stage) throws ReservedException {
-        Objects.requireNonNull(stage);
-        return session = new SetupSession(stage.reserve(this));
+    public SetupSession createSetupSession(Reservable<?> reservable) throws ReservedException {
+        Objects.requireNonNull(reservable);
+        return session = new SetupSession(reservable.reserve(this));
     }
 
     public void destroySetupSession() {

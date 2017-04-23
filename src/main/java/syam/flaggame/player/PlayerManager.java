@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 import jp.llv.flaggame.events.GameFinishedEvent;
 import jp.llv.flaggame.events.GamePlayerUnloadEvent;
@@ -39,6 +40,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import syam.flaggame.FlagGame;
 import syam.flaggame.exception.CommandException;
+import syam.flaggame.exception.FlagGameException;
 
 /**
  * A {@link PlayerManager} provides ways of getting
@@ -167,7 +169,7 @@ public class PlayerManager implements Iterable<GamePlayer> {
          */
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         @SuppressWarnings("deprecation")
-        public void on(PlayerJoinEvent e) throws CommandException {
+        public void on(PlayerJoinEvent e) {
             Player p = e.getPlayer();
             GamePlayer gp = PlayerManager.this.getPlayer(p);
             if (gp != null) { // the player is in a game
@@ -177,7 +179,11 @@ public class PlayerManager implements Iterable<GamePlayer> {
             PlayerManager.this.players.put(p.getUniqueId(), gp);
             for (jp.llv.flaggame.reception.GameReception r : PlayerManager.this.plugin.getReceptions()) {
                 if (r.getPlayers().contains(gp)) {
-                    gp.join(r, Collections.emptyList());
+                    try {
+                        gp.join(r, Collections.emptyList());
+                    } catch (FlagGameException ex) {
+                        plugin.getLogger().log(Level.WARNING, "A player failed re-joining to a reception", ex);
+                    }
                 }
             }
         }
