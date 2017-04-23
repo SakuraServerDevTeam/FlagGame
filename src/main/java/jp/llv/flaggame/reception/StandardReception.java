@@ -18,7 +18,6 @@ package jp.llv.flaggame.reception;
 
 import java.util.List;
 import java.util.UUID;
-import jp.llv.flaggame.reception.fest.FestivalReception;
 import jp.llv.flaggame.util.TriFunction;
 import syam.flaggame.FlagGame;
 
@@ -36,10 +35,7 @@ public enum StandardReception implements ReceptionType<GameReception> {
             MatchingReception::new,
             "matching", "ma"
     ),
-    FESTIVAL(
-            FestivalReception::new,
-            "festival", "fest", "fe"
-    ),;
+    ;
 
     private final String name;
     private final String[] aliases;
