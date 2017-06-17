@@ -22,12 +22,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 import jp.llv.flaggame.events.GameFinishedEvent;
 import jp.llv.flaggame.events.GamePlayerUnloadEvent;
 import jp.llv.flaggame.game.Game;
-import jp.llv.flaggame.reception.GameReception;
 import org.bukkit.Bukkit;
 
 import org.bukkit.World;
@@ -38,9 +36,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import syam.flaggame.FlagGame;
-import syam.flaggame.exception.CommandException;
 import syam.flaggame.exception.FlagGameException;
+import jp.llv.flaggame.api.reception.Reception;
+import jp.llv.flaggame.api.FlagGameAPI;
+import jp.llv.flaggame.util.OptionSet;
 
 /**
  * A {@link PlayerManager} provides ways of getting
@@ -50,7 +49,7 @@ import syam.flaggame.exception.FlagGameException;
  */
 public class PlayerManager implements Iterable<GamePlayer> {
 
-    private final FlagGame plugin;
+    private final FlagGameAPI api;
     private final Map<UUID, GamePlayer> players = new HashMap<>();
 
     /**
@@ -58,13 +57,13 @@ public class PlayerManager implements Iterable<GamePlayer> {
      * consistency, do NOT create new one, use
      * {@link syam.flaggame.FlagGame#getPlayers()}.
      *
-     * @param plugin A plugin instance running on the server to sync this
+     * @param api An API instance running on the server to sync this
      * mamager
      */
-    public PlayerManager(FlagGame plugin) {
-        this.plugin = plugin;
-        this.plugin.getServer().getPluginManager().registerEvents(new OnlinePlayerListener(), plugin);
-        new StageSaveRemindTask(plugin).runTaskTimer(plugin, 1200L, 1200L);
+    public PlayerManager(FlagGameAPI api) {
+        this.api = api;
+        api.getServer().getPluginManager().registerEvents(new OnlinePlayerListener(), api.getPlugin());
+        new StageSaveRemindTask(api).runTaskTimer(api.getPlugin(), 1200L, 1200L);
         Bukkit.getOnlinePlayers()
                 .forEach(p -> this.players.put(p.getUniqueId(), new GamePlayer(this, p)));
     }
@@ -141,13 +140,13 @@ public class PlayerManager implements Iterable<GamePlayer> {
             if (player.isOnline()) {
                 continue; // the player is still online
             } else if (player.getEntry().isPresent()) {
-                GameReception entry = player.getEntry().get();
+                Reception entry = player.getEntry().get();
                 if (entry.getState().toGameState() != Game.State.FINISHED) {
                     continue; // the player is still in game
                 }
                 entry.leave(player); // remove from the reception
             }
-            plugin.getServer().getPluginManager().callEvent(new GamePlayerUnloadEvent(player));
+            api.getServer().getPluginManager().callEvent(new GamePlayerUnloadEvent(player));
             it.remove(); // otherwise remove player
         }
     }
@@ -177,12 +176,12 @@ public class PlayerManager implements Iterable<GamePlayer> {
             }
             gp = new GamePlayer(PlayerManager.this, p);
             PlayerManager.this.players.put(p.getUniqueId(), gp);
-            for (jp.llv.flaggame.reception.GameReception r : PlayerManager.this.plugin.getReceptions()) {
+            for (jp.llv.flaggame.api.reception.Reception r : api.getReceptions()) {
                 if (r.getPlayers().contains(gp)) {
                     try {
-                        gp.join(r, Collections.emptyList());
+                        gp.join(r, new OptionSet());
                     } catch (FlagGameException ex) {
-                        plugin.getLogger().log(Level.WARNING, "A player failed re-joining to a reception", ex);
+                        api.getLogger().warn("A player failed re-joining to a reception", ex);
                     }
                 }
             }
@@ -197,7 +196,7 @@ public class PlayerManager implements Iterable<GamePlayer> {
         public void on(PlayerQuitEvent e) {
             PlayerManager.this.getPlayer(e.getPlayer()).resetTabName();
             // wait until Player#getOnline returns false
-            plugin.getServer().getScheduler().runTask(plugin, PlayerManager.this::gc);
+            api.getServer().getScheduler().runTask(api.getPlugin(), PlayerManager.this::gc);
         }
 
         @EventHandler

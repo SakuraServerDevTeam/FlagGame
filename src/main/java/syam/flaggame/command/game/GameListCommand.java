@@ -17,7 +17,6 @@
 package syam.flaggame.command.game;
 
 import java.util.List;
-import jp.llv.flaggame.reception.GameReception;
 import syam.flaggame.FlagGame;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -25,6 +24,7 @@ import syam.flaggame.command.BaseCommand;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.player.GamePlayer;
+import jp.llv.flaggame.api.reception.Reception;
 
 /**
  *
@@ -52,12 +52,12 @@ public class GameListCommand extends BaseCommand {
             gPlayer.sendMessage("&c現在有効な参加受付はありません");
             return;
         }
-        for (GameReception r : this.plugin.getReceptions()) {
+        for (Reception r : this.plugin.getReceptions()) {
             gPlayer.sendMessage("&" + getColorCodeOf(r.getState()) + r.getName() + "&e(" + r.getID() + ")");
         }
     }
 
-    private static char getColorCodeOf(GameReception.State state) {
+    private static char getColorCodeOf(Reception.State state) {
         switch (state) {
             case READY:
                 return '7';

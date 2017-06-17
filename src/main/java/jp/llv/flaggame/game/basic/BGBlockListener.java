@@ -18,6 +18,7 @@ package jp.llv.flaggame.game.basic;
 
 import java.util.Collection;
 import java.util.Optional;
+import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.game.objective.BannerSlot;
 import syam.flaggame.game.objective.BannerSpawner;
 import jp.llv.flaggame.reception.Team;
@@ -29,7 +30,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import syam.flaggame.FlagGame;
 import jp.llv.flaggame.reception.TeamColor;
 import syam.flaggame.game.objective.Flag;
 import syam.flaggame.game.objective.Nexus;
@@ -51,19 +51,19 @@ import syam.flaggame.player.GamePlayer;
  */
 public class BGBlockListener extends BGListener {
 
-    private final FlagGame plugin;
+    private final FlagGameAPI api;
     private final Collection<GamePlayer> players;
 
-    public BGBlockListener(FlagGame plugin, BasicGame game) {
+    public BGBlockListener(FlagGameAPI api, BasicGame game) {
         super(game);
-        this.plugin = plugin;
+        this.api = api;
         this.players = game.getReception().getPlayers();
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
-        GamePlayer gplayer = this.plugin.getPlayers().getPlayer(player);
+        GamePlayer gplayer = this.api.getPlayers().getPlayer(player);
         if (!this.players.contains(gplayer)) {
             return;
         }
@@ -80,7 +80,7 @@ public class BGBlockListener extends BGListener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onBlockPlace(BlockPlaceEvent event) {
         Player player = event.getPlayer();
-        GamePlayer gplayer = this.plugin.getPlayers().getPlayer(player);
+        GamePlayer gplayer = this.api.getPlayers().getPlayer(player);
         if (!this.players.contains(gplayer)) {
             return;
         }
@@ -123,7 +123,7 @@ public class BGBlockListener extends BGListener {
                 f.getFlagPoint()
         ));
 
-        if (plugin.getConfigs().getUseFlagEffects()) {
+        if (api.getConfig().getUseFlagEffects()) {
             Location loc = b.getLocation();
             Firework effect = loc.getWorld().spawn(loc, Firework.class);
             FireworkMeta meta = effect.getFireworkMeta();
@@ -168,7 +168,7 @@ public class BGBlockListener extends BGListener {
                 event.getBlock().getLocation(),
                 banner.getPoint()
         ));
-        if (plugin.getConfigs().getUseFlagEffects()) {
+        if (api.getConfig().getUseFlagEffects()) {
             Location loc = s.getLocation();
             loc.getWorld().playEffect(loc, Effect.ENDER_SIGNAL, 0, 10);
             loc.getWorld().playEffect(loc, Effect.SMOKE, 4, 2);
@@ -201,7 +201,7 @@ public class BGBlockListener extends BGListener {
                 f.getFlagPoint()
         ));
 
-        if (plugin.getConfigs().getUseFlagEffects()) {
+        if (api.getConfig().getUseFlagEffects()) {
             Location loc = event.getBlock().getLocation();
             loc.getWorld().createExplosion(loc, 0F, false);
             GamePlayer.playSound(brokenTeam, Sound.ENTITY_BLAZE_HURT);
@@ -237,7 +237,7 @@ public class BGBlockListener extends BGListener {
                 f.getPoint()
         ));
 
-        if (plugin.getConfigs().getUseFlagEffects()) {
+        if (api.getConfig().getUseFlagEffects()) {
             Location loc = event.getBlock().getLocation();
             loc.getWorld().playEffect(loc, Effect.ENDER_SIGNAL, 0, 10);
             if (broken != null) {
@@ -263,7 +263,7 @@ public class BGBlockListener extends BGListener {
         GamePlayer.sendMessage(game.getPlayersNotIn(gplayer.getTeam().get()), ChatMessageType.ACTION_BAR,
                 gplayer.getColoredName() + "&aに&6"
                 + s.getPoint() + "pバナー&aを回収されました！");
-        if (plugin.getConfigs().getUseFlagEffects()) {
+        if (api.getConfig().getUseFlagEffects()) {
             Location loc = event.getBlock().getLocation();
             loc.getWorld().createExplosion(loc, 0F, false);
             loc.getWorld().playEffect(loc, Effect.ENDER_SIGNAL, 0, 10);

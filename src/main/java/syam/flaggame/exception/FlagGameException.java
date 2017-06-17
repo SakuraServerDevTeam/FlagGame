@@ -18,11 +18,11 @@ package syam.flaggame.exception;
 
 /**
  * FlagGameException (FlagGameException.java)
- * 
+ *
  * @author syam(syamn)
  */
 public class FlagGameException extends Exception {
-    
+
     private static final long serialVersionUID = -5759263894003798032L;
 
     public FlagGameException() {
@@ -39,4 +39,15 @@ public class FlagGameException extends Exception {
     public FlagGameException(String message, Throwable cause) {
         super(message, cause);
     }
+
+    @Override
+    public String getMessage() {
+        String detailMessage = super.getMessage();
+        if (detailMessage != null) {
+            return detailMessage;
+        }
+        detailMessage = getClass().getSimpleName();
+        return detailMessage.substring(0, detailMessage.length() - 9);
+    }
+
 }

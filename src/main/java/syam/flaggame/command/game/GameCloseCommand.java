@@ -18,7 +18,6 @@ package syam.flaggame.command.game;
 
 import java.util.List;
 import java.util.UUID;
-import jp.llv.flaggame.reception.GameReception;
 import syam.flaggame.FlagGame;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -27,6 +26,7 @@ import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.player.GamePlayer;
+import jp.llv.flaggame.api.reception.Reception;
 
 /**
  *
@@ -47,7 +47,7 @@ public class GameCloseCommand extends BaseCommand {
 
     @Override
     public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
-        GameReception reception = null;
+        Reception reception = null;
         try {
             UUID uuid = UUID.fromString(args.get(0));
             reception = plugin.getReceptions().getReception(uuid).orElse(null);
@@ -59,7 +59,7 @@ public class GameCloseCommand extends BaseCommand {
         }
         GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
         
-        if (reception.getState()==GameReception.State.CLOSED) {
+        if (reception.getState()==Reception.State.CLOSED) {
             throw new CommandException("&cその受付は既に破棄されています!");
         }
         reception.close(args.size() < 2 ? sender.getName()+"Closed":args.get(1));

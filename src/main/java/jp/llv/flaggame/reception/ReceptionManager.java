@@ -16,48 +16,54 @@
  */
 package jp.llv.flaggame.reception;
 
+import jp.llv.flaggame.api.reception.ReceptionAPI;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import jp.llv.flaggame.api.FlagGameAPI;
 import jp.llv.flaggame.game.Game;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.reception.Reception;
+import syam.flaggame.exception.FlagGameException;
 
 /**
  *
  * @author Toyblocks
  */
-public class ReceptionManager implements Iterable<GameReception> {
+public class ReceptionManager implements ReceptionAPI {
 
-    private final FlagGame plugin;
+    private final FlagGameAPI api;
 
-    private final Map<UUID, GameReception> receptions = new HashMap<>();
+    private final Map<UUID, Reception> receptions = new HashMap<>();
 
-    public ReceptionManager(FlagGame plugin) {
-        this.plugin = plugin;
+    public ReceptionManager(FlagGameAPI api) {
+        this.api = api;
     }
 
-    public Collection<GameReception> getReceptions() {
+    @Override
+    public Collection<Reception> getReceptions() {
         return Collections.unmodifiableCollection(this.receptions.values());
     }
 
-    public Collection<GameReception> getReceptions(GameReception.State state) {
+    @Override
+    public Collection<Reception> getReceptions(Reception.State state) {
         return this.receptions.values().stream()
                 .filter(r -> r.getState() == state).collect(Collectors.toSet());
     }
 
-    public Collection<GameReception> getReceptions(Game.State state) {
+    @Override
+    public Collection<Reception> getReceptions(Game.State state) {
         return this.receptions.values().stream()
                 .filter(r -> r.getState().toGameState() == state).collect(Collectors.toSet());
     }
 
     @Deprecated
-    public Optional<GameReception> getReception(String id) {
+    @Override
+    public Optional<Reception> getReception(String id) {
         UUID uuid;
         try {
             uuid = UUID.fromString(id);
@@ -67,49 +73,59 @@ public class ReceptionManager implements Iterable<GameReception> {
         return getReception(uuid);
     }
 
-    public Optional<GameReception> getReception(UUID uuid) {
+    @Override
+    public Optional<Reception> getReception(UUID uuid) {
         return Optional.ofNullable(this.receptions.get(uuid));
     }
 
-    public <R extends GameReception> R newReception(ReceptionType<? extends R> type, UUID id, List<String> args) {
+    @Override
+    public Reception newReception(String type, UUID id) throws FlagGameException {
         if (this.receptions.containsKey(id)) {
             throw new IllegalStateException("A reception with the id already exists");
         }
-        R reception = type.newInstance(plugin, id, args);
+        Reception reception = api.getRegistry().getReception(type)
+                .apply(api, id);
         this.receptions.put(id, reception);
         return reception;
     }
 
-    public <R extends GameReception> R newReception(ReceptionType<? extends R> type, List<String> args) {
+    @Override
+    public Reception newReception(String type) throws FlagGameException {
         UUID id;
         do {
             id = generateNewID();
         } while (this.receptions.containsKey(id));
-        return this.newReception(type, id, args);
+        return this.newReception(type, id);
     }
 
-    /*package*/ void remove(GameReception reception) {
-        for (Iterator<Map.Entry<UUID, GameReception>> it = this.receptions.entrySet().iterator(); it.hasNext();) {
+    @Override
+    public void remove(Reception reception) {
+        if (reception.getState() != Reception.State.CLOSED) {
+            throw new IllegalStateException("The reception is not closed");
+        }
+        for (Iterator<Map.Entry<UUID, Reception>> it = this.receptions.entrySet().iterator(); it.hasNext();) {
             if (it.next().getValue() == reception) {
                 it.remove();
             }
         }
     }
 
+    @Override
     public void stopAll(String reason) {
-        for (Iterator<Map.Entry<UUID, GameReception>> it = this.receptions.entrySet().iterator(); it.hasNext();) {
+        for (Iterator<Map.Entry<UUID, Reception>> it = this.receptions.entrySet().iterator(); it.hasNext();) {
             it.next().getValue().stop(reason);
         }
     }
 
+    @Override
     public void closeAll(String reason) {
-        for (Iterator<Map.Entry<UUID, GameReception>> it = this.receptions.entrySet().iterator(); it.hasNext();) {
+        for (Iterator<Map.Entry<UUID, Reception>> it = this.receptions.entrySet().iterator(); it.hasNext();) {
             it.next().getValue().close(reason);
         }
     }
 
     @Override
-    public Iterator<GameReception> iterator() {
+    public Iterator<Reception> iterator() {
         return this.receptions.values().iterator();
     }
 

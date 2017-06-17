@@ -1,5 +1,5 @@
-/* 
- * Copyright (C) 2017 SakuraServerDev
+/*
+ * Copyright (C) 2017 toyblocks
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,24 +14,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jp.llv.flaggame.reception;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import jp.llv.flaggame.game.Game;
+package syam.flaggame.exception;
 
 /**
  *
- * @author Toyblocks
+ * @author toyblocks
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-@Documented
-public @interface ReceptionFor {
-    
-    Class<? extends Game> value();
+public class NotRegisteredException extends FlagGameException {
+
+    public NotRegisteredException() {
+    }
+
+    public NotRegisteredException(String message) {
+        super(message);
+    }
+
+    public NotRegisteredException(Throwable cause) {
+        super(cause);
+    }
+
+    public NotRegisteredException(String message, Throwable cause) {
+        super(message, cause);
+    }
     
 }

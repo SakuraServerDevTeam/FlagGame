@@ -16,9 +16,9 @@
  */
 package syam.flaggame.player;
 
+import jp.llv.flaggame.api.FlagGameAPI;
 import net.md_5.bungee.api.ChatMessageType;
 import org.bukkit.scheduler.BukkitRunnable;
-import syam.flaggame.FlagGame;
 
 /**
  *
@@ -26,15 +26,15 @@ import syam.flaggame.FlagGame;
  */
 public class StageSaveRemindTask extends BukkitRunnable {
 
-    private final FlagGame plugin;
+    private final FlagGameAPI api;
 
-    public StageSaveRemindTask(FlagGame plugin) {
-        this.plugin = plugin;
+    public StageSaveRemindTask(FlagGameAPI api) {
+        this.api = api;
     }
 
     @Override
     public void run() {
-        plugin.getPlayers().getPlayers().stream()
+        api.getPlayers().getPlayers().stream()
                 .filter(p -> p.getSetupSession().isPresent())
                 .forEach(p -> {
                     p.sendTitle("", "現在ゲーム編集中です", 10, 10, 10);

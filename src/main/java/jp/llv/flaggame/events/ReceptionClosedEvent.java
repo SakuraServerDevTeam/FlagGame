@@ -16,8 +16,8 @@
  */
 package jp.llv.flaggame.events;
 
-import jp.llv.flaggame.reception.GameReception;
 import org.bukkit.event.HandlerList;
+import jp.llv.flaggame.api.reception.Reception;
 
 /**
  *
@@ -29,7 +29,7 @@ public class ReceptionClosedEvent extends ReceptionEvent {
 
     private final String cause;
 
-    public ReceptionClosedEvent(String cause, GameReception reception) {
+    public ReceptionClosedEvent(String cause, Reception reception) {
         super(reception);
         this.cause = cause;
     }

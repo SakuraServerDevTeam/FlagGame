@@ -26,16 +26,16 @@ import syam.flaggame.util.Cuboid;
  *
  * @author SakuraServerDev
  */
-public abstract class StageData {
+public interface StageData {
 
-    public abstract void read(FlagGame plugin, World world, byte[] data) throws RollbackException;
+    void read(FlagGame plugin, World world, byte[] data) throws RollbackException;
 
-    public abstract byte[] write(FlagGame plugin, World world) throws RollbackException;
+    byte[] write(FlagGame plugin, World world) throws RollbackException;
 
-    public abstract SerializeTask save(FlagGame plugin, Stage stage, Cuboid area, Consumer<RollbackException> callback);
+    SerializeTask save(Stage stage, Cuboid area, Consumer<RollbackException> callback);
 
-    public abstract SerializeTask load(FlagGame plugin, Stage stage, Cuboid area, Consumer<RollbackException> callback);
+    SerializeTask load(Stage stage, Cuboid area, Consumer<RollbackException> callback);
 
-    public abstract StageDataType getType();
-    
+    StageDataType getType();
+
 }

@@ -1,4 +1,4 @@
-/*
+/* 
  * Copyright (C) 2017 SakuraServerDev
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14,23 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jp.llv.flaggame.reception;
-
-import java.util.List;
-import java.util.UUID;
-import syam.flaggame.FlagGame;
+package jp.llv.flaggame.util.function;
 
 /**
+ * Represents a function that accepts three arguments and produces a result.
+ * This is the three-arity specialization of
+ * {@link java.util.function.Function}.
  *
- * @author SakuraServerDev
- * @param <R> reception class this type creates.
+ * @author Toyblocks
+ * @param <A1> the type of the first argument to the function
+ * @param <A2> the type of the second argument to the function
+ * @param <A3> the type of the result of the function
+ * @param <R> the type of the result of the function
  */
-public interface ReceptionType<R extends GameReception> {
-
-    String getName();
-    
-    String[] getAliases();
-    
-    R newInstance(FlagGame plugin, UUID id, List<String> args);
-
+@FunctionalInterface
+public interface TriFunction<A1, A2, A3, R> extends ThrowingTriFunction<A1, A2, A3, R, RuntimeException> {
 }

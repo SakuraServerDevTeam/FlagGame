@@ -14,38 +14,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jp.llv.flaggame.events;
+package jp.llv.flaggame.util.function;
 
-import org.bukkit.event.HandlerList;
-import syam.flaggame.player.GamePlayer;
-import jp.llv.flaggame.api.reception.Reception;
 
 /**
+ * Represents a function that accepts two arguments including double
+ * value and produces a result. 
+ * This is the three-arity specialization of {@link java.util.function.Function}.
  *
  * @author Toyblocks
+ * @param <T> the type of the first argument to the function
+ * @param <R> the type of the result of the function
  */
-public class ReceptionLeftEvent extends GamePlayerEvent {
-
-    private static final HandlerList handlers = new HandlerList();
+@FunctionalInterface
+public interface BiDoubleFunction<T, R> {
     
-    private final Reception reception;
-
-    public ReceptionLeftEvent(GamePlayer player, Reception reception) {
-        super(player);
-        this.reception = reception;
-    }
-
-    public Reception getReception() {
-        return reception;
-    }
-    
-    @Override
-    public HandlerList getHandlers() {
-        return handlers;
-    }
-    
-    public static HandlerList getHandlerList() {
-        return handlers;
-    }
+    R apply(T t1, double t2);
     
 }

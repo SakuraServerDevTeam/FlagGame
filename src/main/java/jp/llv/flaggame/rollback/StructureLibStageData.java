@@ -61,12 +61,12 @@ public class StructureLibStageData extends CachedStageData<TagCompound> {
     }
 
     @Override
-    protected SerializeTask deserialize(FlagGame plugin, Stage stage, Cuboid area, TagCompound source, Consumer<RollbackException> callback) {
+    protected SerializeTask deserialize(Stage stage, Cuboid area, TagCompound source, Consumer<RollbackException> callback) {
         return new StructureLibStageDataDeserializeTask(area.serialize().getOrigin(), source, callback);
     }
 
     @Override
-    public SerializeTask save(FlagGame plugin, Stage stage, Cuboid area, Consumer<RollbackException> callback) {
+    public SerializeTask save(Stage stage, Cuboid area, Consumer<RollbackException> callback) {
         return new StructureLibStageDataSerializeTak(callback, area.serialize());
     }
 

@@ -27,6 +27,7 @@ import jp.llv.flaggame.events.TeamLeftEvent;
 import jp.llv.flaggame.game.Game;
 import org.bukkit.Bukkit;
 import syam.flaggame.player.GamePlayer;
+import jp.llv.flaggame.api.reception.Reception;
 
 /**
  *
@@ -34,11 +35,11 @@ import syam.flaggame.player.GamePlayer;
  */
 public class Team implements Iterable<GamePlayer> {
 
-    private final GameReception reception;
+    private final Reception reception;
     private final Set<GamePlayer> players;
     private final TeamType type;
 
-    public Team(GameReception reception, TeamType type) {
+    public Team(Reception reception, TeamType type) {
         if (reception == null || type == null) {
             throw new NullPointerException();
         }
@@ -47,7 +48,7 @@ public class Team implements Iterable<GamePlayer> {
         this.players = Collections.synchronizedSet(new HashSet<>());
     }
     
-    public Team(GameReception reception, TeamType type, Collection<? extends GamePlayer> players) {
+    public Team(Reception reception, TeamType type, Collection<? extends GamePlayer> players) {
         if (reception == null || type == null) {
             throw new NullPointerException();
         }
@@ -60,7 +61,7 @@ public class Team implements Iterable<GamePlayer> {
         }
     }
     
-    public Team(GameReception reception, TeamType type, GamePlayer ... players) {
+    public Team(Reception reception, TeamType type, GamePlayer ... players) {
         this(reception, type, Arrays.asList(players));
     }
     
@@ -72,7 +73,7 @@ public class Team implements Iterable<GamePlayer> {
         return getType().toColor();
     }
     
-    public GameReception getReception() {
+    public Reception getReception() {
         return this.reception;
     }
     

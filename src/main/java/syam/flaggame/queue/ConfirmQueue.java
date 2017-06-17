@@ -21,8 +21,6 @@ import java.util.List;
 
 import org.bukkit.command.CommandSender;
 
-import syam.flaggame.FlagGame;
-import syam.flaggame.exception.CommandException;
 import syam.flaggame.exception.FlagGameException;
 
 /**
@@ -31,17 +29,13 @@ import syam.flaggame.exception.FlagGameException;
  * @author syam(syamn)
  */
 public class ConfirmQueue {
-    private final FlagGame plugin;
+    
     private final List<QueuedCommand> queue;
 
     /**
      * コンストラクタ
-     * 
-     * @param plugin
      */
-    public ConfirmQueue(final FlagGame plugin) {
-        this.plugin = plugin;
-
+    public ConfirmQueue() {
         queue = new ArrayList<>();
     }
 

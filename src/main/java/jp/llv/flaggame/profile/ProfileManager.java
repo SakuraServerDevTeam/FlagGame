@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.logging.Level;
+import jp.llv.flaggame.api.FlagGameAPI;
 import jp.llv.flaggame.database.DatabaseException;
 import jp.llv.flaggame.events.GamePlayerUnloadEvent;
 import org.bukkit.entity.Player;
@@ -40,14 +41,14 @@ import syam.flaggame.player.GamePlayer;
  */
 public class ProfileManager implements Listener {
 
-    private final FlagGame plugin;
+    private final FlagGameAPI api;
     private final Map<UUID, PlayerProfile> playerProfiles = Collections.synchronizedMap(new HashMap<>());
     private final Map<String, StageProfile> stageProfiles = Collections.synchronizedMap(new HashMap<>());
 
-    public ProfileManager(FlagGame plugin) {
-        this.plugin = plugin;
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
-        plugin.getServer().getOnlinePlayers().forEach(p -> getProfile(p.getUniqueId()));
+    public ProfileManager(FlagGameAPI api) {
+        this.api = api;
+        api.getServer().getPluginManager().registerEvents(this, api.getPlugin());
+        api.getServer().getOnlinePlayers().forEach(p -> getProfile(p.getUniqueId()));
     }
 
     public PlayerProfile getProfile(UUID uuid) {
@@ -69,7 +70,7 @@ public class ProfileManager implements Listener {
     }
 
     public void loadPlayerProfile(UUID uuid, boolean notifyLevelUp) {
-        plugin.getDatabases().ifPresent(database -> {
+        api.getDatabase().ifPresent(database -> {
             PlayerProfile profile;
             int oldLevel;
             if (playerProfiles.containsKey(uuid)) {
@@ -85,7 +86,7 @@ public class ProfileManager implements Listener {
                 try {
                     result.test();
                 } catch (DatabaseException ex) {
-                    plugin.getLogger().log(Level.WARNING, "Failed to load player stats", ex);
+                    api.getLogger().warn("Failed to load player stats", ex);
                 }
             });
             database.loadPlayerExp(uuid, result -> {
@@ -93,7 +94,7 @@ public class ProfileManager implements Listener {
                     Long value = result.get();
                     profile.setExp(value == null ? 0 : value);
                     int newLevel = profile.getLevel().orElse(Integer.MIN_VALUE);
-                    Player player = plugin.getServer().getPlayer(uuid);
+                    Player player = api.getServer().getPlayer(uuid);
                     if (oldLevel < newLevel && player != null) {
                         OnelineBuilder.newBuilder().info("あなたのレベルが")
                                 .value(oldLevel).info("から")
@@ -102,7 +103,7 @@ public class ProfileManager implements Listener {
                                 .sendTo(player);
                     }
                 } catch (DatabaseException | NullPointerException ex) {
-                    plugin.getLogger().log(Level.WARNING, "Failed to load player exp", ex);
+                    api.getLogger().warn("Failed to load player exp", ex);
                 }
             });
             database.loadPlayerVibe(uuid, result -> {
@@ -110,7 +111,7 @@ public class ProfileManager implements Listener {
                     Double value = result.get();
                     profile.setVibe(value == null ? 0 : value);
                 } catch (DatabaseException | NullPointerException ex) {
-                    plugin.getLogger().log(Level.WARNING, "Failed to load player vibe", ex);
+                    api.getLogger().warn("Failed to load player vibe", ex);
                 }
             });
         });
@@ -123,7 +124,7 @@ public class ProfileManager implements Listener {
     }
 
     public void loadStageProfile(String stage) {
-        plugin.getDatabases().ifPresent(database -> {
+        api.getDatabase().ifPresent(database -> {
             if (!stageProfiles.containsKey(stage)) {
                 stageProfiles.put(stage, new StageProfile());
             }
@@ -134,7 +135,7 @@ public class ProfileManager implements Listener {
                 try {
                     result.test();
                 } catch (DatabaseException ex) {
-                    plugin.getLogger().log(Level.WARNING, "Failed to load stage stats", ex);
+                    api.getLogger().warn("Failed to load stage stats", ex);
                 }
             });
         });

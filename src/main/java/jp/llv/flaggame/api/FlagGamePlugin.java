@@ -1,5 +1,5 @@
-/* 
- * Copyright (C) 2017 SakuraServerDev
+/*
+ * Copyright (C) 2017 toyblocks
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,25 +14,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jp.llv.flaggame.events;
+package jp.llv.flaggame.api;
 
-import org.bukkit.event.Event;
-import jp.llv.flaggame.api.reception.Reception;
+import org.bukkit.plugin.Plugin;
 
 /**
  *
- * @author Toyblocks
+ * @author toyblocks
  */
-public abstract class ReceptionEvent extends Event {
+public interface FlagGamePlugin extends Plugin {
     
-    private final Reception reception;
-
-    public ReceptionEvent(Reception reception) {
-        this.reception = reception;
-    }
-
-    public Reception getReception() {
-        return reception;
-    }
+    FlagGameAPI getAPI();
     
 }

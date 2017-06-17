@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2017 SakuraServerDev
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14,38 +14,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jp.llv.flaggame.events;
-
-import org.bukkit.event.HandlerList;
-import syam.flaggame.player.GamePlayer;
-import jp.llv.flaggame.api.reception.Reception;
+package syam.flaggame.exception;
 
 /**
  *
- * @author Toyblocks
+ * @author SakuraServerDev
  */
-public class ReceptionLeftEvent extends GamePlayerEvent {
+public class InvalidFestivalException extends FlagGameException {
 
-    private static final HandlerList handlers = new HandlerList();
-    
-    private final Reception reception;
-
-    public ReceptionLeftEvent(GamePlayer player, Reception reception) {
-        super(player);
-        this.reception = reception;
+    public InvalidFestivalException() {
     }
 
-    public Reception getReception() {
-        return reception;
+    public InvalidFestivalException(String message) {
+        super(message);
     }
-    
-    @Override
-    public HandlerList getHandlers() {
-        return handlers;
+
+    public InvalidFestivalException(Throwable cause) {
+        super(cause);
     }
-    
-    public static HandlerList getHandlerList() {
-        return handlers;
+
+    public InvalidFestivalException(String message, Throwable cause) {
+        super(message, cause);
     }
     
 }

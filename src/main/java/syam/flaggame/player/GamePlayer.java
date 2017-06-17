@@ -21,7 +21,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import jp.llv.flaggame.api.session.Reservable;
-import jp.llv.flaggame.reception.GameReception;
 
 import org.bukkit.entity.Player;
 
@@ -37,6 +36,8 @@ import syam.flaggame.exception.FlagGameException;
 import syam.flaggame.exception.ReservedException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.util.Actions;
+import jp.llv.flaggame.api.reception.Reception;
+import jp.llv.flaggame.util.OptionSet;
 
 public class GamePlayer implements Reserver {
 
@@ -46,7 +47,7 @@ public class GamePlayer implements Reserver {
     private final PlayerManager manager;
 
     private SetupSession session;
-    private GameReception reception;
+    private Reception reception;
 
     private Location tpBack = null;
     private String defaultTabName = null;
@@ -94,17 +95,17 @@ public class GamePlayer implements Reserver {
      * Let this join the reception with given arguments.
      *
      * @param reception the reception to join
-     * @param args argument to be given to the reception
+     * @param options argument to be given to the reception
      * @throws syam.flaggame.exception.CommandException caused by illegal state
      * or arguments
      * @deprecated use
      * {@link jp.llv.flaggame.reception.GameReception#join(syam.flaggame.player.GamePlayer, java.util.List)}
      */
     @Deprecated
-    public void join(GameReception reception, List<String> args) throws FlagGameException {
+    public void join(Reception reception, OptionSet options) throws FlagGameException {
         /* 主たる処理は全てGameReception内で行う */
         if (!reception.hasReceived(this)) {//未参加なら参加させる
-            reception.join(this, args);
+            reception.join(this, options);
         } else {//GameReceptionからの呼び出し->内部状態を更新
             this.reception = reception;
         }
@@ -118,7 +119,7 @@ public class GamePlayer implements Reserver {
      * {@link jp.llv.flaggame.reception.GameReception#leave(syam.flaggame.player.GamePlayer)}
      */
     @Deprecated
-    public void leave(GameReception reception) {
+    public void leave(Reception reception) {
         /* 主たる処理は全てGameReception内で行う */
         if (reception.hasReceived(this)) {//参加中なら脱退させる
             reception.leave(this);
@@ -127,7 +128,7 @@ public class GamePlayer implements Reserver {
         }
     }
 
-    public Optional<GameReception> getEntry() {
+    public Optional<Reception> getEntry() {
         return Optional.ofNullable(this.reception);
     }
 

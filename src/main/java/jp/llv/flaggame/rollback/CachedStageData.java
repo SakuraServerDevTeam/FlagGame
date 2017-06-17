@@ -33,7 +33,7 @@ import syam.flaggame.util.Cuboid;
  * @author SakuraServerDev
  * @param <C> cache data type
  */
-public abstract class CachedStageData<C> extends StageData {
+public abstract class CachedStageData<C> implements StageData {
 
     private long loadTiming = 0L;
     private C cache;
@@ -74,12 +74,12 @@ public abstract class CachedStageData<C> extends StageData {
         } 
     }
     
-    protected abstract SerializeTask deserialize(FlagGame plugin, Stage stage, Cuboid area, C source, Consumer<RollbackException> callback);
+    protected abstract SerializeTask deserialize(Stage stage, Cuboid area, C source, Consumer<RollbackException> callback);
     
     @Override
-    public SerializeTask load(FlagGame plugin, Stage stage, Cuboid area, Consumer<RollbackException> callback) {
+    public SerializeTask load(Stage stage, Cuboid area, Consumer<RollbackException> callback) {
         Objects.requireNonNull(cache);
-        return this.deserialize(plugin, stage, area, cache, callback);
+        return this.deserialize(stage, area, cache, callback);
     }
     
     protected abstract class CachableSerializeTask extends SerializeTask {

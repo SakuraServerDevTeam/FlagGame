@@ -1,5 +1,5 @@
-/* 
- * Copyright (C) 2017 SakuraServerDev
+/*
+ * Copyright (C) 2017 toyblocks
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,38 +14,32 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jp.llv.flaggame.events;
+package jp.llv.flaggame.api.reception;
 
-import org.bukkit.event.HandlerList;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
+import jp.llv.flaggame.reception.TeamType;
+import syam.flaggame.exception.FlagGameException;
+import syam.flaggame.exception.InvalidTeamException;
 import syam.flaggame.player.GamePlayer;
-import jp.llv.flaggame.api.reception.Reception;
 
 /**
  *
- * @author Toyblocks
+ * @author toyblocks
  */
-public class ReceptionLeftEvent extends GamePlayerEvent {
-
-    private static final HandlerList handlers = new HandlerList();
+public interface Teaming {
     
-    private final Reception reception;
-
-    public ReceptionLeftEvent(GamePlayer player, Reception reception) {
-        super(player);
-        this.reception = reception;
-    }
-
-    public Reception getReception() {
-        return reception;
-    }
+    Optional<TeamType> join(GamePlayer player) throws FlagGameException;
     
-    @Override
-    public HandlerList getHandlers() {
-        return handlers;
-    }
+    void leave(GamePlayer player) throws FlagGameException;
     
-    public static HandlerList getHandlerList() {
-        return handlers;
+    Collection<GamePlayer> getPlayers();
+    
+    Map<TeamType, ? extends Collection<GamePlayer>> build() throws InvalidTeamException;
+    
+    default int size() {
+        return getPlayers().size();
     }
     
 }

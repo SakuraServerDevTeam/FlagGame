@@ -23,6 +23,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import jp.llv.flaggame.util.OptionSet;
+import syam.flaggame.exception.InvalidOptionException;
 
 /**
  * StageManager (StageManager.java)
@@ -87,12 +89,23 @@ public class StageManager implements Iterable<Stage> {
     /**
      * 実行可能なステージからランダムで1つ抽出する
      *
+     * @param filter filters to 
      * @return Stage
+     * @throws syam.flaggame.exception.InvalidOptionException
      */
-    public Stage getRandomAvailableStage() {
-        Random rnd = new Random();
+    public Stage getRandomAvailableStage(OptionSet filter) throws InvalidOptionException {
         ArrayList<Stage> availables = getAvailableStages();
+        
+        if (filter.isPresent("S")) {
+            String name = filter.getString("S");
+            availables.removeIf(s -> !s.getName().equals(name));
+        }
+        if (filter.isPresent("s")) {
+            String name = filter.getString("s").toLowerCase();
+            availables.removeIf(s -> !s.getName().toLowerCase().startsWith(name));
+        }
 
+        Random rnd = new Random();
         if (availables.size() <= 0) {
             return null;
         }

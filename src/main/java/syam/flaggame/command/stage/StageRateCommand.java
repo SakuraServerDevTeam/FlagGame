@@ -18,7 +18,6 @@ package syam.flaggame.command.stage;
 
 import java.util.List;
 import jp.llv.flaggame.profile.record.StageRateRecord;
-import jp.llv.flaggame.reception.GameReception;
 import syam.flaggame.FlagGame;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -26,6 +25,7 @@ import syam.flaggame.command.BaseCommand;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.player.GamePlayer;
+import jp.llv.flaggame.api.reception.Reception;
 
 /**
  *
@@ -50,8 +50,8 @@ public class StageRateCommand extends BaseCommand {
         if (!gplayer.getEntry().isPresent()) {
             throw new CommandException("&c評価対象に参加していません！");
         }
-        GameReception reception = gplayer.getEntry().get();
-        if (reception.getState() != GameReception.State.FINISHED) {
+        Reception reception = gplayer.getEntry().get();
+        if (reception.getState() != Reception.State.FINISHED) {
             throw new CommandException("&c評価対象が評価段階ではありません！");
         }
         int rate = -1;

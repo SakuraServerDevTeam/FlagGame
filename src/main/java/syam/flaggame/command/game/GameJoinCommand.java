@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.List;
 import jp.llv.flaggame.events.ReceptionJoinEvent;
 import jp.llv.flaggame.game.Game;
-import jp.llv.flaggame.reception.GameReception;
 import syam.flaggame.FlagGame;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -32,6 +31,7 @@ import syam.flaggame.exception.CommandException;
 import syam.flaggame.exception.FlagGameException;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.player.GamePlayer;
+import jp.llv.flaggame.api.reception.Reception;
 
 public class GameJoinCommand extends BaseCommand {
 
@@ -50,10 +50,10 @@ public class GameJoinCommand extends BaseCommand {
     @Override
     public void execute(List<String> args, CommandSender sender, Player player) throws FlagGameException {
         GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
-        GameReception reception = null;
+        Reception reception = null;
         List<String> joinArgs;
 
-        GameReception currentReception = null;
+        Reception currentReception = null;
         if (gPlayer.getEntry().isPresent()) {
             currentReception = gPlayer.getEntry().get();
             if (currentReception.getState().toGameState() != Game.State.FINISHED) {
@@ -64,14 +64,14 @@ public class GameJoinCommand extends BaseCommand {
         if (args.size() >= 1) {// 引数があれば指定したステージに参加
             reception = this.plugin.getReceptions().getReception(args.get(0))
                     .orElseThrow(() -> new CommandException("&cステージ'" + args.get(0) + "'が見つかりません"));
-            if (reception.getState() != GameReception.State.OPENED) {
+            if (reception.getState() != Reception.State.OPENED) {
                 throw new CommandException("&cそのゲームは受付中ではありません!");
             }
             joinArgs = new ArrayList<>(args);
             joinArgs.remove(0);
         } else {// 引数がなければ自動補完
-            Collection<GameReception> openedReceptions = this.plugin.getReceptions()
-                    .getReceptions(GameReception.State.OPENED);
+            Collection<Reception> openedReceptions = this.plugin.getReceptions()
+                    .getReceptions(Reception.State.OPENED);
             if (openedReceptions.size() <= 0) {
                 throw new CommandException("&c現在、参加受付中のゲームはありません！");
             } else if (openedReceptions.size() >= 2) {

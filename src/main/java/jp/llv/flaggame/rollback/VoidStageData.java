@@ -27,7 +27,7 @@ import syam.flaggame.util.Cuboid;
  *
  * @author SakuraServerDev
  */
-public class VoidStageData extends StageData {
+public class VoidStageData implements StageData {
 
     @Override
     public void read(FlagGame plugin, World world, byte[] data) {
@@ -39,12 +39,12 @@ public class VoidStageData extends StageData {
     }
 
     @Override
-    public SerializeTask save(FlagGame plugin, Stage stage, Cuboid area, Consumer<RollbackException> callback) {
+    public SerializeTask save(Stage stage, Cuboid area, Consumer<RollbackException> callback) {
         return new CompletedSerializeTask(callback);
     }
 
     @Override
-    public SerializeTask load(FlagGame plugin, Stage stage, Cuboid area, Consumer<RollbackException> callback) {
+    public SerializeTask load(Stage stage, Cuboid area, Consumer<RollbackException> callback) {
         return new CompletedSerializeTask(callback);
     }
 

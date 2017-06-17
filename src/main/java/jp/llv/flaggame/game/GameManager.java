@@ -18,11 +18,8 @@ package jp.llv.flaggame.game;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Optional;
 import java.util.stream.Collectors;
-import jp.llv.flaggame.reception.GameReception;
-import jp.llv.flaggame.reception.ReceptionManager;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 
 /**
  *
@@ -30,16 +27,14 @@ import syam.flaggame.FlagGame;
  */
 public class GameManager implements Iterable<Game> {
 
-    private final FlagGame plugin;
-    private final ReceptionManager receptions;
+    private final FlagGameAPI api;
 
-    public GameManager(FlagGame plugin) {
-        this.plugin = plugin;
-        this.receptions = plugin.getReceptions();
+    public GameManager(FlagGameAPI api) {
+        this.api = api;
     }
 
     public Collection<Game> getGames() {
-        return this.receptions.getReceptions().stream()
+        return api.getReceptions().getReceptions().stream()
                 .flatMap(r -> r.getGames().stream())
                 .collect(Collectors.toSet());
     }

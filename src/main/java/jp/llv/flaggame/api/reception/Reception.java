@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jp.llv.flaggame.reception;
+package jp.llv.flaggame.api.reception;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 import jp.llv.flaggame.game.Game;
 import jp.llv.flaggame.profile.RecordStream;
 import jp.llv.flaggame.api.session.Reserver;
+import jp.llv.flaggame.util.OptionSet;
 import syam.flaggame.exception.FlagGameException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.player.GamePlayer;
@@ -33,13 +34,13 @@ import syam.flaggame.player.GamePlayer;
  *
  * @author Toyblocks
  */
-public interface GameReception extends Reserver, Iterable<GamePlayer> {
+public interface Reception extends Reserver, Iterable<GamePlayer> {
 
-    void open(List<String> args) throws FlagGameException;
+    void open(OptionSet option) throws FlagGameException;
 
     void close(String reason);
 
-    void join(GamePlayer player, List<String> args) throws FlagGameException;
+    void join(GamePlayer player, OptionSet options) throws FlagGameException;
 
     void leave(GamePlayer player);
 
@@ -47,7 +48,7 @@ public interface GameReception extends Reserver, Iterable<GamePlayer> {
         return this.getPlayers().contains(player);
     }
 
-    void start(List<String> args) throws FlagGameException;
+    void start(OptionSet options) throws FlagGameException;
     
     Optional<? extends Game> getGame(GamePlayer player);
     
@@ -65,16 +66,12 @@ public interface GameReception extends Reserver, Iterable<GamePlayer> {
 
     UUID getID();
 
-    GameReception.State getState();
+    Reception.State getState();
 
     Collection<GamePlayer> getPlayers();
 
     default int size() {
         return this.getPlayers().size();
-    }
-
-    default Optional<Class<? extends Game>> getGameType() {
-        return Optional.ofNullable(this.getClass().getAnnotation(ReceptionFor.class)).map(ReceptionFor::value);
     }
 
     @Override

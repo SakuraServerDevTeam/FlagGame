@@ -25,19 +25,19 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
-import jp.llv.flaggame.reception.GameReception;
 import org.bukkit.Location;
 import jp.llv.flaggame.reception.TeamColor;
 import jp.llv.flaggame.reception.TeamType;
 import jp.llv.flaggame.rollback.QueuedSerializeTask;
 import jp.llv.flaggame.rollback.RollbackException;
 import jp.llv.flaggame.rollback.SerializeTask;
-import syam.flaggame.FlagGame;
 import jp.llv.flaggame.api.session.SimpleReservable;
 import syam.flaggame.exception.ObjectiveCollisionException;
 import syam.flaggame.exception.ReservedException;
 import syam.flaggame.game.objective.Objective;
 import syam.flaggame.util.Cuboid;
+import jp.llv.flaggame.api.reception.Reception;
+import org.bukkit.plugin.Plugin;
 
 /**
  * Stage (Stage.java)
@@ -323,13 +323,13 @@ public class Stage extends SimpleReservable<Stage> {
         this.prize = prize;
     }
     
-    public SerializeTask getInitialTask(FlagGame plugin, Consumer<RollbackException> callback) {
+    public SerializeTask getInitialTask(Plugin plugin, Consumer<RollbackException> callback) {
         QueuedSerializeTask task = new QueuedSerializeTask(callback);
         for (String id : getAreas().getAreas()) {
             Cuboid area = getAreas().getArea(id);
             AreaInfo info = getAreas().getAreaInfo(id);
             for (AreaInfo.RollbackData rollback : info.getInitialRollbacks()) {
-                task.offer(rollback.getTarget().load(plugin, this, area, t -> {}));
+                task.offer(rollback.getTarget().load(this, area, t -> {}));
             }
         }
         return task;
@@ -353,17 +353,11 @@ public class Stage extends SimpleReservable<Stage> {
         return this.available;
     }
     
-    public Optional<GameReception> getReception() {
-        if (!isReserved() && getReserver() instanceof GameReception) {
-            return Optional.of((GameReception) getReserver());
+    public Optional<Reception> getReception() {
+        if (!isReserved() && getReserver() instanceof Reception) {
+            return Optional.of((Reception) getReserver());
         } else {
             return Optional.empty();
-        }
-    }
-    
-    public void validate() throws NullPointerException {
-        if (!available || spawnMap.isEmpty()) {
-            throw new NullPointerException();
         }
     }
     

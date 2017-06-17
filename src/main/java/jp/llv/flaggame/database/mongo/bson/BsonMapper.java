@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
-import jp.llv.flaggame.util.TriConsumer;
+import jp.llv.flaggame.util.function.TriConsumer;
 import org.bson.BsonDocument;
 import org.bson.BsonInvalidOperationException;
 import org.bson.BsonString;

@@ -16,6 +16,7 @@
  */
 package jp.llv.flaggame.game.permission;
 
+import jp.llv.flaggame.api.FlagGameAPI;
 import jp.llv.flaggame.events.PlayerWallKickEvent;
 import jp.llv.flaggame.game.Game;
 import jp.llv.flaggame.reception.Team;
@@ -49,7 +50,6 @@ import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.event.vehicle.VehicleDamageEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
-import syam.flaggame.FlagGame;
 import syam.flaggame.game.AreaSet;
 import syam.flaggame.player.GamePlayer;
 
@@ -59,17 +59,17 @@ import syam.flaggame.player.GamePlayer;
  */
 public class StagePermissionListener implements Listener {
 
-    private final FlagGame plugin;
+    private final FlagGameAPI api;
     private final Game game;
 
-    public StagePermissionListener(FlagGame plugin, Game game) {
-        this.plugin = plugin;
+    public StagePermissionListener(FlagGameAPI api, Game game) {
+        this.api = api;
         this.game = game;
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void on(BlockBreakEvent event) {
-        GamePlayer gplayer = plugin.getPlayers().getPlayer(event.getPlayer());
+        GamePlayer gplayer = api.getPlayers().getPlayer(event.getPlayer());
         if (!game.getReception().hasReceived(gplayer)) {
             return;
         }
@@ -79,7 +79,7 @@ public class StagePermissionListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void on(BlockPlaceEvent event) {
-        GamePlayer gplayer = plugin.getPlayers().getPlayer(event.getPlayer());
+        GamePlayer gplayer = api.getPlayers().getPlayer(event.getPlayer());
         if (!game.getReception().hasReceived(gplayer)) {
             return;
         }
@@ -89,7 +89,7 @@ public class StagePermissionListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void on(PlayerBucketFillEvent event) {
-        GamePlayer gplayer = plugin.getPlayers().getPlayer(event.getPlayer());
+        GamePlayer gplayer = api.getPlayers().getPlayer(event.getPlayer());
         if (!game.getReception().hasReceived(gplayer)) {
             return;
         }
@@ -99,7 +99,7 @@ public class StagePermissionListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void on(PlayerBucketEmptyEvent event) {
-        GamePlayer gplayer = plugin.getPlayers().getPlayer(event.getPlayer());
+        GamePlayer gplayer = api.getPlayers().getPlayer(event.getPlayer());
         if (!game.getReception().hasReceived(gplayer)) {
             return;
         }
@@ -109,7 +109,7 @@ public class StagePermissionListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void on(PlayerShearEntityEvent event) {
-        GamePlayer gplayer = plugin.getPlayers().getPlayer(event.getPlayer());
+        GamePlayer gplayer = api.getPlayers().getPlayer(event.getPlayer());
         if (!game.getReception().hasReceived(gplayer)) {
             return;
         }
@@ -155,7 +155,7 @@ public class StagePermissionListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void on(BlockIgniteEvent event) {
-        GamePlayer gplayer = plugin.getPlayers().getPlayer(event.getPlayer());
+        GamePlayer gplayer = api.getPlayers().getPlayer(event.getPlayer());
         if (!game.getReception().hasReceived(gplayer)) {
             return;
         }
@@ -179,7 +179,7 @@ public class StagePermissionListener implements Listener {
             Entity remover = ((HangingBreakByEntityEvent) event).getRemover();
             if (remover instanceof Player) { // in case of player
                 Player breaker = (Player) remover;
-                GamePlayer gplayer = plugin.getPlayers().getPlayer(breaker);
+                GamePlayer gplayer = api.getPlayers().getPlayer(breaker);
                 if (!game.getReception().hasReceived(gplayer)) {
                     return;
                 }
@@ -197,7 +197,7 @@ public class StagePermissionListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void on(HangingPlaceEvent event) {
-        GamePlayer gplayer = plugin.getPlayers().getPlayer(event.getPlayer());
+        GamePlayer gplayer = api.getPlayers().getPlayer(event.getPlayer());
         if (!game.getReception().hasReceived(gplayer)) {
             return;
         }
@@ -211,7 +211,7 @@ public class StagePermissionListener implements Listener {
             return;
         }
         Player player = (Player) event.getWhoClicked();
-        GamePlayer gplayer = plugin.getPlayers().getPlayer(player);
+        GamePlayer gplayer = api.getPlayers().getPlayer(player);
         if (!game.getReception().hasReceived(gplayer)) {
             return;
         }
@@ -221,7 +221,7 @@ public class StagePermissionListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void on(PlayerArmorStandManipulateEvent event) {
-        GamePlayer gplayer = plugin.getPlayers().getPlayer(event.getPlayer());
+        GamePlayer gplayer = api.getPlayers().getPlayer(event.getPlayer());
         if (!game.getReception().hasReceived(gplayer)) {
             return;
         }
@@ -238,7 +238,7 @@ public class StagePermissionListener implements Listener {
         TeamType color;
         if (event.getEntered() instanceof Player) {
             Player player = (Player) event.getEntered();
-            GamePlayer gplayer = plugin.getPlayers().getPlayer(player);
+            GamePlayer gplayer = api.getPlayers().getPlayer(player);
             color = gplayer.getTeam().map(Team::getType).orElse(TeamColor.WHITE);
         } else {
             color = TeamColor.WHITE;
@@ -255,7 +255,7 @@ public class StagePermissionListener implements Listener {
         TeamType color;
         if (event.getExited() instanceof Player) {
             Player player = (Player) event.getExited();
-            GamePlayer gplayer = plugin.getPlayers().getPlayer(player);
+            GamePlayer gplayer = api.getPlayers().getPlayer(player);
             color = gplayer.getTeam().map(Team::getType).orElse(TeamColor.WHITE);
         } else {
             color = TeamColor.WHITE;
@@ -272,7 +272,7 @@ public class StagePermissionListener implements Listener {
         TeamType color;
         if (event.getAttacker() instanceof Player) {
             Player player = (Player) event.getAttacker();
-            GamePlayer gplayer = plugin.getPlayers().getPlayer(player);
+            GamePlayer gplayer = api.getPlayers().getPlayer(player);
             color = gplayer.getTeam().map(Team::getType).orElse(TeamColor.WHITE);
         } else {
             color = TeamColor.WHITE;
@@ -291,7 +291,7 @@ public class StagePermissionListener implements Listener {
         TeamType color;
         if (event.getDamager() instanceof Player) {
             Player player = (Player) event.getDamager();
-            GamePlayer gplayer = plugin.getPlayers().getPlayer(player);
+            GamePlayer gplayer = api.getPlayers().getPlayer(player);
             color = gplayer.getTeam().map(Team::getType).orElse(TeamColor.WHITE);
         } else {
             color = TeamColor.WHITE;
@@ -301,7 +301,7 @@ public class StagePermissionListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void on(PlayerWallKickEvent event) {
-        GamePlayer gplayer = plugin.getPlayers().getPlayer(event.getPlayer());
+        GamePlayer gplayer = api.getPlayers().getPlayer(event.getPlayer());
         if (!game.getReception().hasReceived(gplayer)) {
             return;
         }
@@ -315,7 +315,7 @@ public class StagePermissionListener implements Listener {
             return;
         }
         Player player = (Player) event.getEntity();
-        GamePlayer gplayer = plugin.getPlayers().getPlayer(player);
+        GamePlayer gplayer = api.getPlayers().getPlayer(player);
         if (!game.getReception().hasReceived(gplayer)) {
             return;
         }

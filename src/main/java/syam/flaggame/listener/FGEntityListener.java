@@ -16,6 +16,7 @@
  */
 package syam.flaggame.listener;
 
+import jp.llv.flaggame.api.FlagGameAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -26,16 +27,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
-
-import syam.flaggame.FlagGame;
 import syam.flaggame.player.GamePlayer;
 
 public class FGEntityListener implements Listener {
 
-    private final FlagGame plugin;
+    private final FlagGameAPI api;
 
-    public FGEntityListener(final FlagGame plugin) {
-        this.plugin = plugin;
+    public FGEntityListener(FlagGameAPI api) {
+        this.api = api;
     }
 
     /* 登録するイベントはここから下に */
@@ -46,7 +45,7 @@ public class FGEntityListener implements Listener {
         Entity entity = event.getEntity();
 
         // ゲーム用ワールドでなければ返す
-        if (entity.getWorld() != Bukkit.getWorld(plugin.getConfigs().getGameWorld())) return;
+        if (entity.getWorld() != Bukkit.getWorld(api.getConfig().getGameWorld())) return;
 
         Player damaged = null;
         Player attacker = null;
@@ -68,10 +67,10 @@ public class FGEntityListener implements Listener {
         if (damaged == null || attacker == null) return;
 
         // 設定確認 チーム内PVPを無効にする設定が無効であれば何もしない
-        if (!plugin.getConfigs().getDisableTeamPVP()) return;
+        if (!api.getConfig().getDisableTeamPVP()) return;
 
-        GamePlayer gAttacker = plugin.getPlayers().getPlayer(attacker),
-                gDamaged = plugin.getPlayers().getPlayer(damaged);
+        GamePlayer gAttacker = api.getPlayers().getPlayer(attacker),
+                gDamaged = api.getPlayers().getPlayer(damaged);
         if (!gAttacker.getTeam().equals(gDamaged.getTeam())) {
             return;
         }
@@ -82,10 +81,10 @@ public class FGEntityListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onEntityRegainHealth(final EntityRegainHealthEvent event) {
         // ゲーム用ワールドでなければ返す
-        if (event.getEntity().getWorld() != Bukkit.getWorld(plugin.getConfigs().getGameWorld())) { return; }
+        if (event.getEntity().getWorld() != Bukkit.getWorld(api.getConfig().getGameWorld())) { return; }
 
         // 設定確認、プレイヤーならイベントキャンセル
-        if (plugin.getConfigs().getDisableRegainHP()) {
+        if (api.getConfig().getDisableRegainHP()) {
             if (event.getEntity() instanceof Player) {
                 event.setCancelled(true);
             }

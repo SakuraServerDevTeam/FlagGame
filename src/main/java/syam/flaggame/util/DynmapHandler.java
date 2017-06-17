@@ -18,6 +18,7 @@ package syam.flaggame.util;
 
 import java.util.HashMap;
 import java.util.Map;
+import jp.llv.flaggame.api.FlagGameAPI;
 
 import org.bukkit.Location;
 import org.bukkit.Server;
@@ -33,18 +34,17 @@ import org.dynmap.markers.AreaMarker;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.markers.MarkerSet;
 
-import syam.flaggame.FlagGame;
 import syam.flaggame.game.Stage;
 import syam.flaggame.game.objective.GameChest;
 import syam.flaggame.game.objective.Flag;
 
 public class DynmapHandler {
 
-    private final FlagGame plugin;
+    private final FlagGameAPI api;
 
     // Dynmap
     private Plugin dynmap;
-    private DynmapAPI api;
+    private DynmapAPI dynmapAPI;
     private MarkerAPI markerapi;
 
     // Markers
@@ -61,28 +61,28 @@ public class DynmapHandler {
     private final static String defaultInfowindow = "<div class=\"infowindow\">" + "<u>フラッグゲームステージ情報</u><br />" + "<span style=\"font-size:120%;font-weight:bold;\">%gamename%</span><br />" + "<span style=\"font-weight:bold;\">フラッグ数:</span> %flagcount%<br />" + "<span style=\"font-weight:bold;\">チェスト数:</span> %chestcount%<br />" + "<span style=\"font-weight:bold;\">ゲーム時間:</span> %gametime%<br />"
             + "<span style=\"font-weight:bold;\">チーム毎人数制限:</span> %teamlimit%<br />" + "<span style=\"font-weight:bold;\">参加料:</span> %entryfee%<br />" + "<span style=\"font-weight:bold;\">賞金:</span> %award%<br />" + "<span style=\"font-weight:bold;\">観戦席:</span> %specspawn%<br />" + "</div>";
 
-    public DynmapHandler(final FlagGame plugin) {
-        this.plugin = plugin;
+    public DynmapHandler(FlagGameAPI api) {
+        this.api = api;
     }
 
     /**
      * 初期化
      */
     public void init() {
-        PluginManager pm = plugin.getServer().getPluginManager();
+        PluginManager pm = api.getServer().getPluginManager();
 
         // Get dynmap
         dynmap = pm.getPlugin("dynmap");
         if (dynmap == null) {
-            plugin.getLogger().severe("Cannot find dynmap!");
+            api.getLogger().warn("Cannot find dynmap!");
             return;
         }
 
         // Get dynmap API
-        api = (DynmapAPI) dynmap;
+        dynmapAPI = (DynmapAPI) dynmap;
 
         // Regist Listener
-        pm.registerEvents(new OurServerListener(), plugin);
+        pm.registerEvents(new OurServerListener(), api.getPlugin());
 
         // dynmapが有効なら有効化
         if (dynmap.isEnabled()) activate();
@@ -96,9 +96,9 @@ public class DynmapHandler {
         if (activated) return;
 
         // Get markers API
-        markerapi = api.getMarkerAPI();
+        markerapi = dynmapAPI.getMarkerAPI();
         if (markerapi == null) {
-            plugin.getLogger().severe("Cannot loading Dynmap marker API!");
+            api.getLogger().warn("Cannot loading Dynmap marker API!");
             return;
         }
 
@@ -115,14 +115,14 @@ public class DynmapHandler {
         }
 
         if (set == null) {
-            plugin.getLogger().severe("Cannot creating dynmap marker set!");
+            api.getLogger().warn("Cannot creating dynmap marker set!");
             return;
         }
         // set.setMinZoom(0);
         set.setLayerPriority(10);
         set.setHideByDefault(false);
 
-        plugin.getLogger().info("Hooked to dynmap!");
+        api.getLogger().info("Hooked to dynmap!");
         activated = true;
 
         updateRegions();
@@ -136,7 +136,7 @@ public class DynmapHandler {
 
         Map<String, AreaMarker> newmap = new HashMap<>();
 
-        plugin.getStages().getStages().values().stream().forEach(stage -> handleStage(stage, newmap));
+        api.getStages().getStages().values().stream().forEach(stage -> handleStage(stage, newmap));
 
         // 古いマーカーを削除
         markers.values().stream().forEach(oldm -> oldm.deleteMarker());
@@ -246,7 +246,7 @@ public class DynmapHandler {
             s = s.replaceAll("%specspawn%", "あり");
         }
 
-        // Build players - included by own ProjectManager plugin
+        // Build players - included by own ProjectManager api
         /*
          * String managers = "(none)"; String members = "(none)"; if
          * (project.getPlayersByType(MemberType.MANAGER).size() >= 1){ managers
@@ -285,8 +285,8 @@ public class DynmapHandler {
         @SuppressWarnings("unused")
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onPluginEnable(final PluginEnableEvent event) {
-            Plugin plugin = event.getPlugin();
-            String name = plugin.getDescription().getName();
+            Plugin api = event.getPlugin();
+            String name = api.getDescription().getName();
             if (name.equals("dynmap")) {
                 if (dynmap.isEnabled()) activate();
             }
@@ -295,7 +295,7 @@ public class DynmapHandler {
 
     /* getter / setter */
     public Server getServer() {
-        return plugin.getServer();
+        return api.getServer();
     }
 
     public boolean isActivated() {

@@ -17,7 +17,6 @@
 package syam.flaggame.command.game;
 
 import java.util.List;
-import jp.llv.flaggame.reception.GameReception;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -30,6 +29,7 @@ import syam.flaggame.command.BaseCommand;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.player.GamePlayer;
+import jp.llv.flaggame.api.reception.Reception;
 
 public class GameLeaveCommand extends BaseCommand {
 
@@ -63,7 +63,7 @@ public class GameLeaveCommand extends BaseCommand {
                 throw new CommandException("&cこのゲームワールド外からこのコマンドを使うことはできません！");
             }
         } else {// ゲームに参加しているプレイヤー
-            GameReception reception = gPlayer.getEntry().get();
+            Reception reception = gPlayer.getEntry().get();
             switch (reception.getState().toGameState()) {
                 case PREPARATION:
                     if (!Perms.GAME_LEAVE_READY.has(sender)) {

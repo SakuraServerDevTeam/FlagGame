@@ -18,7 +18,6 @@ package syam.flaggame.command.stage;
 
 import java.util.List;
 import jp.llv.flaggame.game.Game;
-import jp.llv.flaggame.reception.GameReception;
 import syam.flaggame.FlagGame;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.command.CommandSender;
@@ -28,6 +27,7 @@ import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.util.Actions;
+import jp.llv.flaggame.api.reception.Reception;
 
 public class StageInfoCommand extends BaseCommand {
 
@@ -55,8 +55,8 @@ public class StageInfoCommand extends BaseCommand {
             } else {
                 for (Stage stage : this.plugin.getStages()) {
                     // ゲームステータス取得
-                    String status = stage.getReception().map(GameReception::getState)
-                            .map(GameReception.State::toGameState)
+                    String status = stage.getReception().map(Reception::getState)
+                            .map(Reception.State::toGameState)
                             .map(s -> s == Game.State.PREPARATION ? "&6受付中" : "&c開始中").orElse("&7待機中");
 
                     String s = "&6" + stage.getName() + "&b: 状態=&f" + status;
@@ -73,7 +73,7 @@ public class StageInfoCommand extends BaseCommand {
             Actions.message(sender, "&a ==================&b GameDetail &a==================");
 
             // ゲームステータス取得
-            String status = stage.getReception().map(GameReception::getState).map(GameReception.State::toGameState)
+            String status = stage.getReception().map(Reception::getState).map(Reception.State::toGameState)
                     .map(s -> s == Game.State.PREPARATION ? "&6受付中" : "&c開始中").orElse("&7待機中");
 
             String s1 = "&6 " + stage.getName()

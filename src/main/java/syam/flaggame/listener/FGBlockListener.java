@@ -16,6 +16,7 @@
  */
 package syam.flaggame.listener;
 
+import jp.llv.flaggame.api.FlagGameAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -33,17 +34,16 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.block.SignChangeEvent;
 
-import syam.flaggame.FlagGame;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.util.Actions;
 
 public class FGBlockListener implements Listener {
 
-    private final FlagGame plugin;
+    private final FlagGameAPI api;
 
-    public FGBlockListener(final FlagGame plugin) {
-        this.plugin = plugin;
+    public FGBlockListener(FlagGameAPI api) {
+        this.api = api;
     }
 
     /* 登録するイベントはここから下に */
@@ -75,7 +75,7 @@ public class FGBlockListener implements Listener {
     public boolean onBlockChange(final BlockEvent event, final Player player) {
         final Block block = event.getBlock();
         // ゲーム用ワールドでなければ返す
-        if (block.getWorld() != Bukkit.getWorld(plugin.getConfigs().getGameWorld())) {
+        if (block.getWorld() != Bukkit.getWorld(api.getConfig().getGameWorld())) {
             return false;
         }
         
@@ -85,13 +85,13 @@ public class FGBlockListener implements Listener {
         
         Block b = event.getBlock();
         Location loc = b.getLocation();
-        for (Stage stage : plugin.getStages()) {
+        for (Stage stage : api.getStages()) {
             if (stage.getAreas().hasStageArea() && stage.getAreas().getStageArea().contains(loc) && stage.isProtected()) {
                 return true;
             }
         }
 
-        return plugin.getConfigs().isProtected();
+        return api.getConfig().isProtected();
     }
 
     // 看板設置
@@ -122,12 +122,12 @@ public class FGBlockListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onLeavesDecay(final LeavesDecayEvent event) {
         // ゲーム用ワールドでなければ返す
-        if (event.getBlock().getWorld() != Bukkit.getWorld(plugin.getConfigs().getGameWorld())) {
+        if (event.getBlock().getWorld() != Bukkit.getWorld(api.getConfig().getGameWorld())) {
             return;
         }
 
         // ワールド保護チェック
-        if (plugin.getConfigs().isProtected()) {
+        if (api.getConfig().isProtected()) {
             event.setCancelled(true);
         }
     }
@@ -136,12 +136,12 @@ public class FGBlockListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onBlockFade(final BlockFadeEvent event) {
         // ゲーム用ワールドでなければ返す
-        if (event.getBlock().getWorld() != Bukkit.getWorld(plugin.getConfigs().getGameWorld())) {
+        if (event.getBlock().getWorld() != Bukkit.getWorld(api.getConfig().getGameWorld())) {
             return;
         }
 
         // ワールド保護チェック
-        if (plugin.getConfigs().isProtected()) {
+        if (api.getConfig().isProtected()) {
             event.setCancelled(true);
         }
     }
@@ -150,12 +150,12 @@ public class FGBlockListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onBlockForm(final BlockFormEvent event) {
         // ゲーム用ワールドでなければ返す
-        if (event.getBlock().getWorld() != Bukkit.getWorld(plugin.getConfigs().getGameWorld())) {
+        if (event.getBlock().getWorld() != Bukkit.getWorld(api.getConfig().getGameWorld())) {
             return;
         }
 
         // ワールド保護チェック
-        if (plugin.getConfigs().isProtected()) {
+        if (api.getConfig().isProtected()) {
             event.setCancelled(true);
         }
     }

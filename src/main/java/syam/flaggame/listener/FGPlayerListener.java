@@ -16,11 +16,11 @@
  */
 package syam.flaggame.listener;
 
+import jp.llv.flaggame.api.FlagGameAPI;
 import jp.llv.flaggame.api.session.Reservable;
 import jp.llv.flaggame.game.Game;
 import syam.flaggame.game.objective.BannerSlot;
 import syam.flaggame.game.objective.BannerSpawner;
-import jp.llv.flaggame.reception.GameReception;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -33,8 +33,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.*;
-
-import syam.flaggame.FlagGame;
 import syam.flaggame.game.objective.Flag;
 import syam.flaggame.game.objective.Nexus;
 import org.bukkit.block.BlockFace;
@@ -49,13 +47,14 @@ import syam.flaggame.permission.Perms;
 import syam.flaggame.player.GamePlayer;
 import syam.flaggame.player.SetupSession;
 import syam.flaggame.util.Actions;
+import jp.llv.flaggame.api.reception.Reception;
 
 public class FGPlayerListener implements Listener {
 
-    private final FlagGame plugin;
+    private final FlagGameAPI api;
 
-    public FGPlayerListener(final FlagGame plugin) {
-        this.plugin = plugin;
+    public FGPlayerListener(FlagGameAPI api) {
+        this.api = api;
     }
 
     /* 登録するイベントはここから下に */
@@ -69,13 +68,13 @@ public class FGPlayerListener implements Listener {
             return;
         }
 
-        GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
+        GamePlayer gPlayer = this.api.getPlayers().getPlayer(player);
 
         // 管理モードで権限を持ち、かつ設定したツールでブロックを右クリックした
         if (!(event.getAction() == Action.RIGHT_CLICK_BLOCK
               && gPlayer.getSetupSession().isPresent()
               && event.getHand() == EquipmentSlot.HAND
-              && player.getInventory().getItemInMainHand().getTypeId() == plugin.getConfigs().getToolID()
+              && player.getInventory().getItemInMainHand().getTypeId() == api.getConfig().getToolID()
               && Perms.STAGE_SET.has(player))) {
             return;
         }
@@ -90,7 +89,7 @@ public class FGPlayerListener implements Listener {
         Location loc = block.getLocation();
 
         // ゲーム用ワールドでなければ返す
-        if (loc.getWorld() != Bukkit.getWorld(plugin.getConfigs().getGameWorld())) {
+        if (loc.getWorld() != Bukkit.getWorld(api.getConfig().getGameWorld())) {
             Actions.message(player, "&cここはゲーム用ワールドではありません！");
             return;
         }
@@ -171,8 +170,8 @@ public class FGPlayerListener implements Listener {
         final Player player = event.getPlayer();
 
         // ログイン時のMOTDなどの最後に表示別スレッドで実行する
-        plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, () -> {
-            for (GameReception reception : this.plugin.getReceptions()) {
+        api.getServer().getScheduler().runTaskLaterAsynchronously(api.getPlugin(), () -> {
+            for (Reception reception : this.api.getReceptions()) {
                 // 待機中ゲーム
                 if (reception.getState().toGameState() == Game.State.PREPARATION) {
                     Actions.message(player, "&b* ===================================");

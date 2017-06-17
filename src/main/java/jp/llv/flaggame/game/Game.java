@@ -22,12 +22,12 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-import jp.llv.flaggame.reception.GameReception;
 import jp.llv.flaggame.reception.Team;
 import jp.llv.flaggame.reception.TeamType;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.player.GamePlayer;
+import jp.llv.flaggame.api.reception.Reception;
 
 /**
  *
@@ -51,7 +51,7 @@ public interface Game extends Iterable<GamePlayer> {
 
     void stopForcibly(String message);
 
-    GameReception getReception();
+    Reception getReception();
 
     Team getTeam(TeamType type);
 

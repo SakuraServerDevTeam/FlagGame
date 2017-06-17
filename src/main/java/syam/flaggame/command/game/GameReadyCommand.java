@@ -19,7 +19,6 @@ package syam.flaggame.command.game;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import jp.llv.flaggame.reception.GameReception;
 import jp.llv.flaggame.reception.StandardReception;
 import syam.flaggame.FlagGame;
 import org.bukkit.command.CommandSender;
@@ -28,6 +27,7 @@ import syam.flaggame.command.BaseCommand;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.exception.FlagGameException;
 import syam.flaggame.permission.Perms;
+import jp.llv.flaggame.api.reception.Reception;
 
 public class GameReadyCommand extends BaseCommand {
 
@@ -50,7 +50,7 @@ public class GameReadyCommand extends BaseCommand {
         List<String> readyArgs = new ArrayList<>(args);
         readyArgs.remove(0);
 
-        GameReception reception;
+        Reception reception;
         try {
             reception = this.plugin.getReceptions().newReception(StandardReception.of(args.get(0)), readyArgs);
         } catch (IllegalArgumentException ex) {

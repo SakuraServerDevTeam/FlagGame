@@ -14,21 +14,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jp.llv.flaggame.util;
-
+package jp.llv.flaggame.util.function;
 
 /**
- * Represents a function that accepts two arguments including double
- * value and produces a result. 
- * This is the three-arity specialization of {@link java.util.function.Function}.
+ * Represents a function that accepts three arguments and not produces a result. This
+ * is the three-arity specialization of {@link java.util.function.Consumer}.
  *
  * @author Toyblocks
- * @param <T> the type of the first argument to the function
- * @param <R> the type of the result of the function
+ * @param <A1> the type of the first argument to the function
+ * @param <A2> the type of the second argument to the function
+ * @param <A3> the type of the result of the function
  */
 @FunctionalInterface
-public interface BiDoubleFunction<T, R> {
-    
-    R apply(T t1, double t2);
-    
+public interface TriConsumer<A1, A2, A3> {
+
+    void accept(A1 a1, A2 a2, A3 a3);
+
 }

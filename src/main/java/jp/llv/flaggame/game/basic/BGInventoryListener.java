@@ -17,6 +17,7 @@
 package jp.llv.flaggame.game.basic;
 
 import java.util.Collection;
+import jp.llv.flaggame.api.FlagGameAPI;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -25,7 +26,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
-import syam.flaggame.FlagGame;
 import syam.flaggame.player.GamePlayer;
 
 /**
@@ -34,12 +34,12 @@ import syam.flaggame.player.GamePlayer;
  */
 public class BGInventoryListener extends BGListener {
 
-    private final FlagGame plugin;
+    private final FlagGameAPI api;
     private final Collection<GamePlayer> players;
 
-    public BGInventoryListener(FlagGame plugin, BasicGame game) {
+    public BGInventoryListener(FlagGameAPI api, BasicGame game) {
         super(game);
-        this.plugin = plugin;
+        this.api = api;
         this.players = game.getReception().getPlayers();
     }
 
@@ -54,7 +54,7 @@ public class BGInventoryListener extends BGListener {
             return;
         }
         Player player = (Player) event.getWhoClicked();
-        GamePlayer gplayer = this.plugin.getPlayers().getPlayer(player);
+        GamePlayer gplayer = this.api.getPlayers().getPlayer(player);
 
         if (!this.players.contains(gplayer)) {
             return;

@@ -26,7 +26,6 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-import syam.flaggame.FlagGame;
 import syam.flaggame.game.Stage;
 import syam.flaggame.game.objective.GameChest;
 import syam.flaggame.util.Cuboid;
@@ -38,7 +37,7 @@ import syam.flaggame.util.Cuboid;
 public class ClassicStageData extends VoidStageData {
 
     @Override
-    public SerializeTask load(FlagGame plugin, Stage stage, Cuboid area, Consumer<RollbackException> callback) {
+    public SerializeTask load(Stage stage, Cuboid area, Consumer<RollbackException> callback) {
         stage.getObjectives(Flag.class).values().stream()
                 .filter(f -> area.contains(f.getLocation()))
                 .forEach(Flag::rollback);
