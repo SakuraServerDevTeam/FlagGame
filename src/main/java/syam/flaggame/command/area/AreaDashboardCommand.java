@@ -18,7 +18,7 @@ package syam.flaggame.command.area;
 
 import java.util.List;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import jp.llv.flaggame.util.DashboardBuilder;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.AreaInfo;
@@ -32,9 +32,9 @@ import syam.flaggame.util.Cuboid;
  */
 public class AreaDashboardCommand extends AreaCommand {
 
-    public AreaDashboardCommand(FlagGame plugin) {
+    public AreaDashboardCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 1,
                 "<id> <- show information about areas",
                 Perms.AREA_DASHBOARD,

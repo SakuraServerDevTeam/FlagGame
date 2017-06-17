@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import jp.llv.flaggame.api.FlagGameAPI;
 import org.bukkit.command.CommandSender;
-import syam.flaggame.FlagGame;
 import syam.flaggame.exception.FlagGameException;
 
 /**
@@ -35,7 +35,7 @@ import syam.flaggame.exception.FlagGameException;
 @FunctionalInterface
 public interface FlagTabCompleter {
 
-    Collection<String> complete(FlagGame plugin, List<String> args, CommandSender sender)
+    Collection<String> complete(FlagGameAPI plugin, List<String> args, CommandSender sender)
             throws FlagGameException;
 
     static Builder builder() {
@@ -146,14 +146,14 @@ public interface FlagTabCompleter {
         @FunctionalInterface
         public static interface CollectionSuggestionProvider {
 
-            Collection<? extends Object> get(FlagGame plugin, CommandSender sender, String[] args);
+            Collection<? extends Object> get(FlagGameAPI api, CommandSender sender, String[] args);
 
         }
 
         @FunctionalInterface
         public static interface ArraySuggestionProvider {
 
-            Object[] get(FlagGame plugin, CommandSender sender, String[] args);
+            Object[] get(FlagGameAPI api, CommandSender sender, String[] args);
 
             default CollectionSuggestionProvider toCollectionSuggestionProvider() {
                 return (p, s, a) -> Arrays.asList(get(p, s, a));
@@ -164,7 +164,7 @@ public interface FlagTabCompleter {
         @FunctionalInterface
         public static interface StreamSuggestionProvider {
 
-            Stream<? extends Object> get(FlagGame plugin, CommandSender sender, String[] args);
+            Stream<? extends Object> get(FlagGameAPI api, CommandSender sender, String[] args);
 
             default CollectionSuggestionProvider toCollectionSuggestionProvider() {
                 return (p, s, a) -> get(p, s, a).collect(Collectors.toList());

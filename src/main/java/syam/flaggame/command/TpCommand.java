@@ -19,7 +19,7 @@ package syam.flaggame.command;
 import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.World;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
@@ -28,9 +28,9 @@ import syam.flaggame.permission.Perms;
 
 public class TpCommand extends BaseCommand {
 
-    public TpCommand(FlagGame plugin) {
+    public TpCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 false,
                 4,
                 "<player> <x> <y> <z> [<yaw> <pitch>] [world] [<vx> <vy> <vz>] <- tp the player",
@@ -42,7 +42,7 @@ public class TpCommand extends BaseCommand {
 
     @Override
     public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
-        Player target = plugin.getServer().getPlayer(args.get(0));
+        Player target = api.getServer().getPlayer(args.get(0));
         if (target == null) {
             throw new CommandException("&cプレイヤーが見つかりませんでした！");
         }
@@ -70,7 +70,7 @@ public class TpCommand extends BaseCommand {
         if (args.size() < 7) {
             world = target.getWorld();
         } else {
-            world = plugin.getServer().getWorld(args.get(6));
+            world = api.getServer().getWorld(args.get(6));
             if (world == null) {
                 throw new CommandException("&c無効なワールドです！");
             }

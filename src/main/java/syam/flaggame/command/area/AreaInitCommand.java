@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.logging.Level;
 import jp.llv.flaggame.rollback.StageDataType;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
@@ -33,9 +33,9 @@ import syam.flaggame.util.Cuboid;
  */
 public class AreaInitCommand extends AreaCommand {
 
-    public AreaInitCommand(FlagGame plugin) {
+    public AreaInitCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 1,
                 "<id> <- init region",
                 Perms.AREA_INIT,
@@ -51,17 +51,17 @@ public class AreaInitCommand extends AreaCommand {
             throw new CommandException("&cその名前のエリアは存在しません！");
         }
         final Player playerFinal = player;
-        StageDataType.NONE.newInstance().load(plugin, stage, area, ex -> {
+        StageDataType.CLASSIC.newInstance().load(stage, area, ex -> {
             if (ex == null && playerFinal.isOnline()) {
                 Actions.sendPrefixedMessage(player, "&a'&6" + stage.getName() + "&a'の'&6"
                                                     + id + "&a'エリアを初期化しました！");
             } else if (ex != null && playerFinal.isOnline()) {
                 Actions.sendPrefixedMessage(player, "&c'&6" + stage.getName() + "&c'の'&6"
                                                     + id + "&c'エリアの初期化に失敗しました！");
-                plugin.getLogger().log(Level.WARNING, "Failed to init stage area", ex);
+                api.getLogger().warn("Failed to init stage area", ex);
             }
 
-        }).start(plugin);
+        }).start(api.getPlugin());
     }
 
 }

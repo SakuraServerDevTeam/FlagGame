@@ -18,7 +18,7 @@ package syam.flaggame.command.area;
 
 import java.util.List;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
@@ -31,9 +31,9 @@ import syam.flaggame.util.WorldEditHandler;
  */
 public class AreaSetCommand extends AreaCommand {
 
-    public AreaSetCommand(FlagGame plugin) {
+    public AreaSetCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 1,
                 "<id> <- set region",
                 Perms.AREA_SET,

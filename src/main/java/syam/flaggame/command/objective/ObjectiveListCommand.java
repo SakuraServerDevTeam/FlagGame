@@ -22,7 +22,7 @@ import java.util.List;
 import org.bukkit.Location;
 import syam.flaggame.game.objective.Flag;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import jp.llv.flaggame.util.DashboardBuilder;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
@@ -38,9 +38,9 @@ import syam.flaggame.permission.Perms;
  */
 public class ObjectiveListCommand extends ObjectiveCommand {
 
-    public ObjectiveListCommand(FlagGame plugin) {
+    public ObjectiveListCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 0,
                 "<- show objective list",
                 Perms.OBJECTIVE_LIST,

@@ -22,7 +22,7 @@ import jp.llv.flaggame.reception.fest.FestivalSchedule;
 import jp.llv.flaggame.util.FlagTabCompleter;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.BaseCommand;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.exception.FlagGameException;
@@ -34,15 +34,15 @@ import syam.flaggame.permission.Perms;
  */
 public abstract class FestivalSetCommand extends BaseCommand {
 
-    public FestivalSetCommand(FlagGame plugin, int argLength, String usage, Perms permission, FlagTabCompleter completer, String name, String... aliases) {
-        super(plugin, true, argLength, usage, permission, completer, name, aliases);
+    public FestivalSetCommand(FlagGameAPI api, int argLength, String usage, Perms permission, FlagTabCompleter completer, String name, String... aliases) {
+        super(api, true, argLength, usage, permission, completer, name, aliases);
     }
 
     @Override
     protected final void execute(List<String> args, CommandSender sender, Player player) throws FlagGameException {
         this.execute(
                 args,
-                plugin.getPlayers().getPlayer(player)
+                api.getPlayers().getPlayer(player)
                 .getSetupSession().map(s -> s.getSelected(FestivalSchedule.class))
                 .orElseThrow(() -> new CommandException("&cフェスを選択してください！")),
                 player
@@ -55,7 +55,7 @@ public abstract class FestivalSetCommand extends BaseCommand {
     protected final Collection<String> complete(List<String> args, CommandSender sender, Player player) throws FlagGameException {
         return this.complete(
                 args,
-                plugin.getPlayers().getPlayer(player)
+                api.getPlayers().getPlayer(player)
                 .getSetupSession().map(s -> s.getSelected(FestivalSchedule.class))
                 .orElseThrow(() -> new FlagGameException()),
                 player

@@ -17,7 +17,7 @@
 package syam.flaggame.command;
 
 import java.util.List;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.exception.CommandException;
@@ -30,9 +30,9 @@ import syam.flaggame.exception.FlagGameException;
  */
 public class ConfirmCommand extends BaseCommand {
 
-    public ConfirmCommand(FlagGame plugin) {
+    public ConfirmCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 false,
                 0,
                 "<- command confirm",
@@ -42,7 +42,7 @@ public class ConfirmCommand extends BaseCommand {
 
     @Override
     public void execute(List<String> args, CommandSender sender, Player player) throws FlagGameException {
-        boolean ran = this.plugin.getConfirmQueue().confirmQueue(sender);
+        boolean ran = this.api.getConfirmQueue().confirmQueue(sender);
         if (!ran) {
             throw new CommandException("&cあなたの実行待ちコマンドはありません！");
         }

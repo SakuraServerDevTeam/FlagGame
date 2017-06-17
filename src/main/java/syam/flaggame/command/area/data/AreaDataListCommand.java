@@ -19,7 +19,7 @@ package syam.flaggame.command.area.data;
 import java.util.List;
 import java.util.Map;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.area.AreaCommand;
 import jp.llv.flaggame.util.DashboardBuilder;
 import syam.flaggame.exception.CommandException;
@@ -34,9 +34,9 @@ import syam.flaggame.util.Actions;
  */
 public class AreaDataListCommand extends AreaCommand {
 
-    public AreaDataListCommand(FlagGame plugin) {
+    public AreaDataListCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 1,
                 "<id> <- show a list of area data",
                 Perms.AREA_LIST,

@@ -17,9 +17,9 @@
 package jp.llv.flaggame.rollback;
 
 import java.util.function.Consumer;
+import jp.llv.flaggame.api.FlagGameAPI;
 import jp.llv.flaggame.rollback.SerializeTask.CompletedSerializeTask;
 import org.bukkit.World;
-import syam.flaggame.FlagGame;
 import syam.flaggame.game.Stage;
 import syam.flaggame.util.Cuboid;
 
@@ -30,11 +30,11 @@ import syam.flaggame.util.Cuboid;
 public class VoidStageData implements StageData {
 
     @Override
-    public void read(FlagGame plugin, World world, byte[] data) {
+    public void read(FlagGameAPI api, World world, byte[] data) {
     }
 
     @Override
-    public byte[] write(FlagGame plugin, World world) {
+    public byte[] write(FlagGameAPI api, World world) {
         return new byte[0];
     }
 

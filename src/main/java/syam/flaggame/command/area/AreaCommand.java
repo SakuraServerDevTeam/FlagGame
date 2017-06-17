@@ -17,9 +17,9 @@
 package syam.flaggame.command.area;
 
 import java.util.List;
+import jp.llv.flaggame.api.FlagGameAPI;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagGame;
 import jp.llv.flaggame.api.session.Reservable;
 import syam.flaggame.command.BaseCommand;
 import syam.flaggame.exception.CommandException;
@@ -33,17 +33,17 @@ import syam.flaggame.player.GamePlayer;
  */
 public abstract class AreaCommand extends BaseCommand {
 
-    public AreaCommand(FlagGame plugin, int argLength, String usage, Perms permission, String name, String... aliases) {
-        super(plugin, true, argLength, usage, permission, name, aliases);
+    public AreaCommand(FlagGameAPI api, int argLength, String usage, Perms permission, String name, String... aliases) {
+        super(api, true, argLength, usage, permission, name, aliases);
     }
 
-    public AreaCommand(FlagGame plugin, int argLength, String usage, String name, String... aliases) {
-        super(plugin, true, argLength, usage, name, aliases);
+    public AreaCommand(FlagGameAPI api, int argLength, String usage, String name, String... aliases) {
+        super(api, true, argLength, usage, name, aliases);
     }
 
     @Override
     public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
-        GamePlayer gp = plugin.getPlayers().getPlayer(player);
+        GamePlayer gp = api.getPlayers().getPlayer(player);
         if (!gp.getSetupSession().isPresent()) {
             throw new CommandException("&c先に編集するゲームを選択してください");
         }

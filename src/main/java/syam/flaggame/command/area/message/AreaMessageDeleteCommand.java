@@ -18,7 +18,7 @@ package syam.flaggame.command.area.message;
 
 import java.util.List;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.area.AreaCommand;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.AreaInfo;
@@ -31,9 +31,9 @@ import syam.flaggame.permission.Perms;
  */
 public class AreaMessageDeleteCommand extends AreaCommand {
 
-    public AreaMessageDeleteCommand(FlagGame plugin) {
+    public AreaMessageDeleteCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 1,
                 "<id> <index> <- delete message",
                 Perms.AREA_MESSAGE_DELETE,

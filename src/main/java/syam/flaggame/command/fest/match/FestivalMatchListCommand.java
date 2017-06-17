@@ -24,7 +24,7 @@ import jp.llv.flaggame.util.DashboardBuilder;
 import jp.llv.flaggame.util.FlagTabCompleter;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.BaseCommand;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.exception.FlagGameException;
@@ -36,9 +36,9 @@ import syam.flaggame.permission.Perms;
  */
 public class FestivalMatchListCommand extends BaseCommand {
 
-    public FestivalMatchListCommand(FlagGame plugin) {
+    public FestivalMatchListCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 false,
                 0,
                 "<- show matches in a selected festival",
@@ -53,10 +53,10 @@ public class FestivalMatchListCommand extends BaseCommand {
     @Override
     protected void execute(List<String> args, CommandSender sender, Player player) throws FlagGameException {
         FestivalSchedule festival = args.size() >= 1
-                ? plugin.getFestivals().getFestival(args.get(0)).orElse(null)
+                ? api.getFestivals().getFestival(args.get(0)).orElse(null)
                 : player == null
                         ? null
-                        : plugin.getPlayers().getPlayer(player).getSetupSession()
+                        : api.getPlayers().getPlayer(player).getSetupSession()
                         .map(s -> s.getSelected(FestivalSchedule.class)).orElse(null);
         if (festival == null) {
             throw new CommandException("&cフェスを選択してください！");

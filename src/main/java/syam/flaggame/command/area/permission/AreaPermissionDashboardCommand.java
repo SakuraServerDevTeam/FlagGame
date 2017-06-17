@@ -25,7 +25,7 @@ import jp.llv.flaggame.game.permission.GamePermissionStateSet;
 import jp.llv.flaggame.reception.TeamColor;
 import jp.llv.flaggame.util.StringUtil;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.area.AreaCommand;
 import jp.llv.flaggame.util.DashboardBuilder;
 import syam.flaggame.exception.CommandException;
@@ -38,9 +38,9 @@ import syam.flaggame.permission.Perms;
  */
 public class AreaPermissionDashboardCommand extends AreaCommand {
 
-    public AreaPermissionDashboardCommand(FlagGame plugin) {
+    public AreaPermissionDashboardCommand(FlagGameAPI api) {
         super(
-                plugin, 
+                api, 
                 2,
                 "<id> <permission> <- show information about permissions", 
                 Perms.AREA_PERMISSION_DASHBOARD, 

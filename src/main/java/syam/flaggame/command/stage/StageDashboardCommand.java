@@ -21,7 +21,7 @@ import jp.llv.flaggame.api.session.Reservable;
 import jp.llv.flaggame.reception.TeamColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.BaseCommand;
 import jp.llv.flaggame.util.DashboardBuilder;
 import syam.flaggame.exception.CommandException;
@@ -37,9 +37,9 @@ import syam.flaggame.util.Actions;
  */
 public class StageDashboardCommand extends BaseCommand {
 
-    public StageDashboardCommand(FlagGame plugin) {
+    public StageDashboardCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 false,
                 1,
                 "<stage> <- show information about a stage",
@@ -53,11 +53,11 @@ public class StageDashboardCommand extends BaseCommand {
     public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
         Stage stage = null;
         if (player != null) {
-            GamePlayer gplayer = plugin.getPlayers().getPlayer(player);
+            GamePlayer gplayer = api.getPlayers().getPlayer(player);
             stage = gplayer.getSetupSession().map(s -> s.getSelected(Stage.class)).orElse(null);
         }
         if (stage == null && !args.isEmpty()) {
-            stage = plugin.getStages().getStage(args.get(0)).orElse(null);
+            stage = api.getStages().getStage(args.get(0)).orElse(null);
         }
         if (stage == null) {
             throw new CommandException("&cステージが見つかりません！");

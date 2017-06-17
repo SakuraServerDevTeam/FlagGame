@@ -22,7 +22,7 @@ import jp.llv.flaggame.game.Game;
 
 import org.bukkit.Location;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.command.BaseCommand;
@@ -35,9 +35,9 @@ import syam.flaggame.util.Actions;
 
 public class GameWatchCommand extends BaseCommand {
 
-    public GameWatchCommand(FlagGame plugin) {
+    public GameWatchCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 true,
                 0,
                 "[stage] <- watch the game",
@@ -50,14 +50,14 @@ public class GameWatchCommand extends BaseCommand {
     @Override
     public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
         Stage stage;
-        GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
+        GamePlayer gPlayer = this.api.getPlayers().getPlayer(player);
 
         if (args.size() >= 1) {
-            stage = plugin.getStages().getStage(args.get(0))
+            stage = api.getStages().getStage(args.get(0))
                     .orElseThrow(() -> new CommandException("&cステージ'" + args.get(0) + "'が見つかりません"));
         } // 引数がなければ自動補完
         else {
-            Collection<Game> startingGames = this.plugin.getGames().getGames(Game.State.STARTED);
+            Collection<Game> startingGames = this.api.getGames().getGames(Game.State.STARTED);
             if (gPlayer.getEntry().map(r -> r.getState().toGameState() != Game.State.FINISHED).orElse(false) && gPlayer.getStage().isPresent()) {
                 stage = gPlayer.getStage().get();
             } else if (startingGames.isEmpty()) {

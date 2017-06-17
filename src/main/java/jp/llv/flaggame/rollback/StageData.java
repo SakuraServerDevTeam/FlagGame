@@ -17,8 +17,8 @@
 package jp.llv.flaggame.rollback;
 
 import java.util.function.Consumer;
+import jp.llv.flaggame.api.FlagGameAPI;
 import org.bukkit.World;
-import syam.flaggame.FlagGame;
 import syam.flaggame.game.Stage;
 import syam.flaggame.util.Cuboid;
 
@@ -28,9 +28,9 @@ import syam.flaggame.util.Cuboid;
  */
 public interface StageData {
 
-    void read(FlagGame plugin, World world, byte[] data) throws RollbackException;
+    void read(FlagGameAPI api, World world, byte[] data) throws RollbackException;
 
-    byte[] write(FlagGame plugin, World world) throws RollbackException;
+    byte[] write(FlagGameAPI api, World world) throws RollbackException;
 
     SerializeTask save(Stage stage, Cuboid area, Consumer<RollbackException> callback);
 

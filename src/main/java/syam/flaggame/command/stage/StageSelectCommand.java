@@ -17,7 +17,7 @@
 package syam.flaggame.command.stage;
 
 import java.util.List;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.command.BaseCommand;
@@ -33,9 +33,9 @@ import syam.flaggame.util.WorldEditHandler;
 
 public class StageSelectCommand extends BaseCommand {
 
-    public StageSelectCommand(FlagGame plugin) {
+    public StageSelectCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 true,
                 0,
                 "[stage] <- select exist stage",
@@ -48,9 +48,9 @@ public class StageSelectCommand extends BaseCommand {
 
     @Override
     public void execute(List<String> args, CommandSender sender, Player player) throws FlagGameException {
-        GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
+        GamePlayer gPlayer = this.api.getPlayers().getPlayer(player);
         if (args.size() >= 1) {
-            Stage stage = this.plugin.getStages().getStage(args.get(0))
+            Stage stage = this.api.getStages().getStage(args.get(0))
                     .orElseThrow(() -> new CommandException("&cステージ'" + args.get(0) + "'が見つかりません！"));
             
             // 既に選択中のステージと同じステージでない限りはセッションを作成

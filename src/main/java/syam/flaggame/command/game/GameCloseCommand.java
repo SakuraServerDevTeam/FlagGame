@@ -18,7 +18,7 @@ package syam.flaggame.command.game;
 
 import java.util.List;
 import java.util.UUID;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.command.BaseCommand;
@@ -34,9 +34,9 @@ import jp.llv.flaggame.api.reception.Reception;
  */
 public class GameCloseCommand extends BaseCommand {
 
-    public GameCloseCommand(FlagGame plugin) {
+    public GameCloseCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 false,
                 1,
                 "<game> [reason] <- close the reception",
@@ -50,14 +50,14 @@ public class GameCloseCommand extends BaseCommand {
         Reception reception = null;
         try {
             UUID uuid = UUID.fromString(args.get(0));
-            reception = plugin.getReceptions().getReception(uuid).orElse(null);
+            reception = api.getReceptions().getReception(uuid).orElse(null);
         } catch(IllegalArgumentException ex) {
         }
         if (reception == null) {
-            reception = plugin.getStages().getStage(args.get(0)).flatMap(Stage::getReception)
+            reception = api.getStages().getStage(args.get(0)).flatMap(Stage::getReception)
                     .orElseThrow(() -> new CommandException("&c受付'" + args.get(0) + "'が見つかりません！"));
         }
-        GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
+        GamePlayer gPlayer = this.api.getPlayers().getPlayer(player);
         
         if (reception.getState()==Reception.State.CLOSED) {
             throw new CommandException("&cその受付は既に破棄されています!");

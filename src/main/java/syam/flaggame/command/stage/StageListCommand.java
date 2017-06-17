@@ -21,7 +21,7 @@ import java.util.List;
 import jp.llv.flaggame.game.Game;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.BaseCommand;
 import jp.llv.flaggame.util.DashboardBuilder;
 import syam.flaggame.exception.CommandException;
@@ -34,9 +34,9 @@ import syam.flaggame.permission.Perms;
  */
 public class StageListCommand extends BaseCommand {
 
-    public StageListCommand(FlagGame plugin) {
+    public StageListCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 false,
                 0,
                 "<- show information about stages",
@@ -48,7 +48,7 @@ public class StageListCommand extends BaseCommand {
 
     @Override
     public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
-        Collection<Stage> stages = plugin.getStages().getStages().values();
+        Collection<Stage> stages = api.getStages().getStages().values();
         DashboardBuilder.newBuilder("Stages", stages.size())
                 .appendList(stages, (d, stage) -> {
                     d.key(stage.getName());

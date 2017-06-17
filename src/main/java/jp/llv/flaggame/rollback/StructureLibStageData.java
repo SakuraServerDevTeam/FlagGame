@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.function.Consumer;
+import jp.llv.flaggame.api.FlagGameAPI;
 import jp.llv.nbt.CuboidSerializable;
 import jp.llv.nbt.LocationSerializable;
 import jp.llv.nbt.StructureLibAPI;
@@ -28,7 +29,6 @@ import jp.llv.nbt.storage.async.AsyncSerializeTask;
 import jp.llv.nbt.storage.async.AsyncStorageType;
 import jp.llv.nbt.tag.TagCompound;
 import org.bukkit.World;
-import syam.flaggame.FlagGame;
 import syam.flaggame.game.Stage;
 import syam.flaggame.util.Cuboid;
 
@@ -49,14 +49,14 @@ public class StructureLibStageData extends CachedStageData<TagCompound> {
     }
 
     @Override
-    protected TagCompound read(FlagGame plugin, World world, InputStream is) throws IOException, RollbackException {
+    protected TagCompound read(FlagGameAPI api, World world, InputStream is) throws IOException, RollbackException {
         TagCompound result = new TagCompound();
         result.read(is, gzip);
         return result;
     }
 
     @Override
-    protected void write(FlagGame plugin, World world, OutputStream os, TagCompound cache) throws IOException, RollbackException {
+    protected void write(FlagGameAPI api, World world, OutputStream os, TagCompound cache) throws IOException, RollbackException {
         cache.write(os, gzip);
     }
 

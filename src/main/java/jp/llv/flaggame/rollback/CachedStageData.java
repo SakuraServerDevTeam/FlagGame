@@ -23,8 +23,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Objects;
 import java.util.function.Consumer;
+import jp.llv.flaggame.api.FlagGameAPI;
 import org.bukkit.World;
-import syam.flaggame.FlagGame;
 import syam.flaggame.game.Stage;
 import syam.flaggame.util.Cuboid;
 
@@ -50,24 +50,24 @@ public abstract class CachedStageData<C> implements StageData {
     }
 
 
-    protected abstract C read(FlagGame plugin, World world, InputStream is) throws IOException, RollbackException;
+    protected abstract C read(FlagGameAPI api, World world, InputStream is) throws IOException, RollbackException;
 
     @Override
-    public void read(FlagGame plugin, World world, byte[] data) throws RollbackException {
+    public void read(FlagGameAPI api, World world, byte[] data) throws RollbackException {
         try (ByteArrayInputStream bis = new ByteArrayInputStream(data)) {
-            cache = this.read(plugin, world, bis);
+            cache = this.read(api, world, bis);
         } catch (IOException ex) {
             throw new RollbackException(ex);
         }
     }
 
-    protected abstract void write(FlagGame plugin, World world, OutputStream os, C cache) throws IOException, RollbackException;
+    protected abstract void write(FlagGameAPI api, World world, OutputStream os, C cache) throws IOException, RollbackException;
 
     @Override
-    public byte[] write(FlagGame plugin, World world) throws RollbackException {
+    public byte[] write(FlagGameAPI api, World world) throws RollbackException {
         Objects.requireNonNull(cache);
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
-            this.write(plugin, world, bos, cache);
+            this.write(api, world, bos, cache);
             return bos.toByteArray();
         } catch(IOException ex) {
             throw new RollbackException(ex);

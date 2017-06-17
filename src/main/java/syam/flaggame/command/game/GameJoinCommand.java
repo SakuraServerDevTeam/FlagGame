@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import jp.llv.flaggame.events.ReceptionJoinEvent;
 import jp.llv.flaggame.game.Game;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.command.BaseCommand;
@@ -32,12 +32,13 @@ import syam.flaggame.exception.FlagGameException;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.player.GamePlayer;
 import jp.llv.flaggame.api.reception.Reception;
+import jp.llv.flaggame.util.OptionSet;
 
 public class GameJoinCommand extends BaseCommand {
 
-    public GameJoinCommand(FlagGame plugin) {
+    public GameJoinCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 true,
                 0,
                 "[game] <- join the game",
@@ -49,9 +50,9 @@ public class GameJoinCommand extends BaseCommand {
 
     @Override
     public void execute(List<String> args, CommandSender sender, Player player) throws FlagGameException {
-        GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
+        GamePlayer gPlayer = this.api.getPlayers().getPlayer(player);
         Reception reception = null;
-        List<String> joinArgs;
+        OptionSet options;
 
         Reception currentReception = null;
         if (gPlayer.getEntry().isPresent()) {
@@ -62,15 +63,14 @@ public class GameJoinCommand extends BaseCommand {
         }
 
         if (args.size() >= 1) {// 引数があれば指定したステージに参加
-            reception = this.plugin.getReceptions().getReception(args.get(0))
+            reception = this.api.getReceptions().getReception(args.get(0))
                     .orElseThrow(() -> new CommandException("&cステージ'" + args.get(0) + "'が見つかりません"));
             if (reception.getState() != Reception.State.OPENED) {
                 throw new CommandException("&cそのゲームは受付中ではありません!");
             }
-            joinArgs = new ArrayList<>(args);
-            joinArgs.remove(0);
+            options = new OptionSet(args.subList(1, args.size()));
         } else {// 引数がなければ自動補完
-            Collection<Reception> openedReceptions = this.plugin.getReceptions()
+            Collection<Reception> openedReceptions = this.api.getReceptions()
                     .getReceptions(Reception.State.OPENED);
             if (openedReceptions.size() <= 0) {
                 throw new CommandException("&c現在、参加受付中のゲームはありません！");
@@ -79,12 +79,12 @@ public class GameJoinCommand extends BaseCommand {
             } else {// 受付中が1つのみなら自動補完
                 reception = openedReceptions.iterator().next();
             }
-            joinArgs = Collections.emptyList();
+            options = new OptionSet();
         }
 
         // Call event
         ReceptionJoinEvent joinEvent = new ReceptionJoinEvent(gPlayer, reception);
-        plugin.getServer().getPluginManager().callEvent(joinEvent);
+        api.getServer().getPluginManager().callEvent(joinEvent);
         if (joinEvent.isCancelled()) {
             return;
         }
@@ -92,6 +92,6 @@ public class GameJoinCommand extends BaseCommand {
         if (currentReception != null) {
             currentReception.leave(gPlayer);
         }
-        reception.join(gPlayer, joinArgs);
+        reception.join(gPlayer, options);
     }
 }

@@ -22,7 +22,7 @@ import jp.llv.flaggame.reception.fest.FestivalSchedule;
 import jp.llv.flaggame.util.DashboardBuilder;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.BaseCommand;
 import syam.flaggame.exception.FlagGameException;
 import syam.flaggame.permission.Perms;
@@ -33,9 +33,9 @@ import syam.flaggame.permission.Perms;
  */
 public class FestivalListCommand extends BaseCommand {
     
-    public FestivalListCommand(FlagGame plugin) {
+    public FestivalListCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 true,
                 0, 
                 "<- show a list of festivals", 
@@ -46,7 +46,7 @@ public class FestivalListCommand extends BaseCommand {
 
     @Override
     protected void execute(List<String> args, CommandSender sender, Player player) throws FlagGameException {
-        Collection<FestivalSchedule> festivals = plugin.getFestivals().getFestivals().values();
+        Collection<FestivalSchedule> festivals = api.getFestivals().getFestivals().values();
         DashboardBuilder.newBuilder("Festivals", festivals.size())
                 .appendList(festivals, (d, festival) -> {
                     d.key(festival.getName());

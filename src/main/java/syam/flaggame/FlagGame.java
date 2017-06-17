@@ -35,7 +35,6 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import syam.flaggame.listener.*;
-import syam.flaggame.util.DynmapHandler;
 
 public class FlagGame extends JavaPlugin implements FlagGamePlugin{
 
@@ -57,7 +56,6 @@ public class FlagGame extends JavaPlugin implements FlagGamePlugin{
     private FlagGameAPIImpl api;
     // Hookup plugins
     private Economy economy = null;
-    private DynmapHandler dynmap = null;
     // ** Instance **
     private static FlagGame instance;
 
@@ -92,9 +90,6 @@ public class FlagGame extends JavaPlugin implements FlagGamePlugin{
 
         registerListeners();
 
-        // コマンド登録
-        FlagCommandRegistry.ROOT.initialize(this);
-        this.getCommand("flag").setExecutor(FlagCommandRegistry.ROOT);
 
         // データベース連携
         database = new MongoDB(this, this.config);
@@ -109,6 +104,10 @@ public class FlagGame extends JavaPlugin implements FlagGamePlugin{
         
         this.api = new FlagGameAPIImpl(this);
 
+        // コマンド登録
+        FlagCommandRegistry.initializeAll(api);
+        this.getCommand("flag").setExecutor(FlagCommandRegistry.ROOT);
+        
         // ゲームデータ読み込み
         database.loadStages(stage -> {
             api.getStages().addStage(stage.get());
@@ -134,9 +133,6 @@ public class FlagGame extends JavaPlugin implements FlagGamePlugin{
             }
         });
 
-        // dynmapフック
-        setupDynmap();
-
         // メッセージ表示
         PluginDescriptionFile pdfFile = this.getDescription();
         getLogger().log(Level.INFO, "[{0}] version {1} is enabled!", new Object[]{pdfFile.getName(), pdfFile.getVersion()});
@@ -153,11 +149,6 @@ public class FlagGame extends JavaPlugin implements FlagGamePlugin{
 
         // タスクをすべて止める
         getServer().getScheduler().cancelTasks(this);
-
-        // dynmapフック解除
-        if (getDynmap() != null) {
-            getDynmap().disableDynmap();
-        }
 
         // メッセージ表示
         PluginDescriptionFile pdfFile = this.getDescription();
@@ -195,18 +186,6 @@ public class FlagGame extends JavaPlugin implements FlagGamePlugin{
         }
     }
 
-    /**
-     * Dynmapプラグインにフック
-     */
-    private void setupDynmap() {
-        getServer().getScheduler().scheduleSyncDelayedTask(this, () -> {
-            dynmap = new DynmapHandler(api);
-            if (FlagGame.getInstance().getConfigs().getUseDynmap()) {
-                dynmap.init();
-            }
-        }, 20L);
-    }
-
     private void registerListeners() {
         Stream.<Function<? super FlagGameAPIImpl, ? extends Listener>>of(
                 FGActionListener::new,
@@ -228,15 +207,6 @@ public class FlagGame extends JavaPlugin implements FlagGamePlugin{
 
     public World getGameWorld() {
         return getServer().getWorld(config.getGameWorld());
-    }
-
-    /**
-     * dynmapハンドラを返す
-     *
-     * @return DynmapHandler
-     */
-    public DynmapHandler getDynmap() {
-        return dynmap;
     }
 
     /**

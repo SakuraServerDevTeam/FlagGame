@@ -23,7 +23,7 @@ import jp.llv.flaggame.profile.record.RecordType;
 import jp.llv.flaggame.util.StringUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.BaseCommand;
 import jp.llv.flaggame.util.DashboardBuilder;
 import syam.flaggame.exception.CommandException;
@@ -37,9 +37,9 @@ import syam.flaggame.player.GamePlayer;
  */
 public class StageStatsCommand extends BaseCommand {
 
-    public StageStatsCommand(FlagGame plugin) {
+    public StageStatsCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 false,
                 1,
                 "[stage] <- show stage stats",
@@ -52,15 +52,15 @@ public class StageStatsCommand extends BaseCommand {
     public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
         Stage stage = null;
         if (args.size() >= 1) {
-            stage = plugin.getStages().getStage(args.get(0)).orElse(null);
+            stage = api.getStages().getStage(args.get(0)).orElse(null);
         } else if (player != null) {
-            GamePlayer gplayer = plugin.getPlayers().getPlayer(player);
+            GamePlayer gplayer = api.getPlayers().getPlayer(player);
             stage = gplayer.getSetupSession().map(s -> s.getSelected(Stage.class)).orElse(null);
         }
         if (stage == null) {
             throw new CommandException("&cステージを指定してください！");
         }
-        StageProfile profile = plugin.getProfiles().getProfile(stage.getName());
+        StageProfile profile = api.getProfiles().getProfile(stage.getName());
         int gameCount = profile.getStat(RecordType.GAME_START).map(e -> e.getCount())
                 .orElseThrow(() -> new CommandException("&cそのステージは開催記録がありません！"));
         DashboardBuilder.newBuilder("Stage Stats", stage.getName())

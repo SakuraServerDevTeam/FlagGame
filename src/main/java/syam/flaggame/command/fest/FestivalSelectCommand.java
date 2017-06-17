@@ -21,7 +21,7 @@ import jp.llv.flaggame.reception.fest.FestivalSchedule;
 import jp.llv.flaggame.util.FlagTabCompleter;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.BaseCommand;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.exception.FlagGameException;
@@ -36,9 +36,9 @@ import syam.flaggame.util.Actions;
  */
 public class FestivalSelectCommand extends BaseCommand {
     
-    public FestivalSelectCommand(FlagGame plugin) {
+    public FestivalSelectCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 true,
                 0, 
                 "[festival] <- select an existing festival", 
@@ -53,9 +53,9 @@ public class FestivalSelectCommand extends BaseCommand {
     
     @Override
     public void execute(List<String> args, CommandSender sender, Player player) throws FlagGameException {
-        GamePlayer gPlayer = plugin.getPlayers().getPlayer(player);
+        GamePlayer gPlayer = api.getPlayers().getPlayer(player);
         if (args.size() >= 1) {
-            FestivalSchedule festival = plugin.getFestivals().getFestival(args.get(0))
+            FestivalSchedule festival = api.getFestivals().getFestival(args.get(0))
                     .orElseThrow(() -> new CommandException("&フェス'" + args.get(0) + "'が見つかりません！"));
             
             if (gPlayer.getSetupSession().map(SetupSession::getSelected).orElse(null) != festival) {

@@ -18,7 +18,7 @@ package syam.flaggame.command.stage;
 
 import java.util.List;
 import jp.llv.flaggame.game.Game;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -31,9 +31,9 @@ import jp.llv.flaggame.api.reception.Reception;
 
 public class StageInfoCommand extends BaseCommand {
 
-    public StageInfoCommand(FlagGame plugin) {
+    public StageInfoCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 false,
                 0,
                 "[stage] <- show stage info",
@@ -47,13 +47,13 @@ public class StageInfoCommand extends BaseCommand {
     public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
         // 引数が無ければすべてのステージデータを表示する
         if (args.isEmpty()) {
-            int stagecount = this.plugin.getStages().getStages().size();
+            int stagecount = this.api.getStages().getStages().size();
 
             Actions.message(sender, "&a ===============&b StageList(" + stagecount + ") &a===============");
             if (stagecount == 0) {
                 Actions.message(sender, " &7読み込まれているステージがありません");
             } else {
-                for (Stage stage : this.plugin.getStages()) {
+                for (Stage stage : this.api.getStages()) {
                     // ゲームステータス取得
                     String status = stage.getReception().map(Reception::getState)
                             .map(Reception.State::toGameState)
@@ -67,7 +67,7 @@ public class StageInfoCommand extends BaseCommand {
             Actions.message(sender, "&a ============================================");
         } // 引数があれば指定したゲームについての詳細情報を表示する
         else {
-            Stage stage = this.plugin.getStages().getStage(args.get(0))
+            Stage stage = this.api.getStages().getStage(args.get(0))
                     .orElseThrow(() -> new CommandException("&cそのステージは存在しません！"));
 
             Actions.message(sender, "&a ==================&b GameDetail &a==================");

@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.BaseCommand;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.exception.FlagGameException;
@@ -36,17 +36,17 @@ import syam.flaggame.player.GamePlayer;
  */
 public abstract class ObjectiveCommand extends BaseCommand {
 
-    public ObjectiveCommand(FlagGame plugin, int argLength, String usage, Perms permission, String name, String... aliases) {
-        super(plugin, true, argLength + 1, "<type> " + usage, permission, name, aliases);
+    public ObjectiveCommand(FlagGameAPI api, int argLength, String usage, Perms permission, String name, String... aliases) {
+        super(api, true, argLength + 1, "<type> " + usage, permission, name, aliases);
     }
 
-    public ObjectiveCommand(FlagGame plugin, int argLength, String usage, String name, String... aliases) {
-        this(plugin, argLength, usage, null, name, aliases);
+    public ObjectiveCommand(FlagGameAPI api, int argLength, String usage, String name, String... aliases) {
+        this(api, argLength, usage, null, name, aliases);
     }
 
     @Override
     public void execute(List<String> args, CommandSender sender, Player player) throws FlagGameException {
-        GamePlayer gplayer = plugin.getPlayers().getPlayer(player);
+        GamePlayer gplayer = api.getPlayers().getPlayer(player);
         Stage stage = gplayer.getSetupSession().map(s -> s.getSelected(Stage.class)).orElse(null);
         if (stage == null) {
             throw new CommandException("&cあなたはステージを選択していません！");

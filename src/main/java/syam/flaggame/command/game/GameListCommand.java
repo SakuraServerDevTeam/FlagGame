@@ -17,7 +17,7 @@
 package syam.flaggame.command.game;
 
 import java.util.List;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.command.BaseCommand;
@@ -32,9 +32,9 @@ import jp.llv.flaggame.api.reception.Reception;
  */
 public class GameListCommand extends BaseCommand {
 
-    public GameListCommand(FlagGame plugin) {
+    public GameListCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 false,
                 0,
                 " <- show a list of receptions",
@@ -46,13 +46,13 @@ public class GameListCommand extends BaseCommand {
 
     @Override
     public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
-        GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
+        GamePlayer gPlayer = this.api.getPlayers().getPlayer(player);
 
-        if (this.plugin.getReceptions().getReceptions().isEmpty()) {
+        if (this.api.getReceptions().getReceptions().isEmpty()) {
             gPlayer.sendMessage("&c現在有効な参加受付はありません");
             return;
         }
-        for (Reception r : this.plugin.getReceptions()) {
+        for (Reception r : this.api.getReceptions()) {
             gPlayer.sendMessage("&" + getColorCodeOf(r.getState()) + r.getName() + "&e(" + r.getID() + ")");
         }
     }

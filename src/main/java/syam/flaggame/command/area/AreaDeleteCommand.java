@@ -18,7 +18,7 @@ package syam.flaggame.command.area;
 
 import java.util.List;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
@@ -30,9 +30,9 @@ import syam.flaggame.util.Cuboid;
  */
 public class AreaDeleteCommand extends AreaCommand {
 
-    public AreaDeleteCommand(FlagGame plugin) {
+    public AreaDeleteCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 1,
                "<id> <- delete region",
                 Perms.AREA_DELETE,

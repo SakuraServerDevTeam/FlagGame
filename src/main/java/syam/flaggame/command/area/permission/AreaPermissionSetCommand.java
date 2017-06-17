@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 import jp.llv.flaggame.game.permission.GamePermission;
 import jp.llv.flaggame.game.permission.GamePermissionState;
 import jp.llv.flaggame.reception.TeamColor;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.area.AreaCommand;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.AreaInfo;
@@ -36,9 +36,9 @@ import syam.flaggame.permission.Perms;
  */
 public class AreaPermissionSetCommand extends AreaCommand {
 
-    public AreaPermissionSetCommand(FlagGame plugin) {
+    public AreaPermissionSetCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 3,
                 "<id> <permission> <teamcolor> <state> <- load region",
                 Perms.AREA_PERMISSION_SET,

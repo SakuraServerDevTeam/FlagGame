@@ -23,7 +23,7 @@ import jp.llv.flaggame.reception.fest.FestivalSchedule;
 import jp.llv.flaggame.util.FlagTabCompleter;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.BaseCommand;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.exception.FlagGameException;
@@ -37,9 +37,9 @@ import syam.flaggame.util.Actions;
  */
 public class FestivalDeleteCommand extends BaseCommand {
 
-    public FestivalDeleteCommand(FlagGame plugin) {
+    public FestivalDeleteCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 false,
                 0,
                 "<festival> <- delete a festival",
@@ -54,9 +54,9 @@ public class FestivalDeleteCommand extends BaseCommand {
 
     @Override
     protected void execute(List<String> args, CommandSender sender, Player player) throws FlagGameException {
-        plugin.getFestivals().getFestival(args.get(0))
+        api.getFestivals().getFestival(args.get(0))
                 .orElseThrow(() -> new CommandException("&cその名前のフェスは存在しません！"));
-        plugin.getConfirmQueue().addQueue(player, new QueuedFestivalDeletion(), args, 10);
+        api.getConfirmQueue().addQueue(player, new QueuedFestivalDeletion(), args, 10);
         Actions.message(player, "&フェス'&7" + args.get(0) + "&d'を削除しようとしています！");
         Actions.message(player, "&d続行するには &a/flag confirm &dコマンドを入力してください！");
         Actions.message(player, "&a/flag confirm &dコマンドは10秒間のみ有効です。");
@@ -66,19 +66,19 @@ public class FestivalDeleteCommand extends BaseCommand {
 
         @Override
         public void executeQueue(List<String> args, CommandSender sender, Player player) throws FlagGameException {
-            FestivalSchedule festival = plugin.getFestivals().getFestival(args.get(0))
+            FestivalSchedule festival = api.getFestivals().getFestival(args.get(0))
                 .orElseThrow(() -> new CommandException("&cその名前のフェスは存在しません！"));
             festival.reserve(null);
-            plugin.getDatabases()
+            api.getDatabase()
                     .orElseThrow(() -> new CommandException("&cデータベースへの接続に失敗しました！"))
                     .deleteFestival(festival, result -> {
                         try {
                             result.test();
-                            plugin.getFestivals().removeFestival(festival);
+                            api.getFestivals().removeFestival(festival);
                             Actions.message(player, "&aフェス'" + args.get(0) + "'を削除しました！");
                         } catch (DatabaseException ex) {
                             Actions.message(player, "&aフェス'" + args.get(0) + "'の削除に失敗しました！");
-                            plugin.getLogger().log(Level.WARNING, "Failed to delete festival", ex);
+                            api.getLogger().warn("Failed to delete festival", ex);
                         }
                     });
         }

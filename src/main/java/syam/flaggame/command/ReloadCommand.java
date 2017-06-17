@@ -17,8 +17,7 @@
 package syam.flaggame.command;
 
 import java.util.List;
-import java.util.logging.Level;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.permission.Perms;
@@ -26,9 +25,9 @@ import syam.flaggame.util.Actions;
 
 public class ReloadCommand extends BaseCommand {
 
-    public ReloadCommand(FlagGame plugin) {
+    public ReloadCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 false,
                 0,
                 "<- reload config.yml",
@@ -41,9 +40,9 @@ public class ReloadCommand extends BaseCommand {
     @Override
     public void execute(List<String> args, CommandSender sender, Player player) {
         try {
-            plugin.getConfigs().loadConfig();
+            api.getConfig().loadConfig();
         } catch (Exception ex) {
-            plugin.getLogger().log(Level.WARNING, "an error occured while trying to load the config file.", ex);
+            api.getLogger().warn("an error occured while trying to load the config file.", ex);
             return;
         }
 

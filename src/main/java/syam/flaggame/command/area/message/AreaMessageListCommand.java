@@ -18,7 +18,7 @@ package syam.flaggame.command.area.message;
 
 import java.util.List;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.area.AreaCommand;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.AreaInfo;
@@ -32,9 +32,9 @@ import syam.flaggame.util.Actions;
  */
 public class AreaMessageListCommand extends AreaCommand {
 
-    public AreaMessageListCommand(FlagGame plugin) {
+    public AreaMessageListCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 0,
                 "<id> <- show a list of messages",
                 Perms.AREA_MESSAGE_LIST,

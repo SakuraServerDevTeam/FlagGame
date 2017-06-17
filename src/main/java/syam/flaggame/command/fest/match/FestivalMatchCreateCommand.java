@@ -27,7 +27,7 @@ import jp.llv.flaggame.reception.fest.FestivalSchedule;
 import jp.llv.flaggame.util.OnelineBuilder;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.BaseCommand;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.exception.FlagGameException;
@@ -40,9 +40,9 @@ import syam.flaggame.permission.Perms;
  */
 public class FestivalMatchCreateCommand extends BaseCommand {
 
-    public FestivalMatchCreateCommand(FlagGame plugin) {
+    public FestivalMatchCreateCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 true,
                 2,
                 "<round> <stage> <- create a festival match",
@@ -53,7 +53,7 @@ public class FestivalMatchCreateCommand extends BaseCommand {
 
     @Override
     protected void execute(List<String> args, CommandSender sender, Player player) throws FlagGameException {
-        FestivalSchedule festival = plugin.getPlayers().getPlayer(player)
+        FestivalSchedule festival = api.getPlayers().getPlayer(player)
                 .getSetupSession().map(s -> s.getSelected(FestivalSchedule.class))
                 .orElseThrow(() -> new CommandException("&cフェスを選択してください！"));
         int index;
@@ -67,7 +67,7 @@ public class FestivalMatchCreateCommand extends BaseCommand {
         } else if (index < 0 || festival.getMatches().size() < index) {
             throw new CommandException("&cそのラウンドは存在しません！");
         }
-        Stage stage = plugin.getStages().getStage(args.get(1))
+        Stage stage = api.getStages().getStage(args.get(1))
                 .orElseThrow(() -> new CommandException("&cそのステージは存在しません！"));
         if (festival.getRound(index).containsKey(args.get(1))) {
             throw new CommandException("&cそのマッチは既に追加されています！");
@@ -100,7 +100,7 @@ public class FestivalMatchCreateCommand extends BaseCommand {
 
     @Override
     protected List<String> complete(List<String> args, CommandSender sender, Player player) throws FlagGameException {
-        FestivalSchedule festival = plugin.getPlayers().getPlayer(player)
+        FestivalSchedule festival = api.getPlayers().getPlayer(player)
                 .getSetupSession().map(s -> s.getSelected(FestivalSchedule.class))
                 .orElseThrow(() -> new FlagGameException());
         if (args.isEmpty()) {
@@ -111,7 +111,7 @@ public class FestivalMatchCreateCommand extends BaseCommand {
                     .filter(s -> s.startsWith(args.get(0)))
                     .collect(Collectors.toList());
         } else if (args.size() == 2) {
-            return plugin.getStages().getStages().keySet().stream()
+            return api.getStages().getStages().keySet().stream()
                     .filter(s -> s.startsWith(args.get(1)))
                     .collect(Collectors.toList());
         } else {

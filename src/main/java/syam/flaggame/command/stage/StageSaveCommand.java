@@ -17,13 +17,12 @@
 package syam.flaggame.command.stage;
 
 import java.util.List;
-import java.util.logging.Level;
 import jp.llv.flaggame.database.DatabaseException;
 import jp.llv.flaggame.rollback.RollbackException;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.BaseCommand;
 import jp.llv.flaggame.util.OnelineBuilder;
 import syam.flaggame.exception.CommandException;
@@ -39,9 +38,9 @@ import syam.flaggame.util.Actions;
  */
 public class StageSaveCommand extends BaseCommand {
 
-    public StageSaveCommand(FlagGame plugin) {
+    public StageSaveCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 false,
                 0,
                 "[stage] <- save the stage",
@@ -57,7 +56,7 @@ public class StageSaveCommand extends BaseCommand {
             if (player == null) {
                 throw new CommandException("&cステージを指定してください！");
             } else {
-                GamePlayer gplayer = plugin.getPlayers().getPlayer(player);
+                GamePlayer gplayer = api.getPlayers().getPlayer(player);
                 stage = gplayer.getSetupSession()
                         .orElseThrow(() -> new CommandException("&cステージを指定してください！"))
                         .getSelected(Stage.class);
@@ -68,37 +67,37 @@ public class StageSaveCommand extends BaseCommand {
                 gplayer.sendMessage("&aステージの選択を解除しました！");
             }
         } else {
-            stage = plugin.getStages().getStage(args.get(0))
+            stage = api.getStages().getStage(args.get(0))
                     .orElseThrow(() -> new CommandException("&cステージが見つかりません！"));
         }
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+        api.getServer().getScheduler().runTaskAsynchronously(api.getPlugin(), () -> {
             Actions.sendPrefixedMessage(sender, "&aステージデータを直列化しています...");
-            World gameWorld = plugin.getServer().getWorld(plugin.getConfigs().getGameWorld());
+            World gameWorld = api.getServer().getWorld(api.getConfig().getGameWorld());
             for (String area : stage.getAreas().getAreas()) {
                 AreaInfo info = stage.getAreas().getAreaInfo(area);
                 for (AreaInfo.RollbackData rollback : info.getRollbacks().values()) {
                     try {
-                        rollback.setData(rollback.getTarget().write(plugin, gameWorld));
+                        rollback.setData(rollback.getTarget().write(api, gameWorld));
                     } catch (RollbackException ex) {
                         OnelineBuilder.newBuilder().warn("ステージ").value(stage.getName())
                                 .warn("のエリア").value(area)
                                 .warn("の直列化に失敗しました！").sendTo(sender);
-                        plugin.getLogger().log(Level.WARNING, "Failed to serialize stage data", ex);
+                        api.getLogger().warn("Failed to serialize stage data", ex);
                     }
                 }
             }
             Actions.sendPrefixedMessage(sender, "&aステージデータを直列化しました！");
-            if (!plugin.getDatabases().isPresent()) {
+            if (!api.getDatabase().isPresent()) {
                 Actions.sendPrefixedMessage(sender, "&cデータベースへの接続に失敗しました！");
                 return;
             }
-            plugin.getDatabases().get().saveStage(stage, result -> {
+            api.getDatabase().get().saveStage(stage, result -> {
                 try {
                     result.get();
                     Actions.sendPrefixedMessage(sender, "&aステージを保存しました！");
                 } catch (DatabaseException ex) {
                     Actions.sendPrefixedMessage(sender, "&cステージの保存に失敗しました！");
-                    plugin.getLogger().log(Level.WARNING, "Failed to save stage", ex);
+                    api.getLogger().warn("Failed to save stage", ex);
                 }
             });
         });

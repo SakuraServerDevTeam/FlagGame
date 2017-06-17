@@ -22,7 +22,7 @@ import jp.llv.flaggame.reception.fest.FestivalSchedule;
 import jp.llv.flaggame.util.OnelineBuilder;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.BaseCommand;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.exception.FlagGameException;
@@ -36,9 +36,9 @@ import syam.flaggame.util.Actions;
  */
 public class FestivalCreateCommand extends BaseCommand {
 
-    public FestivalCreateCommand(FlagGame plugin) {
+    public FestivalCreateCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 true,
                 1,
                 "<festival> <- create a festival",
@@ -51,19 +51,19 @@ public class FestivalCreateCommand extends BaseCommand {
     protected void execute(List<String> args, CommandSender sender, Player player) throws FlagGameException {
         if (!FestivalSchedule.NAME_REGEX.matcher(args.get(0)).matches()) {
             throw new CommandException("&cこのフェス名は使用できません！");
-        } else if (plugin.getFestivals().getFestival(args.get(0)).isPresent()) {
+        } else if (api.getFestivals().getFestival(args.get(0)).isPresent()) {
             throw new CommandException("&cそのフェス名は既に存在します！");
         }
 
         FestivalSchedule festival = new FestivalSchedule(args.get(0));
         FestivalCreateEvent event = new FestivalCreateEvent(festival, sender);
-        plugin.getServer().getPluginManager().callEvent(event);
+        api.getServer().getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             return;
         }
-        plugin.getFestivals().addFestival(festival);
+        api.getFestivals().addFestival(festival);
 
-        GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
+        GamePlayer gPlayer = this.api.getPlayers().getPlayer(player);
         gPlayer.createSetupSession(festival);
         OnelineBuilder.newBuilder()
                 .info("新規フェス").value(festival.getName())

@@ -24,7 +24,7 @@ import jp.llv.flaggame.game.permission.GamePermission;
 import jp.llv.flaggame.game.permission.GamePermissionState;
 import jp.llv.flaggame.reception.TeamColor;
 import org.bukkit.Location;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.area.AreaCommand;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.AreaInfo;
@@ -38,9 +38,9 @@ import syam.flaggame.util.Actions;
  */
 public class AreaPermissionTestCommand extends AreaCommand {
 
-    public AreaPermissionTestCommand(FlagGame plugin) {
+    public AreaPermissionTestCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 1,
                 "<permission> [color] <- select region",
                 Perms.AREA_PERMISSION_TEST,

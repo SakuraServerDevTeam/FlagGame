@@ -18,7 +18,7 @@ package syam.flaggame.command.stage;
 
 import java.util.List;
 import jp.llv.flaggame.profile.record.StageRateRecord;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.command.BaseCommand;
@@ -33,9 +33,9 @@ import jp.llv.flaggame.api.reception.Reception;
  */
 public class StageRateCommand extends BaseCommand {
     
-    public StageRateCommand(FlagGame plugin) {
+    public StageRateCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 true,
                 1,
                 "<rate> <- rate the stage",
@@ -46,7 +46,7 @@ public class StageRateCommand extends BaseCommand {
 
     @Override
     public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
-        GamePlayer gplayer = plugin.getPlayers().getPlayer(player);
+        GamePlayer gplayer = api.getPlayers().getPlayer(player);
         if (!gplayer.getEntry().isPresent()) {
             throw new CommandException("&c評価対象に参加していません！");
         }
@@ -62,7 +62,7 @@ public class StageRateCommand extends BaseCommand {
         if (rate < 0 || 5 < rate) {
             throw new CommandException("&c0-5の整数値で評価してください！");
         }
-        reception.getRecordStream().push(new StageRateRecord(reception.getID(), player, plugin.getConfigs().getScoreRate(), rate));
+        reception.getRecordStream().push(new StageRateRecord(reception.getID(), player, api.getConfig().getScoreRate(), rate));
         reception.leave(gplayer);
         sendMessage(sender, "&a投票への協力ありがとうございました！");
     }

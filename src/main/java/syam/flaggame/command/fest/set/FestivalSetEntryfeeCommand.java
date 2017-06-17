@@ -21,7 +21,7 @@ import jp.llv.flaggame.reception.fest.FestivalSchedule;
 import jp.llv.flaggame.util.FlagTabCompleter;
 import jp.llv.flaggame.util.OnelineBuilder;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.exception.FlagGameException;
 import syam.flaggame.permission.Perms;
@@ -33,9 +33,9 @@ import syam.flaggame.util.Actions;
  */
 public class FestivalSetEntryfeeCommand extends FestivalSetCommand {
 
-    public FestivalSetEntryfeeCommand(FlagGame plugin) {
+    public FestivalSetEntryfeeCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 1,
                 "<entryfee> <- set entryfee",
                 Perms.FESTIVAL_SET_ENTRYFEE,

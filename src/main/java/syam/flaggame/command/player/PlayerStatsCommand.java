@@ -23,7 +23,7 @@ import jp.llv.flaggame.profile.record.RecordType;
 import jp.llv.flaggame.util.StringUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.BaseCommand;
 import jp.llv.flaggame.util.DashboardBuilder;
 import syam.flaggame.exception.CommandException;
@@ -35,9 +35,9 @@ import syam.flaggame.permission.Perms;
  */
 public class PlayerStatsCommand extends BaseCommand {
 
-    public PlayerStatsCommand(FlagGame plugin) {
+    public PlayerStatsCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 false,
                 0,
                 "[player] <- show specified player's stats",
@@ -50,7 +50,7 @@ public class PlayerStatsCommand extends BaseCommand {
         Player target = null;
         if (args.size() >= 1) {
             Perms.PLAYER_STATS_OTHER.requireTo(sender);
-            target = plugin.getServer().getPlayer(args.get(0));
+            target = api.getServer().getPlayer(args.get(0));
         } else if (player != null) {
             Perms.PLAYER_STATS_SELF.requireTo(sender);
             target = player;
@@ -58,7 +58,7 @@ public class PlayerStatsCommand extends BaseCommand {
         if (target == null) {
             throw new CommandException("&cプレイヤーを指定してください！");
         }
-        PlayerProfile profile = plugin.getProfiles().getProfile(target.getUniqueId());
+        PlayerProfile profile = api.getProfiles().getProfile(target.getUniqueId());
         DashboardBuilder.newBuilder("Player Stats", target.getName())
                 .appendList(Arrays.asList(StatCategory.values()), (d, stat) -> {
                     stat.appendTo(d, profile);

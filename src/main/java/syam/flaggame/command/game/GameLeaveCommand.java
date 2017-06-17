@@ -21,7 +21,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.command.BaseCommand;
@@ -33,9 +33,9 @@ import jp.llv.flaggame.api.reception.Reception;
 
 public class GameLeaveCommand extends BaseCommand {
 
-    public GameLeaveCommand(FlagGame plugin) {
+    public GameLeaveCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 true,
                 0,
                 "<- leave the game",
@@ -46,7 +46,7 @@ public class GameLeaveCommand extends BaseCommand {
     @Override
     public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
         // 参加しているゲームを取得する
-        GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
+        GamePlayer gPlayer = this.api.getPlayers().getPlayer(player);
 
         World world = player.getWorld();
 
@@ -57,7 +57,7 @@ public class GameLeaveCommand extends BaseCommand {
                 throw new CommandException("&cあなたはゲームに参加していません");
             }
             // ゲームワールド内
-            if (world.equals(Bukkit.getWorld(plugin.getConfigs().getGameWorld()))) {
+            if (world.equals(Bukkit.getWorld(api.getConfig().getGameWorld()))) {
                 leaveFromGameworld(gPlayer, world.getSpawnLocation());
             } else {// 別ワールド
                 throw new CommandException("&cこのゲームワールド外からこのコマンドを使うことはできません！");

@@ -22,7 +22,7 @@ import jp.llv.flaggame.database.DatabaseException;
 import jp.llv.flaggame.reception.fest.FestivalSchedule;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.BaseCommand;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.permission.Perms;
@@ -35,9 +35,9 @@ import syam.flaggame.util.Actions;
  */
 public class FestivalSaveCommand extends BaseCommand {
 
-    public FestivalSaveCommand(FlagGame plugin) {
+    public FestivalSaveCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 true,
                 0,
                 "[festival] <- save the festival",
@@ -53,7 +53,7 @@ public class FestivalSaveCommand extends BaseCommand {
             if (player == null) {
                 throw new CommandException("&cフェスを指定してください！");
             } else {
-                GamePlayer gplayer = plugin.getPlayers().getPlayer(player);
+                GamePlayer gplayer = api.getPlayers().getPlayer(player);
                 festival = gplayer.getSetupSession()
                         .orElseThrow(() -> new CommandException("&cフェスを指定してください！"))
                         .getSelected(FestivalSchedule.class);
@@ -64,10 +64,10 @@ public class FestivalSaveCommand extends BaseCommand {
                 gplayer.sendMessage("&aフェスの選択を解除しました！");
             }
         } else {
-            festival = plugin.getFestivals().getFestival(args.get(0))
+            festival = api.getFestivals().getFestival(args.get(0))
                     .orElseThrow(() -> new CommandException("&cフェスが見つかりません！"));
         }
-        plugin.getDatabases()
+        api.getDatabase()
                 .orElseThrow(() -> new CommandException("&cデータベースへの接続に失敗しました！"))
                 .saveFestival(festival, result -> {
             try {
@@ -75,7 +75,7 @@ public class FestivalSaveCommand extends BaseCommand {
                 Actions.sendPrefixedMessage(sender, "&aフェスを保存しました！");
             } catch (DatabaseException ex) {
                 Actions.sendPrefixedMessage(sender, "&cフェスの保存に失敗しました！");
-                plugin.getLogger().log(Level.WARNING, "Failed to save a festival", ex);
+                api.getLogger().warn("Failed to save a festival", ex);
             }
         });
     }

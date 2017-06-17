@@ -19,7 +19,7 @@ package syam.flaggame.command.area;
 import java.util.List;
 import org.bukkit.entity.Player;
 import java.util.Set;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import jp.llv.flaggame.util.DashboardBuilder;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
@@ -32,9 +32,9 @@ import syam.flaggame.util.Cuboid;
  */
 public class AreaListCommand extends AreaCommand {
 
-    public AreaListCommand(FlagGame plugin) {
+    public AreaListCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 0,
                 "<- show a list of areas",
                 Perms.AREA_LIST,

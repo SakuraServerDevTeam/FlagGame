@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import jp.llv.flaggame.api.FlagGameAPI;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -217,33 +218,33 @@ public enum FlagCommandRegistry implements TabExecutor {
     private final String usage;
     private final String names[];
     private final FlagCommandRegistry[] subcategories;
-    private final Function<FlagGame, ? extends BaseCommand>[] constructors;
+    private final Function<FlagGameAPI, ? extends BaseCommand>[] constructors;
     private final List<BaseCommand> commands = new ArrayList<>();
 
-    private FlagCommandRegistry(String usage, String[] names, FlagCommandRegistry[] subcategories, Function<FlagGame, ? extends BaseCommand>... commands) {
+    private FlagCommandRegistry(String usage, String[] names, FlagCommandRegistry[] subcategories, Function<FlagGameAPI, ? extends BaseCommand>... commands) {
         this.usage = usage;
         this.names = names;
         this.subcategories = subcategories;
         this.constructors = commands;
     }
 
-    private FlagCommandRegistry(String usage, String[] names, FlagCommandRegistry subcategory, Function<FlagGame, ? extends BaseCommand>... commands) {
+    private FlagCommandRegistry(String usage, String[] names, FlagCommandRegistry subcategory, Function<FlagGameAPI, ? extends BaseCommand>... commands) {
         this(usage, names, subcategories(subcategory), commands);
     }
 
-    private FlagCommandRegistry(String usage, String[] names, Function<FlagGame, ? extends BaseCommand>... commands) {
+    private FlagCommandRegistry(String usage, String[] names, Function<FlagGameAPI, ? extends BaseCommand>... commands) {
         this(usage, names, subcategories(), commands);
     }
 
-    public void initialize(FlagGame plugin) {
+    public void initialize(FlagGameAPI api) {
         for (FlagCommandRegistry subcategory : subcategories) {
-            subcategory.initialize(plugin);
+            subcategory.initialize(api);
         }
         if (!this.commands.isEmpty()) {
             return;
         }
-        for (Function<FlagGame, ? extends BaseCommand> constructor : constructors) {
-            BaseCommand command = constructor.apply(plugin);
+        for (Function<FlagGameAPI, ? extends BaseCommand> constructor : constructors) {
+            BaseCommand command = constructor.apply(api);
             if (command instanceof HelpCommand) {
                 help = (HelpCommand) command;
             }
@@ -385,8 +386,8 @@ public enum FlagCommandRegistry implements TabExecutor {
         }
     }
 
-    public static void initializeAll(FlagGame plugin) {
-        ROOT.initialize(plugin);
+    public static void initializeAll(FlagGameAPI api) {
+        ROOT.initialize(api);
     }
 
     public static FlagCommandRegistry getCategory(String name) {

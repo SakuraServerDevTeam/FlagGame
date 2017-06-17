@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.command.BaseCommand;
@@ -29,12 +29,13 @@ import syam.flaggame.exception.CommandException;
 import syam.flaggame.exception.FlagGameException;
 import syam.flaggame.permission.Perms;
 import jp.llv.flaggame.api.reception.Reception;
+import jp.llv.flaggame.util.OptionSet;
 
 public class GameStartCommand extends BaseCommand {
 
-    public GameStartCommand(FlagGame plugin) {
+    public GameStartCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 false,
                 0,
                 "[stage] <- start game",
@@ -47,18 +48,17 @@ public class GameStartCommand extends BaseCommand {
     @Override
     public void execute(List<String> args, CommandSender sender, Player player) throws FlagGameException {
         Reception reception = null;
-        List<String> startArgs;
+        OptionSet options;
 
         if (args.size() >= 1) {// 引数があれば指定したステージに参加
-            reception = this.plugin.getReceptions().getReception(args.get(0))
+            reception = this.api.getReceptions().getReception(args.get(0))
                     .orElseThrow(() -> new CommandException("&cステージ'" + args.get(0) + "'が見つかりません"));
             if (reception.getState() != Reception.State.OPENED) {
                 throw new CommandException("&cそのゲームは受付中ではありません!");
             }
-            startArgs = new ArrayList<>(args);
-            startArgs.remove(0);
+            options = new OptionSet(args.subList(1, args.size()));
         } else {// 引数がなければ自動補完
-            Collection<Reception> openedReceptions = this.plugin.getReceptions()
+            Collection<Reception> openedReceptions = this.api.getReceptions()
                     .getReceptions(Reception.State.OPENED);
             if (openedReceptions.size() <= 0) {
                 throw new CommandException("&c現在、参加受付中のゲームはありません！");
@@ -66,10 +66,10 @@ public class GameStartCommand extends BaseCommand {
                 throw new CommandException("&c複数のゲームが受付中です！参加するステージを指定してください!");
             } else {// 受付中が1つのみなら自動補完
                 reception = openedReceptions.iterator().next();
-                startArgs = Collections.emptyList();
+                options = new OptionSet();
             }
         }
 
-        reception.start(startArgs);
+        reception.start(options);
     }
 }

@@ -24,7 +24,7 @@ import java.util.stream.IntStream;
 import jp.llv.flaggame.reception.fest.FestivalSchedule;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.BaseCommand;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.exception.FlagGameException;
@@ -36,9 +36,9 @@ import syam.flaggame.permission.Perms;
  */
 public class FestivalMatchDeleteCommand extends BaseCommand {
 
-    public FestivalMatchDeleteCommand(FlagGame plugin) {
+    public FestivalMatchDeleteCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 true,
                 2,
                 "<round> <stage> <- delete a festival match",
@@ -49,7 +49,7 @@ public class FestivalMatchDeleteCommand extends BaseCommand {
 
     @Override
     protected void execute(List<String> args, CommandSender sender, Player player) throws FlagGameException {
-        FestivalSchedule festival = plugin.getPlayers().getPlayer(player)
+        FestivalSchedule festival = api.getPlayers().getPlayer(player)
                 .getSetupSession().map(s -> s.getSelected(FestivalSchedule.class))
                 .orElseThrow(() -> new CommandException("&cフェスを選択してください！"));
         int index;
@@ -72,7 +72,7 @@ public class FestivalMatchDeleteCommand extends BaseCommand {
 
     @Override
     protected Collection<String> complete(List<String> args, CommandSender sender, Player player) throws FlagGameException {
-        FestivalSchedule festival = plugin.getPlayers().getPlayer(player)
+        FestivalSchedule festival = api.getPlayers().getPlayer(player)
                 .getSetupSession().map(s -> s.getSelected(FestivalSchedule.class))
                 .orElseThrow(() -> new FlagGameException());
         if (args.isEmpty()) {

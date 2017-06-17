@@ -25,7 +25,7 @@ import jp.llv.flaggame.reception.TeamColor;
 import jp.llv.flaggame.reception.fest.FestivalSchedule;
 import jp.llv.flaggame.util.OnelineBuilder;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.exception.FlagGameException;
 import syam.flaggame.permission.Perms;
@@ -36,9 +36,9 @@ import syam.flaggame.permission.Perms;
  */
 public class FestivalSetTeamCommand extends FestivalSetCommand {
 
-    public FestivalSetTeamCommand(FlagGame plugin) {
+    public FestivalSetTeamCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 2,
                 "<team> <color|'none'> <- set festival team",
                 Perms.FESTIVAL_SET_TEAM,

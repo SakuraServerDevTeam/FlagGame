@@ -17,7 +17,6 @@
 package jp.llv.flaggame.api.reception;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Optional;
 import java.util.UUID;
 import jp.llv.flaggame.game.Game;
@@ -42,11 +41,13 @@ public interface ReceptionAPI extends Iterable<Reception> {
 
     Collection<Reception> getReceptions(Game.State state);
 
-    Iterator<Reception> iterator();
-
     Reception newReception(String type, UUID id) throws FlagGameException;
 
     Reception newReception(String type) throws FlagGameException;
+    
+    default Reception newReception() throws FlagGameException {
+        return newReception(null);
+    }
 
     void remove(Reception reception);
     

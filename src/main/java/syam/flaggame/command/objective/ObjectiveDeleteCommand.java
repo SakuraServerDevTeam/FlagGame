@@ -20,7 +20,7 @@ import syam.flaggame.game.objective.ObjectiveType;
 import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import jp.llv.flaggame.util.OnelineBuilder;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.Stage;
@@ -32,9 +32,9 @@ import syam.flaggame.permission.Perms;
  */
 public class ObjectiveDeleteCommand extends ObjectiveCommand {
 
-    public ObjectiveDeleteCommand(FlagGame plugin) {
+    public ObjectiveDeleteCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 3,
                 "<x> <y> <z> <- delete objective located there",
                 Perms.OBJECTIVE_DELETE,
@@ -53,7 +53,7 @@ public class ObjectiveDeleteCommand extends ObjectiveCommand {
         } catch (NumberFormatException ex) {
             throw new CommandException("&c無効な数値です！");
         }
-        Location loc = new Location(plugin.getGameWorld(), x, y, z);
+        Location loc = new Location(api.getGameWorld(), x, y, z);
         if (!stage.getObjective(loc, type.getType()).isPresent()) {
             throw new CommandException("&cそこには" + type.getName() + "はありません！");
         };

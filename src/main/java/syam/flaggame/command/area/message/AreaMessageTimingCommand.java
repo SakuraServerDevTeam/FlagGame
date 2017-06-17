@@ -19,7 +19,7 @@ package syam.flaggame.command.area.message;
 import java.util.List;
 import jp.llv.flaggame.util.ConvertUtils;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.area.AreaCommand;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.AreaInfo;
@@ -33,9 +33,9 @@ import syam.flaggame.util.Actions;
  */
 public class AreaMessageTimingCommand extends AreaCommand {
 
-    public AreaMessageTimingCommand(FlagGame plugin) {
+    public AreaMessageTimingCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 3,
                 "<id> <index> <timing> <- set message timing",
                 Perms.AREA_MESSAGE_TIMING,

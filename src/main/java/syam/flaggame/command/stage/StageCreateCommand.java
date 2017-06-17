@@ -17,11 +17,9 @@
 package syam.flaggame.command.stage;
 
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.BaseCommand;
 import syam.flaggame.event.StageCreateEvent;
 import syam.flaggame.exception.CommandException;
@@ -37,9 +35,9 @@ import syam.flaggame.util.Actions;
  */
 public class StageCreateCommand extends BaseCommand {
 
-    public StageCreateCommand(FlagGame plugin) {
+    public StageCreateCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 true,
                 1,
                 "<stage> <- create a stage",
@@ -55,14 +53,14 @@ public class StageCreateCommand extends BaseCommand {
             throw new CommandException("&cこのステージ名は使用できません！");
         }
 
-        if (this.plugin.getStages().getStage(args.get(0)).isPresent()) {
+        if (this.api.getStages().getStage(args.get(0)).isPresent()) {
             throw new CommandException("&cそのステージ名は既に存在します！");
         }
 
         // Call event
         Stage stage = new Stage(args.get(0));
         StageCreateEvent stageCreateEvent = new StageCreateEvent(player, stage);
-        plugin.getServer().getPluginManager().callEvent(stageCreateEvent);
+        api.getServer().getPluginManager().callEvent(stageCreateEvent);
         if (stageCreateEvent.isCancelled()) {
             return;
         }
@@ -70,9 +68,9 @@ public class StageCreateCommand extends BaseCommand {
         // 新規ゲーム登録
         stage.setAvailable(false);
         stage.setProtected(false);
-        this.plugin.getStages().addStage(stage);
+        this.api.getStages().addStage(stage);
 
-        GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
+        GamePlayer gPlayer = this.api.getPlayers().getPlayer(player);
         try {
             gPlayer.createSetupSession(stage);
         } catch (ReservedException ex) {
@@ -80,7 +78,6 @@ public class StageCreateCommand extends BaseCommand {
         }
 
         // update dynmap
-        plugin.getDynmap().updateRegions();
         Actions.message(player, "&a新規ステージ'" + stage.getName() + "'を登録して選択しました！");
     }
 

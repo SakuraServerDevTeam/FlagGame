@@ -19,7 +19,7 @@ package syam.flaggame.command.area.data;
 import java.util.List;
 import org.bukkit.entity.Player;
 import jp.llv.flaggame.util.ConvertUtils;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.area.AreaCommand;
 import syam.flaggame.exception.CommandException;
 import syam.flaggame.game.AreaInfo;
@@ -33,9 +33,9 @@ import syam.flaggame.util.Actions;
  */
 public class AreaDataTimingCommand extends AreaCommand {
 
-    public AreaDataTimingCommand(FlagGame plugin) {
+    public AreaDataTimingCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 3,
                 "<id> <name> [timing] <- schedule rollback",
                 Perms.AREA_DATA_TIMING,
