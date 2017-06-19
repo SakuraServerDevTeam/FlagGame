@@ -17,10 +17,12 @@
 package syam.flaggame.listener;
 
 import jp.llv.flaggame.api.FlagGameAPI;
+import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.player.StageSetupSession;
 import jp.llv.flaggame.api.session.Reservable;
-import jp.llv.flaggame.game.Game;
-import syam.flaggame.game.objective.BannerSlot;
-import syam.flaggame.game.objective.BannerSpawner;
+import jp.llv.flaggame.api.game.Game;
+import jp.llv.flaggame.api.stage.objective.BannerSlot;
+import jp.llv.flaggame.api.stage.objective.BannerSpawner;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -33,19 +35,17 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.*;
-import syam.flaggame.game.objective.Flag;
-import syam.flaggame.game.objective.Nexus;
+import jp.llv.flaggame.api.stage.objective.Flag;
+import jp.llv.flaggame.api.stage.objective.Nexus;
 import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.material.Banner;
 import jp.llv.flaggame.util.OnelineBuilder;
-import syam.flaggame.exception.ObjectiveCollisionException;
-import syam.flaggame.game.objective.ObjectiveType;
-import syam.flaggame.game.Stage;
-import syam.flaggame.game.objective.GameChest;
+import jp.llv.flaggame.api.exception.ObjectiveCollisionException;
+import jp.llv.flaggame.api.stage.objective.ObjectiveType;
+import jp.llv.flaggame.stage.BasicStage;
+import jp.llv.flaggame.api.stage.objective.GameChest;
 import syam.flaggame.permission.Perms;
-import syam.flaggame.player.GamePlayer;
-import syam.flaggame.player.SetupSession;
 import syam.flaggame.util.Actions;
 import jp.llv.flaggame.api.reception.Reception;
 
@@ -78,13 +78,13 @@ public class FGPlayerListener implements Listener {
               && Perms.STAGE_SET.has(player))) {
             return;
         }
-        SetupSession sess = gPlayer.getSetupSession().get();
+        StageSetupSession sess = gPlayer.getSetupSession().get();
         ObjectiveType conf = sess.getSetting();
         Reservable selected = sess.getSelected();
-        if (!(selected instanceof Stage)) {
+        if (!(selected instanceof BasicStage)) {
             Actions.message(player, "&cあなたはステージを選択していません！");
         }
-        Stage stage = (Stage) selected;
+        BasicStage stage = (BasicStage) selected;
 
         Location loc = block.getLocation();
 

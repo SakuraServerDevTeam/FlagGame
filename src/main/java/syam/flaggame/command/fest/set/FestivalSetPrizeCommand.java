@@ -22,8 +22,8 @@ import jp.llv.flaggame.util.FlagTabCompleter;
 import jp.llv.flaggame.util.OnelineBuilder;
 import org.bukkit.entity.Player;
 import jp.llv.flaggame.api.FlagGameAPI;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.exception.FlagGameException;
+import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.api.exception.FlagGameException;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.util.Actions;
 
@@ -32,7 +32,7 @@ import syam.flaggame.util.Actions;
  * @author SakuraServerDev
  */
 public class FestivalSetPrizeCommand extends FestivalSetCommand {
-    
+
     public FestivalSetPrizeCommand(FlagGameAPI api) {
         super(
                 api,
@@ -62,5 +62,5 @@ public class FestivalSetPrizeCommand extends FestivalSetCommand {
                 .info("に設定されました！")
                 .sendTo(sender);
     }
-    
+
 }

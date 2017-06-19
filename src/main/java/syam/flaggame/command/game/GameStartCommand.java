@@ -25,8 +25,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.command.BaseCommand;
 
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.exception.FlagGameException;
+import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.api.exception.FlagGameException;
 import syam.flaggame.permission.Perms;
 import jp.llv.flaggame.api.reception.Reception;
 import jp.llv.flaggame.util.OptionSet;
@@ -42,7 +42,7 @@ public class GameStartCommand extends BaseCommand {
                 Perms.GAME_START,
                 "start"
         );
-    
+
     }
 
     @Override

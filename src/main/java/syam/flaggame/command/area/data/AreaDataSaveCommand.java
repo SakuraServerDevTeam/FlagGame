@@ -18,18 +18,17 @@ package syam.flaggame.command.area.data;
 
 import java.util.List;
 import java.util.Arrays;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
-import jp.llv.flaggame.rollback.SerializeTask;
-import jp.llv.flaggame.rollback.StageData;
-import jp.llv.flaggame.rollback.StageDataType;
+import jp.llv.flaggame.api.stage.rollback.SerializeTask;
+import jp.llv.flaggame.api.stage.rollback.StageData;
+import jp.llv.flaggame.api.stage.rollback.StageDataType;
 import jp.llv.flaggame.util.ConvertUtils;
 import org.bukkit.entity.Player;
 import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.area.AreaCommand;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.game.AreaInfo;
-import syam.flaggame.game.Stage;
+import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.api.stage.Stage;
+import jp.llv.flaggame.api.stage.area.StageAreaInfo;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.util.Actions;
 
@@ -52,7 +51,7 @@ public class AreaDataSaveCommand extends AreaCommand {
     @Override
     public void execute(List<String> args, Player player, Stage stage) throws CommandException {
         String id = args.get(0);
-        AreaInfo info = stage.getAreas().getAreaInfo(id);
+        StageAreaInfo info = stage.getAreas().getAreaInfo(id);
         if (info == null) {
             throw new CommandException("&cその名前のエリアは存在しません！");
         }
@@ -66,15 +65,15 @@ public class AreaDataSaveCommand extends AreaCommand {
             throw new CommandException("&cそのロールバック対象はサポートされていません！\n&c" + types, ex);
         }
         String savename = args.get(2);
-        AreaInfo.RollbackData data = info.getRollback(savename);
+        StageAreaInfo.StageRollbackData data = info.getRollback(savename);
         if (data == null) {
             data = info.addRollback(savename);
         }
         if (target == StageDataType.NONE) {
             info.removeRollback(savename);
             sendMessage(player, "&a'&6" + stage.getName() + "&a'の'&6"
-                        + id + "&a'エリアの'&6"
-                        + savename + "&a'を削除しました！");
+                                + id + "&a'エリアの'&6"
+                                + savename + "&a'を削除しました！");
             return;
         }
         StageData structure = target.newInstance();
@@ -96,7 +95,7 @@ public class AreaDataSaveCommand extends AreaCommand {
         Actions.sendPrefixedMessage(player, "&a'&6" + stage.getName() + "&a'の'&6"
                                             + id + "&a'エリアの'&6"
                                             + savename + "&a'をセーブしています...");
-        Actions.sendPrefixedMessage(player, "&aこれにはおよそ"+etr+"間かかる予定です...");
+        Actions.sendPrefixedMessage(player, "&aこれにはおよそ" + etr + "間かかる予定です...");
         task.start(api.getPlugin());
     }
 

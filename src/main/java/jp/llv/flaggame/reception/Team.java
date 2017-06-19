@@ -24,9 +24,9 @@ import java.util.Iterator;
 import java.util.Set;
 import jp.llv.flaggame.events.TeamJoinedEvent;
 import jp.llv.flaggame.events.TeamLeftEvent;
-import jp.llv.flaggame.game.Game;
+import jp.llv.flaggame.api.game.Game;
 import org.bukkit.Bukkit;
-import syam.flaggame.player.GamePlayer;
+import jp.llv.flaggame.api.player.GamePlayer;
 import jp.llv.flaggame.api.reception.Reception;
 
 /**
@@ -47,8 +47,8 @@ public class Team implements Iterable<GamePlayer> {
         this.type = type;
         this.players = Collections.synchronizedSet(new HashSet<>());
     }
-    
-    public Team(Reception reception, TeamType type, Collection<? extends GamePlayer> players) {
+
+    public Team(Reception reception, TeamType type, Collection<GamePlayer> players) {
         if (reception == null || type == null) {
             throw new NullPointerException();
         }
@@ -60,23 +60,23 @@ public class Team implements Iterable<GamePlayer> {
             Bukkit.getServer().getPluginManager().callEvent(new TeamJoinedEvent(player, this));
         }
     }
-    
-    public Team(Reception reception, TeamType type, GamePlayer ... players) {
+
+    public Team(Reception reception, TeamType type, GamePlayer... players) {
         this(reception, type, Arrays.asList(players));
     }
-    
+
     public TeamType getType() {
         return this.type;
     }
-    
+
     public TeamColor getColor() {
         return getType().toColor();
     }
-    
+
     public Reception getReception() {
         return this.reception;
     }
-    
+
     public void add(GamePlayer player) {
         if (this.reception.getState().toGameState() != Game.State.PREPARATION) {
             throw new IllegalStateException();
@@ -84,7 +84,7 @@ public class Team implements Iterable<GamePlayer> {
         this.players.add(player);
         Bukkit.getServer().getPluginManager().callEvent(new TeamJoinedEvent(player, this));
     }
-    
+
     public void remove(GamePlayer player) {
         if (this.reception.getState().toGameState() != Game.State.PREPARATION) {
             throw new IllegalStateException();
@@ -92,18 +92,18 @@ public class Team implements Iterable<GamePlayer> {
         this.players.remove(player);
         Bukkit.getServer().getPluginManager().callEvent(new TeamLeftEvent(player, this));
     }
-    
-    public Collection<? extends GamePlayer> getPlayers() {
+
+    public Collection<GamePlayer> getPlayers() {
         return Collections.unmodifiableCollection(this.players);
     }
-    
+
     public boolean hasJoined(GamePlayer player) {
         return this.getPlayers().contains(player);
     }
-    
+
     @Override
     public Iterator<GamePlayer> iterator() {
         return this.players.iterator();
     }
-    
+
 }

@@ -36,7 +36,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import syam.flaggame.listener.*;
 
-public class FlagGame extends JavaPlugin implements FlagGamePlugin{
+public class FlagGame extends JavaPlugin implements FlagGamePlugin {
 
     /*
      * TODO:
@@ -49,7 +49,6 @@ public class FlagGame extends JavaPlugin implements FlagGamePlugin{
      * 
      * 参加チームの選択
      */
-
     // ** Private classes **
     private FlagConfig config;
     private Database database;
@@ -58,7 +57,6 @@ public class FlagGame extends JavaPlugin implements FlagGamePlugin{
     private Economy economy = null;
     // ** Instance **
     private static FlagGame instance;
-
 
     /**
      * プラグイン起動処理
@@ -90,7 +88,6 @@ public class FlagGame extends JavaPlugin implements FlagGamePlugin{
 
         registerListeners();
 
-
         // データベース連携
         database = new MongoDB(this, this.config);
         try {
@@ -101,13 +98,13 @@ public class FlagGame extends JavaPlugin implements FlagGamePlugin{
             return;
         }
         this.getServer().getScheduler().runTaskTimer(this, database::tryConnect, 600000L, 300000L);
-        
+
         this.api = new FlagGameAPIImpl(this);
 
         // コマンド登録
         FlagCommandRegistry.initializeAll(api);
         this.getCommand("flag").setExecutor(FlagCommandRegistry.ROOT);
-        
+
         // ゲームデータ読み込み
         database.loadStages(stage -> {
             api.getStages().addStage(stage.get());

@@ -206,7 +206,7 @@ public class DashboardBuilder {
             return this;
         });
     }
-    
+
     public DashboardBuilder buttonTp(String name, Player player, Location loc) {
         return buttonRun("tp").append("tp").append(player.getName())
                 .append(loc.getX()).append(loc.getY()).append(loc.getZ())
@@ -292,7 +292,7 @@ public class DashboardBuilder {
     }
 
     public <K extends Enum<K>, V> DashboardBuilder appendEnumMap(Map<? extends K, ? extends V> contents,
-                                                                      BiConsumer<DashboardBuilder, ? super V> valueFormatter) {
+                                                                 BiConsumer<DashboardBuilder, ? super V> valueFormatter) {
         return appendMap(contents, (t, k) -> t.green(k.toString().toLowerCase()), valueFormatter);
     }
 

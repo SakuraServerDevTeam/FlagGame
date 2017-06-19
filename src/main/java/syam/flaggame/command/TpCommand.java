@@ -23,7 +23,7 @@ import jp.llv.flaggame.api.FlagGameAPI;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
-import syam.flaggame.exception.CommandException;
+import jp.llv.flaggame.api.exception.CommandException;
 import syam.flaggame.permission.Perms;
 
 public class TpCommand extends BaseCommand {

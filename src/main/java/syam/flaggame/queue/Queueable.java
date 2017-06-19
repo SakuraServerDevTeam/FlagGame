@@ -19,7 +19,7 @@ package syam.flaggame.queue;
 import java.util.List;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import syam.flaggame.exception.FlagGameException;
+import jp.llv.flaggame.api.exception.FlagGameException;
 
 /**
  * Queueable (Queueable.java)

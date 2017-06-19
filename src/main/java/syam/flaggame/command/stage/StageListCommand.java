@@ -18,14 +18,14 @@ package syam.flaggame.command.stage;
 
 import java.util.Collection;
 import java.util.List;
-import jp.llv.flaggame.game.Game;
+import jp.llv.flaggame.api.game.Game;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.BaseCommand;
 import jp.llv.flaggame.util.DashboardBuilder;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.game.Stage;
+import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.api.stage.Stage;
 import syam.flaggame.permission.Perms;
 
 /**
@@ -59,7 +59,6 @@ public class StageListCommand extends BaseCommand {
                 }).buttonSuggest("create").append("stage create").create()
                 .sendTo(sender);
     }
-
 
     private static void appendStageState(DashboardBuilder builder, Stage stage) {
         if (stage.getReception().isPresent()) {

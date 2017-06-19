@@ -20,9 +20,9 @@ import java.util.List;
 import org.bukkit.entity.Player;
 import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.area.AreaCommand;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.game.AreaInfo;
-import syam.flaggame.game.Stage;
+import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.api.stage.Stage;
+import jp.llv.flaggame.api.stage.area.StageAreaInfo;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.util.Actions;
 
@@ -45,17 +45,17 @@ public class AreaMessageListCommand extends AreaCommand {
 
     @Override
     public void execute(List<String> args, Player player, Stage stage) throws CommandException {
-        AreaInfo info = stage.getAreas().getAreaInfo(args.get(0));
+        StageAreaInfo info = stage.getAreas().getAreaInfo(args.get(0));
         if (info == null) {
             throw new CommandException("&cその名前のエリアは存在しません！");
         }
-        List<AreaInfo.MessageData> messages = info.getMessages();
+        List<? extends StageAreaInfo.StageMessageData> messages = info.getMessages();
         sendMessage(player, "&a ==============&b MessageList(" + messages.size() + ") &a==============");
         if (messages.isEmpty()) {
             Actions.message(player, " &7定義済みのメッセージがありません");
         } else {
             for (int i = 0; i < messages.size(); i++) {
-                AreaInfo.MessageData message = messages.get(i);
+                StageAreaInfo.StageMessageData message = messages.get(i);
                 sendMessage(player, "&7"
                                     + (i + 1) + ". &6"
                                     + message.getMessage()

@@ -16,18 +16,18 @@
  */
 package syam.flaggame.command.objective;
 
-import syam.flaggame.game.objective.ObjectiveType;
+import jp.llv.flaggame.api.stage.objective.ObjectiveType;
 import java.util.List;
 import jp.llv.flaggame.reception.TeamColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import jp.llv.flaggame.api.FlagGameAPI;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.exception.FlagGameException;
-import syam.flaggame.exception.ReservedException;
-import syam.flaggame.game.Stage;
+import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.api.exception.FlagGameException;
+import jp.llv.flaggame.api.exception.ReservedException;
 import syam.flaggame.permission.Perms;
-import syam.flaggame.player.GamePlayer;
+import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.stage.Stage;
 import syam.flaggame.util.Actions;
 
 /**

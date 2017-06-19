@@ -16,7 +16,7 @@
  */
 package syam.flaggame.command.objective;
 
-import syam.flaggame.game.objective.ObjectiveType;
+import jp.llv.flaggame.api.stage.objective.ObjectiveType;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,11 +24,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.BaseCommand;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.exception.FlagGameException;
-import syam.flaggame.game.Stage;
+import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.api.exception.FlagGameException;
 import syam.flaggame.permission.Perms;
-import syam.flaggame.player.GamePlayer;
+import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.stage.Stage;
 
 /**
  *

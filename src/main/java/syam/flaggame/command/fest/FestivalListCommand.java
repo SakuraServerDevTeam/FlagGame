@@ -24,7 +24,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.BaseCommand;
-import syam.flaggame.exception.FlagGameException;
+import jp.llv.flaggame.api.exception.FlagGameException;
 import syam.flaggame.permission.Perms;
 
 /**
@@ -32,13 +32,13 @@ import syam.flaggame.permission.Perms;
  * @author SakuraServerDev
  */
 public class FestivalListCommand extends BaseCommand {
-    
+
     public FestivalListCommand(FlagGameAPI api) {
         super(
                 api,
                 true,
-                0, 
-                "<- show a list of festivals", 
+                0,
+                "<- show a list of festivals",
                 Perms.FESTIVAL_LIST,
                 "list"
         );
@@ -56,5 +56,5 @@ public class FestivalListCommand extends BaseCommand {
                 }).buttonSuggest("create").append("festival create").create()
                 .sendTo(sender);
     }
-    
+
 }

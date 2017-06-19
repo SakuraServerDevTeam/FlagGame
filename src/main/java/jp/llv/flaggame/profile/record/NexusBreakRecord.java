@@ -16,6 +16,7 @@
  */
 package jp.llv.flaggame.profile.record;
 
+import jp.llv.flaggame.api.profile.RecordType;
 import java.util.UUID;
 import org.bson.Document;
 import org.bukkit.Location;
@@ -41,7 +42,7 @@ public class NexusBreakRecord extends ScoreRecord {
         super(game, player, score);
     }
 
-    /*package*/ NexusBreakRecord(Document base) {
+    public NexusBreakRecord(Document base) {
         super(base);
     }
 

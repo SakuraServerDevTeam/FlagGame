@@ -22,9 +22,9 @@ import jp.llv.flaggame.api.FlagGameAPI;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.command.BaseCommand;
-import syam.flaggame.exception.CommandException;
+import jp.llv.flaggame.api.exception.CommandException;
 import syam.flaggame.permission.Perms;
-import syam.flaggame.player.GamePlayer;
+import jp.llv.flaggame.api.player.GamePlayer;
 import jp.llv.flaggame.api.reception.Reception;
 
 /**
@@ -32,7 +32,7 @@ import jp.llv.flaggame.api.reception.Reception;
  * @author SakuraServerDev
  */
 public class StageRateCommand extends BaseCommand {
-    
+
     public StageRateCommand(FlagGameAPI api) {
         super(
                 api,
@@ -57,7 +57,7 @@ public class StageRateCommand extends BaseCommand {
         int rate = -1;
         try {
             rate = Integer.parseInt(args.get(0));
-        } catch(NumberFormatException ex) {
+        } catch (NumberFormatException ex) {
         }
         if (rate < 0 || 5 < rate) {
             throw new CommandException("&c0-5の整数値で評価してください！");
@@ -66,5 +66,5 @@ public class StageRateCommand extends BaseCommand {
         reception.leave(gplayer);
         sendMessage(sender, "&a投票への協力ありがとうございました！");
     }
-    
+
 }

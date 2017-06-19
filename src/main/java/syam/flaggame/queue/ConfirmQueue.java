@@ -21,15 +21,15 @@ import java.util.List;
 
 import org.bukkit.command.CommandSender;
 
-import syam.flaggame.exception.FlagGameException;
+import jp.llv.flaggame.api.exception.FlagGameException;
 
 /**
  * ConfirmQueue (ConfirmQueue.java)
- * 
+ *
  * @author syam(syamn)
  */
 public class ConfirmQueue {
-    
+
     private final List<QueuedCommand> queue;
 
     /**

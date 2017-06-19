@@ -17,8 +17,9 @@
 package jp.llv.flaggame.util.function;
 
 /**
- * Represents a throwing function that accepts three arguments and produces a result. This
- * is the three-arity specialization of {@link java.util.function.Function}.
+ * Represents a throwing function that accepts three arguments and produces a
+ * result. This is the three-arity specialization of
+ * {@link java.util.function.Function}.
  *
  * @author Toyblocks
  * @param <A1> the type of the first argument to the function

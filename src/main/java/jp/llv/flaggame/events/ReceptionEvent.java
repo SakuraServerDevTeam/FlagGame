@@ -24,7 +24,7 @@ import jp.llv.flaggame.api.reception.Reception;
  * @author Toyblocks
  */
 public abstract class ReceptionEvent extends Event {
-    
+
     private final Reception reception;
 
     public ReceptionEvent(Reception reception) {
@@ -34,5 +34,5 @@ public abstract class ReceptionEvent extends Event {
     public Reception getReception() {
         return reception;
     }
-    
+
 }

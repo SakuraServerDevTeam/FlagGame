@@ -16,9 +16,9 @@
  */
 package jp.llv.flaggame.events;
 
+import jp.llv.flaggame.api.player.GamePlayer;
 import org.bukkit.event.HandlerList;
 import jp.llv.flaggame.reception.Team;
-import syam.flaggame.player.GamePlayer;
 
 /**
  *
@@ -29,7 +29,7 @@ public class TeamJoinedEvent extends GamePlayerEvent {
     private static final HandlerList handlers = new HandlerList();
 
     private final Team team;
-    
+
     public TeamJoinedEvent(GamePlayer player, Team team) {
         super(player);
         this.team = team;
@@ -38,14 +38,14 @@ public class TeamJoinedEvent extends GamePlayerEvent {
     public Team getTeam() {
         return team;
     }
-    
+
     @Override
     public HandlerList getHandlers() {
         return handlers;
     }
-    
+
     public static HandlerList getHandlerList() {
         return handlers;
     }
-    
+
 }

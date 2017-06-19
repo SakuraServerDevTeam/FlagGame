@@ -22,8 +22,8 @@ import jp.llv.flaggame.util.FlagTabCompleter;
 import jp.llv.flaggame.util.OnelineBuilder;
 import org.bukkit.entity.Player;
 import jp.llv.flaggame.api.FlagGameAPI;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.exception.FlagGameException;
+import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.api.exception.FlagGameException;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.util.Actions;
 
@@ -62,5 +62,5 @@ public class FestivalSetEntryfeeCommand extends FestivalSetCommand {
                 .info("に設定されました！")
                 .sendTo(sender);
     }
-    
+
 }

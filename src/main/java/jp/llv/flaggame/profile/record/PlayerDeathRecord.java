@@ -16,6 +16,7 @@
  */
 package jp.llv.flaggame.profile.record;
 
+import jp.llv.flaggame.api.profile.RecordType;
 import java.util.UUID;
 import org.bson.Document;
 import org.bukkit.entity.Player;
@@ -35,7 +36,7 @@ public class PlayerDeathRecord extends ScoreRecord {
         super(game, player, score);
     }
 
-    /*package*/ PlayerDeathRecord(Document base) {
+    public PlayerDeathRecord(Document base) {
         super(base);
     }
 
@@ -53,5 +54,5 @@ public class PlayerDeathRecord extends ScoreRecord {
     public double getExpWeight(FlagConfig config) {
         return getScore() * config.getScoreCombatDeath();
     }
-    
+
 }

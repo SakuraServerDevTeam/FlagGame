@@ -16,16 +16,16 @@
  */
 package jp.llv.flaggame.database.mongo.bson;
 
-import static  jp.llv.flaggame.database.mongo.bson.BsonMapper.*;
-import jp.llv.flaggame.game.permission.GamePermission;
-import syam.flaggame.game.objective.BannerSlot;
-import syam.flaggame.game.objective.BannerSpawner;
-import syam.flaggame.game.objective.Flag;
-import syam.flaggame.game.objective.Nexus;
-import jp.llv.flaggame.game.permission.GamePermissionState;
-import jp.llv.flaggame.game.permission.GamePermissionStateSet;
+import static jp.llv.flaggame.database.mongo.bson.BsonMapper.*;
+import jp.llv.flaggame.api.stage.permission.GamePermission;
+import jp.llv.flaggame.api.stage.objective.BannerSlot;
+import jp.llv.flaggame.api.stage.objective.BannerSpawner;
+import jp.llv.flaggame.api.stage.objective.Flag;
+import jp.llv.flaggame.api.stage.objective.Nexus;
+import jp.llv.flaggame.api.stage.permission.GamePermissionState;
+import jp.llv.flaggame.stage.permission.GamePermissionStateSet;
 import jp.llv.flaggame.reception.TeamColor;
-import jp.llv.flaggame.rollback.StageDataType;
+import jp.llv.flaggame.api.stage.rollback.StageDataType;
 import org.bson.BsonBinary;
 import org.bson.BsonBoolean;
 import org.bson.BsonDocument;
@@ -37,17 +37,21 @@ import org.bson.BsonString;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
-import syam.flaggame.exception.ObjectiveCollisionException;
-import syam.flaggame.exception.ReservedException;
-import syam.flaggame.game.AreaInfo;
-import syam.flaggame.game.AreaSet;
-import syam.flaggame.game.GameMessageType;
-import syam.flaggame.game.Stage;
-import syam.flaggame.game.objective.GameChest;
+import jp.llv.flaggame.api.exception.ObjectiveCollisionException;
+import jp.llv.flaggame.api.exception.ReservedException;
+import jp.llv.flaggame.api.stage.Stage;
+import jp.llv.flaggame.stage.AreaInfo;
+import jp.llv.flaggame.stage.AreaSet;
+import jp.llv.flaggame.api.stage.area.GameMessageType;
+import jp.llv.flaggame.api.stage.area.StageAreaInfo;
+import jp.llv.flaggame.api.stage.area.StageAreaSet;
+import jp.llv.flaggame.api.stage.permission.StagePermissionStateSet;
+import jp.llv.flaggame.stage.BasicStage;
+import jp.llv.flaggame.api.stage.objective.GameChest;
 import syam.flaggame.util.Cuboid;
 
 public final class StageBsonMapper {
-    
+
     private StageBsonMapper() {
         throw new UnsupportedOperationException();
     }
@@ -93,7 +97,7 @@ public final class StageBsonMapper {
         return new Cuboid(readLocation(section, "pos1"), readLocation(section, "pos2"));
     }
 
-    private static void writeRollback(BsonDocument bson, String key, AreaInfo.RollbackData value) {
+    private static void writeRollback(BsonDocument bson, String key, StageAreaInfo.StageRollbackData value) {
         BsonDocument section = new BsonDocument();
         section.append("timing", new BsonInt64(value.getTiming()));
         writeEnum(section, "target", value.getTarget().getType());
@@ -109,25 +113,25 @@ public final class StageBsonMapper {
         result.setData(section.getBinary("data").getData());
         return result;
     }
-    
-    private static void writeGamePermissionStateSet(BsonDocument bson, String key, GamePermissionStateSet value) {
+
+    private static void writeGamePermissionStateSet(BsonDocument bson, String key, StagePermissionStateSet value) {
         writeEnumMap(bson, key, value.getState(), (b, k, s) -> writeEnum(b, k, s));
     }
-    
+
     private static GamePermissionStateSet readGamePermissionStateSet(BsonDocument bson, String key) {
         return new GamePermissionStateSet(
                 readEnumMap(bson, key, TeamColor.class, (b, k) -> readEnum(b, k, GamePermissionState.class))
         );
     }
-    
-    private static void writeMessageData(BsonDocument bson, String key, AreaInfo.MessageData value) {
+
+    private static void writeMessageData(BsonDocument bson, String key, StageAreaInfo.StageMessageData value) {
         BsonDocument section = new BsonDocument();
         section.append("timing", new BsonInt64(value.getTiming()));
         writeEnum(section, "type", value.getType());
         section.append("message", new BsonString(value.getMessage()));
         bson.append(key, section);
     }
-    
+
     private static AreaInfo.MessageData readMessageData(BsonDocument bson, String key) {
         BsonDocument section = bson.getDocument(key);
         AreaInfo.MessageData result = new AreaInfo.MessageData();
@@ -137,7 +141,7 @@ public final class StageBsonMapper {
         return result;
     }
 
-    private static void writeAreaInfo(BsonDocument bson, String key, AreaInfo value) {
+    private static void writeAreaInfo(BsonDocument bson, String key, StageAreaInfo value) {
         BsonDocument section = new BsonDocument();
         writeMap(section, "rollbacks", value.getRollbacks(), StageBsonMapper::writeRollback);
         writeEnumMap(section, "permissions", value.getPermissions(), StageBsonMapper::writeGamePermissionStateSet);
@@ -154,7 +158,7 @@ public final class StageBsonMapper {
         return result;
     }
 
-    private static void writeAreaSet(BsonDocument bson, String key, AreaSet value) {
+    private static void writeAreaSet(BsonDocument bson, String key, StageAreaSet value) {
         BsonDocument section = new BsonDocument();
         writeMap(section, "areas", value.getAreaMap(), StageBsonMapper::writeCuboid);
         writeMap(section, "info", value.getAreaInfoMap(), StageBsonMapper::writeAreaInfo);
@@ -260,13 +264,13 @@ public final class StageBsonMapper {
         section.append("cooldown", new BsonInt64(value.getCooldown()));
         writeEnumMap(section, "spawn", value.getSpawns(), StageBsonMapper::writeLocation);
         writeLocation(section, "specspawn", value.getSpecSpawn().orElse(null));
-        
+
         writeList(section, "flags", value.getObjectives(Flag.class).values(), StageBsonMapper::writeFlag);
         writeList(section, "nexuses", value.getObjectives(Nexus.class).values(), StageBsonMapper::writeNexus);
         writeList(section, "banner-spawners", value.getObjectives(BannerSlot.class).values(), StageBsonMapper::writeBannerSlot);
         writeList(section, "banner-slots", value.getObjectives(BannerSpawner.class).values(), StageBsonMapper::writeBannerSpawner);
         writeList(section, "containers", value.getObjectives(GameChest.class).values(), StageBsonMapper::writeGameChest);
-        
+
         writeAreaSet(section, "areas", value.getAreas());
         section.append("author", new BsonString(value.getAuthor()));
         section.append("description", new BsonString(value.getDescription()));
@@ -274,9 +278,9 @@ public final class StageBsonMapper {
         return section;
     }
 
-    public static Stage readStage(BsonDocument bson) {
+    public static BasicStage readStage(BsonDocument bson) {
         try {
-            Stage stage = new Stage(bson.getString("_id").getValue());
+            BasicStage stage = new BasicStage(bson.getString("_id").getValue());
             stage.setGameTime(bson.getInt64("time").getValue());
             stage.setTeamLimit(bson.getInt32("teamlimit").getValue());
             stage.setProtected(bson.getBoolean("protected").getValue());

@@ -34,7 +34,7 @@ import jp.llv.flaggame.util.MapUtils;
  * @author SakuraServerDev
  */
 public class FestivalSchedule extends SimpleReservable<FestivalSchedule> {
-    
+
     public static final Pattern NAME_REGEX = Pattern.compile("^[a-z0-9](?:[a-z0-9_-]*[a-z0-9])?$");
 
     private final String name;
@@ -58,7 +58,7 @@ public class FestivalSchedule extends SimpleReservable<FestivalSchedule> {
     public String getTeam(TeamColor color) {
         return teams.get(color);
     }
-    
+
     public TeamColor getTeam(String team) {
         Iterator<TeamColor> it = MapUtils.getKeyByValue(teams, team).iterator();
         return it.hasNext() ? it.next() : null;
@@ -70,7 +70,7 @@ public class FestivalSchedule extends SimpleReservable<FestivalSchedule> {
         MapUtils.removeValue(teams, team);
         teams.put(color, team);
     }
-    
+
     public void removeTeam(String team) {
         MapUtils.removeValue(teams, team);
     }
@@ -83,47 +83,47 @@ public class FestivalSchedule extends SimpleReservable<FestivalSchedule> {
 
     public List<Map<String, FestivalMatch>> getMatches() {
         List<Map<String, FestivalMatch>> result = new ArrayList<>();
-        for (Map<String,FestivalMatch> round : matches) {
+        for (Map<String, FestivalMatch> round : matches) {
             result.add(Collections.unmodifiableMap(round));
         }
         return result;
     }
-    
+
     public Map<String, FestivalMatch> getRound(int index) {
         return Collections.unmodifiableMap(matches.get(index));
     }
-    
+
     public FestivalMatch getMatch(int index, String stage) {
         return matches.get(index).get(stage);
     }
-    
+
     public void addMatch(int index, FestivalMatch match) {
         matches.get(index).put(match.getStage(), match);
     }
-    
+
     public void removeMatch(int index, String stage) {
         matches.get(index).remove(stage);
     }
-    
+
     public void addRound(int index) {
         matches.add(index, new HashMap<>());
     }
-    
+
     public void addRound(int index, Collection<FestivalMatch> round) {
         addRound(index);
         for (FestivalMatch match : round) {
             addMatch(index, match);
         }
     }
-    
+
     public void addRound(Collection<FestivalMatch> round) {
         addRound(matches.size(), round);
     }
-    
+
     public void removeRound(int index) {
         matches.remove(index);
     }
-    
+
     public void setMatches(Collection<? extends Collection<FestivalMatch>> matches) {
         matches.clear();
         for (Collection<FestivalMatch> round : matches) {

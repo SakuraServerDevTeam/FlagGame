@@ -17,16 +17,15 @@
 package syam.flaggame.command.area.data;
 
 import java.util.List;
-import java.util.logging.Level;
-import jp.llv.flaggame.rollback.SerializeTask;
-import jp.llv.flaggame.rollback.StageData;
+import jp.llv.flaggame.api.stage.rollback.SerializeTask;
+import jp.llv.flaggame.api.stage.rollback.StageData;
 import jp.llv.flaggame.util.ConvertUtils;
 import org.bukkit.entity.Player;
 import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.area.AreaCommand;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.game.AreaInfo;
-import syam.flaggame.game.Stage;
+import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.api.stage.Stage;
+import jp.llv.flaggame.api.stage.area.StageAreaInfo;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.util.Actions;
 
@@ -49,12 +48,12 @@ public class AreaDataLoadCommand extends AreaCommand {
     @Override
     public void execute(List<String> args, Player player, Stage stage) throws CommandException {
         String id = args.get(0);
-        AreaInfo info = stage.getAreas().getAreaInfo(id);
+        StageAreaInfo info = stage.getAreas().getAreaInfo(id);
         if (info == null) {
             throw new CommandException("&cその名前のエリアは存在しません！");
         }
         String savename = args.get(1);
-        AreaInfo.RollbackData data = info.getRollback(savename);
+        StageAreaInfo.StageRollbackData data = info.getRollback(savename);
         if (data == null) {
             throw new CommandException("&c該当の名前のデータは保存されていません！");
         }
@@ -76,7 +75,7 @@ public class AreaDataLoadCommand extends AreaCommand {
         Actions.sendPrefixedMessage(player, "&a'&6" + stage.getName() + "&a'の'&6"
                                             + id + "&a'エリアの'&6"
                                             + savename + "&a'をロードしています...");
-        Actions.sendPrefixedMessage(player, "&aこれにはおよそ"+etr+"間かかる予定です...");
+        Actions.sendPrefixedMessage(player, "&aこれにはおよそ" + etr + "間かかる予定です...");
         task.start(api.getPlugin());
     }
 

@@ -30,7 +30,7 @@ public abstract class LocationRecord extends GameRecord {
     private final static String FIELD_LOCATION_X = "x";
     private final static String FIELD_LOCATION_Y = "y";
     private final static String FIELD_LOCATION_Z = "z";
-    
+
     public LocationRecord(UUID game, double x, double y, double z) {
         super(game);
         super.put(FIELD_LOCATION_X, x);
@@ -45,21 +45,21 @@ public abstract class LocationRecord extends GameRecord {
     /*package*/ LocationRecord(Document base) {
         super(base);
     }
-    
+
     public double getX() {
         return super.getDouble(FIELD_LOCATION_X);
     }
-    
+
     public double getY() {
         return super.getDouble(FIELD_LOCATION_Y);
     }
-    
+
     public double getZ() {
         return super.getDouble(FIELD_LOCATION_Z);
     }
-    
+
     public Location getLocation(World world) {
         return new Location(world, getX(), getY(), getZ());
     }
-    
+
 }

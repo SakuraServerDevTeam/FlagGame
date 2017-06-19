@@ -17,6 +17,7 @@
 package syam.flaggame.listener;
 
 import jp.llv.flaggame.api.FlagGameAPI;
+import jp.llv.flaggame.api.stage.Stage;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -34,7 +35,6 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.block.SignChangeEvent;
 
-import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.util.Actions;
 
@@ -78,11 +78,11 @@ public class FGBlockListener implements Listener {
         if (block.getWorld() != Bukkit.getWorld(api.getConfig().getGameWorld())) {
             return false;
         }
-        
+
         if (Perms.IGNORE_PROTECT.has(player)) {
             return false;
         }
-        
+
         Block b = event.getBlock();
         Location loc = b.getLocation();
         for (Stage stage : api.getStages()) {

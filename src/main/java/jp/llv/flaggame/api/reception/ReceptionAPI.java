@@ -19,8 +19,8 @@ package jp.llv.flaggame.api.reception;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
-import jp.llv.flaggame.game.Game;
-import syam.flaggame.exception.FlagGameException;
+import jp.llv.flaggame.api.game.Game;
+import jp.llv.flaggame.api.exception.FlagGameException;
 
 /**
  *
@@ -44,13 +44,13 @@ public interface ReceptionAPI extends Iterable<Reception> {
     Reception newReception(String type, UUID id) throws FlagGameException;
 
     Reception newReception(String type) throws FlagGameException;
-    
+
     default Reception newReception() throws FlagGameException {
         return newReception(null);
     }
 
     void remove(Reception reception);
-    
+
     void stopAll(String reason);
-    
+
 }

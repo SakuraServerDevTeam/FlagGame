@@ -16,6 +16,7 @@
  */
 package jp.llv.flaggame.profile.record;
 
+import jp.llv.flaggame.api.profile.RecordType;
 import java.util.UUID;
 import org.bson.Document;
 import org.bukkit.entity.Player;
@@ -35,7 +36,7 @@ public class LoginRecord extends PlayerRecord {
         super(game, player);
     }
 
-    /*package*/ LoginRecord(Document base) {
+    public LoginRecord(Document base) {
         super(base);
     }
 
@@ -48,5 +49,5 @@ public class LoginRecord extends PlayerRecord {
     public double getExpWeight(FlagConfig config) {
         return config.getScoreGameJoin();
     }
-    
+
 }

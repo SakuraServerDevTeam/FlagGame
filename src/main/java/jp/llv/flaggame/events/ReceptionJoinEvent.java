@@ -16,9 +16,9 @@
  */
 package jp.llv.flaggame.events;
 
+import jp.llv.flaggame.api.player.GamePlayer;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
-import syam.flaggame.player.GamePlayer;
 import jp.llv.flaggame.api.reception.Reception;
 
 /**
@@ -28,7 +28,7 @@ import jp.llv.flaggame.api.reception.Reception;
 public class ReceptionJoinEvent extends GamePlayerEvent implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();
-    
+
     private final Reception reception;
     private boolean cancel = false;
 
@@ -50,14 +50,14 @@ public class ReceptionJoinEvent extends GamePlayerEvent implements Cancellable {
     public void setCancelled(boolean bln) {
         this.cancel = bln;
     }
-    
+
     @Override
     public HandlerList getHandlers() {
         return handlers;
     }
-    
+
     public static HandlerList getHandlerList() {
         return handlers;
     }
-    
+
 }

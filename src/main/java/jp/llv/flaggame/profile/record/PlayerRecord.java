@@ -27,9 +27,9 @@ import syam.flaggame.FlagConfig;
  * @author toyblocks
  */
 public abstract class PlayerRecord extends LocationRecord {
-    
+
     public static final String FIELD_PLAYER = "player";
-    
+
     public PlayerRecord(UUID game, double x, double y, double z, UUID player) {
         super(game, x, y, z);
         super.put(FIELD_PLAYER, player);
@@ -48,26 +48,28 @@ public abstract class PlayerRecord extends LocationRecord {
     /*package*/ PlayerRecord(Document base) {
         super(base);
     }
-    
+
     public UUID getPlayer() {
         return (UUID) super.get(FIELD_PLAYER);
     }
 
     /**
      * Gets weight for experience calcuration.
+     *
      * @param config plugin configuration.
      * @return weight.
      */
     public double getExpWeight(FlagConfig config) {
         return 0D;
     }
-    
+
     /**
      * Gets actual game point the player earned.
+     *
      * @return actual game point.
      */
     public double getGamePoint() {
         return 0D;
     }
-    
+
 }

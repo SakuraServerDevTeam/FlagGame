@@ -16,6 +16,7 @@
  */
 package jp.llv.flaggame.profile.record;
 
+import jp.llv.flaggame.api.profile.RecordType;
 import java.util.UUID;
 import jp.llv.flaggame.reception.TeamColor;
 import org.bson.Document;
@@ -26,7 +27,7 @@ import org.bukkit.entity.Player;
  * @author toyblocks
  */
 public class PlayerTeamRecord extends PlayerRecord {
-    
+
     public static final String FIELD_TEAM = "team";
 
     public PlayerTeamRecord(UUID game, double x, double y, double z, UUID player, TeamColor team) {
@@ -39,10 +40,10 @@ public class PlayerTeamRecord extends PlayerRecord {
         super.put(FIELD_TEAM, team.toString().toLowerCase());
     }
 
-    /*package*/ PlayerTeamRecord(Document base) {
+    public PlayerTeamRecord(Document base) {
         super(base);
     }
-    
+
     public TeamColor getTeam() {
         return TeamColor.of(super.getString(FIELD_TEAM));
     }
@@ -51,5 +52,5 @@ public class PlayerTeamRecord extends PlayerRecord {
     public RecordType getType() {
         return RecordType.TEAM;
     }
-    
+
 }

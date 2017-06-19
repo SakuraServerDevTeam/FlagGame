@@ -16,11 +16,10 @@
  */
 package jp.llv.flaggame.util.function;
 
-
 /**
- * Represents a function that accepts two arguments including double
- * value and produces a result. 
- * This is the three-arity specialization of {@link java.util.function.Function}.
+ * Represents a function that accepts two arguments including double value and
+ * produces a result. This is the three-arity specialization of
+ * {@link java.util.function.Function}.
  *
  * @author Toyblocks
  * @param <T> the type of the first argument to the function
@@ -28,7 +27,7 @@ package jp.llv.flaggame.util.function;
  */
 @FunctionalInterface
 public interface BiDoubleFunction<T, R> {
-    
+
     R apply(T t1, double t2);
-    
+
 }

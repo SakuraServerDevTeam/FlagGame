@@ -21,9 +21,9 @@ import jp.llv.flaggame.util.ConvertUtils;
 import org.bukkit.entity.Player;
 import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.area.AreaCommand;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.game.AreaInfo;
-import syam.flaggame.game.Stage;
+import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.api.stage.Stage;
+import jp.llv.flaggame.api.stage.area.StageAreaInfo;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.util.Actions;
 
@@ -45,7 +45,7 @@ public class AreaMessageTimingCommand extends AreaCommand {
 
     @Override
     public void execute(List<String> args, Player player, Stage stage) throws CommandException {
-        AreaInfo info = stage.getAreas().getAreaInfo(args.get(0));
+        StageAreaInfo info = stage.getAreas().getAreaInfo(args.get(0));
         if (info == null) {
             throw new CommandException("&cその名前のエリアは存在しません！");
         }
@@ -67,7 +67,7 @@ public class AreaMessageTimingCommand extends AreaCommand {
         if (timing <= 0) {
             throw new CommandException("&c無効な数値です！正の小数値を指定してください！");
         }
-        AreaInfo.MessageData data = info.getMessages().get(index);
+        StageAreaInfo.StageMessageData data = info.getMessages().get(index);
         data.setTiming(timing);
         sendMessage(player, "&a'&6" + stage.getName() + "&a'の'&6"
                             + args.get(0) + "&a'エリアのメッセージ'&6"

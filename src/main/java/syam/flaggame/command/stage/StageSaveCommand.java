@@ -18,18 +18,19 @@ package syam.flaggame.command.stage;
 
 import java.util.List;
 import jp.llv.flaggame.database.DatabaseException;
-import jp.llv.flaggame.rollback.RollbackException;
+import jp.llv.flaggame.api.exception.RollbackException;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.BaseCommand;
 import jp.llv.flaggame.util.OnelineBuilder;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.game.AreaInfo;
-import syam.flaggame.game.Stage;
+import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.stage.AreaInfo;
+import jp.llv.flaggame.api.stage.Stage;
 import syam.flaggame.permission.Perms;
-import syam.flaggame.player.GamePlayer;
+import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.stage.area.StageAreaInfo;
 import syam.flaggame.util.Actions;
 
 /**
@@ -74,8 +75,8 @@ public class StageSaveCommand extends BaseCommand {
             Actions.sendPrefixedMessage(sender, "&aステージデータを直列化しています...");
             World gameWorld = api.getServer().getWorld(api.getConfig().getGameWorld());
             for (String area : stage.getAreas().getAreas()) {
-                AreaInfo info = stage.getAreas().getAreaInfo(area);
-                for (AreaInfo.RollbackData rollback : info.getRollbacks().values()) {
+                StageAreaInfo info = stage.getAreas().getAreaInfo(area);
+                for (StageAreaInfo.StageRollbackData rollback : info.getRollbacks().values()) {
                     try {
                         rollback.setData(rollback.getTarget().write(api, gameWorld));
                     } catch (RollbackException ex) {

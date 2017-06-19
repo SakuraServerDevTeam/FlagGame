@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import jp.llv.flaggame.api.FlagGameAPI;
 import org.bukkit.command.CommandSender;
-import syam.flaggame.exception.FlagGameException;
+import jp.llv.flaggame.api.exception.FlagGameException;
 
 /**
  *
@@ -41,7 +41,7 @@ public interface FlagTabCompleter {
     static Builder builder() {
         return new Builder();
     }
-    
+
     static FlagTabCompleter empty() {
         return (p, a, s) -> Collections.emptyList();
     }

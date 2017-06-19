@@ -17,18 +17,17 @@
 package syam.flaggame.command.stage;
 
 import java.util.List;
-import jp.llv.flaggame.api.session.Reservable;
 import jp.llv.flaggame.reception.TeamColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.BaseCommand;
 import jp.llv.flaggame.util.DashboardBuilder;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.game.Stage;
-import syam.flaggame.game.objective.ObjectiveType;
+import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.api.stage.Stage;
+import jp.llv.flaggame.api.stage.objective.ObjectiveType;
 import syam.flaggame.permission.Perms;
-import syam.flaggame.player.GamePlayer;
+import jp.llv.flaggame.api.player.GamePlayer;
 import syam.flaggame.util.Actions;
 
 /**
@@ -123,5 +122,5 @@ public class StageDashboardCommand extends BaseCommand {
         }
         builder.sendTo(sender);
     }
-    
+
 }

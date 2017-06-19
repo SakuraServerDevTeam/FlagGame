@@ -27,9 +27,9 @@ import jp.llv.flaggame.api.reception.Reception;
 public class ReceptionOpenEvent extends ReceptionEvent implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();
-    
+
     private boolean cancel = false;
-    
+
     public ReceptionOpenEvent(Reception reception) {
         super(reception);
     }
@@ -48,9 +48,9 @@ public class ReceptionOpenEvent extends ReceptionEvent implements Cancellable {
     public HandlerList getHandlers() {
         return handlers;
     }
-    
+
     public static HandlerList getHandlerList() {
         return handlers;
     }
-    
+
 }

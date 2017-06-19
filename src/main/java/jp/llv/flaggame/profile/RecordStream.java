@@ -36,7 +36,7 @@ import org.bson.Document;
 public interface RecordStream extends Iterable<GameRecord> {
 
     List<GameRecord> getRecords();
-    
+
     default List<Document> getDocuments() {
         return stream().map(GameRecord::toDocument).collect(Collectors.toList());
     }
@@ -77,9 +77,9 @@ public interface RecordStream extends Iterable<GameRecord> {
 
     default <T extends GameRecord, K, D, A, M extends Map<K, D>>
             M groupingBy(Class<? extends T> clazz,
-                                          Function<? super T, ? extends K> classifier,
-                                          Supplier<M> mapFactory,
-                                          Collector<? super T, A, D> downstream) {
+                         Function<? super T, ? extends K> classifier,
+                         Supplier<M> mapFactory,
+                         Collector<? super T, A, D> downstream) {
         return stream(clazz).collect(Collectors.groupingBy(classifier, mapFactory, downstream));
     }
 

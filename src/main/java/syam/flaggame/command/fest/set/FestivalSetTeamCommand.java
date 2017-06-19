@@ -26,8 +26,8 @@ import jp.llv.flaggame.reception.fest.FestivalSchedule;
 import jp.llv.flaggame.util.OnelineBuilder;
 import org.bukkit.entity.Player;
 import jp.llv.flaggame.api.FlagGameAPI;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.exception.FlagGameException;
+import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.api.exception.FlagGameException;
 import syam.flaggame.permission.Perms;
 
 /**

@@ -21,9 +21,9 @@ import jp.llv.flaggame.api.FlagGameAPI;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.command.BaseCommand;
-import syam.flaggame.exception.CommandException;
+import jp.llv.flaggame.api.exception.CommandException;
 import syam.flaggame.permission.Perms;
-import syam.flaggame.player.GamePlayer;
+import jp.llv.flaggame.api.player.GamePlayer;
 
 /**
  *
@@ -45,6 +45,6 @@ public class PlayerInfoCommand extends BaseCommand {
     @Override
     public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
         GamePlayer gp = this.api.getPlayers().getPlayer(player);
-        gp.sendMessage("&2あなたは現在ゲーム&6"+gp.getEntry().map(e -> e.getName()+"&2("+e.getName()+")に参加しています。").orElse("&2に参加していません"));
+        gp.sendMessage("&2あなたは現在ゲーム&6" + gp.getEntry().map(e -> e.getName() + "&2(" + e.getName() + ")に参加しています。").orElse("&2に参加していません"));
     }
 }

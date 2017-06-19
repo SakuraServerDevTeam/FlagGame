@@ -19,27 +19,27 @@ package jp.llv.flaggame.api.reception;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
+import jp.llv.flaggame.api.player.GamePlayer;
 import jp.llv.flaggame.reception.TeamType;
-import syam.flaggame.exception.FlagGameException;
-import syam.flaggame.exception.InvalidTeamException;
-import syam.flaggame.player.GamePlayer;
+import jp.llv.flaggame.api.exception.FlagGameException;
+import jp.llv.flaggame.api.exception.InvalidTeamException;
 
 /**
  *
  * @author toyblocks
  */
 public interface Teaming {
-    
+
     Optional<TeamType> join(GamePlayer player) throws FlagGameException;
-    
+
     void leave(GamePlayer player) throws FlagGameException;
-    
+
     Collection<GamePlayer> getPlayers();
-    
+
     Map<TeamType, ? extends Collection<GamePlayer>> build() throws InvalidTeamException;
-    
+
     default int size() {
         return getPlayers().size();
     }
-    
+
 }

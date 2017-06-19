@@ -26,7 +26,7 @@ import jp.llv.flaggame.reception.ReceptionManager;
 import jp.llv.flaggame.reception.fest.FestivalManager;
 import org.slf4j.Logger;
 import org.slf4j.impl.JDK14LoggerAdapter;
-import syam.flaggame.game.StageManager;
+import jp.llv.flaggame.stage.StageManager;
 import syam.flaggame.player.PlayerManager;
 import syam.flaggame.queue.ConfirmQueue;
 import jp.llv.flaggame.api.FlagGameAPI;

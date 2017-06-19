@@ -25,8 +25,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.BaseCommand;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.exception.FlagGameException;
+import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.api.exception.FlagGameException;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.queue.Queueable;
 import syam.flaggame.util.Actions;
@@ -67,7 +67,7 @@ public class FestivalDeleteCommand extends BaseCommand {
         @Override
         public void executeQueue(List<String> args, CommandSender sender, Player player) throws FlagGameException {
             FestivalSchedule festival = api.getFestivals().getFestival(args.get(0))
-                .orElseThrow(() -> new CommandException("&cその名前のフェスは存在しません！"));
+                    .orElseThrow(() -> new CommandException("&cその名前のフェスは存在しません！"));
             festival.reserve(null);
             api.getDatabase()
                     .orElseThrow(() -> new CommandException("&cデータベースへの接続に失敗しました！"))

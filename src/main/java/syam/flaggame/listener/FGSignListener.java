@@ -17,7 +17,8 @@
 package syam.flaggame.listener;
 
 import jp.llv.flaggame.api.FlagGameAPI;
-import jp.llv.flaggame.game.Game;
+import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.game.Game;
 import jp.llv.flaggame.reception.TeamColor;
 import net.md_5.bungee.api.ChatMessageType;
 import org.bukkit.block.Block;
@@ -28,7 +29,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
-import syam.flaggame.player.GamePlayer;
 import syam.flaggame.util.Actions;
 
 /**

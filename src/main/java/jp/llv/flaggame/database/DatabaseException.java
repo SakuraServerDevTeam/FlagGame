@@ -38,5 +38,5 @@ public class DatabaseException extends IOException {
     public DatabaseException(Throwable cause) {
         super(cause);
     }
-    
+
 }

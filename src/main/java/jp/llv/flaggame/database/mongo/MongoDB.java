@@ -35,12 +35,13 @@ import jp.llv.flaggame.database.DatabaseException;
 import jp.llv.flaggame.database.DatabaseResult;
 import jp.llv.flaggame.database.mongo.bson.FestivalBsonMapper;
 import jp.llv.flaggame.profile.RecordStream;
-import jp.llv.flaggame.profile.StatEntry;
+import jp.llv.flaggame.api.profile.StatEntry;
 import jp.llv.flaggame.profile.record.ExpRecord;
 import jp.llv.flaggame.profile.record.GameStartRecord;
 import jp.llv.flaggame.profile.record.PlayerRecord;
 import jp.llv.flaggame.profile.record.PlayerResultRecord;
-import jp.llv.flaggame.profile.record.RecordType;
+import jp.llv.flaggame.api.profile.RecordType;
+import jp.llv.flaggame.api.stage.Stage;
 import jp.llv.flaggame.profile.record.ScoreRecord;
 import jp.llv.flaggame.util.MapUtils;
 import org.bson.BsonDocument;
@@ -48,7 +49,7 @@ import org.bson.BsonValue;
 import org.bson.Document;
 import syam.flaggame.FlagConfig;
 import syam.flaggame.FlagGame;
-import syam.flaggame.game.Stage;
+import jp.llv.flaggame.stage.BasicStage;
 import jp.llv.flaggame.database.mongo.bson.StageBsonMapper;
 import jp.llv.flaggame.reception.fest.FestivalSchedule;
 
@@ -289,7 +290,7 @@ public class MongoDB implements Database {
                         new StatEntry(d.getInteger(FIELD_COUNT, 0), getDouble(d, ScoreRecord.FIELD_SCORE))
                 )).forEach(new MongoDBResultCallback<>(consumer), new MongoDBErrorCallback<>(callback));
     }
-    
+
     private static Double getDouble(Document doc, String key) {
         Object obj = doc.get(key);
         if (obj instanceof Integer) {

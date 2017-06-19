@@ -16,6 +16,8 @@
  */
 package jp.llv.flaggame.game;
 
+import jp.llv.flaggame.api.game.GameAPI;
+import jp.llv.flaggame.api.game.Game;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.stream.Collectors;
@@ -25,7 +27,7 @@ import jp.llv.flaggame.api.FlagGameAPI;
  *
  * @author Toyblocks
  */
-public class GameManager implements Iterable<Game> {
+public class GameManager implements GameAPI {
 
     private final FlagGameAPI api;
 
@@ -33,12 +35,14 @@ public class GameManager implements Iterable<Game> {
         this.api = api;
     }
 
+    @Override
     public Collection<Game> getGames() {
         return api.getReceptions().getReceptions().stream()
                 .flatMap(r -> r.getGames().stream())
                 .collect(Collectors.toSet());
     }
-    
+
+    @Override
     public Collection<Game> getGames(Game.State state) {
         return this.getGames().stream()
                 .filter(g -> g.getState() == state)

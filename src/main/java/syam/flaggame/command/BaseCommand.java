@@ -29,10 +29,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import org.bukkit.permissions.Permissible;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.exception.FlagGameException;
-import syam.flaggame.exception.PermissionException;
-import syam.flaggame.exception.ReservedException;
+import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.api.exception.FlagGameException;
+import jp.llv.flaggame.api.exception.PermissionException;
+import jp.llv.flaggame.api.exception.ReservedException;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.util.Actions;
 

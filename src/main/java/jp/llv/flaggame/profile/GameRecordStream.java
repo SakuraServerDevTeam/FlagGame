@@ -25,7 +25,7 @@ import java.util.UUID;
  * @author toyblocks
  */
 public class GameRecordStream implements RecordStream {
-    
+
     private final UUID game;
     private final LinkedList<GameRecord> records = new LinkedList<>();
 
@@ -41,5 +41,5 @@ public class GameRecordStream implements RecordStream {
     public LinkedList<GameRecord> getRecords() {
         return records;
     }
-    
+
 }

@@ -18,22 +18,23 @@ package syam.flaggame.command.stage;
 
 import java.util.ArrayList;
 import java.util.List;
-import jp.llv.flaggame.game.permission.GamePermission;
-import jp.llv.flaggame.game.permission.GamePermissionState;
+import jp.llv.flaggame.api.stage.permission.GamePermission;
+import jp.llv.flaggame.api.stage.permission.GamePermissionState;
 
 import jp.llv.flaggame.api.FlagGameAPI;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import jp.llv.flaggame.reception.TeamColor;
-import jp.llv.flaggame.rollback.StageDataType;
+import jp.llv.flaggame.api.stage.rollback.StageDataType;
 import syam.flaggame.command.BaseCommand;
-import syam.flaggame.game.Configables;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.game.AreaInfo;
-import syam.flaggame.game.Stage;
+import jp.llv.flaggame.stage.Configables;
+import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.stage.AreaInfo;
+import jp.llv.flaggame.api.stage.Stage;
 import syam.flaggame.permission.Perms;
-import syam.flaggame.player.GamePlayer;
+import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.stage.area.StageAreaInfo;
 import syam.flaggame.util.Actions;
 import syam.flaggame.util.Cuboid;
 import syam.flaggame.util.WorldEditHandler;
@@ -401,8 +402,8 @@ public class StageSetCommand extends BaseCommand {
             throw new CommandException("&c" + ex.getMessage());
         }
         stage.getAreas().setStageArea(region);
-        AreaInfo info = stage.getAreas().getStageAreaInfo();
-        AreaInfo.RollbackData rollback = info.addRollback("init");
+        StageAreaInfo info = stage.getAreas().getStageAreaInfo();
+        StageAreaInfo.StageRollbackData rollback = info.addRollback("init");
         rollback.setTarget(StageDataType.CLASSIC.newInstance());
         sendMessage(player, "&a'&6" + stage.getName() + "&a'のステージエリアを設定しました！");
         sendMessage(player, "&a'&6" + stage.getName() + "&a'のステージエリアの'&6init&a'をセーブしました！");
@@ -426,7 +427,7 @@ public class StageSetCommand extends BaseCommand {
             throw new CommandException("&c" + ex.getMessage());
         }
         game.getAreas().setArea(id, area);
-        AreaInfo info = game.getAreas().getAreaInfo(id);
+        StageAreaInfo info = game.getAreas().getAreaInfo(id);
         System.out.println(info);
         info.getPermission(GamePermission.DOOR).setState(team, GamePermissionState.ALLOW);
         info.getPermission(GamePermission.CONTAINER).setState(team, GamePermissionState.ALLOW);

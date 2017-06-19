@@ -17,6 +17,7 @@
 package syam.flaggame.listener;
 
 import jp.llv.flaggame.api.FlagGameAPI;
+import jp.llv.flaggame.api.player.GamePlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -27,7 +28,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
-import syam.flaggame.player.GamePlayer;
+import syam.flaggame.player.FlagGamePlayer;
 
 public class FGEntityListener implements Listener {
 
@@ -38,14 +39,15 @@ public class FGEntityListener implements Listener {
     }
 
     /* 登録するイベントはここから下に */
-
     // プレイヤーがダメージを受けた
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onEntityDamageByEntity(final EntityDamageByEntityEvent event) {
         Entity entity = event.getEntity();
 
         // ゲーム用ワールドでなければ返す
-        if (entity.getWorld() != Bukkit.getWorld(api.getConfig().getGameWorld())) return;
+        if (entity.getWorld() != Bukkit.getWorld(api.getConfig().getGameWorld())) {
+            return;
+        }
 
         Player damaged = null;
         Player attacker = null;
@@ -54,8 +56,7 @@ public class FGEntityListener implements Listener {
         if ((event.getCause() == DamageCause.ENTITY_ATTACK) && (entity instanceof Player) && (event.getDamager() instanceof Player)) {
             damaged = (Player) entity; // 攻撃された人
             attacker = (Player) event.getDamager(); // 攻撃した人
-        }
-        // 矢・雪球・卵など
+        } // 矢・雪球・卵など
         else if ((event.getCause() == DamageCause.PROJECTILE) && (entity instanceof Player) && (event.getDamager() instanceof Projectile)) {
             // プレイヤーが打ったもの
             if (((Projectile) event.getDamager()).getShooter() instanceof Player) {
@@ -64,13 +65,17 @@ public class FGEntityListener implements Listener {
             }
         }
 
-        if (damaged == null || attacker == null) return;
+        if (damaged == null || attacker == null) {
+            return;
+        }
 
         // 設定確認 チーム内PVPを無効にする設定が無効であれば何もしない
-        if (!api.getConfig().getDisableTeamPVP()) return;
+        if (!api.getConfig().getDisableTeamPVP()) {
+            return;
+        }
 
-        GamePlayer gAttacker = api.getPlayers().getPlayer(attacker),
-                gDamaged = api.getPlayers().getPlayer(damaged);
+        GamePlayer gAttacker = api.getPlayers().getPlayer(attacker);
+        GamePlayer gDamaged = api.getPlayers().getPlayer(damaged);
         if (!gAttacker.getTeam().equals(gDamaged.getTeam())) {
             return;
         }
@@ -81,7 +86,9 @@ public class FGEntityListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onEntityRegainHealth(final EntityRegainHealthEvent event) {
         // ゲーム用ワールドでなければ返す
-        if (event.getEntity().getWorld() != Bukkit.getWorld(api.getConfig().getGameWorld())) { return; }
+        if (event.getEntity().getWorld() != Bukkit.getWorld(api.getConfig().getGameWorld())) {
+            return;
+        }
 
         // 設定確認、プレイヤーならイベントキャンセル
         if (api.getConfig().getDisableRegainHP()) {

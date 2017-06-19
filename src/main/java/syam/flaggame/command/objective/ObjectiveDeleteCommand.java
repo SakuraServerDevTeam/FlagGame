@@ -16,14 +16,14 @@
  */
 package syam.flaggame.command.objective;
 
-import syam.flaggame.game.objective.ObjectiveType;
+import jp.llv.flaggame.api.stage.objective.ObjectiveType;
 import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import jp.llv.flaggame.api.FlagGameAPI;
 import jp.llv.flaggame.util.OnelineBuilder;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.game.Stage;
+import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.api.stage.Stage;
 import syam.flaggame.permission.Perms;
 
 /**

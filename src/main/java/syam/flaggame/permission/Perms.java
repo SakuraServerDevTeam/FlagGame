@@ -17,7 +17,7 @@
 package syam.flaggame.permission;
 
 import org.bukkit.permissions.Permissible;
-import syam.flaggame.exception.PermissionException;
+import jp.llv.flaggame.api.exception.PermissionException;
 
 /**
  * Permission (Permission.java)
@@ -25,37 +25,31 @@ import syam.flaggame.exception.PermissionException;
  * @author syam(syamn)
  */
 public enum Perms {
-    
+
     RELOAD("reload"),
     TP("tp"),
-    
     IGNORE_PROTECT("ignoreprotect"),
     SIGN("sign"),
     WALL_KICK("wallkick"),
-    
     AREA_DASHBOARD("area.dashboard"),
     AREA_DELETE("area.delete"),
     AREA_INIT("area.init"),
     AREA_LIST("area.list"),
     AREA_SELECT("area.select"),
     AREA_SET("area.set"),
-    
     AREA_DATA_DELETE("area.data.delete"),
     AREA_DATA_LIST("area.data.list"),
     AREA_DATA_LOAD("area.data.load"),
     AREA_DATA_SAVE("area.data.save"),
     AREA_DATA_TIMING("area.data.timing"),
-    
     AREA_MESSAGE_ADD("area.message.add"),
     AREA_MESSAGE_DELETE("area.message.delete"),
     AREA_MESSAGE_LIST("area.message.list"),
     AREA_MESSAGE_TIMING("area.message.timing"),
-    
     AREA_PERMISSION_DASHBOARD("area.permission.dashboard"),
     AREA_PERMISSION_LIST("area.permission.list"),
     AREA_PERMISSION_SET("area.permission.set"),
     AREA_PERMISSION_TEST("area.permission.test"),
-    
     GAME_CLOSE("game.close"),
     GAME_JOIN("game.join"),
     GAME_LEAVE_SPECTATE("game.leave.spectate"), GAME_LEAVE_READY("game.leave.ready"),
@@ -64,7 +58,6 @@ public enum Perms {
     GAME_READY("game.ready"),
     GAME_START("game.start"),
     GAME_WATCH("game.watch"),
-    
     STAGE_CREATE("stage.create"),
     STAGE_DASHBOARD("stage.dashboard"),
     STAGE_DELETE("stage.delete"),
@@ -75,32 +68,26 @@ public enum Perms {
     STAGE_SELECT("stage.select"),
     STAGE_SET("stage.set"),
     STAGE_STATS("stage.stats"),
-    
     FESTIVAL_MATCH_CREATE("festival.match.create"),
     FESTIVAL_MATCH_DELETE("festival.match.delete"),
     FESTIVAL_MATCH_TEAM("festival.match.team"),
     FESTIVAL_MATCH_LIST("festival.match.list"),
-    
     FESTIVAL_CREATE("festival.create"),
     FESTIVAL_DASHBOARD("festival.dashboard"),
     FESTIVAL_DELETE("festival.delete"),
     FESTIVAL_LIST("festival.list"),
     FESTIVAL_SAVE("festival.save"),
     FESTIVAL_SELECT("festival.select"),
-    
     FESTIVAL_SET_ENTRYFEE("festival.entryfee"),
     FESTIVAL_SET_PRIZE("festival.prize"),
     FESTIVAL_SET_TEAM("festival.set.team"),
-    
     OBJECTIVE_LIST("objective.list"),
     OBJECTIVE_DELETE("objective.delete"),
     OBJECTIVE_SET("objective.set"),
-    
     PLAYER_INFO("player.info"),
     PLAYER_STATS_SELF("player.stats.self"), PLAYER_STATS_OTHER("player.stats.other"),
     PLAYER_EXP_SELF("player.exp.self"), PLAYER_EXP_OTHER("player.exp.other"),
-    PLAYER_VIBE_SELF("player.vibe.self"), PLAYER_VIBE_OTHER("player.vibe.other"),
-    ;
+    PLAYER_VIBE_SELF("player.vibe.self"), PLAYER_VIBE_OTHER("player.vibe.other"),;
 
     // ノードヘッダー
     final String HEADER = "flag.";

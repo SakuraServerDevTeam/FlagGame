@@ -18,7 +18,7 @@ package syam.flaggame.command.game;
 
 import java.util.List;
 import java.util.Collection;
-import jp.llv.flaggame.game.Game;
+import jp.llv.flaggame.api.game.Game;
 
 import org.bukkit.Location;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
@@ -26,11 +26,11 @@ import jp.llv.flaggame.api.FlagGameAPI;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.command.BaseCommand;
-import syam.flaggame.exception.CommandException;
+import jp.llv.flaggame.api.exception.CommandException;
 
-import syam.flaggame.game.Stage;
 import syam.flaggame.permission.Perms;
-import syam.flaggame.player.GamePlayer;
+import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.stage.Stage;
 import syam.flaggame.util.Actions;
 
 public class GameWatchCommand extends BaseCommand {
@@ -44,7 +44,7 @@ public class GameWatchCommand extends BaseCommand {
                 Perms.GAME_WATCH,
                 "watch"
         );
-    
+
     }
 
     @Override

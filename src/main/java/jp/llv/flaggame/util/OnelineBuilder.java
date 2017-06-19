@@ -23,7 +23,7 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import syam.flaggame.player.GamePlayer;
+import jp.llv.flaggame.api.player.GamePlayer;
 import syam.flaggame.util.Actions;
 
 /**
@@ -71,8 +71,7 @@ public class OnelineBuilder {
         text.text(color, obj);
         return this;
     }
-    
-    
+
     public OnelineBuilder value(Object obj) {
         return value(ChatColor.GOLD, obj);
     }
@@ -99,7 +98,7 @@ public class OnelineBuilder {
             return this;
         });
     }
-    
+
     public OnelineBuilder buttonTp(String name, Player player, Location loc) {
         return buttonRun("tp").append("tp").append(player.getName())
                 .append(loc.getX()).append(loc.getY()).append(loc.getZ())

@@ -16,7 +16,7 @@
  */
 package jp.llv.flaggame.events;
 
-import jp.llv.flaggame.game.Game;
+import jp.llv.flaggame.api.game.Game;
 import org.bukkit.event.Event;
 
 /**
@@ -24,9 +24,9 @@ import org.bukkit.event.Event;
  * @author Toyblocks
  */
 public abstract class GameEvent extends Event {
-    
+
     private final Game game;
-    
+
     public GameEvent(Game game) {
         this.game = game;
     }
@@ -34,5 +34,5 @@ public abstract class GameEvent extends Event {
     public Game getGame() {
         return game;
     }
-    
+
 }

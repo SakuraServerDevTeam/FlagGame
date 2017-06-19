@@ -27,6 +27,7 @@ import java.util.OptionalDouble;
  * @param <K> the type of keys maintained by this map
  */
 public class DoubleMap<K> extends HashMap<K, Double> {
+
     private static final long serialVersionUID = 1L;
 
     public DoubleMap(int i, float f) {
@@ -43,43 +44,43 @@ public class DoubleMap<K> extends HashMap<K, Double> {
     public DoubleMap(Map<? extends K, ? extends Double> map) {
         super(map);
     }
-    
+
     public void increase(K key) {
         this.add(key, 1);
     }
-    
+
     public void add(K key, double num) {
         Double v = super.get(key);
-        v = v != null ? v+=num : num;
+        v = v != null ? v += num : num;
         super.put(key, v);
     }
-    
+
     public void decrease(K key) {
         this.subtract(key, 1);
     }
-    
+
     public void subtract(K key, double num) {
         this.add(key, -num);
     }
-    
+
     public double getOr(K key, double def) {
         Double i = super.get(key);
         return i != null ? i : def;
     }
-    
+
     public double getOrZero(K key) {
         return this.getOr(key, 0);
     }
-    
+
     public OptionalDouble getOptional(K key) {
         Double i = super.get(key);
         return i != null ? OptionalDouble.of(i) : OptionalDouble.empty();
     }
-    
+
     public void putAll(Collection<? extends K> keys, double value) {
         for (K k : keys) {
             super.put(k, value);
         }
     }
-    
+
 }

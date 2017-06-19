@@ -16,20 +16,20 @@
  */
 package syam.flaggame.command.objective;
 
-import syam.flaggame.game.objective.ObjectiveType;
+import jp.llv.flaggame.api.stage.objective.ObjectiveType;
 import java.util.Collection;
 import java.util.List;
 import org.bukkit.Location;
-import syam.flaggame.game.objective.Flag;
+import jp.llv.flaggame.api.stage.objective.Flag;
 import org.bukkit.entity.Player;
 import jp.llv.flaggame.api.FlagGameAPI;
 import jp.llv.flaggame.util.DashboardBuilder;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.game.Stage;
-import syam.flaggame.game.objective.BannerSlot;
-import syam.flaggame.game.objective.BannerSpawner;
-import syam.flaggame.game.objective.GameChest;
-import syam.flaggame.game.objective.Nexus;
+import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.api.stage.Stage;
+import jp.llv.flaggame.api.stage.objective.BannerSlot;
+import jp.llv.flaggame.api.stage.objective.BannerSpawner;
+import jp.llv.flaggame.api.stage.objective.GameChest;
+import jp.llv.flaggame.api.stage.objective.Nexus;
 import syam.flaggame.permission.Perms;
 
 /**

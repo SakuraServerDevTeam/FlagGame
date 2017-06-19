@@ -26,9 +26,9 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import jp.llv.flaggame.api.FlagGameAPI;
-import jp.llv.flaggame.game.Game;
+import jp.llv.flaggame.api.game.Game;
 import jp.llv.flaggame.api.reception.Reception;
-import syam.flaggame.exception.FlagGameException;
+import jp.llv.flaggame.api.exception.FlagGameException;
 
 /**
  *

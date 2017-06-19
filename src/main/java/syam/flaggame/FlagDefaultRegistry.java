@@ -30,9 +30,9 @@ import jp.llv.flaggame.reception.TeamType;
 import jp.llv.flaggame.reception.teaming.SuccessiveTeaming;
 import jp.llv.flaggame.reception.teaming.VibeBasedTeaming;
 import jp.llv.flaggame.util.function.ThrowingBiFunction;
-import syam.flaggame.exception.FlagGameException;
+import jp.llv.flaggame.api.exception.FlagGameException;
 import jp.llv.flaggame.api.FlagGameRegistry;
-import syam.flaggame.exception.NotRegisteredException;
+import jp.llv.flaggame.api.exception.NotRegisteredException;
 
 /**
  *
@@ -41,19 +41,21 @@ import syam.flaggame.exception.NotRegisteredException;
 public class FlagDefaultRegistry implements FlagGameRegistry {
 
     private final Map<String, ThrowingBiFunction<? super FlagGameAPI, ? super UUID, ? extends Reception, FlagGameException>> receptions = new HashMap<>();
+
     {
         receptions.put(null, BasicGameReception::new);
     }
-    
+
     private final Map<String, ThrowingBiFunction<? super FlagGameAPI, ? super TeamType[], ? extends Teaming, FlagGameException>> teamings = new HashMap<>();
+
     {
         teamings.put(null, VibeBasedTeaming::new);
         teamings.put("successive", SuccessiveTeaming::new);
     }
-    
+
     /*package*/ FlagDefaultRegistry() {
     }
-    
+
     @Override
     public void registerReception(String key, ThrowingBiFunction<? super FlagGameAPI, ? super UUID, ? extends Reception, FlagGameException> factory) {
         if (receptions.containsKey(Objects.requireNonNull(key))) {
@@ -97,5 +99,5 @@ public class FlagDefaultRegistry implements FlagGameRegistry {
             throw new NotRegisteredException();
         }
     }
-    
+
 }

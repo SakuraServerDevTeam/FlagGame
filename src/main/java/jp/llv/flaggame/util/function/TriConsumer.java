@@ -17,8 +17,9 @@
 package jp.llv.flaggame.util.function;
 
 /**
- * Represents a function that accepts three arguments and not produces a result. This
- * is the three-arity specialization of {@link java.util.function.Consumer}.
+ * Represents a function that accepts three arguments and not produces a result.
+ * This is the three-arity specialization of
+ * {@link java.util.function.Consumer}.
  *
  * @author Toyblocks
  * @param <A1> the type of the first argument to the function

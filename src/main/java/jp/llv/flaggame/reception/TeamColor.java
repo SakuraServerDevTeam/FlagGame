@@ -37,8 +37,7 @@ public enum TeamColor implements TeamType {
     SKYBLUE("水", 0x3, Color.AQUA, ChatColor.AQUA, DyeColor.LIGHT_BLUE, BarColor.WHITE, Material.LIGHT_BLUE_SHULKER_BOX),
     YELLOW("黄", 0x4, Color.YELLOW, ChatColor.YELLOW, DyeColor.YELLOW, BarColor.YELLOW, Material.YELLOW_SHULKER_BOX),
     PURPLE("紫", 0x2, Color.PURPLE, ChatColor.DARK_PURPLE, DyeColor.PURPLE, BarColor.PURPLE, Material.PURPLE_SHULKER_BOX),
-    WHITE("白", 0x0, Color.WHITE, ChatColor.WHITE, DyeColor.WHITE, BarColor.WHITE, Material.WHITE_SHULKER_BOX),
-    ;
+    WHITE("白", 0x0, Color.WHITE, ChatColor.WHITE, DyeColor.WHITE, BarColor.WHITE, Material.WHITE_SHULKER_BOX),;
 
     private final String teamName;
     private final byte blockData;
@@ -91,7 +90,7 @@ public enum TeamColor implements TeamType {
     public Color getColor() {
         return color;
     }
-    
+
     /**
      * チームの色タグ "&(char)" を返す
      *
@@ -100,7 +99,7 @@ public enum TeamColor implements TeamType {
     public String getChatColor() {
         return chatColor.toString();
     }
-    
+
     public ChatColor getBungeeChatColor() {
         return chatColor;
     }

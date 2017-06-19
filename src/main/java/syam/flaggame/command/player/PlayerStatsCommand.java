@@ -18,15 +18,15 @@ package syam.flaggame.command.player;
 
 import java.util.Arrays;
 import java.util.List;
-import jp.llv.flaggame.profile.PlayerProfile;
-import jp.llv.flaggame.profile.record.RecordType;
+import jp.llv.flaggame.profile.CachedPlayerProfile;
+import jp.llv.flaggame.api.profile.RecordType;
 import jp.llv.flaggame.util.StringUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.BaseCommand;
 import jp.llv.flaggame.util.DashboardBuilder;
-import syam.flaggame.exception.CommandException;
+import jp.llv.flaggame.api.exception.CommandException;
 import syam.flaggame.permission.Perms;
 
 /**
@@ -58,7 +58,7 @@ public class PlayerStatsCommand extends BaseCommand {
         if (target == null) {
             throw new CommandException("&cプレイヤーを指定してください！");
         }
-        PlayerProfile profile = api.getProfiles().getProfile(target.getUniqueId());
+        CachedPlayerProfile profile = api.getProfiles().getProfile(target.getUniqueId());
         DashboardBuilder.newBuilder("Player Stats", target.getName())
                 .appendList(Arrays.asList(StatCategory.values()), (d, stat) -> {
                     stat.appendTo(d, profile);
@@ -66,30 +66,29 @@ public class PlayerStatsCommand extends BaseCommand {
     }
 
     enum StatCategory {
-        
+
         RECEPTION(Stat.ENTRY, Stat.LEAVE),
         RESULT(Stat.WIN, Stat.DRAW, Stat.LOSE),
         COMBAT(Stat.KILL, Stat.DEATH, Stat.KD),
         FLAG(Stat.FLAG_CAPTURE, Stat.FLAG_BREAK, Stat.FLAG_SCORE),
         NEXUS(Stat.NEXUS_BREAK),
         BANNER(Stat.BANNER_HOLD, Stat.BANNER_STEAL, Stat.BANNER_DEPLOY, Stat.BANNER_KEEP),
-        RATE(Stat.RATE),
-        ;
-        
+        RATE(Stat.RATE),;
+
         private final Stat[] stats;
 
-        private StatCategory(Stat ... stats) {
+        private StatCategory(Stat... stats) {
             this.stats = stats;
         }
 
-        public void appendTo(DashboardBuilder dashboard, PlayerProfile profile) {
+        public void appendTo(DashboardBuilder dashboard, CachedPlayerProfile profile) {
             for (Stat stat : stats) {
                 stat.appendTo(dashboard, profile);
             }
         }
-        
+
     }
-    
+
     enum Stat {
 
         ENTRY(RecordType.ENTRY),
@@ -101,7 +100,7 @@ public class PlayerStatsCommand extends BaseCommand {
         DEATH(RecordType.DEATH),
         KD(null) {
             @Override
-            public void appendTo(DashboardBuilder dashboard, PlayerProfile profile) {
+            public void appendTo(DashboardBuilder dashboard, CachedPlayerProfile profile) {
                 dashboard.key("K/D")
                         .value(
                                 profile.getStat(RecordType.KILL).flatMap(kill
@@ -120,8 +119,7 @@ public class PlayerStatsCommand extends BaseCommand {
         BANNER_STEAL(RecordType.BANNER_STEAL),
         BANNER_DEPLOY(RecordType.BANNER_DEPLOY),
         BANNER_KEEP(RecordType.BANNER_KEEP),
-        RATE(RecordType.DRAW),
-        ;
+        RATE(RecordType.DRAW),;
 
         private final RecordType record;
 
@@ -129,7 +127,7 @@ public class PlayerStatsCommand extends BaseCommand {
             this.record = record;
         }
 
-        public void appendTo(DashboardBuilder dashboard, PlayerProfile profile) {
+        public void appendTo(DashboardBuilder dashboard, CachedPlayerProfile profile) {
             dashboard.key(StringUtil.capitalize(name()))
                     .value(profile.getStat(record).map(e -> Integer.toString(e.getCount())).orElse("N/A"));
         }

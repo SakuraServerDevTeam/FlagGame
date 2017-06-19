@@ -16,16 +16,17 @@
  */
 package syam.flaggame.player;
 
+import jp.llv.flaggame.api.player.StageSetupSession;
 import java.util.Objects;
 import jp.llv.flaggame.reception.TeamColor;
 import jp.llv.flaggame.api.session.Reservable;
-import syam.flaggame.game.objective.ObjectiveType;
+import jp.llv.flaggame.api.stage.objective.ObjectiveType;
 
 /**
  *
  * @author Toyblocks
  */
-public class SetupSession {
+public class SetupSession implements StageSetupSession {
 
     private final Reservable.Reservation<?> selected;
     private ObjectiveType setting;
@@ -38,10 +39,12 @@ public class SetupSession {
         this.selected = Objects.requireNonNull(selected);
     }
 
+    @Override
     public Reservable<?> getSelected() {
         return this.selected.getReservable();
     }
 
+    @Override
     public <T extends Reservable<T>> T getSelected(Class<T> clazz) {
         if (clazz.isInstance(selected.getReservable())) {
             return (T) selected.getReservable();
@@ -54,10 +57,12 @@ public class SetupSession {
         return selected;
     }
 
+    @Override
     public ObjectiveType getSetting() {
         return this.setting;
     }
 
+    @Override
     public SetupSession setSetting(ObjectiveType setting) {
         if (this.setting == setting) {
             return this;
@@ -69,6 +74,7 @@ public class SetupSession {
         return this;
     }
 
+    @Override
     public Double getSelectedPoint() {
         if (this.setting != ObjectiveType.FLAG && this.setting != ObjectiveType.NEXUS && this.setting != ObjectiveType.BANNER_SPAWNER) {
             throw new IllegalStateException();
@@ -76,6 +82,7 @@ public class SetupSession {
         return this.point;
     }
 
+    @Override
     public SetupSession setSelectedPoint(double point) {
         if (this.setting != ObjectiveType.FLAG && this.setting != ObjectiveType.NEXUS && this.setting != ObjectiveType.BANNER_SPAWNER) {
             throw new IllegalStateException();
@@ -84,6 +91,7 @@ public class SetupSession {
         return this;
     }
 
+    @Override
     public TeamColor getSelectedColor() {
         if (this.setting != ObjectiveType.BANNER_SLOT && this.setting != ObjectiveType.NEXUS) {
             throw new IllegalStateException();
@@ -91,6 +99,7 @@ public class SetupSession {
         return color;
     }
 
+    @Override
     public SetupSession setSelectedColor(TeamColor color) {
         if (this.setting != ObjectiveType.BANNER_SLOT && this.setting != ObjectiveType.NEXUS) {
             throw new IllegalStateException();
@@ -99,6 +108,7 @@ public class SetupSession {
         return this;
     }
 
+    @Override
     public Byte getSelectedHp() {
         if (this.setting != ObjectiveType.BANNER_SPAWNER) {
             throw new IllegalStateException();
@@ -106,6 +116,7 @@ public class SetupSession {
         return hp;
     }
 
+    @Override
     public SetupSession setHp(Byte hp) {
         if (this.setting != ObjectiveType.BANNER_SPAWNER) {
             throw new IllegalStateException();

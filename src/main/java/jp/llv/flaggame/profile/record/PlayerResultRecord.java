@@ -27,7 +27,7 @@ import org.bukkit.entity.Player;
  * @author SakuraServerDev
  */
 public abstract class PlayerResultRecord extends ExpRecord {
-    
+
     public static final String FIELD_VIBE = "vibe";
 
     public PlayerResultRecord(UUID game, double x, double y, double z, UUID player, long exp, double vive) {
@@ -48,5 +48,5 @@ public abstract class PlayerResultRecord extends ExpRecord {
     /*package*/ PlayerResultRecord(Document base) {
         super(base);
     }
-    
+
 }

@@ -16,7 +16,7 @@
  */
 package jp.llv.flaggame.api.session;
 
-import syam.flaggame.exception.ReservedException;
+import jp.llv.flaggame.api.exception.ReservedException;
 
 /**
  *

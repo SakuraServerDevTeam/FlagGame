@@ -21,7 +21,7 @@ package jp.llv.flaggame.api.session;
  * @author SakuraServerDev
  */
 public interface Reserver {
-    
+
     String getName();
-    
+
 }

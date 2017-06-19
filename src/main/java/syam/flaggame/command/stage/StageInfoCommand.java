@@ -17,14 +17,13 @@
 package syam.flaggame.command.stage;
 
 import java.util.List;
-import jp.llv.flaggame.game.Game;
+import jp.llv.flaggame.api.game.Game;
 import jp.llv.flaggame.api.FlagGameAPI;
-import org.bukkit.permissions.Permissible;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.command.BaseCommand;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.game.Stage;
+import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.api.stage.Stage;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.util.Actions;
 import jp.llv.flaggame.api.reception.Reception;
@@ -40,7 +39,7 @@ public class StageInfoCommand extends BaseCommand {
                 Perms.STAGE_INFO,
                 "info"
         );
-    
+
     }
 
     @Override
@@ -82,7 +81,7 @@ public class StageInfoCommand extends BaseCommand {
             String s2 = "&b 製作者=&6" + stage.getAuthor()
                         + "&b 説明=&6" + stage.getDescription();
             String s7 = "&b 参加料=&6" + Actions.formatMoney(stage.getEntryFee())
-                    + "&b 賞金=&6" + Actions.formatMoney(stage.getPrize());
+                        + "&b 賞金=&6" + Actions.formatMoney(stage.getPrize());
 
             // メッセージ送信
             Actions.message(sender, s1);

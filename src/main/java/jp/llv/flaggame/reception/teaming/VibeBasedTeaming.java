@@ -29,12 +29,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import jp.llv.flaggame.api.FlagGameAPI;
+import jp.llv.flaggame.api.player.GamePlayer;
 import jp.llv.flaggame.api.reception.Teaming;
 import jp.llv.flaggame.reception.TeamType;
 import jp.llv.flaggame.util.ValueSortedMap;
-import syam.flaggame.exception.FlagGameException;
-import syam.flaggame.exception.InvalidTeamException;
-import syam.flaggame.player.GamePlayer;
+import jp.llv.flaggame.api.exception.FlagGameException;
+import jp.llv.flaggame.api.exception.InvalidTeamException;
 
 /**
  *
@@ -46,11 +46,11 @@ public class VibeBasedTeaming implements Teaming {
     private final Set<TeamType> teamTypes;
     private final Set<GamePlayer> players = new HashSet<>();
 
-    public VibeBasedTeaming(FlagGameAPI api, TeamType ... teams) {
+    public VibeBasedTeaming(FlagGameAPI api, TeamType... teams) {
         this.api = api;
         this.teamTypes = new HashSet<>(Arrays.asList(teams));
     }
-    
+
     @Override
     public Optional<TeamType> join(GamePlayer player) throws FlagGameException {
         players.add(player);

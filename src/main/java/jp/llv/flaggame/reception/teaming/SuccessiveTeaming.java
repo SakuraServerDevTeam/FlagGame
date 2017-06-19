@@ -28,10 +28,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import jp.llv.flaggame.api.FlagGameAPI;
+import jp.llv.flaggame.api.player.GamePlayer;
 import jp.llv.flaggame.api.reception.Teaming;
 import jp.llv.flaggame.reception.TeamType;
-import syam.flaggame.exception.InvalidTeamException;
-import syam.flaggame.player.GamePlayer;
+import jp.llv.flaggame.api.exception.InvalidTeamException;
 
 /**
  *
@@ -41,7 +41,7 @@ public class SuccessiveTeaming implements Teaming {
 
     private final Map<TeamType, Set<GamePlayer>> players = new HashMap<>();
 
-    public SuccessiveTeaming(FlagGameAPI api, TeamType ... teams) {
+    public SuccessiveTeaming(FlagGameAPI api, TeamType... teams) {
         for (TeamType team : teams) {
             Objects.requireNonNull(team);
             players.put(team, new HashSet<>());
@@ -50,7 +50,7 @@ public class SuccessiveTeaming implements Teaming {
             throw new IllegalArgumentException();
         }
     }
-    
+
     @Override
     public Optional<TeamType> join(GamePlayer player) {
         //人数でチームをマッピング
@@ -90,5 +90,5 @@ public class SuccessiveTeaming implements Teaming {
     public int size() {
         return this.players.values().stream().mapToInt(Set::size).sum();
     }
-    
+
 }

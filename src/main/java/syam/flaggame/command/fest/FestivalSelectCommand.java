@@ -23,11 +23,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.BaseCommand;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.exception.FlagGameException;
+import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.api.exception.FlagGameException;
 import syam.flaggame.permission.Perms;
-import syam.flaggame.player.GamePlayer;
-import syam.flaggame.player.SetupSession;
+import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.player.StageSetupSession;
 import syam.flaggame.util.Actions;
 
 /**
@@ -35,30 +35,30 @@ import syam.flaggame.util.Actions;
  * @author SakuraServerDev
  */
 public class FestivalSelectCommand extends BaseCommand {
-    
+
     public FestivalSelectCommand(FlagGameAPI api) {
         super(
                 api,
                 true,
-                0, 
-                "[festival] <- select an existing festival", 
+                0,
+                "[festival] <- select an existing festival",
                 Perms.FESTIVAL_SELECT,
                 FlagTabCompleter.builder()
                 .forArg(1).suggestList((p, s, a) -> p.getFestivals().getFestivals().keySet())
                 .create(),
-                "select", 
+                "select",
                 "sel"
         );
     }
-    
+
     @Override
     public void execute(List<String> args, CommandSender sender, Player player) throws FlagGameException {
         GamePlayer gPlayer = api.getPlayers().getPlayer(player);
         if (args.size() >= 1) {
             FestivalSchedule festival = api.getFestivals().getFestival(args.get(0))
                     .orElseThrow(() -> new CommandException("&フェス'" + args.get(0) + "'が見つかりません！"));
-            
-            if (gPlayer.getSetupSession().map(SetupSession::getSelected).orElse(null) != festival) {
+
+            if (gPlayer.getSetupSession().map(StageSetupSession::getSelected).orElse(null) != festival) {
                 gPlayer.createSetupSession(festival);
             }
 
@@ -69,5 +69,5 @@ public class FestivalSelectCommand extends BaseCommand {
             Actions.message(player, "&aフェスの選択を解除しました！");
         }
     }
-    
+
 }

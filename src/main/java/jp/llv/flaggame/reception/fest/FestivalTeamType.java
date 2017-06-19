@@ -24,7 +24,7 @@ import jp.llv.flaggame.reception.TeamType;
  * @author SakuraServerDev
  */
 public class FestivalTeamType implements TeamType {
-    
+
     private final String name;
     private final TeamColor color;
 
@@ -42,5 +42,5 @@ public class FestivalTeamType implements TeamType {
     public TeamColor toColor() {
         return color;
     }
-    
+
 }

@@ -20,8 +20,8 @@ import java.util.List;
 import jp.llv.flaggame.api.FlagGameAPI;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.exception.FlagGameException;
+import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.api.exception.FlagGameException;
 
 /**
  * ConfirmCommand (ConfirmCommand.java)
@@ -47,5 +47,5 @@ public class ConfirmCommand extends BaseCommand {
             throw new CommandException("&cあなたの実行待ちコマンドはありません！");
         }
     }
-    
+
 }

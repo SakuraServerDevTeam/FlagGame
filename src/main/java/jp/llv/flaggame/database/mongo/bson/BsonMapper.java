@@ -33,7 +33,7 @@ import org.bson.BsonString;
  * @author SakuraServerDev
  */
 public final class BsonMapper {
-    
+
     private BsonMapper() {
         throw new UnsupportedOperationException();
     }
@@ -41,11 +41,11 @@ public final class BsonMapper {
     static void writeString(BsonDocument bson, String key, String value) {
         bson.append(key, new BsonString(value));
     }
-    
+
     static String readString(BsonDocument bson, String key) {
         return bson.getString(key).getValue();
     }
-    
+
     static <E extends Enum<E>> void writeEnum(BsonDocument bson, String key, E value) {
         if (value == null) {
             return;
@@ -112,5 +112,5 @@ public final class BsonMapper {
         }
         return result;
     }
-    
+
 }

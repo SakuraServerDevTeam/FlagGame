@@ -17,12 +17,11 @@
 package syam.flaggame.command.area;
 
 import java.util.List;
-import java.util.logging.Level;
-import jp.llv.flaggame.rollback.StageDataType;
+import jp.llv.flaggame.api.stage.rollback.StageDataType;
 import org.bukkit.entity.Player;
 import jp.llv.flaggame.api.FlagGameAPI;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.game.Stage;
+import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.api.stage.Stage;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.util.Actions;
 import syam.flaggame.util.Cuboid;

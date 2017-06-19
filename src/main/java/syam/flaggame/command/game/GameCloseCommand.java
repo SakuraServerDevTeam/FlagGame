@@ -22,11 +22,11 @@ import jp.llv.flaggame.api.FlagGameAPI;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.command.BaseCommand;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.game.Stage;
+import jp.llv.flaggame.api.exception.CommandException;
 import syam.flaggame.permission.Perms;
-import syam.flaggame.player.GamePlayer;
+import jp.llv.flaggame.api.player.GamePlayer;
 import jp.llv.flaggame.api.reception.Reception;
+import jp.llv.flaggame.api.stage.Stage;
 
 /**
  *
@@ -51,19 +51,19 @@ public class GameCloseCommand extends BaseCommand {
         try {
             UUID uuid = UUID.fromString(args.get(0));
             reception = api.getReceptions().getReception(uuid).orElse(null);
-        } catch(IllegalArgumentException ex) {
+        } catch (IllegalArgumentException ex) {
         }
         if (reception == null) {
             reception = api.getStages().getStage(args.get(0)).flatMap(Stage::getReception)
                     .orElseThrow(() -> new CommandException("&c受付'" + args.get(0) + "'が見つかりません！"));
         }
         GamePlayer gPlayer = this.api.getPlayers().getPlayer(player);
-        
-        if (reception.getState()==Reception.State.CLOSED) {
+
+        if (reception.getState() == Reception.State.CLOSED) {
             throw new CommandException("&cその受付は既に破棄されています!");
         }
-        reception.close(args.size() < 2 ? sender.getName()+"Closed":args.get(1));
+        reception.close(args.size() < 2 ? sender.getName() + "Closed" : args.get(1));
         gPlayer.sendMessage("&a成功しました!");
     }
-    
+
 }

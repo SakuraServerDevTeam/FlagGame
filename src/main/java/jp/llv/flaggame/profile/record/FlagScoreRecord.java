@@ -16,6 +16,7 @@
  */
 package jp.llv.flaggame.profile.record;
 
+import jp.llv.flaggame.api.profile.RecordType;
 import java.util.UUID;
 import org.bson.Document;
 import org.bukkit.Location;
@@ -40,7 +41,7 @@ public class FlagScoreRecord extends ScoreRecord {
         super(game, player, score);
     }
 
-    /*package*/ FlagScoreRecord(Document base) {
+    public FlagScoreRecord(Document base) {
         super(base);
     }
 
@@ -58,5 +59,5 @@ public class FlagScoreRecord extends ScoreRecord {
     public double getExpWeight(FlagConfig config) {
         return getScore() * config.getScoreFlagLastPlace();
     }
-    
+
 }

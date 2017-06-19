@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import syam.flaggame.exception.InvalidOptionException;
+import jp.llv.flaggame.api.exception.InvalidOptionException;
 
 /**
  * Command line unordered optional arguments handler.
@@ -50,8 +50,8 @@ public class OptionSet {
             options.put(key, value);
         }
     }
-    
-    public OptionSet(String ... args) throws InvalidOptionException {
+
+    public OptionSet(String... args) throws InvalidOptionException {
         this(Arrays.asList(args));
     }
 
@@ -66,63 +66,63 @@ public class OptionSet {
             throw new InvalidOptionException("missing value");
         }
     }
-    
+
     public byte getByte(String key, byte value) throws InvalidOptionException {
         return getMappedValue(key, value, Byte::parseByte);
     }
-    
+
     public byte getByte(String key) throws InvalidOptionException {
         return getMappedValue(key, Byte::parseByte);
     }
-    
+
     public short getShort(String key, short value) throws InvalidOptionException {
         return getMappedValue(key, value, Short::parseShort);
     }
-    
+
     public short getShort(String key) throws InvalidOptionException {
         return getMappedValue(key, Short::parseShort);
     }
-    
+
     public int getInt(String key, int value) throws InvalidOptionException {
         return getMappedValue(key, value, Integer::parseInt);
     }
-    
+
     public int getInt(String key) throws InvalidOptionException {
         return getMappedValue(key, Integer::parseInt);
     }
-    
+
     public long getLong(String key, long value) throws InvalidOptionException {
         return getMappedValue(key, value, Long::parseLong);
     }
-    
+
     public long getLong(String key) throws InvalidOptionException {
         return getMappedValue(key, Long::parseLong);
     }
-    
+
     public float getFloat(String key, float value) throws InvalidOptionException {
         return getMappedValue(key, value, Float::parseFloat);
     }
-    
+
     public float getFloat(String key) throws InvalidOptionException {
         return getMappedValue(key, Float::parseFloat);
     }
-    
+
     public double getDouble(String key, double value) throws InvalidOptionException {
         return getMappedValue(key, value, Double::parseDouble);
     }
-    
+
     public double getDouble(String key) throws InvalidOptionException {
         return getMappedValue(key, Double::parseDouble);
     }
-    
+
     public <E extends Enum<E>> E getEnum(String key, E value) throws InvalidOptionException {
         return getMappedValue(key, value, v -> Enum.valueOf(value.getDeclaringClass(), v));
     }
-    
+
     public <E extends Enum<E>> E getEnum(String key, Class<E> clazz) throws InvalidOptionException {
         return getMappedValue(key, v -> Enum.valueOf(clazz, v));
     }
-    
+
     public boolean isPresent(String key) {
         return options.containsKey(key);
     }

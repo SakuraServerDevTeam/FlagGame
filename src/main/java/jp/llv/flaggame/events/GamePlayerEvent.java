@@ -16,15 +16,15 @@
  */
 package jp.llv.flaggame.events;
 
+import jp.llv.flaggame.api.player.GamePlayer;
 import org.bukkit.event.Event;
-import syam.flaggame.player.GamePlayer;
 
 /**
  *
  * @author Toyblocks
  */
 public abstract class GamePlayerEvent extends Event {
-    
+
     private final GamePlayer player;
 
     public GamePlayerEvent(GamePlayer player) {
@@ -34,5 +34,5 @@ public abstract class GamePlayerEvent extends Event {
     public GamePlayer getPlayer() {
         return player;
     }
-    
+
 }

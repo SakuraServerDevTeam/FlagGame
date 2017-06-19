@@ -47,7 +47,7 @@ public final class MapUtils {
         }
         return result;
     }
-    
+
     public static <K, V> void removeValue(Map<? extends K, ? extends V> map, V value) {
         for (K key : getKeyByValue(map, value)) {
             map.remove(key, value);

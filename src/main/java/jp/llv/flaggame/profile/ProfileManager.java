@@ -16,13 +16,15 @@
  */
 package jp.llv.flaggame.profile;
 
+import jp.llv.flaggame.api.profile.ProfileAPI;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.logging.Level;
 import jp.llv.flaggame.api.FlagGameAPI;
+import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.stage.Stage;
 import jp.llv.flaggame.database.DatabaseException;
 import jp.llv.flaggame.events.GamePlayerUnloadEvent;
 import org.bukkit.entity.Player;
@@ -30,20 +32,17 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import syam.flaggame.FlagGame;
 import jp.llv.flaggame.util.OnelineBuilder;
-import syam.flaggame.game.Stage;
-import syam.flaggame.player.GamePlayer;
 
 /**
  *
  * @author SakuraServerDev
  */
-public class ProfileManager implements Listener {
+public class ProfileManager implements Listener, ProfileAPI {
 
     private final FlagGameAPI api;
-    private final Map<UUID, PlayerProfile> playerProfiles = Collections.synchronizedMap(new HashMap<>());
-    private final Map<String, StageProfile> stageProfiles = Collections.synchronizedMap(new HashMap<>());
+    private final Map<UUID, CachedPlayerProfile> playerProfiles = Collections.synchronizedMap(new HashMap<>());
+    private final Map<String, CachedStageProfile> stageProfiles = Collections.synchronizedMap(new HashMap<>());
 
     public ProfileManager(FlagGameAPI api) {
         this.api = api;
@@ -51,33 +50,36 @@ public class ProfileManager implements Listener {
         api.getServer().getOnlinePlayers().forEach(p -> getProfile(p.getUniqueId()));
     }
 
-    public PlayerProfile getProfile(UUID uuid) {
+    @Override
+    public CachedPlayerProfile getProfile(UUID uuid) {
         Objects.requireNonNull(uuid);
-        PlayerProfile profile = playerProfiles.get(uuid);
+        CachedPlayerProfile profile = playerProfiles.get(uuid);
         if (profile == null) {
-            playerProfiles.put(uuid, profile = new PlayerProfile());
+            playerProfiles.put(uuid, profile = new CachedPlayerProfile());
         }
         return profile;
     }
 
-    public StageProfile getProfile(String name) {
+    @Override
+    public CachedStageProfile getProfile(String name) {
         Objects.requireNonNull(name);
-        StageProfile profile = stageProfiles.get(name);
+        CachedStageProfile profile = stageProfiles.get(name);
         if (profile == null) {
-            stageProfiles.put(name, profile = new StageProfile());
+            stageProfiles.put(name, profile = new CachedStageProfile());
         }
         return profile;
     }
 
+    @Override
     public void loadPlayerProfile(UUID uuid, boolean notifyLevelUp) {
         api.getDatabase().ifPresent(database -> {
-            PlayerProfile profile;
+            CachedPlayerProfile profile;
             int oldLevel;
             if (playerProfiles.containsKey(uuid)) {
                 profile = playerProfiles.get(uuid);
                 oldLevel = notifyLevelUp ? profile.getLevel().orElse(Integer.MAX_VALUE) : Integer.MAX_VALUE;
             } else {
-                playerProfiles.put(uuid, profile = new PlayerProfile());
+                playerProfiles.put(uuid, profile = new CachedPlayerProfile());
                 oldLevel = Integer.MAX_VALUE;
             }
             database.loadPlayerStat(uuid, result -> {
@@ -117,18 +119,20 @@ public class ProfileManager implements Listener {
         });
     }
 
+    @Override
     public void loadPlayerProfiles(Iterable<GamePlayer> players, boolean notifyLevelUp) {
         for (GamePlayer player : players) {
             loadPlayerProfile(player.getUUID(), notifyLevelUp);
         }
     }
 
+    @Override
     public void loadStageProfile(String stage) {
         api.getDatabase().ifPresent(database -> {
             if (!stageProfiles.containsKey(stage)) {
-                stageProfiles.put(stage, new StageProfile());
+                stageProfiles.put(stage, new CachedStageProfile());
             }
-            StageProfile profile = stageProfiles.get(stage);
+            CachedStageProfile profile = stageProfiles.get(stage);
             database.loadStageStat(stage, result -> {
                 profile.setStat(result.get().getKey(), result.get().getValue());
             }, result -> {
@@ -140,7 +144,8 @@ public class ProfileManager implements Listener {
             });
         });
     }
-    
+
+    @Override
     public void loadStageProfile(Stage stage) {
         loadStageProfile(stage.getName());
     }

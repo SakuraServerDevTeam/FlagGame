@@ -16,6 +16,7 @@
  */
 package jp.llv.flaggame.profile.record;
 
+import jp.llv.flaggame.api.profile.RecordType;
 import java.util.UUID;
 import org.bson.Document;
 import org.bukkit.entity.Player;
@@ -29,7 +30,7 @@ public class PlayerKillRecord extends ScoreRecord {
 
     private static final String FIELD_KILLED = "killed";
     private static final String FIELD_WEAPON = "weapon";
-    
+
     public PlayerKillRecord(UUID game, double x, double y, double z, UUID player, double score, UUID killed, String weapon) {
         super(game, x, y, z, player, score);
         super.put(FIELD_WEAPON, weapon);
@@ -42,14 +43,14 @@ public class PlayerKillRecord extends ScoreRecord {
         super.put(FIELD_KILLED, killed);
     }
 
-    /*package*/ PlayerKillRecord(Document base) {
+    public PlayerKillRecord(Document base) {
         super(base);
     }
-    
+
     public String getWeapon() {
         return super.getString(FIELD_WEAPON);
     }
-    
+
     public UUID getKilled() {
         return super.get(FIELD_KILLED, UUID.class);
     }

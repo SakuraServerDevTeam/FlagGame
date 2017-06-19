@@ -18,7 +18,7 @@ package jp.llv.flaggame.game.basic;
 
 import java.util.Collection;
 import jp.llv.flaggame.api.FlagGameAPI;
-import jp.llv.flaggame.game.permission.GamePermission;
+import jp.llv.flaggame.api.stage.permission.GamePermission;
 import jp.llv.flaggame.profile.record.LoginRecord;
 import jp.llv.flaggame.profile.record.PlayerLeaveRecord;
 import org.bukkit.Location;
@@ -36,14 +36,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Openable;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import syam.flaggame.FlagGame;
 import jp.llv.flaggame.reception.TeamType;
 import org.bukkit.block.BlockState;
 import org.bukkit.event.EventHandler;
-import syam.flaggame.player.GamePlayer;
+import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.stage.area.StageAreaSet;
 import syam.flaggame.util.Actions;
 import org.bukkit.event.player.PlayerJoinEvent;
-import syam.flaggame.game.AreaSet;
 
 /**
  *
@@ -70,11 +69,11 @@ public class BGPlayerListener extends BGListener {
 
         Block block = event.getClickedBlock();
         BlockState state = block.getState();
-        AreaSet area = game.getStage().getAreas();
+        StageAreaSet area = game.getStage().getAreas();
         TeamType color = gplayer.getTeam().get().getType();
         Location loc = block.getLocation();
         if ((state instanceof InventoryHolder && !area.getAreaInfo(loc, a -> a.getPermission(GamePermission.CONTAINER).getState(color)))
-                || (state.getData() instanceof Openable && !area.getAreaInfo(loc, a -> a.getPermission(GamePermission.DOOR).getState(color)))) {
+            || (state.getData() instanceof Openable && !area.getAreaInfo(loc, a -> a.getPermission(GamePermission.DOOR).getState(color)))) {
             gplayer.sendMessage("&cあなたのチームはこのブロックにアクセスできません!");
             event.setCancelled(true);
             event.setUseInteractedBlock(Event.Result.DENY);

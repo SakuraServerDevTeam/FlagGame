@@ -18,17 +18,16 @@ package jp.llv.flaggame.api.reception;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import jp.llv.flaggame.game.Game;
+import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.game.Game;
 import jp.llv.flaggame.profile.RecordStream;
 import jp.llv.flaggame.api.session.Reserver;
 import jp.llv.flaggame.util.OptionSet;
-import syam.flaggame.exception.FlagGameException;
-import syam.flaggame.game.Stage;
-import syam.flaggame.player.GamePlayer;
+import jp.llv.flaggame.api.exception.FlagGameException;
+import jp.llv.flaggame.api.stage.Stage;
 
 /**
  *
@@ -49,15 +48,15 @@ public interface Reception extends Reserver, Iterable<GamePlayer> {
     }
 
     void start(OptionSet options) throws FlagGameException;
-    
+
     Optional<? extends Game> getGame(GamePlayer player);
-    
+
     Collection<? extends Game> getGames();
 
     default Optional<Stage> getStage(GamePlayer player) {
         return this.getGame(player).map(Game::getStage);
     }
-    
+
     default Collection<Stage> getStages() {
         return getGames().stream().map(g -> g.getStage()).collect(Collectors.toSet());
     }
@@ -87,8 +86,7 @@ public interface Reception extends Reserver, Iterable<GamePlayer> {
         STARTING(Game.State.PREPARATION),
         STARTED(Game.State.STARTED),
         FINISHED(Game.State.FINISHED),
-        CLOSED(Game.State.FINISHED),
-        ;
+        CLOSED(Game.State.FINISHED),;
 
         private final Game.State state;
 

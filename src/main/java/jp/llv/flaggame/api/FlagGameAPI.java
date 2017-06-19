@@ -17,18 +17,18 @@
 package jp.llv.flaggame.api;
 
 import java.util.Optional;
+import jp.llv.flaggame.api.game.GameAPI;
+import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.player.PlayerAPI;
+import jp.llv.flaggame.api.profile.ProfileAPI;
 import jp.llv.flaggame.api.reception.ReceptionAPI;
+import jp.llv.flaggame.api.stage.StageAPI;
 import jp.llv.flaggame.database.Database;
-import jp.llv.flaggame.game.GameManager;
-import jp.llv.flaggame.profile.ProfileManager;
-import jp.llv.flaggame.reception.ReceptionManager;
 import jp.llv.flaggame.reception.fest.FestivalManager;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.slf4j.Logger;
 import syam.flaggame.FlagConfig;
-import syam.flaggame.game.StageManager;
-import syam.flaggame.player.PlayerManager;
 import syam.flaggame.queue.ConfirmQueue;
 
 /**
@@ -40,18 +40,18 @@ public interface FlagGameAPI {
     default Server getServer() {
         return getPlugin().getServer();
     }
-    
+
     FlagGameRegistry getRegistry();
 
-    PlayerManager getPlayers();
+    PlayerAPI<? extends GamePlayer> getPlayers();
 
-    ProfileManager getProfiles();
+    ProfileAPI getProfiles();
 
     ReceptionAPI getReceptions();
 
-    GameManager getGames();
+    GameAPI getGames();
 
-    StageManager getStages();
+    StageAPI getStages();
 
     FestivalManager getFestivals();
 
@@ -62,11 +62,11 @@ public interface FlagGameAPI {
     default World getGameWorld() {
         return getServer().getWorld(getConfig().getGameWorld());
     }
-    
+
     ConfirmQueue getConfirmQueue();
-    
+
     Logger getLogger();
-    
+
     FlagGamePlugin getPlugin();
 
 }

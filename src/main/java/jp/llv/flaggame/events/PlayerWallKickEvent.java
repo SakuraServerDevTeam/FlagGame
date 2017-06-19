@@ -31,7 +31,7 @@ public class PlayerWallKickEvent extends PlayerEvent implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();
     private boolean cancelled = false;
-    
+
     private final Block wall;
     private final Vector velocity;
 
@@ -58,14 +58,14 @@ public class PlayerWallKickEvent extends PlayerEvent implements Cancellable {
     public void setCancelled(boolean cancel) {
         cancelled = cancel;
     }
-    
+
     @Override
     public HandlerList getHandlers() {
         return handlers;
     }
-    
+
     public static HandlerList getHandlerList() {
         return handlers;
     }
-    
+
 }

@@ -16,8 +16,8 @@
  */
 package jp.llv.flaggame.events;
 
+import jp.llv.flaggame.api.player.GamePlayer;
 import org.bukkit.event.HandlerList;
-import syam.flaggame.player.GamePlayer;
 
 /**
  *
@@ -26,7 +26,7 @@ import syam.flaggame.player.GamePlayer;
 public class GamePlayerUnloadEvent extends GamePlayerEvent {
 
     private static final HandlerList handlers = new HandlerList();
-    
+
     public GamePlayerUnloadEvent(GamePlayer player) {
         super(player);
     }
@@ -35,9 +35,9 @@ public class GamePlayerUnloadEvent extends GamePlayerEvent {
     public HandlerList getHandlers() {
         return handlers;
     }
-    
+
     public static HandlerList getHandlerList() {
         return handlers;
     }
-    
+
 }

@@ -24,7 +24,7 @@ import jp.llv.flaggame.api.reception.Reception;
  * @author Toyblocks
  */
 public class ReceptionClosedEvent extends ReceptionEvent {
-    
+
     private static final HandlerList handlers = new HandlerList();
 
     private final String cause;
@@ -37,14 +37,14 @@ public class ReceptionClosedEvent extends ReceptionEvent {
     public String getCause() {
         return cause;
     }
-    
+
     @Override
     public HandlerList getHandlers() {
         return handlers;
     }
-    
+
     public static HandlerList getHandlerList() {
         return handlers;
     }
-    
+
 }

@@ -29,7 +29,7 @@ import jp.llv.flaggame.api.reception.Reception;
 import jp.llv.flaggame.api.reception.Teaming;
 import jp.llv.flaggame.api.session.Reservable;
 import jp.llv.flaggame.database.DatabaseException;
-import jp.llv.flaggame.game.Game;
+import jp.llv.flaggame.api.game.Game;
 import jp.llv.flaggame.game.basic.BasicGame;
 import jp.llv.flaggame.profile.GameRecordStream;
 import jp.llv.flaggame.profile.RecordStream;
@@ -39,7 +39,7 @@ import jp.llv.flaggame.profile.record.PlayerTeamRecord;
 import jp.llv.flaggame.profile.record.PlayerWinRecord;
 import jp.llv.flaggame.profile.record.ReceptionCloseRecord;
 import jp.llv.flaggame.profile.record.ReceptionOpenRecord;
-import jp.llv.flaggame.rollback.SerializeTask;
+import jp.llv.flaggame.api.stage.rollback.SerializeTask;
 import jp.llv.flaggame.util.ConvertUtils;
 import jp.llv.flaggame.util.OptionSet;
 import net.md_5.bungee.api.ChatColor;
@@ -47,12 +47,13 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.exception.FlagGameException;
-import syam.flaggame.exception.InvalidOptionException;
-import syam.flaggame.game.Stage;
+import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.api.exception.FlagGameException;
+import jp.llv.flaggame.api.exception.InvalidOptionException;
+import jp.llv.flaggame.stage.BasicStage;
 import syam.flaggame.permission.Perms;
-import syam.flaggame.player.GamePlayer;
+import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.stage.Stage;
 import syam.flaggame.util.Actions;
 
 /**
@@ -85,20 +86,20 @@ public class BasicGameReception implements Reception {
         if (this.getState() != State.READY) {
             throw new CommandException("&cこの募集は既に開始されました!");
         }
-        
+
         try {
             this.stage = api.getStages().getRandomAvailableStage(options);
         } catch (InvalidOptionException ex) {
             throw new CommandException("&c無効なオプションが設定されています！", ex);
         }
 
-        TeamType[] teams = stage.getSpawns().keySet().toArray(new TeamType[stage.getSpawns().size()]);
+        TeamType[] teams = stage.getSpawns().keySet().toArray(new TeamColor[stage.getSpawns().size()]);
         if (options.isPresent("t")) {
             teaming = api.getRegistry().getTeaming(options.getString("t")).apply(api, teams);
         } else {
             teaming = api.getRegistry().getDefaultTeaming().apply(api, teams);
         }
-        
+
         this.reservation = stage.reserve(this);
 
         initialTask = stage.getInitialTask(api.getPlugin(), ex -> {

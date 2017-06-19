@@ -21,12 +21,12 @@ import jp.llv.flaggame.api.FlagGameAPI;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.command.BaseCommand;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.exception.FlagGameException;
-import syam.flaggame.game.Stage;
+import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.api.exception.FlagGameException;
+import jp.llv.flaggame.api.stage.Stage;
 import syam.flaggame.permission.Perms;
-import syam.flaggame.player.GamePlayer;
-import syam.flaggame.player.SetupSession;
+import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.player.StageSetupSession;
 import syam.flaggame.util.Actions;
 import syam.flaggame.util.Cuboid;
 import syam.flaggame.util.WorldEditHandler;
@@ -43,7 +43,7 @@ public class StageSelectCommand extends BaseCommand {
                 "select",
                 "sel"
         );
-    
+
     }
 
     @Override
@@ -52,9 +52,9 @@ public class StageSelectCommand extends BaseCommand {
         if (args.size() >= 1) {
             Stage stage = this.api.getStages().getStage(args.get(0))
                     .orElseThrow(() -> new CommandException("&cステージ'" + args.get(0) + "'が見つかりません！"));
-            
+
             // 既に選択中のステージと同じステージでない限りはセッションを作成
-            if (gPlayer.getSetupSession().map(SetupSession::getSelected).orElse(null) != stage) {
+            if (gPlayer.getSetupSession().map(StageSetupSession::getSelected).orElse(null) != stage) {
                 gPlayer.createSetupSession(stage);
             }
 

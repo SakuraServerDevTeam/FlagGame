@@ -16,8 +16,8 @@
  */
 package jp.llv.flaggame.events;
 
+import jp.llv.flaggame.api.player.GamePlayer;
 import org.bukkit.event.HandlerList;
-import syam.flaggame.player.GamePlayer;
 import jp.llv.flaggame.api.reception.Reception;
 
 /**
@@ -27,7 +27,7 @@ import jp.llv.flaggame.api.reception.Reception;
 public class ReceptionLeftEvent extends GamePlayerEvent {
 
     private static final HandlerList handlers = new HandlerList();
-    
+
     private final Reception reception;
 
     public ReceptionLeftEvent(GamePlayer player, Reception reception) {
@@ -38,14 +38,14 @@ public class ReceptionLeftEvent extends GamePlayerEvent {
     public Reception getReception() {
         return reception;
     }
-    
+
     @Override
     public HandlerList getHandlers() {
         return handlers;
     }
-    
+
     public static HandlerList getHandlerList() {
         return handlers;
     }
-    
+
 }

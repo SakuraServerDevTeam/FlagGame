@@ -21,17 +21,18 @@ import java.util.List;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.exception.FlagGameException;
+import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.api.exception.FlagGameException;
 
 import syam.flaggame.util.Actions;
 
 /**
  * QueuedCommand (QueuedCommand.java)
- * 
+ *
  * @author syam(syamn)
  */
 public class QueuedCommand {
+
     private final CommandSender sender;
     private final Queueable queueable;
     private final List<String> args;

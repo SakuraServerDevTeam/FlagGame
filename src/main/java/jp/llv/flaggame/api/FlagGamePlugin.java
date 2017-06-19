@@ -23,7 +23,7 @@ import org.bukkit.plugin.Plugin;
  * @author toyblocks
  */
 public interface FlagGamePlugin extends Plugin {
-    
+
     FlagGameAPI getAPI();
-    
+
 }

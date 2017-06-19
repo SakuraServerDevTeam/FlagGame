@@ -21,9 +21,9 @@ import org.bukkit.entity.Player;
 import jp.llv.flaggame.util.ConvertUtils;
 import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.area.AreaCommand;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.game.AreaInfo;
-import syam.flaggame.game.Stage;
+import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.api.stage.Stage;
+import jp.llv.flaggame.api.stage.area.StageAreaInfo;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.util.Actions;
 
@@ -46,22 +46,22 @@ public class AreaDataTimingCommand extends AreaCommand {
     @Override
     public void execute(List<String> args, Player player, Stage stage) throws CommandException {
         String id = args.get(0);
-        AreaInfo info = stage.getAreas().getAreaInfo(id);
+        StageAreaInfo info = stage.getAreas().getAreaInfo(id);
         if (info == null) {
             throw new CommandException("&cその名前のエリアは存在しません！");
         }
 
         String savename = args.get(1);
-        AreaInfo.RollbackData data = info.getRollback(savename);
+        StageAreaInfo.StageRollbackData data = info.getRollback(savename);
         if (data == null) {
             throw new CommandException("&cその名前のロールバックデータは存在しません！");
         }
         if (args.size() == 2) {
             sendMessage(player, "&aステージ'&6" + stage.getName()
-                        + "&a'のエリア'&6" + id
-                        + "&a'でのロールバック'&6" + savename
-                        + "&a'は開始後'" + Actions.getTimeString(data.getTiming())
-                        + "&a'です！"
+                                + "&a'のエリア'&6" + id
+                                + "&a'でのロールバック'&6" + savename
+                                + "&a'は開始後'" + Actions.getTimeString(data.getTiming())
+                                + "&a'です！"
             );
         } else {
             long timing;
@@ -75,10 +75,10 @@ public class AreaDataTimingCommand extends AreaCommand {
             }
             data.setTiming(timing);
             sendMessage(player, "&aステージ'&6" + stage.getName()
-                        + "&a'のエリア'&6" + id
-                        + "&a'でのロールバック'&6" + savename
-                        + "&a'を開始後'" + Actions.getTimeString(timing)
-                        + "&a'にスケジュールしました！"
+                                + "&a'のエリア'&6" + id
+                                + "&a'でのロールバック'&6" + savename
+                                + "&a'を開始後'" + Actions.getTimeString(timing)
+                                + "&a'にスケジュールしました！"
             );
         }
     }

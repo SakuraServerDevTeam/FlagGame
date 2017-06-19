@@ -27,7 +27,7 @@ import java.util.Optional;
  * @author SakuraServerDev
  */
 public class FestivalManager implements Iterable<FestivalSchedule> {
-    
+
     private final Map<String, FestivalSchedule> schedules = new HashMap<>();
 
     public Map<String, FestivalSchedule> getFestivals() {
@@ -51,5 +51,4 @@ public class FestivalManager implements Iterable<FestivalSchedule> {
         return this.getFestivals().values().iterator();
     }
 
-    
 }

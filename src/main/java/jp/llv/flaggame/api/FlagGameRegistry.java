@@ -22,25 +22,25 @@ import jp.llv.flaggame.api.reception.Reception;
 import jp.llv.flaggame.api.reception.Teaming;
 import jp.llv.flaggame.reception.TeamType;
 import jp.llv.flaggame.util.function.ThrowingBiFunction;
-import syam.flaggame.exception.FlagGameException;
-import syam.flaggame.exception.NotRegisteredException;
+import jp.llv.flaggame.api.exception.FlagGameException;
+import jp.llv.flaggame.api.exception.NotRegisteredException;
 
 /**
  *
  * @author toyblocks
  */
 public interface FlagGameRegistry {
-    
+
     void registerReception(String key, ThrowingBiFunction<? super FlagGameAPI, ? super UUID, ? extends Reception, FlagGameException> factory);
-    
+
     void registerTeaming(String key, ThrowingBiFunction<? super FlagGameAPI, ? super TeamType[], ? extends Teaming, FlagGameException> factory);
-    
+
     Collection<String> getReceptions();
-    
+
     Collection<String> getTeamings();
-    
+
     ThrowingBiFunction<? super FlagGameAPI, ? super UUID, ? extends Reception, FlagGameException> getReception(String key) throws NotRegisteredException;
-    
+
     default ThrowingBiFunction<? super FlagGameAPI, ? super UUID, ? extends Reception, FlagGameException> getDefaultReception() {
         try {
             return getReception(null);
@@ -48,9 +48,9 @@ public interface FlagGameRegistry {
             return null;
         }
     }
-    
+
     ThrowingBiFunction<? super FlagGameAPI, ? super TeamType[], ? extends Teaming, FlagGameException> getTeaming(String key) throws NotRegisteredException;
-    
+
     default ThrowingBiFunction<? super FlagGameAPI, ? super TeamType[], ? extends Teaming, FlagGameException> getDefaultTeaming() {
         try {
             return getTeaming(null);
@@ -58,5 +58,5 @@ public interface FlagGameRegistry {
             return null;
         }
     }
-    
+
 }

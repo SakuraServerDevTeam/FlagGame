@@ -48,17 +48,17 @@ public class FestivalMatch {
         Objects.requireNonNull(name);
         this.stage = name;
     }
-    
+
     public void setColorMap(TeamColor team, TeamColor stage) {
         Objects.requireNonNull(team);
         Objects.requireNonNull(stage);
         colorMapping.put(team, stage);
     }
-    
+
     public void setColorMapping(Map<TeamColor, TeamColor> mapping) {
         for (Map.Entry<TeamColor, TeamColor> entry : mapping.entrySet()) {
             setColorMap(entry.getKey(), entry.getValue());
         }
     }
-    
+
 }

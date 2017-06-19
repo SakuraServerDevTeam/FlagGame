@@ -16,19 +16,19 @@
  */
 package syam.flaggame.event;
 
+import jp.llv.flaggame.api.stage.Stage;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import syam.flaggame.game.Stage;
-
 /**
  * StageCreateEvent (StageCreateEvent.java)
- * 
+ *
  * @author syam(syamn)
  */
 public class StageCreateEvent extends Event implements Cancellable {
+
     private static final HandlerList handlers = new HandlerList();
     private boolean isCancelled = false;
 
@@ -49,7 +49,9 @@ public class StageCreateEvent extends Event implements Cancellable {
     }
 
     public String getStageName() {
-        if (this.stage == null) return null;
+        if (this.stage == null) {
+            return null;
+        }
         return this.stage.getName();
     }
 

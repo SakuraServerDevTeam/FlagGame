@@ -63,5 +63,5 @@ public class HelpCommand extends BaseCommand {
         }
         Actions.message(sender, "&c===================================");
     }
-    
+
 }

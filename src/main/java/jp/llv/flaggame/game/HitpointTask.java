@@ -16,14 +16,15 @@
  */
 package jp.llv.flaggame.game;
 
-import jp.llv.flaggame.game.permission.GamePermission;
+import jp.llv.flaggame.api.game.Game;
+import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.stage.area.StageAreaSet;
+import jp.llv.flaggame.api.stage.permission.GamePermission;
 import jp.llv.flaggame.reception.TeamType;
 import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import syam.flaggame.game.AreaSet;
-import syam.flaggame.player.GamePlayer;
 
 /**
  *
@@ -36,10 +37,10 @@ public class HitpointTask extends BukkitRunnable {
     public HitpointTask(Game game) {
         this.game = game;
     }
-    
+
     @Override
     public void run() {
-        AreaSet areas = game.getStage().getAreas();
+        StageAreaSet areas = game.getStage().getAreas();
         for (GamePlayer gplayer : game) {
             if (!gplayer.isOnline()) {
                 continue;
@@ -57,5 +58,5 @@ public class HitpointTask extends BukkitRunnable {
             }
         }
     }
-    
+
 }

@@ -34,7 +34,7 @@ public class ReloadCommand extends BaseCommand {
                 Perms.RELOAD,
                 "reload"
         );
-    
+
     }
 
     @Override
@@ -48,5 +48,5 @@ public class ReloadCommand extends BaseCommand {
 
         Actions.message(sender, "&aConfiguration reloaded!");
     }
-    
+
 }

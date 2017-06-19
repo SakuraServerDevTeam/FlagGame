@@ -55,10 +55,10 @@ public class FlagConfig {
     private boolean isProtected = true;
     private boolean isDebug = false;
     private boolean useDynmap = false;
-    
+
     private double wallKickPowerXZ = 0.75;
     private double wallKickPowerY = 0.6;
-    
+
     /* Games Configs */
     private int startCountdownInSec = 10;
     private boolean useFlagEffects = true;
@@ -117,7 +117,7 @@ public class FlagConfig {
         checkver(plugin.getConfig().getDouble("Version", VERSION));
 
         FileConfiguration config = plugin.getConfig();
-        
+
         /* Basic Configs */
         toolID = plugin.getConfig().getInt("ToolID", 269);
         gameWorld = plugin.getConfig().getString("WorldName", DEFAULT_WORLD_NAME);

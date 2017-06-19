@@ -21,9 +21,9 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 import jp.llv.flaggame.api.FlagGameAPI;
-import syam.flaggame.game.objective.BannerSpawner;
-import syam.flaggame.game.objective.Flag;
-import jp.llv.flaggame.game.permission.GamePermission;
+import jp.llv.flaggame.api.stage.objective.BannerSpawner;
+import jp.llv.flaggame.api.stage.objective.Flag;
+import jp.llv.flaggame.api.stage.permission.GamePermission;
 import jp.llv.flaggame.profile.record.BannerStealRecord;
 import jp.llv.flaggame.profile.record.PlayerDeathRecord;
 import jp.llv.flaggame.profile.record.PlayerKillRecord;
@@ -43,8 +43,8 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
-import syam.flaggame.game.AreaSet;
-import syam.flaggame.player.GamePlayer;
+import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.stage.area.StageAreaSet;
 
 /**
  * PvP handling listener.
@@ -102,7 +102,7 @@ public class BGEntityListener extends BGListener {
         }
 
         // Disallow damage in basements
-        AreaSet as = game.getStage().getAreas();
+        StageAreaSet as = game.getStage().getAreas();
         if (as.getAreaInfo(player.getLocation(), a -> a.getPermission(GamePermission.GODMODE).getState(gp.getTeam().get().getType()))) {
             event.setCancelled(true);
             if (!as.getAreaInfo(damager.getLocation(), a -> a.getPermission(GamePermission.GODMODE).getState(gd.getTeam().get().getType()))) {

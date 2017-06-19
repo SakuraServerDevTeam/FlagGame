@@ -19,7 +19,7 @@ package jp.llv.flaggame.game;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.UnaryOperator;
-import syam.flaggame.player.GamePlayer;
+import jp.llv.flaggame.api.player.GamePlayer;
 
 /**
  *
@@ -27,7 +27,7 @@ import syam.flaggame.player.GamePlayer;
  */
 @FunctionalInterface
 public interface ExpCalcurator {
-    
+
     UnaryOperator<Map.Entry<GamePlayer, Double>> calcurate(Set<GamePlayer> winners, long gametime, int players);
-    
+
 }

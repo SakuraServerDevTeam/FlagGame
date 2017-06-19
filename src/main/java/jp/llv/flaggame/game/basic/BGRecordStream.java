@@ -24,14 +24,14 @@ import jp.llv.flaggame.profile.record.GameRecord;
 import jp.llv.flaggame.profile.record.PlayerRecord;
 import org.bukkit.entity.Player;
 import syam.flaggame.FlagGame;
-import syam.flaggame.player.GamePlayer;
+import jp.llv.flaggame.api.player.GamePlayer;
 
 /**
  *
  * @author SakuraServerDev
  */
 public class BGRecordStream implements RecordStream {
-    
+
     private final FlagGameAPI api;
     private final BasicGame game;
     private final RecordStream base;
@@ -66,5 +66,5 @@ public class BGRecordStream implements RecordStream {
     public List<GameRecord> getRecords() {
         return base.getRecords();
     }
-    
+
 }

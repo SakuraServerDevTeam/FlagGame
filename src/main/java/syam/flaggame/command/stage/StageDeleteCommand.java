@@ -17,16 +17,15 @@
 package syam.flaggame.command.stage;
 
 import java.util.List;
-import java.util.logging.Level;
 import jp.llv.flaggame.database.DatabaseException;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.BaseCommand;
 import syam.flaggame.queue.Queueable;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.exception.FlagGameException;
-import syam.flaggame.game.Stage;
+import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.api.exception.FlagGameException;
+import jp.llv.flaggame.api.stage.Stage;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.util.Actions;
 

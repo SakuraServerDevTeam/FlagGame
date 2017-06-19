@@ -33,10 +33,10 @@ import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 import jp.llv.flaggame.api.FlagGameAPI;
 import jp.llv.flaggame.events.GameStartEvent;
-import jp.llv.flaggame.game.Game;
+import jp.llv.flaggame.api.game.Game;
 import jp.llv.flaggame.game.HitpointTask;
 import jp.llv.flaggame.game.ObjectiveEffectTask;
-import jp.llv.flaggame.game.permission.StagePermissionListener;
+import jp.llv.flaggame.stage.permission.StagePermissionListener;
 import jp.llv.flaggame.game.DeviationBasedExpCalcurator;
 import jp.llv.flaggame.profile.record.FlagCaptureRecord;
 import jp.llv.flaggame.profile.record.FlagScoreRecord;
@@ -64,9 +64,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 import jp.llv.flaggame.util.StreamUtil;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.game.Stage;
-import syam.flaggame.player.GamePlayer;
+import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.api.player.GamePlayer;
 import syam.flaggame.util.Actions;
 import jp.llv.flaggame.game.ExpCalcurator;
 import jp.llv.flaggame.profile.record.BannerKeepRecord;
@@ -74,12 +73,13 @@ import jp.llv.flaggame.profile.record.PlayerDrawRecord;
 import jp.llv.flaggame.profile.record.PlayerLoseRecord;
 import jp.llv.flaggame.profile.record.PlayerWinRecord;
 import jp.llv.flaggame.reception.TeamType;
-import jp.llv.flaggame.rollback.SerializeTask;
-import syam.flaggame.game.AreaInfo;
-import syam.flaggame.game.objective.BannerSlot;
-import syam.flaggame.game.objective.Flag;
+import jp.llv.flaggame.api.stage.rollback.SerializeTask;
+import jp.llv.flaggame.api.stage.objective.BannerSlot;
+import jp.llv.flaggame.api.stage.objective.Flag;
 import syam.flaggame.util.Cuboid;
 import jp.llv.flaggame.api.reception.Reception;
+import jp.llv.flaggame.api.stage.Stage;
+import jp.llv.flaggame.api.stage.area.StageAreaInfo;
 
 /**
  *
@@ -235,8 +235,8 @@ public class BasicGame implements Game {
         // stage rollback and message
         for (String areaID : stage.getAreas().getAreas()) {
             Cuboid area = stage.getAreas().getArea(areaID);
-            AreaInfo info = stage.getAreas().getAreaInfo(areaID);
-            for (AreaInfo.RollbackData rollback : info.getDelayedRollbacks()) {
+            StageAreaInfo info = stage.getAreas().getAreaInfo(areaID);
+            for (StageAreaInfo.StageRollbackData rollback : info.getDelayedRollbacks()) {
                 SerializeTask task = rollback.getTarget().load(stage, area, ex -> {
                     if (ex != null) {
                         api.getLogger().warn("Failed to rollback", ex);
@@ -247,7 +247,7 @@ public class BasicGame implements Game {
                 task.start(api.getPlugin(), ConvertUtils.toTick(rollback.getTiming()));
                 onFinishing.offer(task::cancel);
             }
-            for (AreaInfo.MessageData message : info.getMessages()) {
+            for (StageAreaInfo.StageMessageData message : info.getMessages()) {
                 BukkitTask task = api.getServer().getScheduler().runTaskLater(api.getPlugin(), () -> {
                     getPlayers().stream()
                             .filter(p -> p.isOnline())
@@ -386,7 +386,7 @@ public class BasicGame implements Game {
 
         GamePlayer.sendMessage(this.api.getPlayers(), "&2フラッグゲーム'&6" + this.stage.getName() + "&2'が終わりました!");
         GamePlayer.sendMessage(this.api.getPlayers(), teamPoints.entrySet().stream()
-                .map(e -> e.getKey().getRichName() + "得点: &6" + e.getValue() + e.getKey().toColor().getChatColor()+ "点")
+                .map(e -> e.getKey().getRichName() + "得点: &6" + e.getValue() + e.getKey().toColor().getChatColor() + "点")
                 .collect(Collectors.joining(", "))
         );
         if (winnerTeams.isEmpty()) {

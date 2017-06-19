@@ -28,7 +28,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.util.Vector;
-import syam.flaggame.FlagGame;
 import syam.flaggame.permission.Perms;
 
 /**
@@ -42,7 +41,7 @@ public class FGActionListener implements Listener {
     public FGActionListener(FlagGameAPI api) {
         this.api = api;
     }
-    
+
     @EventHandler
     public void on(PlayerInteractEvent event) {
         Player player = event.getPlayer();
@@ -71,5 +70,5 @@ public class FGActionListener implements Listener {
         player.getWorld().playEffect(player.getLocation(), Effect.STEP_SOUND, wallBlock.getType());
         player.setVelocity(actionEvent.getVelocity());
     }
-    
+
 }

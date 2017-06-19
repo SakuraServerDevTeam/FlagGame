@@ -16,14 +16,15 @@
  */
 package jp.llv.flaggame.game;
 
+import jp.llv.flaggame.api.game.Game;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.scheduler.BukkitRunnable;
-import syam.flaggame.game.objective.BannerSlot;
-import syam.flaggame.game.objective.Flag;
-import syam.flaggame.game.objective.Nexus;
-import syam.flaggame.game.objective.Objective;
+import jp.llv.flaggame.api.stage.objective.BannerSlot;
+import jp.llv.flaggame.api.stage.objective.Flag;
+import jp.llv.flaggame.api.stage.objective.Nexus;
+import jp.llv.flaggame.api.stage.objective.StageObjective;
 
 /**
  *
@@ -41,7 +42,7 @@ public class ObjectiveEffectTask extends BukkitRunnable {
     public void run() {
         game.getStage().getObjectives().values().stream()
                 .filter(o -> o instanceof Flag || o instanceof BannerSlot || o instanceof Nexus)
-                .map(Objective::getLocation)
+                .map(StageObjective::getLocation)
                 .forEach(this::spawnParticle);
     }
 

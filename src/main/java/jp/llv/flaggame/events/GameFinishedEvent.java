@@ -16,7 +16,7 @@
  */
 package jp.llv.flaggame.events;
 
-import jp.llv.flaggame.game.Game;
+import jp.llv.flaggame.api.game.Game;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 
@@ -32,7 +32,7 @@ public class GameFinishedEvent extends GameEvent implements Cancellable {
     public GameFinishedEvent(Game game) {
         super(game);
     }
-    
+
     @Override
     public boolean isCancelled() {
         return this.cancel;
@@ -47,9 +47,9 @@ public class GameFinishedEvent extends GameEvent implements Cancellable {
     public HandlerList getHandlers() {
         return handlers;
     }
-    
+
     public static HandlerList getHandlerList() {
         return handlers;
     }
-    
+
 }

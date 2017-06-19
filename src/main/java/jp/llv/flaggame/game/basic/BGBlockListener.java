@@ -19,8 +19,9 @@ package jp.llv.flaggame.game.basic;
 import java.util.Collection;
 import java.util.Optional;
 import jp.llv.flaggame.api.FlagGameAPI;
-import syam.flaggame.game.objective.BannerSlot;
-import syam.flaggame.game.objective.BannerSpawner;
+import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.stage.objective.BannerSlot;
+import jp.llv.flaggame.api.stage.objective.BannerSpawner;
 import jp.llv.flaggame.reception.Team;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -31,8 +32,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import jp.llv.flaggame.reception.TeamColor;
-import syam.flaggame.game.objective.Flag;
-import syam.flaggame.game.objective.Nexus;
+import jp.llv.flaggame.api.stage.objective.Flag;
+import jp.llv.flaggame.api.stage.objective.Nexus;
 import jp.llv.flaggame.profile.record.BannerDeployRecord;
 import jp.llv.flaggame.profile.record.FlagBreakRecord;
 import jp.llv.flaggame.profile.record.FlagCaptureRecord;
@@ -43,7 +44,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Firework;
 import org.bukkit.inventory.meta.FireworkMeta;
-import syam.flaggame.player.GamePlayer;
+import jp.llv.flaggame.api.player.GamePlayer;
 
 /**
  *

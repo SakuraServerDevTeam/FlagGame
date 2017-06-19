@@ -20,14 +20,14 @@ import java.util.List;
 import org.bukkit.entity.Player;
 import java.util.Arrays;
 import java.util.stream.Collectors;
-import jp.llv.flaggame.game.permission.GamePermission;
-import jp.llv.flaggame.game.permission.GamePermissionState;
+import jp.llv.flaggame.api.stage.permission.GamePermission;
+import jp.llv.flaggame.api.stage.permission.GamePermissionState;
 import jp.llv.flaggame.reception.TeamColor;
 import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.area.AreaCommand;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.game.AreaInfo;
-import syam.flaggame.game.Stage;
+import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.api.stage.Stage;
+import jp.llv.flaggame.api.stage.area.StageAreaInfo;
 import syam.flaggame.permission.Perms;
 
 /**
@@ -49,7 +49,7 @@ public class AreaPermissionSetCommand extends AreaCommand {
     @Override
     public void execute(List<String> args, Player player, Stage stage) throws CommandException {
         String id = args.get(0);
-        AreaInfo info = stage.getAreas().getAreaInfo(id);
+        StageAreaInfo info = stage.getAreas().getAreaInfo(id);
         if (info == null) {
             throw new CommandException("&cその名前のエリアは存在しません！");
         }
