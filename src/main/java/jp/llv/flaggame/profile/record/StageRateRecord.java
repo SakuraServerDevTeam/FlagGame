@@ -21,7 +21,7 @@ import java.util.UUID;
 import org.bson.BsonInt32;
 import org.bson.Document;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagConfig;
+import jp.llv.flaggame.api.FlagConfig;
 
 /**
  *

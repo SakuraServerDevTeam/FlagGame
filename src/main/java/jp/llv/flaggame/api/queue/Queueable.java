@@ -1,4 +1,4 @@
-/*
+/* 
  * Copyright (C) 2017 SakuraServerDev
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14,33 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jp.llv.flaggame.reception.fest;
+package jp.llv.flaggame.api.queue;
 
-import jp.llv.flaggame.reception.TeamColor;
-import jp.llv.flaggame.reception.TeamType;
+import java.util.List;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import jp.llv.flaggame.api.exception.FlagGameException;
 
 /**
+ * Queueable (Queueable.java)
  *
- * @author SakuraServerDev
+ * @author syam(syamn)
  */
-public class FestivalTeamType implements TeamType {
+public interface Queueable {
 
-    private final String name;
-    private final TeamColor color;
-
-    public FestivalTeamType(String name, TeamColor color) {
-        this.name = name;
-        this.color = color;
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public TeamColor toColor() {
-        return color;
-    }
-
+    void executeQueue(List<String> args, CommandSender sender, Player player) throws FlagGameException;
 }

@@ -28,7 +28,7 @@ import syam.flaggame.command.BaseCommand;
 import jp.llv.flaggame.api.exception.CommandException;
 import jp.llv.flaggame.api.exception.FlagGameException;
 import syam.flaggame.permission.Perms;
-import syam.flaggame.queue.Queueable;
+import jp.llv.flaggame.api.queue.Queueable;
 import syam.flaggame.util.Actions;
 
 /**

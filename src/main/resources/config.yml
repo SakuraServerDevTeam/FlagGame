@@ -54,12 +54,6 @@ Database:
   User_Name: null
   User_Password: null
 
-#====================#
-#   Logging Config   #
-#====================#
-# DetailLogDirectory
-DetailDirectory: plugins/FlagGame/detail/
-
 #========================#
 #   Score weight Config   #
 #========================#

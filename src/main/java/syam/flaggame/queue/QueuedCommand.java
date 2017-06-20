@@ -16,12 +16,12 @@
  */
 package syam.flaggame.queue;
 
+import jp.llv.flaggame.api.queue.Queueable;
 import java.util.Calendar;
 import java.util.List;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import jp.llv.flaggame.api.exception.CommandException;
 import jp.llv.flaggame.api.exception.FlagGameException;
 
 import syam.flaggame.util.Actions;

@@ -16,6 +16,7 @@
  */
 package syam.flaggame;
 
+import jp.llv.flaggame.api.FlagConfig;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -35,10 +36,8 @@ import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
-public class FlagConfig {
+public class CachedFlagConfig implements FlagConfig {
 
-    // Logger
-    private static final String DEFAULT_DETAIL_DIRECTORY = "plugins/FlagGame/detail/";
     // Defaults
     private static final String DEFAULT_WORLD_NAME = "flag";
     private static final List<String> DEFAULT_DISABLED_COMMANDS = Arrays.asList("/spawn", "/home", "/setspawn");
@@ -73,8 +72,6 @@ public class FlagConfig {
     private String dbDatabaseName = "DatabaseName";
     private String dbUserName = "UserName";
     private String dbUserPassword = "UserPassword";
-    /* Logging Configs */
-    private String detailDirectory = DEFAULT_DETAIL_DIRECTORY;
     /* Permissions Configs */
     private List<String> permissions = new ArrayList<>(DEFAULT_PERMISSIONS);
     /* Score weight */
@@ -90,7 +87,7 @@ public class FlagConfig {
      *
      * @param plugin
      */
-    public FlagConfig(FlagGame plugin) {
+    public CachedFlagConfig(FlagGame plugin) {
         this.plugin = plugin;
         this.pluginDir = plugin.getDataFolder();
     }
@@ -99,6 +96,7 @@ public class FlagConfig {
      * 設定をファイルから読み込む
      *
      */
+    @Override
     public void loadConfig() {
         // ディレクトリ作成
         createDirs();
@@ -140,8 +138,6 @@ public class FlagConfig {
         dbDatabaseName = plugin.getConfig().getString("Database.Name", "flaggame");
         dbUserName = plugin.getConfig().getString("Database.User_Name", null);
         dbUserPassword = plugin.getConfig().getString("Database.User_Password", null);
-        /* Logging Configs */
-        detailDirectory = plugin.getConfig().getString("DetailDirectory", DEFAULT_DETAIL_DIRECTORY);
         /* Permissions Configs */
         if (plugin.getConfig().get("Permissions") != null) {
             permissions = plugin.getConfig().getStringList("Permissions");
@@ -168,150 +164,175 @@ public class FlagConfig {
             plugin.getLogger().log(Level.WARNING, "World {0} is Not Found! Disabling plugin..", gameWorld);
             throw new IllegalStateException("Game world not found; configuration required");
         }
-
-        // 詳細ログ用ディレクトリ作成
-        createDir(new File(detailDirectory));
     }
 
     // 設定 getter ここから
 
     /* Basic Configs */
+    @Override
     public int getToolID() {
         return this.toolID;
     }
 
+    @Override
     public String getGameWorld() {
         return this.gameWorld;
     }
 
+    @Override
     public boolean isProtected() {
         return this.isProtected;
     }
 
+    @Override
     public boolean isDebug() {
         return this.isDebug;
     }
 
+    @Override
     public boolean getUseDynmap() {
         return this.useDynmap;
     }
 
+    @Override
     public double getWallKickPowerXZ() {
         return wallKickPowerXZ;
     }
 
+    @Override
     public double getWallKickPowerY() {
         return wallKickPowerY;
     }
 
     /* Games Configs */
+    @Override
     public int getStartCountdownInSec() {
         return this.startCountdownInSec;
     }
 
+    @Override
     public boolean getUseFlagEffects() {
         return this.useFlagEffects;
     }
 
+    @Override
     public boolean getDeathWhenLogout() {
         return this.deathWhenLogout;
     }
 
+    @Override
     public boolean getDisableRegainHP() {
         return this.disableRegainHP;
     }
 
+    @Override
     public boolean getDisableTeamPVP() {
         return this.disableTeamPVP;
     }
 
+    @Override
     public int getGodModeTime() {
         return this.godModeTime;
     }
 
+    @Override
     public List<String> getDisableCommands() {
         return this.disableCommands;
     }
 
     /* MySQL Configs */
+    @Override
     public String getDatabaseAddress() {
         return this.dbAddress;
     }
 
+    @Override
     public int getDatabasePort() {
         return this.dbPort;
     }
 
+    @Override
     public String getDatabaseDbname() {
         return this.dbDatabaseName;
     }
 
+    @Override
     public String getDatabaseUsername() {
         return this.dbUserName;
     }
 
+    @Override
     public String getDatabaseUserpass() {
         return this.dbUserPassword;
     }
 
-    /* Logging Configs */
-    public String getDetailDirectory() {
-        return this.detailDirectory;
-    }
-
     /* Permissions Configs */
+    @Override
     public List<String> getPermissions() {
         return this.permissions;
     }
 
+    @Override
     public double getScoreGameJoin() {
         return scoreGameJoin;
     }
 
+    @Override
     public double getScoreGameExit() {
         return scoreGameExit;
     }
 
+    @Override
     public double getScoreCombatKill() {
         return scoreCombatKill;
     }
 
+    @Override
     public double getScoreCombatDeath() {
         return scoreCombatDeath;
     }
 
+    @Override
     public double getScoreFlagPlace() {
         return scoreFlagPlace;
     }
 
+    @Override
     public double getScoreFlagBreak() {
         return scoreFlagBreak;
     }
 
+    @Override
     public double getScoreFlagLastPlace() {
         return scoreFlagLastPlace;
     }
 
+    @Override
     public double getScoreBannerDeploy() {
         return scoreBannerDeploy;
     }
 
+    @Override
     public double getScoreBannerBreak() {
         return scoreBannerBreak;
     }
 
+    @Override
     public double getScoreBannerKeep() {
         return scoreBannerKeep;
     }
 
+    @Override
     public double getScoreBannerSteal() {
         return scoreBannerSteal;
     }
 
+    @Override
     public double getScoreNexusBreak() {
         return scoreNexusBreak;
     }
 
+    @Override
     public long getScoreRate() {
         return (long) scoreRate;
     }

@@ -28,8 +28,8 @@ import jp.llv.flaggame.reception.fest.FestivalManager;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.slf4j.Logger;
-import syam.flaggame.FlagConfig;
 import syam.flaggame.queue.ConfirmQueue;
+import jp.llv.flaggame.api.queue.ConfirmQueueAPI;
 
 /**
  *
@@ -63,7 +63,7 @@ public interface FlagGameAPI {
         return getServer().getWorld(getConfig().getGameWorld());
     }
 
-    ConfirmQueue getConfirmQueue();
+    ConfirmQueueAPI getConfirmQueue();
 
     Logger getLogger();
 

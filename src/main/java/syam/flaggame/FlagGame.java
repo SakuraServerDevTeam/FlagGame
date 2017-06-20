@@ -50,7 +50,7 @@ public class FlagGame extends JavaPlugin implements FlagGamePlugin {
      * 参加チームの選択
      */
     // ** Private classes **
-    private FlagConfig config;
+    private CachedFlagConfig config;
     private Database database;
     private FlagGameAPIImpl api;
     // Hookup plugins
@@ -66,7 +66,7 @@ public class FlagGame extends JavaPlugin implements FlagGamePlugin {
         instance = this;
 
         try {
-            config = new FlagConfig(this);
+            config = new CachedFlagConfig(this);
         } catch (IllegalStateException ex) {
             this.getPluginLoader().disablePlugin(this);
             return;
@@ -198,7 +198,7 @@ public class FlagGame extends JavaPlugin implements FlagGamePlugin {
      *
      * @return ConfigurationManager
      */
-    public FlagConfig getConfigs() {
+    public CachedFlagConfig getConfigs() {
         return config;
     }
 

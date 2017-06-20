@@ -17,10 +17,10 @@
 package jp.llv.flaggame.profile.record;
 
 import java.util.UUID;
+import jp.llv.flaggame.api.FlagConfig;;
 import org.bson.Document;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagConfig;
 
 /**
  *

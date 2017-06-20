@@ -16,14 +16,12 @@
  */
 package jp.llv.flaggame.game.basic;
 
-import java.util.Iterator;
 import java.util.List;
 import jp.llv.flaggame.api.FlagGameAPI;
 import jp.llv.flaggame.profile.RecordStream;
 import jp.llv.flaggame.profile.record.GameRecord;
 import jp.llv.flaggame.profile.record.PlayerRecord;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagGame;
 import jp.llv.flaggame.api.player.GamePlayer;
 
 /**

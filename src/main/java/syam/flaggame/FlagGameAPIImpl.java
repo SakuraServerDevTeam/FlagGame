@@ -108,7 +108,7 @@ public class FlagGameAPIImpl implements FlagGameAPI {
     }
 
     @Override
-    public FlagConfig getConfig() {
+    public CachedFlagConfig getConfig() {
         return plugin.getConfigs();
     }
 

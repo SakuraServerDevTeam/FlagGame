@@ -16,19 +16,21 @@
  */
 package syam.flaggame.queue;
 
+import jp.llv.flaggame.api.queue.Queueable;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.command.CommandSender;
 
 import jp.llv.flaggame.api.exception.FlagGameException;
+import jp.llv.flaggame.api.queue.ConfirmQueueAPI;
 
 /**
  * ConfirmQueue (ConfirmQueue.java)
  *
  * @author syam(syamn)
  */
-public class ConfirmQueue {
+public class ConfirmQueue implements ConfirmQueueAPI {
 
     private final List<QueuedCommand> queue;
 
@@ -42,6 +44,7 @@ public class ConfirmQueue {
     /*
      * キューにコマンドを追加する
      */
+    @Override
     public void addQueue(CommandSender sender, Queueable queueable, List<String> args, int seconds) {
         cancelQueue(sender);
         this.queue.add(new QueuedCommand(sender, queueable, args, seconds));
@@ -52,6 +55,7 @@ public class ConfirmQueue {
      * 
      * @param sender コマンド送信者
      */
+    @Override
     public boolean confirmQueue(CommandSender sender) throws FlagGameException {
         for (QueuedCommand cmd : this.queue) {
             if (cmd.getSender().equals(sender)) {
@@ -69,6 +73,7 @@ public class ConfirmQueue {
      * @param sender
      *            CommandSender
      */
+    @Override
     public void cancelQueue(CommandSender sender) {
         QueuedCommand cmd = null;
         for (QueuedCommand check : this.queue) {
