@@ -118,17 +118,6 @@ public class FlagGame extends JavaPlugin implements FlagGamePlugin {
                 getLogger().log(Level.WARNING, "Failed to load stage!", ex);
             }
         });
-        database.loadFestivals(festival -> {
-            api.getFestivals().addFestival(festival.get());
-            getLogger().log(Level.INFO, "Loaded festival ''{0}''", festival.get().getName());
-        }, result -> {
-            try {
-                result.test();
-                getLogger().log(Level.INFO, "Finished loading festivals!");
-            } catch (DatabaseException ex) {
-                getLogger().log(Level.WARNING, "Failed to load festival!", ex);
-            }
-        });
 
         // メッセージ表示
         PluginDescriptionFile pdfFile = this.getDescription();

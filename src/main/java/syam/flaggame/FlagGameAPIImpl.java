@@ -23,7 +23,6 @@ import jp.llv.flaggame.database.Database;
 import jp.llv.flaggame.game.GameManager;
 import jp.llv.flaggame.profile.ProfileManager;
 import jp.llv.flaggame.reception.ReceptionManager;
-import jp.llv.flaggame.reception.fest.FestivalManager;
 import org.slf4j.Logger;
 import org.slf4j.impl.JDK14LoggerAdapter;
 import jp.llv.flaggame.stage.StageManager;
@@ -44,7 +43,6 @@ public class FlagGameAPIImpl implements FlagGameAPI {
     private final ReceptionManager receptions;
     private final GameManager games;
     private final StageManager stages;
-    private final FestivalManager festivals;
     private final ConfirmQueue confirmQueue;
     private final Logger logger;
 
@@ -56,7 +54,6 @@ public class FlagGameAPIImpl implements FlagGameAPI {
         this.receptions = new ReceptionManager(this);
         this.games = new GameManager(this);
         this.stages = new StageManager();
-        this.festivals = new FestivalManager();
         this.confirmQueue = new ConfirmQueue();
         try {
             Constructor<? extends Logger> loggerConstructor = JDK14LoggerAdapter.class.getConstructor(java.util.logging.Logger.class);
@@ -95,11 +92,6 @@ public class FlagGameAPIImpl implements FlagGameAPI {
     @Override
     public StageManager getStages() {
         return stages;
-    }
-
-    @Override
-    public FestivalManager getFestivals() {
-        return festivals;
     }
 
     @Override

@@ -24,11 +24,9 @@ import jp.llv.flaggame.api.profile.ProfileAPI;
 import jp.llv.flaggame.api.reception.ReceptionAPI;
 import jp.llv.flaggame.api.stage.StageAPI;
 import jp.llv.flaggame.database.Database;
-import jp.llv.flaggame.reception.fest.FestivalManager;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.slf4j.Logger;
-import syam.flaggame.queue.ConfirmQueue;
 import jp.llv.flaggame.api.queue.ConfirmQueueAPI;
 
 /**
@@ -52,8 +50,6 @@ public interface FlagGameAPI {
     GameAPI getGames();
 
     StageAPI getStages();
-
-    FestivalManager getFestivals();
 
     Optional<Database> getDatabase();
 

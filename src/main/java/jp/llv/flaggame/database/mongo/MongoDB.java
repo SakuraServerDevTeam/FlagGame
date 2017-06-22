@@ -33,7 +33,6 @@ import jp.llv.flaggame.database.Database;
 import jp.llv.flaggame.database.DatabaseCallback;
 import jp.llv.flaggame.database.DatabaseException;
 import jp.llv.flaggame.database.DatabaseResult;
-import jp.llv.flaggame.database.mongo.bson.FestivalBsonMapper;
 import jp.llv.flaggame.profile.RecordStream;
 import jp.llv.flaggame.api.profile.StatEntry;
 import jp.llv.flaggame.profile.record.ExpRecord;
@@ -49,9 +48,7 @@ import org.bson.BsonValue;
 import org.bson.Document;
 import syam.flaggame.CachedFlagConfig;
 import syam.flaggame.FlagGame;
-import jp.llv.flaggame.stage.BasicStage;
 import jp.llv.flaggame.database.mongo.bson.StageBsonMapper;
-import jp.llv.flaggame.reception.fest.FestivalSchedule;
 
 /**
  *
@@ -164,54 +161,6 @@ public class MongoDB implements Database {
     public void deleteStage(Stage stage, DatabaseCallback<Void, DatabaseException> callback) {
         try {
             getStageCollection().deleteOne(Filters.eq(FIELD_ID, stage.getName()),
-                    new MongoDBErrorCallback<>(callback)
-            );
-        } catch (DatabaseException ex) {
-            callback.call(DatabaseResult.fail(ex));
-        }
-    }
-
-    private MongoCollection<BsonValue> getFestivalCollection() throws DatabaseException {
-        if (database == null) {
-            throw new DatabaseException("Not connected");
-        }
-        return database.getCollection(COLLECTION_FESTIVAL).withDocumentClass(BsonValue.class);
-    }
-
-    @Override
-    public void loadFestivals(DatabaseCallback<FestivalSchedule, RuntimeException> consumer, DatabaseCallback<Void, DatabaseException> callback) {
-        try {
-            getFestivalCollection().find()
-                    .map(BsonDocument.class::cast)
-                    .map(FestivalBsonMapper::readSchedule)
-                    .forEach(
-                            new MongoDBResultCallback<>(consumer),
-                            new MongoDBErrorCallback<>(callback)
-                    );
-        } catch (DatabaseException ex) {
-            callback.call(DatabaseResult.fail(ex));
-        }
-    }
-
-    @Override
-    public void saveFestival(FestivalSchedule festival, DatabaseCallback<Void, DatabaseException> callback) {
-        try {
-            MongoCollection<BsonValue> coll = getFestivalCollection();
-            BsonDocument bson = FestivalBsonMapper.writeSchedule(festival);
-            coll.updateOne(Filters.eq(FIELD_ID, bson.get(FIELD_ID)),
-                    new BsonDocument(SET, bson),
-                    new UpdateOptions().upsert(true),
-                    new MongoDBErrorCallback<>(callback)
-            );
-        } catch (DatabaseException ex) {
-            callback.call(DatabaseResult.fail(ex));
-        }
-    }
-
-    @Override
-    public void deleteFestival(FestivalSchedule festival, DatabaseCallback<Void, DatabaseException> callback) {
-        try {
-            getFestivalCollection().deleteOne(Filters.eq(FIELD_ID, festival.getName()),
                     new MongoDBErrorCallback<>(callback)
             );
         } catch (DatabaseException ex) {

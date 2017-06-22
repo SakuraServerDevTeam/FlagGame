@@ -50,19 +50,6 @@ import syam.flaggame.command.area.permission.AreaPermissionDashboardCommand;
 import syam.flaggame.command.area.permission.AreaPermissionListCommand;
 import syam.flaggame.command.area.permission.AreaPermissionSetCommand;
 import syam.flaggame.command.area.permission.AreaPermissionTestCommand;
-import syam.flaggame.command.fest.FestivalCreateCommand;
-import syam.flaggame.command.fest.FestivalDashboardCommand;
-import syam.flaggame.command.fest.FestivalDeleteCommand;
-import syam.flaggame.command.fest.FestivalListCommand;
-import syam.flaggame.command.fest.FestivalSaveCommand;
-import syam.flaggame.command.fest.FestivalSelectCommand;
-import syam.flaggame.command.fest.match.FestivalMatchCreateCommand;
-import syam.flaggame.command.fest.match.FestivalMatchDeleteCommand;
-import syam.flaggame.command.fest.match.FestivalMatchListCommand;
-import syam.flaggame.command.fest.match.FestivalMatchTeamCommand;
-import syam.flaggame.command.fest.set.FestivalSetEntryfeeCommand;
-import syam.flaggame.command.fest.set.FestivalSetPrizeCommand;
-import syam.flaggame.command.fest.set.FestivalSetTeamCommand;
 import syam.flaggame.command.game.GameCloseCommand;
 import syam.flaggame.command.game.GameJoinCommand;
 import syam.flaggame.command.game.GameLeaveCommand;
@@ -131,32 +118,6 @@ public enum FlagCommandRegistry implements TabExecutor {
             AreaSelectCommand::new,
             AreaSetCommand::new
     ),
-    FESTIVAL_MATCH(
-            "<- manages festival matches",
-            names("match", "m"),
-            FestivalMatchCreateCommand::new,
-            FestivalMatchDeleteCommand::new,
-            FestivalMatchTeamCommand::new,
-            FestivalMatchListCommand::new
-    ),
-    FESTIVAL_SET(
-            "<- configure festival settings",
-            names("set", "s"),
-            FestivalSetEntryfeeCommand::new,
-            FestivalSetPrizeCommand::new,
-            FestivalSetTeamCommand::new
-    ),
-    FESTIVAL(
-            "<- manages festivals",
-            names("festival", "fest", "fes"),
-            subcategories(FESTIVAL_MATCH, FESTIVAL_SET),
-            FestivalCreateCommand::new,
-            FestivalDeleteCommand::new,
-            FestivalListCommand::new,
-            FestivalDashboardCommand::new,
-            FestivalSaveCommand::new,
-            FestivalSelectCommand::new
-    ),
     GAME(
             "<- manage games",
             names("game", "g"),
@@ -200,7 +161,7 @@ public enum FlagCommandRegistry implements TabExecutor {
     GENERAL(
             "<- general commands",
             names("flag", "fg", "f"),
-            subcategories(AREA, GAME, OBJECTIVE, PLAYER, STAGE, FESTIVAL),
+            subcategories(AREA, GAME, OBJECTIVE, PLAYER, STAGE),
             HelpCommand::new,
             ConfirmCommand::new,
             ReloadCommand::new,
@@ -209,7 +170,7 @@ public enum FlagCommandRegistry implements TabExecutor {
     ROOT(
             null,
             null,
-            subcategories(GENERAL, AREA, GAME, OBJECTIVE, PLAYER, STAGE, FESTIVAL)
+            subcategories(GENERAL, AREA, GAME, OBJECTIVE, PLAYER, STAGE)
     );
 
     private static final String PLUGIN_PREFIX = "flaggame:";
