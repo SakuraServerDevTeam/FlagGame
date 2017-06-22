@@ -17,7 +17,7 @@
 package syam.flaggame.command;
 
 import java.util.List;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -26,9 +26,9 @@ import syam.flaggame.util.Actions;
 
 public class HelpCommand extends BaseCommand {
 
-    public HelpCommand(FlagGame plugin) {
+    public HelpCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 false,
                 0,
                 "<- show command help matches specified arguments",
@@ -48,7 +48,7 @@ public class HelpCommand extends BaseCommand {
             prefix = label;
         }
         Actions.message(sender, "&c===================================");
-        Actions.message(sender, "&bFlagGame Plugin version &3" + plugin.getDescription().getVersion() + " &bby " + String.join(", ", plugin.getDescription().getAuthors()));
+        Actions.message(sender, "&bFlagGameAPI api version &3" + api.getPlugin().getDescription().getVersion() + " &bby " + String.join(", ", api.getPlugin().getDescription().getAuthors()));
         Actions.message(sender, " &b<>&f = required, &b[]&f = optional");
         if (registry == null) {
             Actions.message(sender, "&cNo command starts with " + prefix);
@@ -63,5 +63,5 @@ public class HelpCommand extends BaseCommand {
         }
         Actions.message(sender, "&c===================================");
     }
-    
+
 }

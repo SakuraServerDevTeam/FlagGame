@@ -18,11 +18,11 @@ package syam.flaggame.command.area;
 
 import java.util.List;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import jp.llv.flaggame.util.DashboardBuilder;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.game.AreaInfo;
-import syam.flaggame.game.Stage;
+import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.api.stage.Stage;
+import jp.llv.flaggame.api.stage.area.StageAreaInfo;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.util.Cuboid;
 
@@ -32,9 +32,9 @@ import syam.flaggame.util.Cuboid;
  */
 public class AreaDashboardCommand extends AreaCommand {
 
-    public AreaDashboardCommand(FlagGame plugin) {
+    public AreaDashboardCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 1,
                 "<id> <- show information about areas",
                 Perms.AREA_DASHBOARD,
@@ -46,7 +46,7 @@ public class AreaDashboardCommand extends AreaCommand {
     public void execute(List<String> args, Player player, Stage stage) throws CommandException {
         String id = args.get(0);
         Cuboid area = stage.getAreas().getArea(id);
-        AreaInfo info = stage.getAreas().getAreaInfo(id);
+        StageAreaInfo info = stage.getAreas().getAreaInfo(id);
         if (area == null) {
             throw new CommandException("&cその名前のエリアは存在しません！");
         }

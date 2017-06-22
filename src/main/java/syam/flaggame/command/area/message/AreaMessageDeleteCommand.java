@@ -18,11 +18,11 @@ package syam.flaggame.command.area.message;
 
 import java.util.List;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.area.AreaCommand;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.game.AreaInfo;
-import syam.flaggame.game.Stage;
+import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.api.stage.Stage;
+import jp.llv.flaggame.api.stage.area.StageAreaInfo;
 import syam.flaggame.permission.Perms;
 
 /**
@@ -31,9 +31,9 @@ import syam.flaggame.permission.Perms;
  */
 public class AreaMessageDeleteCommand extends AreaCommand {
 
-    public AreaMessageDeleteCommand(FlagGame plugin) {
+    public AreaMessageDeleteCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 1,
                 "<id> <index> <- delete message",
                 Perms.AREA_MESSAGE_DELETE,
@@ -44,7 +44,7 @@ public class AreaMessageDeleteCommand extends AreaCommand {
 
     @Override
     public void execute(List<String> args, Player player, Stage stage) throws CommandException {
-        AreaInfo info = stage.getAreas().getAreaInfo(args.get(0));
+        StageAreaInfo info = stage.getAreas().getAreaInfo(args.get(0));
         if (info == null) {
             throw new CommandException("&cその名前のエリアは存在しません！");
         }
@@ -57,7 +57,7 @@ public class AreaMessageDeleteCommand extends AreaCommand {
         if (index < 0 || info.getMessages().size() <= index) {
             throw new CommandException("&c無効なインデックスです！");
         }
-        AreaInfo.MessageData data = info.getMessages().get(index - 1);
+        StageAreaInfo.StageMessageData data = info.getMessages().get(index - 1);
         sendMessage(player, "&a'&6" + stage.getName() + "&a'の'&6"
                             + args.get(0) + "&a'エリアのメッセージ'&6"
                             + data.getMessage() + "&a'を削除しました！"

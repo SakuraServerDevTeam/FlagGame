@@ -35,7 +35,7 @@ public class MongoDBCallback<T> implements SingleResultCallback<T> {
         Objects.requireNonNull(callback);
         this.callback = callback;
     }
-    
+
     @Override
     public void onResult(T t, Throwable thrwbl) {
         if (thrwbl == null) {
@@ -44,5 +44,5 @@ public class MongoDBCallback<T> implements SingleResultCallback<T> {
             this.callback.call(DatabaseResult.fail(new DatabaseException(thrwbl)));
         }
     }
-    
+
 }

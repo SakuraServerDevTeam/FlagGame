@@ -16,6 +16,7 @@
  */
 package jp.llv.flaggame.profile.record;
 
+import jp.llv.flaggame.api.profile.RecordType;
 import java.util.UUID;
 import org.bson.Document;
 import org.bukkit.Location;
@@ -39,7 +40,7 @@ public class PlayerLoseRecord extends PlayerResultRecord {
         super(game, player, exp, vive);
     }
 
-    /*package*/ PlayerLoseRecord(Document base) {
+    public PlayerLoseRecord(Document base) {
         super(base);
     }
 
@@ -47,5 +48,5 @@ public class PlayerLoseRecord extends PlayerResultRecord {
     public RecordType getType() {
         return RecordType.LOSE;
     }
-    
+
 }

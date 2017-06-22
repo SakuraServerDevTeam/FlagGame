@@ -16,18 +16,19 @@
  */
 package syam.flaggame.command.objective;
 
-import syam.flaggame.game.objective.ObjectiveType;
+import jp.llv.flaggame.api.stage.objective.ObjectiveType;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.BaseCommand;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.game.Stage;
+import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.api.exception.FlagGameException;
 import syam.flaggame.permission.Perms;
-import syam.flaggame.player.GamePlayer;
+import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.stage.Stage;
 
 /**
  *
@@ -35,20 +36,20 @@ import syam.flaggame.player.GamePlayer;
  */
 public abstract class ObjectiveCommand extends BaseCommand {
 
-    public ObjectiveCommand(FlagGame plugin, int argLength, String usage, Perms permission, String name, String... aliases) {
-        super(plugin, true, argLength + 1, "<type> " + usage, permission, name, aliases);
+    public ObjectiveCommand(FlagGameAPI api, int argLength, String usage, Perms permission, String name, String... aliases) {
+        super(api, true, argLength + 1, "<type> " + usage, permission, name, aliases);
     }
 
-    public ObjectiveCommand(FlagGame plugin, int argLength, String usage, String name, String... aliases) {
-        this(plugin, argLength, usage, null, name, aliases);
+    public ObjectiveCommand(FlagGameAPI api, int argLength, String usage, String name, String... aliases) {
+        this(api, argLength, usage, null, name, aliases);
     }
 
     @Override
-    public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
-        GamePlayer gplayer = plugin.getPlayers().getPlayer(player);
-        Stage stage = gplayer.getSetupSession().map(s -> s.getSelectedStage()).orElse(null);
+    public void execute(List<String> args, CommandSender sender, Player player) throws FlagGameException {
+        GamePlayer gplayer = api.getPlayers().getPlayer(player);
+        Stage stage = gplayer.getSetupSession().map(s -> s.getSelected(Stage.class)).orElse(null);
         if (stage == null) {
-            throw new CommandException("&c先に編集するゲームを選択してください");
+            throw new CommandException("&cあなたはステージを選択していません！");
         }
         ObjectiveType type;
         try {
@@ -63,6 +64,6 @@ public abstract class ObjectiveCommand extends BaseCommand {
         execute(args, player, stage, type);
     }
 
-    public abstract void execute(List<String> args, Player player, Stage stage, ObjectiveType type) throws CommandException;
+    public abstract void execute(List<String> args, Player player, Stage stage, ObjectiveType type) throws FlagGameException;
 
 }

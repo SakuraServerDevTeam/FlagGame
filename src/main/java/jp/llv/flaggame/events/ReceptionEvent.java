@@ -16,23 +16,23 @@
  */
 package jp.llv.flaggame.events;
 
-import jp.llv.flaggame.reception.GameReception;
 import org.bukkit.event.Event;
+import jp.llv.flaggame.api.reception.Reception;
 
 /**
  *
  * @author Toyblocks
  */
 public abstract class ReceptionEvent extends Event {
-    
-    private final GameReception reception;
 
-    public ReceptionEvent(GameReception reception) {
+    private final Reception reception;
+
+    public ReceptionEvent(Reception reception) {
         this.reception = reception;
     }
 
-    public GameReception getReception() {
+    public Reception getReception() {
         return reception;
     }
-    
+
 }

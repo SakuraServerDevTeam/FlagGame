@@ -19,12 +19,12 @@ package syam.flaggame.command.area.data;
 import java.util.List;
 import java.util.Map;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.area.AreaCommand;
 import jp.llv.flaggame.util.DashboardBuilder;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.game.AreaInfo;
-import syam.flaggame.game.Stage;
+import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.api.stage.Stage;
+import jp.llv.flaggame.api.stage.area.StageAreaInfo;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.util.Actions;
 
@@ -34,9 +34,9 @@ import syam.flaggame.util.Actions;
  */
 public class AreaDataListCommand extends AreaCommand {
 
-    public AreaDataListCommand(FlagGame plugin) {
+    public AreaDataListCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 1,
                 "<id> <- show a list of area data",
                 Perms.AREA_LIST,
@@ -48,12 +48,12 @@ public class AreaDataListCommand extends AreaCommand {
     @Override
     public void execute(List<String> args, Player player, Stage stage) throws CommandException {
         String id = args.get(0);
-        AreaInfo info = stage.getAreas().getAreaInfo(id);
+        StageAreaInfo info = stage.getAreas().getAreaInfo(id);
         if (info == null) {
             throw new CommandException("&cその名前のエリアは存在しません！");
         }
-        
-        Map<String, AreaInfo.RollbackData> rollbacks = info.getRollbacks();
+
+        Map<String, ? extends StageAreaInfo.StageRollbackData> rollbacks = info.getRollbacks();
         DashboardBuilder.newBuilder("Area Data", rollbacks.size())
                 .appendMap(rollbacks, (t, name, data) -> {
                     t.value(data.getTarget().getType().toString().toLowerCase()).space()

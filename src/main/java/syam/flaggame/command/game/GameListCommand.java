@@ -17,14 +17,14 @@
 package syam.flaggame.command.game;
 
 import java.util.List;
-import jp.llv.flaggame.reception.GameReception;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.command.BaseCommand;
-import syam.flaggame.exception.CommandException;
+import jp.llv.flaggame.api.exception.CommandException;
 import syam.flaggame.permission.Perms;
-import syam.flaggame.player.GamePlayer;
+import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.reception.Reception;
 
 /**
  *
@@ -32,9 +32,9 @@ import syam.flaggame.player.GamePlayer;
  */
 public class GameListCommand extends BaseCommand {
 
-    public GameListCommand(FlagGame plugin) {
+    public GameListCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 false,
                 0,
                 " <- show a list of receptions",
@@ -46,18 +46,18 @@ public class GameListCommand extends BaseCommand {
 
     @Override
     public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
-        GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
+        GamePlayer gPlayer = this.api.getPlayers().getPlayer(player);
 
-        if (this.plugin.getReceptions().getReceptions().isEmpty()) {
+        if (this.api.getReceptions().getReceptions().isEmpty()) {
             gPlayer.sendMessage("&c現在有効な参加受付はありません");
             return;
         }
-        for (GameReception r : this.plugin.getReceptions()) {
+        for (Reception r : this.api.getReceptions()) {
             gPlayer.sendMessage("&" + getColorCodeOf(r.getState()) + r.getName() + "&e(" + r.getID() + ")");
         }
     }
 
-    private static char getColorCodeOf(GameReception.State state) {
+    private static char getColorCodeOf(Reception.State state) {
         switch (state) {
             case READY:
                 return '7';

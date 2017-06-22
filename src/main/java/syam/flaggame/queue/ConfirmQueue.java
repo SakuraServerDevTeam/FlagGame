@@ -16,37 +16,35 @@
  */
 package syam.flaggame.queue;
 
+import jp.llv.flaggame.api.queue.Queueable;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.command.CommandSender;
 
-import syam.flaggame.FlagGame;
-import syam.flaggame.exception.CommandException;
+import jp.llv.flaggame.api.exception.FlagGameException;
+import jp.llv.flaggame.api.queue.ConfirmQueueAPI;
 
 /**
  * ConfirmQueue (ConfirmQueue.java)
- * 
+ *
  * @author syam(syamn)
  */
-public class ConfirmQueue {
-    private final FlagGame plugin;
+public class ConfirmQueue implements ConfirmQueueAPI {
+
     private final List<QueuedCommand> queue;
 
     /**
      * コンストラクタ
-     * 
-     * @param plugin
      */
-    public ConfirmQueue(final FlagGame plugin) {
-        this.plugin = plugin;
-
+    public ConfirmQueue() {
         queue = new ArrayList<>();
     }
 
     /*
      * キューにコマンドを追加する
      */
+    @Override
     public void addQueue(CommandSender sender, Queueable queueable, List<String> args, int seconds) {
         cancelQueue(sender);
         this.queue.add(new QueuedCommand(sender, queueable, args, seconds));
@@ -57,7 +55,8 @@ public class ConfirmQueue {
      * 
      * @param sender コマンド送信者
      */
-    public boolean confirmQueue(CommandSender sender) throws CommandException {
+    @Override
+    public boolean confirmQueue(CommandSender sender) throws FlagGameException {
         for (QueuedCommand cmd : this.queue) {
             if (cmd.getSender().equals(sender)) {
                 cmd.execute();
@@ -74,6 +73,7 @@ public class ConfirmQueue {
      * @param sender
      *            CommandSender
      */
+    @Override
     public void cancelQueue(CommandSender sender) {
         QueuedCommand cmd = null;
         for (QueuedCommand check : this.queue) {

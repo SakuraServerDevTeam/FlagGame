@@ -35,7 +35,7 @@ public class MongoDBResultCallback<T> implements SingleResultCallback<T>, Block<
         Objects.requireNonNull(callback);
         this.callback = callback;
     }
-    
+
     @Override
     public void apply(T t) {
         callback.call(DatabaseResult.success(t));
@@ -52,5 +52,5 @@ public class MongoDBResultCallback<T> implements SingleResultCallback<T>, Block<
             apply(t);
         }
     }
-    
+
 }

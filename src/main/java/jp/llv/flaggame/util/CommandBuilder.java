@@ -25,14 +25,14 @@ import java.util.function.Function;
  * @param <R> callback
  */
 public class CommandBuilder<R> {
-    
+
     private final StringBuilder command = new StringBuilder("/flaggame:flag");
     private final Function<String, R> callback;
 
     private CommandBuilder(Function<String, R> callback) {
         this.callback = callback;
     }
-    
+
     public CommandBuilder<R> append(Object argument) {
         if (command.length() != 1) {
             command.append(' ');
@@ -40,17 +40,17 @@ public class CommandBuilder<R> {
         command.append(Objects.toString(argument));
         return this;
     }
-    
+
     public R create() {
         return callback.apply(command.toString());
     }
-    
+
     public static CommandBuilder<String> newBuilder() {
         return new CommandBuilder<>(Function.identity());
     }
-    
+
     public static <R> CommandBuilder<R> newBuilder(Function<String, R> callback) {
         return new CommandBuilder<>(callback);
     }
-    
+
 }

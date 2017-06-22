@@ -25,7 +25,7 @@ public class StringUtil {
     private StringUtil() {
         throw new RuntimeException();
     }
-    
+
     public static String capitalize(String source) {
         char[] result = source.toCharArray();
         boolean front = true;

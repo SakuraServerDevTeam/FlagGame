@@ -16,7 +16,9 @@
  */
 package syam.flaggame.listener;
 
-import jp.llv.flaggame.game.Game;
+import jp.llv.flaggame.api.FlagGameAPI;
+import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.game.Game;
 import jp.llv.flaggame.reception.TeamColor;
 import net.md_5.bungee.api.ChatMessageType;
 import org.bukkit.block.Block;
@@ -27,8 +29,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
-import syam.flaggame.FlagGame;
-import syam.flaggame.player.GamePlayer;
 import syam.flaggame.util.Actions;
 
 /**
@@ -37,10 +37,10 @@ import syam.flaggame.util.Actions;
  */
 public class FGSignListener implements Listener {
 
-    private final FlagGame plugin;
+    private final FlagGameAPI api;
 
-    public FGSignListener(FlagGame plugin) {
-        this.plugin = plugin;
+    public FGSignListener(FlagGameAPI api) {
+        this.api = api;
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
@@ -86,13 +86,13 @@ public class FGSignListener implements Listener {
                 return;
             }
 
-            GamePlayer gplayer = plugin.getPlayers().getPlayer(player);
+            GamePlayer gplayer = api.getPlayers().getPlayer(player);
             if (!gplayer.getTeam().isPresent()) {
                 Actions.message(player, "&cこの看板はフラッグゲーム中にのみ使うことができます");
                 return;
             }
 
-            if (gplayer.getTeam().get().getColor() != signTeam) {
+            if (gplayer.getTeam().get().getType() != signTeam) {
                 Actions.message(player, "&cこれはあなたのチームの看板ではありません！");
                 return;
             }
@@ -120,7 +120,7 @@ public class FGSignListener implements Listener {
     }
 
     private void onClickAtKillSign(Player player, Sign sign) {
-        GamePlayer gplayer = plugin.getPlayers().getPlayer(player);
+        GamePlayer gplayer = api.getPlayers().getPlayer(player);
         if (gplayer.getTeam().isPresent()) {
             Game game = gplayer.getGame().get();
             GamePlayer.sendMessage(game, "&6[" + game.getName() + "]&6 '" + gplayer.getColoredName() + "&6'が自殺しました。");
@@ -130,15 +130,15 @@ public class FGSignListener implements Listener {
     }
 
     private void onClickAtStageSign(Player player, Sign sign) {
-        plugin.getServer().dispatchCommand(player, "flaggame:flag stage info " + sign.getLine(2));
+        api.getServer().dispatchCommand(player, "flaggame:flag stage info " + sign.getLine(2));
     }
 
     private void onClickAtJoinSign(Player player, Sign sign) {
-        plugin.getServer().dispatchCommand(player, "flaggame:flag join " + sign.getLine(2));
+        api.getServer().dispatchCommand(player, "flaggame:flag join " + sign.getLine(2));
     }
 
     private void onClickAtWatchSign(Player player, Sign sign) {
-        plugin.getServer().dispatchCommand(player, "flaggame:flag watch " + sign.getLine(2));
+        api.getServer().dispatchCommand(player, "flaggame:flag watch " + sign.getLine(2));
     }
 
 }

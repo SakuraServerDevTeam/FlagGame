@@ -16,6 +16,7 @@
  */
 package jp.llv.flaggame.profile.record;
 
+import jp.llv.flaggame.api.profile.RecordType;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -29,16 +30,16 @@ import org.bson.Document;
 public class GameFinishRecord extends GameRecord {
 
     private static final String FIELD_TEAM_WON = "win";
-    
+
     public GameFinishRecord(UUID game, List<TeamColor> colors) {
         super(game);
         super.put(FIELD_TEAM_WON, colors.stream().map(c -> c.toString().toLowerCase()).collect(Collectors.toList()));
     }
 
-    /*package*/ GameFinishRecord(Document base) {
+    public GameFinishRecord(Document base) {
         super(base);
     }
-    
+
     public List<TeamColor> getTeamsWin() {
         List<String> colors = (List<String>) super.get(FIELD_TEAM_WON);
         return colors.stream().map(c -> TeamColor.valueOf(c.toUpperCase())).collect(Collectors.toList());
@@ -48,5 +49,5 @@ public class GameFinishRecord extends GameRecord {
     public RecordType getType() {
         return RecordType.GAME_FINISH;
     }
-    
+
 }

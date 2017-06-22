@@ -26,7 +26,7 @@ package jp.llv.flaggame.database;
 public interface DatabaseResult<T, E extends Throwable> {
 
     T get() throws E;
-    
+
     default void test() throws E {
         get();
     }

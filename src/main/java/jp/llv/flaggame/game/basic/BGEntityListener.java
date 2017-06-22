@@ -20,9 +20,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
-import syam.flaggame.game.objective.BannerSpawner;
-import syam.flaggame.game.objective.Flag;
-import jp.llv.flaggame.game.permission.GamePermission;
+import jp.llv.flaggame.api.FlagGameAPI;
+import jp.llv.flaggame.api.stage.objective.BannerSpawner;
+import jp.llv.flaggame.api.stage.objective.Flag;
+import jp.llv.flaggame.api.stage.permission.GamePermission;
 import jp.llv.flaggame.profile.record.BannerStealRecord;
 import jp.llv.flaggame.profile.record.PlayerDeathRecord;
 import jp.llv.flaggame.profile.record.PlayerKillRecord;
@@ -42,9 +43,8 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
-import syam.flaggame.FlagGame;
-import syam.flaggame.game.AreaSet;
-import syam.flaggame.player.GamePlayer;
+import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.stage.area.StageAreaSet;
 
 /**
  * PvP handling listener.
@@ -55,12 +55,12 @@ public class BGEntityListener extends BGListener {
 
     private static final double WOOL_REPAINT_PCT = 0.5;
 
-    private final FlagGame plugin;
+    private final FlagGameAPI api;
     private final Collection<GamePlayer> players;
 
-    public BGEntityListener(FlagGame plugin, BasicGame game) {
+    public BGEntityListener(FlagGameAPI api, BasicGame game) {
         super(game);
-        this.plugin = plugin;
+        this.api = api;
         this.players = game.getReception().getPlayers();
     }
 
@@ -75,8 +75,8 @@ public class BGEntityListener extends BGListener {
         boolean remoteDamage = cause.remote;
 
         Player player = (Player) event.getEntity();
-        GamePlayer gp = this.plugin.getPlayers().getPlayer(player);
-        GamePlayer gd = this.plugin.getPlayers().getPlayer(damager);
+        GamePlayer gp = this.api.getPlayers().getPlayer(player);
+        GamePlayer gd = this.api.getPlayers().getPlayer(damager);
 
         // Banner check (drop)
         Optional<HeldBanner> bannerHeld = game.getBannerHeld(gp);
@@ -102,17 +102,17 @@ public class BGEntityListener extends BGListener {
         }
 
         // Disallow damage in basements
-        AreaSet as = game.getStage().getAreas();
-        if (as.getAreaInfo(player.getLocation(), a -> a.getPermission(GamePermission.GODMODE).getState(gp.getTeam().get().getColor()))) {
+        StageAreaSet as = game.getStage().getAreas();
+        if (as.getAreaInfo(player.getLocation(), a -> a.getPermission(GamePermission.GODMODE).getState(gp.getTeam().get().getType()))) {
             event.setCancelled(true);
-            if (!as.getAreaInfo(damager.getLocation(), a -> a.getPermission(GamePermission.GODMODE).getState(gd.getTeam().get().getColor()))) {
+            if (!as.getAreaInfo(damager.getLocation(), a -> a.getPermission(GamePermission.GODMODE).getState(gd.getTeam().get().getType()))) {
                 damager.damage(event.getDamage(), player);
             }
             return;
         }
 
         // Disallow friendly fire
-        if (plugin.getConfigs().getDisableTeamPVP()
+        if (api.getConfig().getDisableTeamPVP()
             && gp.getTeam().get() == gd.getTeam().get()) {
             event.setDamage(0D);
             event.setCancelled(true);
@@ -142,7 +142,7 @@ public class BGEntityListener extends BGListener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void on(PlayerDeathEvent event) {
         Player killed = event.getEntity();
-        GamePlayer gkilled = this.plugin.getPlayers().getPlayer(killed);
+        GamePlayer gkilled = this.api.getPlayers().getPlayer(killed);
         if (!this.players.contains(gkilled)) {
             return;
         }
@@ -154,7 +154,7 @@ public class BGEntityListener extends BGListener {
         Player killer = cause.attacker;
         String weapon = cause.cause;
 
-        GamePlayer gkiller = this.plugin.getPlayers().getPlayer(killer);
+        GamePlayer gkiller = this.api.getPlayers().getPlayer(killer);
         if (gkiller != null && (!gkiller.getGame().isPresent() || gkiller.getGame().get() != this.game)) {
             return;
         }
@@ -178,7 +178,7 @@ public class BGEntityListener extends BGListener {
         }
         game.getRecordStream().push(new PlayerDeathRecord(game.getID(), killed, game.getStage().getDeathScore()));
 
-        GamePlayer.sendMessage(this.plugin.getPlayers().getPlayersIn(killed.getWorld()), ChatMessageType.ACTION_BAR, message);
+        GamePlayer.sendMessage(this.api.getPlayers().getPlayersIn(killed.getWorld()), ChatMessageType.ACTION_BAR, message);
         GamePlayer.playSound(killedTeam, Sound.ENTITY_RABBIT_DEATH);
         if (killerTeam != null) {
             GamePlayer.playSound(killerTeam, Sound.ENTITY_SKELETON_DEATH);

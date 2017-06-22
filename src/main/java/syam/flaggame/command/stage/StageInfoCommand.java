@@ -17,46 +17,45 @@
 package syam.flaggame.command.stage;
 
 import java.util.List;
-import jp.llv.flaggame.game.Game;
-import jp.llv.flaggame.reception.GameReception;
-import syam.flaggame.FlagGame;
-import org.bukkit.permissions.Permissible;
+import jp.llv.flaggame.api.game.Game;
+import jp.llv.flaggame.api.FlagGameAPI;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.command.BaseCommand;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.game.Stage;
+import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.api.stage.Stage;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.util.Actions;
+import jp.llv.flaggame.api.reception.Reception;
 
 public class StageInfoCommand extends BaseCommand {
 
-    public StageInfoCommand(FlagGame plugin) {
+    public StageInfoCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 false,
                 0,
                 "[stage] <- show stage info",
                 Perms.STAGE_INFO,
                 "info"
         );
-    
+
     }
 
     @Override
     public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
         // 引数が無ければすべてのステージデータを表示する
         if (args.isEmpty()) {
-            int stagecount = this.plugin.getStages().getStages().size();
+            int stagecount = this.api.getStages().getStages().size();
 
             Actions.message(sender, "&a ===============&b StageList(" + stagecount + ") &a===============");
             if (stagecount == 0) {
                 Actions.message(sender, " &7読み込まれているステージがありません");
             } else {
-                for (Stage stage : this.plugin.getStages()) {
+                for (Stage stage : this.api.getStages()) {
                     // ゲームステータス取得
-                    String status = stage.getReception().map(GameReception::getState)
-                            .map(GameReception.State::toGameState)
+                    String status = stage.getReception().map(Reception::getState)
+                            .map(Reception.State::toGameState)
                             .map(s -> s == Game.State.PREPARATION ? "&6受付中" : "&c開始中").orElse("&7待機中");
 
                     String s = "&6" + stage.getName() + "&b: 状態=&f" + status;
@@ -67,13 +66,13 @@ public class StageInfoCommand extends BaseCommand {
             Actions.message(sender, "&a ============================================");
         } // 引数があれば指定したゲームについての詳細情報を表示する
         else {
-            Stage stage = this.plugin.getStages().getStage(args.get(0))
+            Stage stage = this.api.getStages().getStage(args.get(0))
                     .orElseThrow(() -> new CommandException("&cそのステージは存在しません！"));
 
             Actions.message(sender, "&a ==================&b GameDetail &a==================");
 
             // ゲームステータス取得
-            String status = stage.getReception().map(GameReception::getState).map(GameReception.State::toGameState)
+            String status = stage.getReception().map(Reception::getState).map(Reception.State::toGameState)
                     .map(s -> s == Game.State.PREPARATION ? "&6受付中" : "&c開始中").orElse("&7待機中");
 
             String s1 = "&6 " + stage.getName()
@@ -82,7 +81,7 @@ public class StageInfoCommand extends BaseCommand {
             String s2 = "&b 製作者=&6" + stage.getAuthor()
                         + "&b 説明=&6" + stage.getDescription();
             String s7 = "&b 参加料=&6" + Actions.formatMoney(stage.getEntryFee())
-                    + "&b 賞金=&6" + Actions.formatMoney(stage.getPrize());
+                        + "&b 賞金=&6" + Actions.formatMoney(stage.getPrize());
 
             // メッセージ送信
             Actions.message(sender, s1);

@@ -16,20 +16,20 @@
  */
 package syam.flaggame.command.objective;
 
-import syam.flaggame.game.objective.ObjectiveType;
+import jp.llv.flaggame.api.stage.objective.ObjectiveType;
 import java.util.Collection;
 import java.util.List;
 import org.bukkit.Location;
-import syam.flaggame.game.objective.Flag;
+import jp.llv.flaggame.api.stage.objective.Flag;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import jp.llv.flaggame.util.DashboardBuilder;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.game.Stage;
-import syam.flaggame.game.objective.BannerSlot;
-import syam.flaggame.game.objective.BannerSpawner;
-import syam.flaggame.game.objective.GameChest;
-import syam.flaggame.game.objective.Nexus;
+import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.api.stage.Stage;
+import jp.llv.flaggame.api.stage.objective.BannerSlot;
+import jp.llv.flaggame.api.stage.objective.BannerSpawner;
+import jp.llv.flaggame.api.stage.objective.GameChest;
+import jp.llv.flaggame.api.stage.objective.Nexus;
 import syam.flaggame.permission.Perms;
 
 /**
@@ -38,9 +38,9 @@ import syam.flaggame.permission.Perms;
  */
 public class ObjectiveListCommand extends ObjectiveCommand {
 
-    public ObjectiveListCommand(FlagGame plugin) {
+    public ObjectiveListCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 0,
                 "<- show objective list",
                 Perms.OBJECTIVE_LIST,
@@ -111,7 +111,7 @@ public class ObjectiveListCommand extends ObjectiveCommand {
                     if (obj.getColor() == null) {
                         d.value("全チーム");
                     } else {
-                        d.text(obj.getColor().getBungeeChatColor(), obj.getColor().getTeamName());
+                        d.text(obj.getColor().getBungeeChatColor(), obj.getColor().getName());
                     }
                     d.buttonTp("tp", player, loc)
                             .buttonRun("delete").append("objective delete")
@@ -148,7 +148,7 @@ public class ObjectiveListCommand extends ObjectiveCommand {
                     if (obj.getColor() == null) {
                         d.white("全チーム");
                     } else {
-                        d.text(obj.getColor().getBungeeChatColor(), obj.getColor().getTeamName());
+                        d.text(obj.getColor().getBungeeChatColor(), obj.getColor().getName());
                     }
                     d.buttonTp("tp", player, loc)
                             .buttonRun("delete").append("objective delete")

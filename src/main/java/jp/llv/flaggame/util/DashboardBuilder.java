@@ -16,11 +16,11 @@
  */
 package jp.llv.flaggame.util;
 
+import jp.llv.flaggame.util.function.TriConsumer;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
-import jp.llv.flaggame.util.TriConsumer;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -206,7 +206,7 @@ public class DashboardBuilder {
             return this;
         });
     }
-    
+
     public DashboardBuilder buttonTp(String name, Player player, Location loc) {
         return buttonRun("tp").append("tp").append(player.getName())
                 .append(loc.getX()).append(loc.getY()).append(loc.getZ())
@@ -291,8 +291,8 @@ public class DashboardBuilder {
         return appendMap(contents, (t, k) -> t.green(k), valueFormatter);
     }
 
-    public <K extends CharSequence, V> DashboardBuilder appendEnumMap(Map<? extends K, ? extends V> contents,
-                                                                      BiConsumer<DashboardBuilder, ? super V> valueFormatter) {
+    public <K extends Enum<K>, V> DashboardBuilder appendEnumMap(Map<? extends K, ? extends V> contents,
+                                                                 BiConsumer<DashboardBuilder, ? super V> valueFormatter) {
         return appendMap(contents, (t, k) -> t.green(k.toString().toLowerCase()), valueFormatter);
     }
 

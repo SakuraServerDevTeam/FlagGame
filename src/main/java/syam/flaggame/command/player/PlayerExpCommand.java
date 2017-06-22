@@ -17,13 +17,13 @@
 package syam.flaggame.command.player;
 
 import java.util.List;
-import jp.llv.flaggame.profile.PlayerProfile;
+import jp.llv.flaggame.profile.CachedPlayerProfile;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.BaseCommand;
 import jp.llv.flaggame.util.OnelineBuilder;
-import syam.flaggame.exception.CommandException;
+import jp.llv.flaggame.api.exception.CommandException;
 import syam.flaggame.permission.Perms;
 
 /**
@@ -32,9 +32,9 @@ import syam.flaggame.permission.Perms;
  */
 public class PlayerExpCommand extends BaseCommand {
 
-    public PlayerExpCommand(FlagGame plugin) {
+    public PlayerExpCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 false,
                 0,
                 "[player] <- show specified player's exp",
@@ -47,7 +47,7 @@ public class PlayerExpCommand extends BaseCommand {
         Player target = null;
         if (args.size() >= 1) {
             Perms.PLAYER_EXP_OTHER.requireTo(sender);
-            target = plugin.getServer().getPlayer(args.get(0));
+            target = api.getServer().getPlayer(args.get(0));
         } else if (player != null) {
             Perms.PLAYER_EXP_SELF.requireTo(sender);
             target = player;
@@ -55,7 +55,7 @@ public class PlayerExpCommand extends BaseCommand {
         if (target == null) {
             throw new CommandException("&cプレイヤーを指定してください！");
         }
-        PlayerProfile profile = plugin.getProfiles().getProfile(target.getUniqueId());
+        CachedPlayerProfile profile = api.getProfiles().getProfile(target.getUniqueId());
         OnelineBuilder.newBuilder()
                 .value(target.getName()).info("のレベルは")
                 .value(profile.getLevel().orElseThrow(() -> new CommandException("&c対象のプロファイルがが読み込まれていません！")))

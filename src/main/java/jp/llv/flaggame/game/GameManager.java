@@ -16,45 +16,37 @@
  */
 package jp.llv.flaggame.game;
 
+import jp.llv.flaggame.api.game.GameAPI;
+import jp.llv.flaggame.api.game.Game;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Optional;
 import java.util.stream.Collectors;
-import jp.llv.flaggame.reception.GameReception;
-import jp.llv.flaggame.reception.ReceptionManager;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 
 /**
  *
  * @author Toyblocks
  */
-public class GameManager implements Iterable<Game> {
+public class GameManager implements GameAPI {
 
-    private final FlagGame plugin;
-    private final ReceptionManager receptions;
+    private final FlagGameAPI api;
 
-    public GameManager(FlagGame plugin) {
-        this.plugin = plugin;
-        this.receptions = plugin.getReceptions();
+    public GameManager(FlagGameAPI api) {
+        this.api = api;
     }
 
+    @Override
     public Collection<Game> getGames() {
-        return this.receptions.getReceptions().stream()
-                .map(GameReception::getGame)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
+        return api.getReceptions().getReceptions().stream()
+                .flatMap(r -> r.getGames().stream())
                 .collect(Collectors.toSet());
     }
-    
+
+    @Override
     public Collection<Game> getGames(Game.State state) {
         return this.getGames().stream()
                 .filter(g -> g.getState() == state)
                 .collect(Collectors.toSet());
-    }
-    
-    @Deprecated
-    public Optional<Game> getGame(String id) {
-        return this.receptions.getReception(id).flatMap(GameReception::getGame);
     }
 
     @Override

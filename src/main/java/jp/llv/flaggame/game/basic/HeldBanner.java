@@ -16,7 +16,7 @@
  */
 package jp.llv.flaggame.game.basic;
 
-import syam.flaggame.game.objective.BannerSpawner;
+import jp.llv.flaggame.api.stage.objective.BannerSpawner;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -45,7 +45,7 @@ public class HeldBanner {
         this.sources = new HashMap<>();
         spawners.stream().forEach(s -> this.sources.put(s, s.getHp()));
     }
-    
+
     public HeldBanner(BannerSpawner spawner) {
         this.sources = Collections.singletonMap(spawner, spawner.getHp());
     }

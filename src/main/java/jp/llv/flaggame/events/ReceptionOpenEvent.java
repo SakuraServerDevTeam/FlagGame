@@ -16,9 +16,9 @@
  */
 package jp.llv.flaggame.events;
 
-import jp.llv.flaggame.reception.GameReception;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
+import jp.llv.flaggame.api.reception.Reception;
 
 /**
  *
@@ -27,10 +27,10 @@ import org.bukkit.event.HandlerList;
 public class ReceptionOpenEvent extends ReceptionEvent implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();
-    
+
     private boolean cancel = false;
-    
-    public ReceptionOpenEvent(GameReception reception) {
+
+    public ReceptionOpenEvent(Reception reception) {
         super(reception);
     }
 
@@ -48,9 +48,9 @@ public class ReceptionOpenEvent extends ReceptionEvent implements Cancellable {
     public HandlerList getHandlers() {
         return handlers;
     }
-    
+
     public static HandlerList getHandlerList() {
         return handlers;
     }
-    
+
 }

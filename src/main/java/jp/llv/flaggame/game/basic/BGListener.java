@@ -24,15 +24,15 @@ import org.bukkit.event.Listener;
  * @author Toyblocks
  */
 public abstract class BGListener implements Listener {
-    
+
     protected final BasicGame game;
 
     public BGListener(BasicGame game) {
         this.game = game;
     }
-    
+
     public void unregister() {
         HandlerList.unregisterAll(this);
     }
-    
+
 }

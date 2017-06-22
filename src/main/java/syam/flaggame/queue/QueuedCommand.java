@@ -16,21 +16,23 @@
  */
 package syam.flaggame.queue;
 
+import jp.llv.flaggame.api.queue.Queueable;
 import java.util.Calendar;
 import java.util.List;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import syam.flaggame.exception.CommandException;
+import jp.llv.flaggame.api.exception.FlagGameException;
 
 import syam.flaggame.util.Actions;
 
 /**
  * QueuedCommand (QueuedCommand.java)
- * 
+ *
  * @author syam(syamn)
  */
 public class QueuedCommand {
+
     private final CommandSender sender;
     private final Queueable queueable;
     private final List<String> args;
@@ -47,7 +49,7 @@ public class QueuedCommand {
         this.requestDate = Calendar.getInstance();
     }
 
-    public void execute() throws CommandException {
+    public void execute() throws FlagGameException {
         // タイムアウトチェック
         this.requestDate.add(13, this.timeoutSec);
         if (!this.requestDate.after(Calendar.getInstance())) {

@@ -19,8 +19,8 @@ package jp.llv.flaggame.game;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.UnaryOperator;
+import jp.llv.flaggame.api.player.GamePlayer;
 import jp.llv.flaggame.util.MapUtils;
-import syam.flaggame.player.GamePlayer;
 
 /**
  *

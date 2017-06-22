@@ -27,7 +27,7 @@ import jp.llv.flaggame.database.DatabaseResult;
  * @author SakuraServerDev
  */
 public class MongoDBErrorCallback<T> implements SingleResultCallback<T> {
-    
+
     private final DatabaseCallback<?, ? super DatabaseException> callback;
 
     public MongoDBErrorCallback(DatabaseCallback<?, ? super DatabaseException> callback) {
@@ -43,5 +43,5 @@ public class MongoDBErrorCallback<T> implements SingleResultCallback<T> {
             callback.call(DatabaseResult.fail(new DatabaseException(thrwbl)));
         }
     }
-    
+
 }

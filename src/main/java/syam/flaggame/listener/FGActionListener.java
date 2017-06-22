@@ -16,6 +16,7 @@
  */
 package syam.flaggame.listener;
 
+import jp.llv.flaggame.api.FlagGameAPI;
 import jp.llv.flaggame.events.PlayerWallKickEvent;
 import org.bukkit.Effect;
 import org.bukkit.block.Block;
@@ -27,7 +28,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.util.Vector;
-import syam.flaggame.FlagGame;
 import syam.flaggame.permission.Perms;
 
 /**
@@ -36,12 +36,12 @@ import syam.flaggame.permission.Perms;
  */
 public class FGActionListener implements Listener {
 
-    private final FlagGame plugin;
+    private final FlagGameAPI api;
 
-    public FGActionListener(FlagGame plugin) {
-        this.plugin = plugin;
+    public FGActionListener(FlagGameAPI api) {
+        this.api = api;
     }
-    
+
     @EventHandler
     public void on(PlayerInteractEvent event) {
         Player player = event.getPlayer();
@@ -60,15 +60,15 @@ public class FGActionListener implements Listener {
         Vector in = player.getEyeLocation().getDirection();
         Vector wall = new Vector(face.getModX(), face.getModY(), face.getModZ());
         Vector out = in.add(wall.multiply(-2 * in.dot(wall)))
-                .multiply(plugin.getConfigs().getWallKickPowerXZ())
-                .setY(plugin.getConfigs().getWallKickPowerY());
+                .multiply(api.getConfig().getWallKickPowerXZ())
+                .setY(api.getConfig().getWallKickPowerY());
         PlayerWallKickEvent actionEvent = new PlayerWallKickEvent(player, wallBlock, out);
-        plugin.getServer().getPluginManager().callEvent(actionEvent);
+        api.getServer().getPluginManager().callEvent(actionEvent);
         if (actionEvent.isCancelled()) {
             return;
         }
         player.getWorld().playEffect(player.getLocation(), Effect.STEP_SOUND, wallBlock.getType());
         player.setVelocity(actionEvent.getVelocity());
     }
-    
+
 }

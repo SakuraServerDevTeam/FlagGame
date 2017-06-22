@@ -18,15 +18,21 @@ package syam.flaggame.command;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import jp.llv.flaggame.api.FlagGameAPI;
+import jp.llv.flaggame.util.FlagTabCompleter;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import syam.flaggame.FlagGame;
 import org.bukkit.permissions.Permissible;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.exception.PermissionException;
+import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.api.exception.FlagGameException;
+import jp.llv.flaggame.api.exception.PermissionException;
+import jp.llv.flaggame.api.exception.ReservedException;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.util.Actions;
 
@@ -36,7 +42,7 @@ public abstract class BaseCommand {
 
     /* コマンド関係 */
     // 初期化必要無し
-    protected final FlagGame plugin;
+    protected final FlagGameAPI api;
 
     // プロパティ
     private final boolean bePlayer;
@@ -44,20 +50,26 @@ public abstract class BaseCommand {
     private final int argLength;
     private final String usage;
     private final Perms permission;
+    private final FlagTabCompleter completer;
     private final String[] aliases;
 
-    public BaseCommand(FlagGame plugin, boolean bePlayer, int argLength, String usage, Perms permission, String name, String... aliases) {
-        this.plugin = plugin;
+    public BaseCommand(FlagGameAPI plugin, boolean bePlayer, int argLength, String usage, Perms permission, FlagTabCompleter completer, String name, String... aliases) {
+        this.api = Objects.requireNonNull(plugin);
         this.bePlayer = bePlayer;
         this.argLength = argLength;
-        this.usage = usage;
+        this.usage = Objects.requireNonNull(usage);
         this.permission = permission;
-        this.name = name;
-        this.aliases = aliases;
+        this.completer = completer;
+        this.name = Objects.requireNonNull(name);
+        this.aliases = Objects.requireNonNull(aliases);
     }
 
-    public BaseCommand(FlagGame plugin, boolean bePlayer, int argLength, String usage, String name, String... aliases) {
-        this(plugin, bePlayer, argLength, usage, null, name, aliases);
+    public BaseCommand(FlagGameAPI plugin, boolean bePlayer, int argLength, String usage, Perms permission, String name, String... aliases) {
+        this(plugin, bePlayer, argLength, usage, permission, null, name, aliases);
+    }
+
+    public BaseCommand(FlagGameAPI plugin, boolean bePlayer, int argLength, String usage, String name, String... aliases) {
+        this(plugin, bePlayer, argLength, usage, null, null, name, aliases);
     }
 
     public final boolean run(CommandSender sender, String[] preArgs, String cmd) {
@@ -91,23 +103,53 @@ public abstract class BaseCommand {
         } catch (PermissionException ex) {
             Actions.message(sender, "&cYou don't have permission to use this!");
         } catch (CommandException ex) {
-            Throwable error = ex;
-            while (error instanceof CommandException) {
-                Actions.message(sender, error.getMessage());
-                error = error.getCause();
-            }
+            Actions.message(sender, ex.getMessage());
+        } catch (ReservedException ex) {
+            Actions.message(sender, "&c そのステージは'" + ex.getReservable().getReserver().getName() + "'に占有されています！");
+        } catch (FlagGameException ex) {
+            Actions.message(sender, "&cAn unhandled plugin error has occured.");
+            api.getLogger().warn("Failed to handle command", ex);
+        } catch (Exception ex) {
+            Actions.message(sender, "&cAn unexpected plugin error has occured.");
+            api.getLogger().warn("Failed to handle command", ex);
         }
         return true;
     }
-    
+
     public final List<String> complete(CommandSender sender, String[] preArgs, String cmd) {
-        return null;
+        List<String> args = new ArrayList<>(Arrays.asList(preArgs));
+        if ((bePlayer && !(sender instanceof Player))
+            || !hasPermission(sender)) {
+            return Collections.emptyList();
+        }
+        try {
+            Collection<String> result;
+            if (sender instanceof Player) {
+                result = complete(args, sender, (Player) sender);
+            } else {
+                result = complete(args, sender, null);
+            }
+            if (result instanceof List) {
+                return (List<String>) result;
+            } else {
+                return new ArrayList<>(result);
+            }
+        } catch (FlagGameException ex) {
+        } catch (Exception ex) {
+            Actions.message(sender, "&cAn unexpected plugin error has occured.");
+            api.getLogger().warn("Failed to complete command", ex);
+        }
+        return Collections.emptyList();
     }
 
-    public void execute(List<String> args, String label, CommandSender sender, Player player) throws CommandException {
+    protected Collection<String> complete(List<String> args, CommandSender sender, Player player) throws FlagGameException {
+        return completer == null ? Collections.emptyList() : completer.complete(api, args, sender);
+    }
+
+    protected void execute(List<String> args, String label, CommandSender sender, Player player) throws FlagGameException {
         this.execute(args, sender, player);
     }
-    
+
     /**
      * コマンドを実際に実行する
      *
@@ -116,7 +158,7 @@ public abstract class BaseCommand {
      * @param player the player who executed this command - equal to sender
      * @throws CommandException
      */
-    public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
+    protected void execute(List<String> args, CommandSender sender, Player player) throws FlagGameException {
         throw new CommandException("&cThis command is not implemented yet.");
     }
 

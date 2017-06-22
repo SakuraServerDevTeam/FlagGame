@@ -24,9 +24,10 @@ import java.util.Iterator;
 import java.util.Set;
 import jp.llv.flaggame.events.TeamJoinedEvent;
 import jp.llv.flaggame.events.TeamLeftEvent;
-import jp.llv.flaggame.game.Game;
+import jp.llv.flaggame.api.game.Game;
 import org.bukkit.Bukkit;
-import syam.flaggame.player.GamePlayer;
+import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.reception.Reception;
 
 /**
  *
@@ -34,44 +35,48 @@ import syam.flaggame.player.GamePlayer;
  */
 public class Team implements Iterable<GamePlayer> {
 
-    private final GameReception reception;
+    private final Reception reception;
     private final Set<GamePlayer> players;
-    private final TeamColor color;
+    private final TeamType type;
 
-    public Team(GameReception reception, TeamColor color) {
-        if (reception == null || color == null) {
+    public Team(Reception reception, TeamType type) {
+        if (reception == null || type == null) {
             throw new NullPointerException();
         }
         this.reception = reception;
-        this.color = color;
+        this.type = type;
         this.players = Collections.synchronizedSet(new HashSet<>());
     }
-    
-    public Team(GameReception reception, TeamColor color, Collection<? extends GamePlayer> players) {
-        if (reception == null || color == null) {
+
+    public Team(Reception reception, TeamType type, Collection<GamePlayer> players) {
+        if (reception == null || type == null) {
             throw new NullPointerException();
         }
         this.reception = reception;
-        this.color = color;
+        this.type = type;
         this.players = Collections.synchronizedSet(new HashSet<>(players));
         this.players.remove(null);
         for (GamePlayer player : this.players) {
             Bukkit.getServer().getPluginManager().callEvent(new TeamJoinedEvent(player, this));
         }
     }
-    
-    public Team(GameReception reception, TeamColor color, GamePlayer ... players) {
-        this(reception, color, Arrays.asList(players));
+
+    public Team(Reception reception, TeamType type, GamePlayer... players) {
+        this(reception, type, Arrays.asList(players));
     }
-    
+
+    public TeamType getType() {
+        return this.type;
+    }
+
     public TeamColor getColor() {
-        return this.color;
+        return getType().toColor();
     }
-    
-    public GameReception getReception() {
+
+    public Reception getReception() {
         return this.reception;
     }
-    
+
     public void add(GamePlayer player) {
         if (this.reception.getState().toGameState() != Game.State.PREPARATION) {
             throw new IllegalStateException();
@@ -79,7 +84,7 @@ public class Team implements Iterable<GamePlayer> {
         this.players.add(player);
         Bukkit.getServer().getPluginManager().callEvent(new TeamJoinedEvent(player, this));
     }
-    
+
     public void remove(GamePlayer player) {
         if (this.reception.getState().toGameState() != Game.State.PREPARATION) {
             throw new IllegalStateException();
@@ -87,18 +92,18 @@ public class Team implements Iterable<GamePlayer> {
         this.players.remove(player);
         Bukkit.getServer().getPluginManager().callEvent(new TeamLeftEvent(player, this));
     }
-    
-    public Collection<? extends GamePlayer> getPlayers() {
+
+    public Collection<GamePlayer> getPlayers() {
         return Collections.unmodifiableCollection(this.players);
     }
-    
+
     public boolean hasJoined(GamePlayer player) {
         return this.getPlayers().contains(player);
     }
-    
+
     @Override
     public Iterator<GamePlayer> iterator() {
         return this.players.iterator();
     }
-    
+
 }

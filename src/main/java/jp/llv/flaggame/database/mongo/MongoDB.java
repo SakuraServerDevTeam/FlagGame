@@ -34,21 +34,21 @@ import jp.llv.flaggame.database.DatabaseCallback;
 import jp.llv.flaggame.database.DatabaseException;
 import jp.llv.flaggame.database.DatabaseResult;
 import jp.llv.flaggame.profile.RecordStream;
-import jp.llv.flaggame.profile.StatEntry;
+import jp.llv.flaggame.api.profile.StatEntry;
 import jp.llv.flaggame.profile.record.ExpRecord;
 import jp.llv.flaggame.profile.record.GameStartRecord;
 import jp.llv.flaggame.profile.record.PlayerRecord;
 import jp.llv.flaggame.profile.record.PlayerResultRecord;
-import jp.llv.flaggame.profile.record.RecordType;
+import jp.llv.flaggame.api.profile.RecordType;
+import jp.llv.flaggame.api.stage.Stage;
 import jp.llv.flaggame.profile.record.ScoreRecord;
 import jp.llv.flaggame.util.MapUtils;
 import org.bson.BsonDocument;
 import org.bson.BsonValue;
 import org.bson.Document;
-import syam.flaggame.FlagConfig;
+import syam.flaggame.CachedFlagConfig;
 import syam.flaggame.FlagGame;
-import syam.flaggame.game.Stage;
-import syam.flaggame.game.StageBsonConverter;
+import jp.llv.flaggame.database.mongo.bson.StageBsonMapper;
 
 /**
  *
@@ -62,6 +62,7 @@ public class MongoDB implements Database {
     public static final String VIEW_STAGE_STATS = "stage_stats";
     public static final String VIEW_GAME_HISTORY = "game_history";
     public static final String COLLECTION_STAGE = "stage";
+    public static final String COLLECTION_FESTIVAL = "festival";
     public static final String COLLECTION_RECORD = "record";
     public static final String FIELD_ID = "_id";
     public static final String FIELD_COUNT = "count";
@@ -70,11 +71,11 @@ public class MongoDB implements Database {
     private static final char FIELD_SEPARATOR = '.';
 
     private final FlagGame plugin;
-    private final FlagConfig config;
+    private final CachedFlagConfig config;
     private MongoClient client;
     private MongoDatabase database;
 
-    public MongoDB(FlagGame plugin, FlagConfig config) {
+    public MongoDB(FlagGame plugin, CachedFlagConfig config) {
         this.plugin = plugin;
         this.config = config;
     }
@@ -131,7 +132,7 @@ public class MongoDB implements Database {
         try {
             getStageCollection().find()
                     .map(BsonDocument.class::cast)
-                    .map(StageBsonConverter::readStage)
+                    .map(StageBsonMapper::readStage)
                     .forEach(
                             new MongoDBResultCallback<>(consumer),
                             new MongoDBErrorCallback<>(callback)
@@ -145,7 +146,7 @@ public class MongoDB implements Database {
     public void saveStage(Stage stage, DatabaseCallback<Void, DatabaseException> callback) {
         try {
             MongoCollection<BsonValue> coll = getStageCollection();
-            BsonDocument bson = StageBsonConverter.writeStage(stage);
+            BsonDocument bson = StageBsonMapper.writeStage(stage);
             coll.updateOne(Filters.eq(FIELD_ID, bson.get(FIELD_ID)),
                     new BsonDocument(SET, bson),
                     new UpdateOptions().upsert(true),
@@ -238,7 +239,7 @@ public class MongoDB implements Database {
                         new StatEntry(d.getInteger(FIELD_COUNT, 0), getDouble(d, ScoreRecord.FIELD_SCORE))
                 )).forEach(new MongoDBResultCallback<>(consumer), new MongoDBErrorCallback<>(callback));
     }
-    
+
     private static Double getDouble(Document doc, String key) {
         Object obj = doc.get(key);
         if (obj instanceof Integer) {

@@ -26,9 +26,9 @@ import org.bukkit.entity.Player;
  * @author SakuraServerDev
  */
 public abstract class ExpRecord extends PlayerRecord {
-    
+
     public static final String FIELD_EXP = "exp";
-    
+
     public ExpRecord(UUID game, double x, double y, double z, UUID player, long exp) {
         super(game, x, y, z, player);
         super.put(FIELD_EXP, exp);
@@ -47,13 +47,14 @@ public abstract class ExpRecord extends PlayerRecord {
     /*package*/ ExpRecord(Document base) {
         super(base);
     }
-    
+
     /**
      * Gets actual experience point the player earned.
+     *
      * @return actual experience point.
      */
     public double getExp() {
         return super.getDouble(FIELD_EXP);
     }
-    
+
 }

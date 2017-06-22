@@ -27,7 +27,7 @@ import org.bukkit.boss.BarColor;
  *
  * @author syam
  */
-public enum TeamColor {
+public enum TeamColor implements TeamType {
 
     RED("赤", 0xE, Color.RED, ChatColor.RED, DyeColor.RED, BarColor.RED, Material.RED_SHULKER_BOX),
     BLUE("青", 0xB, Color.BLUE, ChatColor.BLUE, DyeColor.BLUE, BarColor.BLUE, Material.BLUE_SHULKER_BOX),
@@ -37,8 +37,7 @@ public enum TeamColor {
     SKYBLUE("水", 0x3, Color.AQUA, ChatColor.AQUA, DyeColor.LIGHT_BLUE, BarColor.WHITE, Material.LIGHT_BLUE_SHULKER_BOX),
     YELLOW("黄", 0x4, Color.YELLOW, ChatColor.YELLOW, DyeColor.YELLOW, BarColor.YELLOW, Material.YELLOW_SHULKER_BOX),
     PURPLE("紫", 0x2, Color.PURPLE, ChatColor.DARK_PURPLE, DyeColor.PURPLE, BarColor.PURPLE, Material.PURPLE_SHULKER_BOX),
-    WHITE("白", 0x0, Color.WHITE, ChatColor.WHITE, DyeColor.WHITE, BarColor.WHITE, Material.WHITE_SHULKER_BOX),
-    ;
+    WHITE("白", 0x0, Color.WHITE, ChatColor.WHITE, DyeColor.WHITE, BarColor.WHITE, Material.WHITE_SHULKER_BOX),;
 
     private final String teamName;
     private final byte blockData;
@@ -69,8 +68,14 @@ public enum TeamColor {
      *
      * @return name of the team
      */
-    public String getTeamName() {
+    @Override
+    public String getName() {
         return teamName + "チーム";
+    }
+
+    @Override
+    public TeamColor toColor() {
+        return this;
     }
 
     /**
@@ -85,7 +90,7 @@ public enum TeamColor {
     public Color getColor() {
         return color;
     }
-    
+
     /**
      * チームの色タグ "&(char)" を返す
      *
@@ -94,7 +99,7 @@ public enum TeamColor {
     public String getChatColor() {
         return chatColor.toString();
     }
-    
+
     public ChatColor getBungeeChatColor() {
         return chatColor;
     }
@@ -109,10 +114,6 @@ public enum TeamColor {
 
     public Material getShulerColor() {
         return shulerColor;
-    }
-
-    public String getRichName() {
-        return this.getChatColor() + this.getTeamName() + "&r";
     }
 
     public static TeamColor getByColorData(byte data) {

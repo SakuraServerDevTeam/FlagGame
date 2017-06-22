@@ -16,12 +16,15 @@
  */
 package jp.llv.flaggame.profile;
 
+import jp.llv.flaggame.api.profile.ProfileAPI;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.logging.Level;
+import jp.llv.flaggame.api.FlagGameAPI;
+import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.stage.Stage;
 import jp.llv.flaggame.database.DatabaseException;
 import jp.llv.flaggame.events.GamePlayerUnloadEvent;
 import org.bukkit.entity.Player;
@@ -29,54 +32,54 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import syam.flaggame.FlagGame;
 import jp.llv.flaggame.util.OnelineBuilder;
-import syam.flaggame.game.Stage;
-import syam.flaggame.player.GamePlayer;
 
 /**
  *
  * @author SakuraServerDev
  */
-public class ProfileManager implements Listener {
+public class ProfileManager implements Listener, ProfileAPI {
 
-    private final FlagGame plugin;
-    private final Map<UUID, PlayerProfile> playerProfiles = Collections.synchronizedMap(new HashMap<>());
-    private final Map<String, StageProfile> stageProfiles = Collections.synchronizedMap(new HashMap<>());
+    private final FlagGameAPI api;
+    private final Map<UUID, CachedPlayerProfile> playerProfiles = Collections.synchronizedMap(new HashMap<>());
+    private final Map<String, CachedStageProfile> stageProfiles = Collections.synchronizedMap(new HashMap<>());
 
-    public ProfileManager(FlagGame plugin) {
-        this.plugin = plugin;
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
-        plugin.getServer().getOnlinePlayers().forEach(p -> getProfile(p.getUniqueId()));
+    public ProfileManager(FlagGameAPI api) {
+        this.api = api;
+        api.getServer().getPluginManager().registerEvents(this, api.getPlugin());
+        api.getServer().getOnlinePlayers().forEach(p -> getProfile(p.getUniqueId()));
     }
 
-    public PlayerProfile getProfile(UUID uuid) {
+    @Override
+    public CachedPlayerProfile getProfile(UUID uuid) {
         Objects.requireNonNull(uuid);
-        PlayerProfile profile = playerProfiles.get(uuid);
+        CachedPlayerProfile profile = playerProfiles.get(uuid);
         if (profile == null) {
-            playerProfiles.put(uuid, profile = new PlayerProfile());
+            playerProfiles.put(uuid, profile = new CachedPlayerProfile());
         }
         return profile;
     }
 
-    public StageProfile getProfile(String name) {
+    @Override
+    public CachedStageProfile getProfile(String name) {
         Objects.requireNonNull(name);
-        StageProfile profile = stageProfiles.get(name);
+        CachedStageProfile profile = stageProfiles.get(name);
         if (profile == null) {
-            stageProfiles.put(name, profile = new StageProfile());
+            stageProfiles.put(name, profile = new CachedStageProfile());
         }
         return profile;
     }
 
+    @Override
     public void loadPlayerProfile(UUID uuid, boolean notifyLevelUp) {
-        plugin.getDatabases().ifPresent(database -> {
-            PlayerProfile profile;
+        api.getDatabase().ifPresent(database -> {
+            CachedPlayerProfile profile;
             int oldLevel;
             if (playerProfiles.containsKey(uuid)) {
                 profile = playerProfiles.get(uuid);
                 oldLevel = notifyLevelUp ? profile.getLevel().orElse(Integer.MAX_VALUE) : Integer.MAX_VALUE;
             } else {
-                playerProfiles.put(uuid, profile = new PlayerProfile());
+                playerProfiles.put(uuid, profile = new CachedPlayerProfile());
                 oldLevel = Integer.MAX_VALUE;
             }
             database.loadPlayerStat(uuid, result -> {
@@ -85,7 +88,7 @@ public class ProfileManager implements Listener {
                 try {
                     result.test();
                 } catch (DatabaseException ex) {
-                    plugin.getLogger().log(Level.WARNING, "Failed to load player stats", ex);
+                    api.getLogger().warn("Failed to load player stats", ex);
                 }
             });
             database.loadPlayerExp(uuid, result -> {
@@ -93,7 +96,7 @@ public class ProfileManager implements Listener {
                     Long value = result.get();
                     profile.setExp(value == null ? 0 : value);
                     int newLevel = profile.getLevel().orElse(Integer.MIN_VALUE);
-                    Player player = plugin.getServer().getPlayer(uuid);
+                    Player player = api.getServer().getPlayer(uuid);
                     if (oldLevel < newLevel && player != null) {
                         OnelineBuilder.newBuilder().info("あなたのレベルが")
                                 .value(oldLevel).info("から")
@@ -102,7 +105,7 @@ public class ProfileManager implements Listener {
                                 .sendTo(player);
                     }
                 } catch (DatabaseException | NullPointerException ex) {
-                    plugin.getLogger().log(Level.WARNING, "Failed to load player exp", ex);
+                    api.getLogger().warn("Failed to load player exp", ex);
                 }
             });
             database.loadPlayerVibe(uuid, result -> {
@@ -110,36 +113,39 @@ public class ProfileManager implements Listener {
                     Double value = result.get();
                     profile.setVibe(value == null ? 0 : value);
                 } catch (DatabaseException | NullPointerException ex) {
-                    plugin.getLogger().log(Level.WARNING, "Failed to load player vibe", ex);
+                    api.getLogger().warn("Failed to load player vibe", ex);
                 }
             });
         });
     }
 
+    @Override
     public void loadPlayerProfiles(Iterable<GamePlayer> players, boolean notifyLevelUp) {
         for (GamePlayer player : players) {
             loadPlayerProfile(player.getUUID(), notifyLevelUp);
         }
     }
 
+    @Override
     public void loadStageProfile(String stage) {
-        plugin.getDatabases().ifPresent(database -> {
+        api.getDatabase().ifPresent(database -> {
             if (!stageProfiles.containsKey(stage)) {
-                stageProfiles.put(stage, new StageProfile());
+                stageProfiles.put(stage, new CachedStageProfile());
             }
-            StageProfile profile = stageProfiles.get(stage);
+            CachedStageProfile profile = stageProfiles.get(stage);
             database.loadStageStat(stage, result -> {
                 profile.setStat(result.get().getKey(), result.get().getValue());
             }, result -> {
                 try {
                     result.test();
                 } catch (DatabaseException ex) {
-                    plugin.getLogger().log(Level.WARNING, "Failed to load stage stats", ex);
+                    api.getLogger().warn("Failed to load stage stats", ex);
                 }
             });
         });
     }
-    
+
+    @Override
     public void loadStageProfile(Stage stage) {
         loadStageProfile(stage.getName());
     }

@@ -17,13 +17,13 @@
 package syam.flaggame.command.player;
 
 import java.util.List;
-import jp.llv.flaggame.profile.PlayerProfile;
+import jp.llv.flaggame.profile.CachedPlayerProfile;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.BaseCommand;
 import jp.llv.flaggame.util.OnelineBuilder;
-import syam.flaggame.exception.CommandException;
+import jp.llv.flaggame.api.exception.CommandException;
 import syam.flaggame.permission.Perms;
 
 /**
@@ -32,9 +32,9 @@ import syam.flaggame.permission.Perms;
  */
 public class PlayerVibeCommand extends BaseCommand {
 
-    public PlayerVibeCommand(FlagGame plugin) {
+    public PlayerVibeCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 false,
                 0,
                 "[player] <- show specified player's vibe",
@@ -47,7 +47,7 @@ public class PlayerVibeCommand extends BaseCommand {
         Player target = null;
         if (args.size() >= 1) {
             Perms.PLAYER_VIBE_OTHER.requireTo(sender);
-            target = plugin.getServer().getPlayer(args.get(0));
+            target = api.getServer().getPlayer(args.get(0));
         } else if (player != null) {
             Perms.PLAYER_VIBE_SELF.requireTo(sender);
             target = player;
@@ -55,7 +55,7 @@ public class PlayerVibeCommand extends BaseCommand {
         if (target == null) {
             throw new CommandException("&cプレイヤーを指定してください！");
         }
-        PlayerProfile profile = plugin.getProfiles().getProfile(target.getUniqueId());
+        CachedPlayerProfile profile = api.getProfiles().getProfile(target.getUniqueId());
         OnelineBuilder.newBuilder()
                 .value(target.getName()).info("のチョーシは")
                 .value(profile.getVibe().orElseThrow(() -> new CommandException("&c対象のプロファイルがが読み込まれていません！")))

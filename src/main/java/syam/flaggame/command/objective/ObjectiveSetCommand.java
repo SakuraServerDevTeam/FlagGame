@@ -16,16 +16,18 @@
  */
 package syam.flaggame.command.objective;
 
-import syam.flaggame.game.objective.ObjectiveType;
+import jp.llv.flaggame.api.stage.objective.ObjectiveType;
 import java.util.List;
 import jp.llv.flaggame.reception.TeamColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagGame;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.game.Stage;
+import jp.llv.flaggame.api.FlagGameAPI;
+import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.api.exception.FlagGameException;
+import jp.llv.flaggame.api.exception.ReservedException;
 import syam.flaggame.permission.Perms;
-import syam.flaggame.player.GamePlayer;
+import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.stage.Stage;
 import syam.flaggame.util.Actions;
 
 /**
@@ -34,9 +36,9 @@ import syam.flaggame.util.Actions;
  */
 public class ObjectiveSetCommand extends ObjectiveCommand {
 
-    public ObjectiveSetCommand(FlagGame plugin) {
+    public ObjectiveSetCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 0,
                 "[option...] <- enable objective locate tool",
                 Perms.OBJECTIVE_SET,
@@ -45,7 +47,7 @@ public class ObjectiveSetCommand extends ObjectiveCommand {
     }
 
     @Override
-    public void execute(List<String> args, Player player, Stage stage, ObjectiveType type) throws CommandException {
+    public void execute(List<String> args, Player player, Stage stage, ObjectiveType type) throws FlagGameException {
         switch (type) {
             case FLAG:
                 setFlag(player, stage, args);
@@ -67,7 +69,7 @@ public class ObjectiveSetCommand extends ObjectiveCommand {
         }
     }
 
-    private void setFlag(Player player, Stage game, List<String> args) throws CommandException {
+    private void setFlag(Player player, Stage game, List<String> args) throws CommandException, ReservedException {
         // 引数チェック
         if (args.size() < 1) {
             throw new CommandException("&c引数が足りません！フラッグの得点を指定してください！");
@@ -82,13 +84,13 @@ public class ObjectiveSetCommand extends ObjectiveCommand {
         }
 
         // マネージャーセット
-        GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
+        GamePlayer gPlayer = this.api.getPlayers().getPlayer(player);
         gPlayer.createSetupSession(game).setSetting(ObjectiveType.FLAG).setSelectedPoint(type);
-        String tool = Material.getMaterial(plugin.getConfigs().getToolID()).name();
+        String tool = Material.getMaterial(api.getConfig().getToolID()).name();
         Actions.message(player, "&aフラッグ管理モードを開始しました。選択ツール: " + tool);
     }
 
-    private void setNexus(Player player, Stage stage, List<String> args) throws CommandException {
+    private void setNexus(Player player, Stage stage, List<String> args) throws CommandException, ReservedException {
         if (args.size() < 1) {
             throw new CommandException("&c引数が足りません！目標の得点を正しく指定してください!");
         }
@@ -111,15 +113,15 @@ public class ObjectiveSetCommand extends ObjectiveCommand {
             }
         }
 
-        GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
+        GamePlayer gPlayer = this.api.getPlayers().getPlayer(player);
         gPlayer.createSetupSession(stage).setSetting(ObjectiveType.NEXUS)
                 .setSelectedPoint(point)
                 .setSelectedColor(color);
-        String tool = Material.getMaterial(plugin.getConfigs().getToolID()).name();
+        String tool = Material.getMaterial(api.getConfig().getToolID()).name();
         Actions.message(player, "&a目標管理モードを開始しました。選択ツール: " + tool);
     }
 
-    private void setBannerSpawner(Player player, Stage stage, List<String> args) throws CommandException {
+    private void setBannerSpawner(Player player, Stage stage, List<String> args) throws CommandException, ReservedException {
         if (args.size() < 2) {
             throw new CommandException("&c引数が足りません! バナーの得点と耐久度を正しく指定してください!");
         }
@@ -132,15 +134,15 @@ public class ObjectiveSetCommand extends ObjectiveCommand {
             throw new CommandException("&c数値フォーマットが異常です!", ex);
         }
 
-        GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
+        GamePlayer gPlayer = this.api.getPlayers().getPlayer(player);
         gPlayer.createSetupSession(stage).setSetting(ObjectiveType.BANNER_SPAWNER)
                 .setSelectedPoint(point)
                 .setHp(hp);
-        String tool = Material.getMaterial(plugin.getConfigs().getToolID()).name();
+        String tool = Material.getMaterial(api.getConfig().getToolID()).name();
         Actions.message(player, "&aバナースポナー管理モードを開始しました。選択ツール: " + tool);
     }
 
-    private void setBannerSlot(Player player, Stage stage, List<String> args) throws CommandException {
+    private void setBannerSlot(Player player, Stage stage, List<String> args) throws CommandException, ReservedException {
         TeamColor color;
         if (args.size() < 1) {
             color = null;
@@ -152,18 +154,18 @@ public class ObjectiveSetCommand extends ObjectiveCommand {
             }
         }
 
-        GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
+        GamePlayer gPlayer = this.api.getPlayers().getPlayer(player);
         gPlayer.createSetupSession(stage).setSetting(ObjectiveType.BANNER_SLOT)
                 .setSelectedColor(color);
-        String tool = Material.getMaterial(plugin.getConfigs().getToolID()).name();
+        String tool = Material.getMaterial(api.getConfig().getToolID()).name();
         Actions.message(player, "&aスロット管理モードを開始しました。選択ツール: " + tool);
     }
 
-    private void setChest(Player player, Stage game, List<String> args) {
+    private void setChest(Player player, Stage game, List<String> args) throws ReservedException {
         // マネージャーセット
-        GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
+        GamePlayer gPlayer = this.api.getPlayers().getPlayer(player);
         gPlayer.createSetupSession(game).setSetting(ObjectiveType.CHEST);
-        String tool = Material.getMaterial(plugin.getConfigs().getToolID()).name();
+        String tool = Material.getMaterial(api.getConfig().getToolID()).name();
         Actions.message(player, "&aチェスト管理モードを開始しました。選択ツール: " + tool);
     }
 

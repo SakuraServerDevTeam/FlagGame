@@ -53,6 +53,7 @@ public final class BannerUtils {
         }
         paintChar(banner, c, color, backgroundColor);
     }
+
     public static void paint(BannerMeta banner, BannerChar character, DyeColor color, DyeColor backgroundColor) {
         for (BannerChar.DyeStep s : character.steps) {
             banner.addPattern(new Pattern(s.bgcolor ? backgroundColor : color, s.pattern));

@@ -16,11 +16,12 @@
  */
 package jp.llv.flaggame.profile.record;
 
+import jp.llv.flaggame.api.profile.RecordType;
 import java.util.UUID;
 import org.bson.BsonInt32;
 import org.bson.Document;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagConfig;
+import jp.llv.flaggame.api.FlagConfig;
 
 /**
  *
@@ -29,7 +30,7 @@ import syam.flaggame.FlagConfig;
 public class StageRateRecord extends ExpRecord {
 
     private static final String FIELD_RATE = ScoreRecord.FIELD_SCORE;
-    
+
     public StageRateRecord(UUID game, double x, double y, double z, UUID player, long exp, int rate) {
         super(game, x, y, z, player, exp);
         super.put(FIELD_RATE, new BsonInt32(rate));
@@ -53,5 +54,5 @@ public class StageRateRecord extends ExpRecord {
     public double getExpWeight(FlagConfig config) {
         return config.getScoreRate();
     }
-    
+
 }

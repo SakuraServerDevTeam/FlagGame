@@ -18,7 +18,6 @@ package jp.llv.flaggame.game.basic;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -30,21 +29,20 @@ import java.util.OptionalLong;
 import java.util.Queue;
 import java.util.Set;
 import java.util.UUID;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
+import jp.llv.flaggame.api.FlagGameAPI;
 import jp.llv.flaggame.events.GameStartEvent;
-import jp.llv.flaggame.game.Game;
+import jp.llv.flaggame.api.game.Game;
 import jp.llv.flaggame.game.HitpointTask;
 import jp.llv.flaggame.game.ObjectiveEffectTask;
-import jp.llv.flaggame.game.permission.StagePermissionListener;
+import jp.llv.flaggame.stage.permission.StagePermissionListener;
 import jp.llv.flaggame.game.DeviationBasedExpCalcurator;
 import jp.llv.flaggame.profile.record.FlagCaptureRecord;
 import jp.llv.flaggame.profile.record.FlagScoreRecord;
 import jp.llv.flaggame.profile.record.GameStartRecord;
 import jp.llv.flaggame.profile.record.PlayerKillRecord;
 import jp.llv.flaggame.profile.record.PlayerRecord;
-import jp.llv.flaggame.reception.GameReception;
 import jp.llv.flaggame.reception.Team;
 import jp.llv.flaggame.util.MapUtils;
 import jp.llv.flaggame.util.ConvertUtils;
@@ -65,23 +63,23 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
-import syam.flaggame.FlagGame;
-import jp.llv.flaggame.reception.TeamColor;
 import jp.llv.flaggame.util.StreamUtil;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.game.Stage;
-import syam.flaggame.player.GamePlayer;
+import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.api.player.GamePlayer;
 import syam.flaggame.util.Actions;
 import jp.llv.flaggame.game.ExpCalcurator;
 import jp.llv.flaggame.profile.record.BannerKeepRecord;
 import jp.llv.flaggame.profile.record.PlayerDrawRecord;
 import jp.llv.flaggame.profile.record.PlayerLoseRecord;
 import jp.llv.flaggame.profile.record.PlayerWinRecord;
-import jp.llv.flaggame.rollback.SerializeTask;
-import syam.flaggame.game.AreaInfo;
-import syam.flaggame.game.objective.BannerSlot;
-import syam.flaggame.game.objective.Flag;
+import jp.llv.flaggame.reception.TeamType;
+import jp.llv.flaggame.api.stage.rollback.SerializeTask;
+import jp.llv.flaggame.api.stage.objective.BannerSlot;
+import jp.llv.flaggame.api.stage.objective.Flag;
 import syam.flaggame.util.Cuboid;
+import jp.llv.flaggame.api.reception.Reception;
+import jp.llv.flaggame.api.stage.Stage;
+import jp.llv.flaggame.api.stage.area.StageAreaInfo;
 
 /**
  *
@@ -89,10 +87,10 @@ import syam.flaggame.util.Cuboid;
  */
 public class BasicGame implements Game {
 
-    private final FlagGame plugin;
-    private final GameReception reception;
+    private final FlagGameAPI api;
+    private final Reception reception;
     private final Stage stage;
-    private final Map<TeamColor, Team> teams;
+    private final Map<TeamType, Team> teams;
     private final Map<GamePlayer, HeldBanner> heldBanners = new HashMap<>();
 
     private final Queue<Runnable> onFinishing = new LinkedList<>();
@@ -104,8 +102,8 @@ public class BasicGame implements Game {
     private BGRecordStream records;
     private final ExpCalcurator expCalcurator = new DeviationBasedExpCalcurator();
 
-    public BasicGame(FlagGame plugin, GameReception reception, Stage stage, Collection<Team> ts) {
-        if (plugin == null || reception == null) {
+    public BasicGame(FlagGameAPI api, Reception reception, Stage stage, Collection<Team> ts) {
+        if (api == null || reception == null) {
             throw new NullPointerException();
         }
         if (stage.getReception().orElseThrow(() -> {
@@ -113,18 +111,18 @@ public class BasicGame implements Game {
         }) != reception) {
             throw new IllegalStateException("The stage is not reserved by the reception");
         }
-        this.plugin = plugin;
+        this.api = api;
         this.reception = reception;
         this.stage = stage;
-        this.teams = new EnumMap<>(TeamColor.class);
+        this.teams = new HashMap<>();
         ts.forEach(t -> {
-            this.teams.put(t.getColor(), t);
+            this.teams.put(t.getType(), t);
         });
-        this.records = new BGRecordStream(plugin, this, reception.getRecordStream());
+        this.records = new BGRecordStream(api, this, reception.getRecordStream());
     }
 
-    public BasicGame(FlagGame plugin, GameReception reception, Stage stage, Team... teams) {
-        this(plugin, reception, stage, Arrays.asList(teams));
+    public BasicGame(FlagGameAPI api, Reception reception, Stage stage, Team... teams) {
+        this(api, reception, stage, Arrays.asList(teams));
     }
 
     public UUID getID() {
@@ -138,19 +136,13 @@ public class BasicGame implements Game {
         }
 
         GameStartEvent event = new GameStartEvent(this);
-        this.plugin.getServer().getPluginManager().callEvent(event);
+        this.api.getServer().getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             throw new CommandException("&cCancelled by event-api");
         }
 
         if (this.getTeams().stream().map(Team::getPlayers).anyMatch(Collection::isEmpty)) {
             throw new CommandException("&cany team is empty");
-        }
-
-        try {
-            this.stage.validate();
-        } catch (NullPointerException ex) {
-            throw new CommandException("&cthe stage is not ready", ex);
         }
 
         this.state = State.STARTED;
@@ -164,7 +156,7 @@ public class BasicGame implements Game {
         }
 
         GameStartEvent event = new GameStartEvent(this);
-        this.plugin.getServer().getPluginManager().callEvent(event);
+        this.api.getServer().getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             throw new CommandException("&cCancelled by event-api");
         }
@@ -173,20 +165,14 @@ public class BasicGame implements Game {
             throw new CommandException("&cany team is empty");
         }
 
-        try {
-            this.stage.validate();
-        } catch (NullPointerException ex) {
-            throw new CommandException("&cthe stage is not ready", ex);
-        }
-
         LongStream.of(10000L, 5000L, 4000L, 3000L, 2000L, 1000L)
                 .forEach(r -> {
-                    this.plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                    this.api.getServer().getScheduler().runTaskLater(api.getPlugin(), () -> {
                         GamePlayer.sendMessage(this.reception.getPlayers(),
                                 "&2ゲーム'&6" + this.reception.getName() + "&2'が始まるまであと&6" + Actions.getTimeString(r) + "&2です!");
                     }, ConvertUtils.toTick(ms - r));
                 });
-        this.plugin.getServer().getScheduler().runTaskLater(plugin, this::start, ConvertUtils.toTick(ms));
+        this.api.getServer().getScheduler().runTaskLater(api.getPlugin(), this::start, ConvertUtils.toTick(ms));
     }
 
     private void start() {
@@ -198,18 +184,18 @@ public class BasicGame implements Game {
 
         this.expectedFinishAt = System.currentTimeMillis() + this.stage.getGameTime();
 
-        GamePlayer.sendMessage(this.plugin.getPlayers(),
+        GamePlayer.sendMessage(this.api.getPlayers(),
                 "&2ゲーム'&6" + this.reception.getName() + "&2'が始まりました！",
                 "&2開催ステージ: '&6" + this.stage.getName() + "&2' &f| &2制限時間: " + Actions.getTimeString(this.stage.getGameTime()),
                 this.getTeams().stream()
-                .map(t -> t.getColor().getRichName() + "&f" + t.getPlayers().size() + "人&r").collect(Collectors.joining(", "))
+                .map(t -> t.getType().getRichName() + "&f" + t.getPlayers().size() + "人&r").collect(Collectors.joining(", "))
         );
         this.stage.getSpecSpawn().ifPresent(l -> {
             BaseComponent[] message = new ComponentBuilder("ここをクリック").bold(true).color(ChatColor.GOLD).bold(false)
                     .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("クリックして観戦します").color(ChatColor.GOLD).create()))
                     .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/flag game watch " + this.stage.getName()))
                     .append("して観戦することができます！").color(ChatColor.DARK_GREEN).create();
-            GamePlayer.sendMessage(this.plugin.getPlayers(), message);
+            GamePlayer.sendMessage(this.api.getPlayers(), message);
         });
 
         for (Team team : this.getTeams()) {
@@ -249,20 +235,20 @@ public class BasicGame implements Game {
         // stage rollback and message
         for (String areaID : stage.getAreas().getAreas()) {
             Cuboid area = stage.getAreas().getArea(areaID);
-            AreaInfo info = stage.getAreas().getAreaInfo(areaID);
-            for (AreaInfo.RollbackData rollback : info.getDelayedRollbacks()) {
-                SerializeTask task = rollback.getTarget().load(plugin, stage, area, ex -> {
+            StageAreaInfo info = stage.getAreas().getAreaInfo(areaID);
+            for (StageAreaInfo.StageRollbackData rollback : info.getDelayedRollbacks()) {
+                SerializeTask task = rollback.getTarget().load(stage, area, ex -> {
                     if (ex != null) {
-                        plugin.getLogger().log(Level.WARNING, "Failed to rollback", ex);
+                        api.getLogger().warn("Failed to rollback", ex);
                         this.stopForcibly("Failed to rollback");
                     }
 
                 });
-                task.start(plugin, ConvertUtils.toTick(rollback.getTiming()));
+                task.start(api.getPlugin(), ConvertUtils.toTick(rollback.getTiming()));
                 onFinishing.offer(task::cancel);
             }
-            for (AreaInfo.MessageData message : info.getMessages()) {
-                BukkitTask task = plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+            for (StageAreaInfo.StageMessageData message : info.getMessages()) {
+                BukkitTask task = api.getServer().getScheduler().runTaskLater(api.getPlugin(), () -> {
                     getPlayers().stream()
                             .filter(p -> p.isOnline())
                             .filter(p -> area.contains(p.getPlayer().getLocation()))
@@ -273,25 +259,25 @@ public class BasicGame implements Game {
         }
 
         //各種処理系開始
-        BGListener playerListener = new BGPlayerListener(plugin, this);
-        this.plugin.getServer().getPluginManager().registerEvents(playerListener, this.plugin);
+        BGListener playerListener = new BGPlayerListener(api, this);
+        this.api.getServer().getPluginManager().registerEvents(playerListener, api.getPlugin());
         this.onFinishing.offer(playerListener::unregister);
-        BGListener blockListener = new BGBlockListener(plugin, this);
-        this.plugin.getServer().getPluginManager().registerEvents(blockListener, this.plugin);
+        BGListener blockListener = new BGBlockListener(api, this);
+        this.api.getServer().getPluginManager().registerEvents(blockListener, api.getPlugin());
         this.onFinishing.offer(blockListener::unregister);
-        BGListener inventoryListener = new BGInventoryListener(plugin, this);
-        this.plugin.getServer().getPluginManager().registerEvents(inventoryListener, this.plugin);
+        BGListener inventoryListener = new BGInventoryListener(api, this);
+        this.api.getServer().getPluginManager().registerEvents(inventoryListener, api.getPlugin());
         this.onFinishing.offer(inventoryListener::unregister);
-        BGListener entityListener = new BGEntityListener(plugin, this);
-        this.plugin.getServer().getPluginManager().registerEvents(entityListener, this.plugin);
+        BGListener entityListener = new BGEntityListener(api, this);
+        this.api.getServer().getPluginManager().registerEvents(entityListener, api.getPlugin());
         this.onFinishing.offer(entityListener::unregister);
-        StagePermissionListener protectionListener = new StagePermissionListener(plugin, this);
-        this.plugin.getServer().getPluginManager().registerEvents(protectionListener, this.plugin);
+        StagePermissionListener protectionListener = new StagePermissionListener(api, this);
+        this.api.getServer().getPluginManager().registerEvents(protectionListener, api.getPlugin());
         this.onFinishing.offer(protectionListener::unregister);
 
         this.getTeams().stream().forEach(team -> {
             String title = "\u00A76FlagGame ~\u00A7b" + this.stage.getName() + "\u00A76";
-            BossBar bossbar = this.plugin.getServer().createBossBar(title, team.getColor().getBarColor(), BarStyle.SEGMENTED_20, new BarFlag[0]);
+            BossBar bossbar = this.api.getServer().createBossBar(title, team.getColor().getBarColor(), BarStyle.SEGMENTED_20, new BarFlag[0]);
             this.bossbars.add(bossbar);
             for (GamePlayer player : team) {
                 bossbar.addPlayer(player.getPlayer());
@@ -299,15 +285,15 @@ public class BasicGame implements Game {
             bossbar.setVisible(true);
         });
 
-        BukkitTask stopTask = this.plugin.getServer().getScheduler()
-                .runTaskLater(plugin, this::stop, ConvertUtils.toTick(this.stage.getGameTime()));
+        BukkitTask stopTask = this.api.getServer().getScheduler()
+                .runTaskLater(api.getPlugin(), this::stop, ConvertUtils.toTick(this.stage.getGameTime()));
         this.onFinishing.offer(stopTask::cancel);
-        BukkitTask updateTask = this.plugin.getServer().getScheduler()
-                .runTaskTimer(plugin, this::updateRemainTime, 20L, 20L);
+        BukkitTask updateTask = this.api.getServer().getScheduler()
+                .runTaskTimer(api.getPlugin(), this::updateRemainTime, 20L, 20L);
         this.onFinishing.offer(updateTask::cancel);
-        BukkitTask hitpointTask = new HitpointTask(this).runTaskTimer(plugin, 10L, 10L);
+        BukkitTask hitpointTask = new HitpointTask(this).runTaskTimer(api.getPlugin(), 10L, 10L);
         this.onFinishing.offer(hitpointTask::cancel);
-        BukkitTask objectiveEffectTask = new ObjectiveEffectTask(this).runTaskTimer(plugin, 10L, 10L);
+        BukkitTask objectiveEffectTask = new ObjectiveEffectTask(this).runTaskTimer(api.getPlugin(), 10L, 10L);
         this.onFinishing.offer(objectiveEffectTask::cancel);
 
         LongStream lessThanAMinute = LongStream//1~10秒,30秒
@@ -317,8 +303,8 @@ public class BasicGame implements Game {
                 .filter(t -> t % 60000L == 0);
         LongStream.concat(lessThanAMinute, aMinute).map(t -> this.stage.getGameTime() - t)
                 .map(ConvertUtils::toTick).forEach(t -> {
-            BukkitTask task = this.plugin.getServer().getScheduler()
-                    .runTaskLater(plugin, this::notifyRemainTime, t);
+            BukkitTask task = this.api.getServer().getScheduler()
+                    .runTaskLater(api.getPlugin(), this::notifyRemainTime, t);
             this.onFinishing.offer(task::cancel);
         });
 
@@ -357,12 +343,12 @@ public class BasicGame implements Game {
         OptionalDouble maxPoint = points.entrySet().stream().mapToDouble(Map.Entry::getValue).max();
         Set<GamePlayer> maxPointers = MapUtils.getKeyByValue(points, maxPoint.orElse(Double.NaN));
         // game point (a team)
-        Map<TeamColor, Double> teamPoints = MapUtils.remap(points,
-                p -> p.getTeam().get().getColor(),
+        Map<TeamType, Double> teamPoints = MapUtils.remap(points,
+                p -> p.getTeam().get().getType(),
                 Collectors.summingDouble(d -> d)
         );
         OptionalDouble maxTeamPoint = teamPoints.entrySet().stream().mapToDouble(Map.Entry::getValue).max();
-        Set<TeamColor> winnerTeams = MapUtils.getKeyByValue(teamPoints, maxTeamPoint.orElse(Double.NaN));
+        Set<TeamType> winnerTeams = MapUtils.getKeyByValue(teamPoints, maxTeamPoint.orElse(Double.NaN));
         if (winnerTeams.size() == teams.size()) {
             winnerTeams.clear(); // at least one team lose
         }
@@ -372,7 +358,7 @@ public class BasicGame implements Game {
         // vibe
         Map<GamePlayer, Double> vibes = this.getRecordStream().groupingBy(
                 PlayerRecord.class, r -> getPlayer(r.getPlayer()),
-                Collectors.summingDouble(t -> t.getExpWeight(plugin.getConfigs()))
+                Collectors.summingDouble(t -> t.getExpWeight(api.getConfig()))
         ).entrySet().stream()
                 .collect(StreamUtil.deviation(Map.Entry::getValue, (e, v) -> MapUtils.tuple(e.getKey(), v)))
                 .collect(StreamUtil.toMap());
@@ -393,41 +379,41 @@ public class BasicGame implements Game {
         // capture point
         Map<GamePlayer, Double> captures = this.getRecordStream().groupingBy(
                 FlagCaptureRecord.class, r -> getPlayer(r.getPlayer()),
-                Collectors.summingDouble(t -> t.getExpWeight(plugin.getConfigs()))
+                Collectors.summingDouble(t -> t.getExpWeight(api.getConfig()))
         );
         OptionalDouble maxCaptures = captures.entrySet().stream().mapToDouble(Map.Entry::getValue).max();
         Set<GamePlayer> maxCapturers = MapUtils.getKeyByValue(captures, maxCaptures.orElse(Double.NaN));
 
-        GamePlayer.sendMessage(this.plugin.getPlayers(), "&2フラッグゲーム'&6" + this.stage.getName() + "&2'が終わりました!");
-        GamePlayer.sendMessage(this.plugin.getPlayers(), teamPoints.entrySet().stream()
-                .map(e -> e.getKey().getRichName() + "得点: &6" + e.getValue() + e.getKey().getChatColor() + "点")
+        GamePlayer.sendMessage(this.api.getPlayers(), "&2フラッグゲーム'&6" + this.stage.getName() + "&2'が終わりました!");
+        GamePlayer.sendMessage(this.api.getPlayers(), teamPoints.entrySet().stream()
+                .map(e -> e.getKey().getRichName() + "得点: &6" + e.getValue() + e.getKey().toColor().getChatColor() + "点")
                 .collect(Collectors.joining(", "))
         );
         if (winnerTeams.isEmpty()) {
-            GamePlayer.sendMessage(this.plugin.getPlayers(), "このゲームは引き分けです!");
+            GamePlayer.sendMessage(this.api.getPlayers(), "このゲームは引き分けです!");
         } else {
-            GamePlayer.sendMessage(this.plugin.getPlayers(), winnerTeams.stream()
-                    .map(TeamColor::getRichName)
+            GamePlayer.sendMessage(this.api.getPlayers(), winnerTeams.stream()
+                    .map(TeamType::getRichName)
                     .collect(Collectors.joining(", ")) + "の勝利です！"
             );
         }
 
         if (!maxKillers.isEmpty()) {
-            GamePlayer.sendMessage(this.plugin.getPlayers(),
+            GamePlayer.sendMessage(this.api.getPlayers(),
                     "&6戦闘狂: "
                     + maxKillers.stream().map(GamePlayer::getColoredName).collect(Collectors.joining(", "))
                     + "(&6" + maxKills.getAsLong() + "kills&f)"
             );
         }
         if (!maxCapturers.isEmpty()) {
-            GamePlayer.sendMessage(this.plugin.getPlayers(),
+            GamePlayer.sendMessage(this.api.getPlayers(),
                     "&6戦略家: "
                     + maxExps.stream().map(GamePlayer::getColoredName).collect(Collectors.joining(", "))
                     + "(&6" + maxExp.getAsDouble() + "exp&f)"
             );
         }
         if (!maxPointers.isEmpty()) {
-            GamePlayer.sendMessage(this.plugin.getPlayers(),
+            GamePlayer.sendMessage(this.api.getPlayers(),
                     "&6稼ぎ頭: "
                     + maxPointers.stream().map(GamePlayer::getColoredName).collect(Collectors.joining(", "))
                     + "(&6" + maxPoint.getAsDouble() + "points&f)"
@@ -436,12 +422,12 @@ public class BasicGame implements Game {
 
         this.bossbars.stream().forEach(BossBar::removeAll);
 
-        this.plugin.getServer().getPluginManager()
+        this.api.getServer().getPluginManager()
                 .callEvent(new jp.llv.flaggame.events.GameFinishedEvent(this));
 
         String author = "".equals(stage.getAuthor()) ? "" : "presented by " + stage.getAuthor();
         for (GamePlayer player : this) {
-            Location spawn = stage.getSpawn(player.getTeam().get().getColor());
+            Location spawn = stage.getSpawn(player.getTeam().get().getType());
             Location loc = player.isOnline()
                     ? player.getPlayer().getLocation()
                     : spawn;
@@ -486,7 +472,7 @@ public class BasicGame implements Game {
 
         for (GamePlayer g : this.reception.getPlayers()) {
             if (g.getPlayer().isOnline()) {
-                g.getPlayer().teleport(this.stage.getSpawn(g.getTeam().get().getColor()));
+                g.getPlayer().teleport(this.stage.getSpawn(g.getTeam().get().getType()));
                 g.getPlayer().setFallDistance(0f);
                 g.getPlayer().getInventory().clear();
                 g.resetTabName();
@@ -520,8 +506,8 @@ public class BasicGame implements Game {
     }
 
     @Override
-    public Team getTeam(TeamColor color) {
-        return this.teams.get(color);
+    public Team getTeam(TeamType type) {
+        return this.teams.get(type);
     }
 
     public void setBannerHeld(GamePlayer player, HeldBanner banner) {
@@ -544,7 +530,7 @@ public class BasicGame implements Game {
     }
 
     @Override
-    public GameReception getReception() {
+    public Reception getReception() {
         return this.reception;
     }
 
@@ -563,7 +549,7 @@ public class BasicGame implements Game {
     }
 
     private GamePlayer getPlayer(UUID uuid) {
-        return this.plugin.getPlayers().getPlayer(uuid);
+        return this.api.getPlayers().getPlayer(uuid);
     }
 
 }

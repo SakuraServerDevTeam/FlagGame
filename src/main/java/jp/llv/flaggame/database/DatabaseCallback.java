@@ -23,7 +23,7 @@ package jp.llv.flaggame.database;
  * @param <E> exception type
  */
 public interface DatabaseCallback<T, E extends Throwable> {
-    
+
     void call(DatabaseResult<T, E> result);
-    
+
 }

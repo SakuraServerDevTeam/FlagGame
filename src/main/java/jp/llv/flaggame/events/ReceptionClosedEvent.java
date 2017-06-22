@@ -16,20 +16,20 @@
  */
 package jp.llv.flaggame.events;
 
-import jp.llv.flaggame.reception.GameReception;
 import org.bukkit.event.HandlerList;
+import jp.llv.flaggame.api.reception.Reception;
 
 /**
  *
  * @author Toyblocks
  */
 public class ReceptionClosedEvent extends ReceptionEvent {
-    
+
     private static final HandlerList handlers = new HandlerList();
 
     private final String cause;
 
-    public ReceptionClosedEvent(String cause, GameReception reception) {
+    public ReceptionClosedEvent(String cause, Reception reception) {
         super(reception);
         this.cause = cause;
     }
@@ -37,14 +37,14 @@ public class ReceptionClosedEvent extends ReceptionEvent {
     public String getCause() {
         return cause;
     }
-    
+
     @Override
     public HandlerList getHandlers() {
         return handlers;
     }
-    
+
     public static HandlerList getHandlerList() {
         return handlers;
     }
-    
+
 }

@@ -16,6 +16,7 @@
  */
 package jp.llv.flaggame.profile.record;
 
+import jp.llv.flaggame.api.profile.RecordType;
 import java.util.UUID;
 import org.bson.Document;
 import org.bukkit.entity.Player;
@@ -34,7 +35,7 @@ public class PlayerEntryRecord extends PlayerRecord {
         super(game, player);
     }
 
-    /*package*/ PlayerEntryRecord(Document base) {
+    public PlayerEntryRecord(Document base) {
         super(base);
     }
 
@@ -42,5 +43,5 @@ public class PlayerEntryRecord extends PlayerRecord {
     public RecordType getType() {
         return RecordType.ENTRY;
     }
-    
+
 }

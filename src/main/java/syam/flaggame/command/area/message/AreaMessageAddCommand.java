@@ -20,12 +20,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.area.AreaCommand;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.game.AreaInfo;
-import syam.flaggame.game.GameMessageType;
-import syam.flaggame.game.Stage;
+import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.api.stage.Stage;
+import jp.llv.flaggame.api.stage.area.GameMessageType;
+import jp.llv.flaggame.api.stage.area.StageAreaInfo;
 import syam.flaggame.permission.Perms;
 
 /**
@@ -34,9 +34,9 @@ import syam.flaggame.permission.Perms;
  */
 public class AreaMessageAddCommand extends AreaCommand {
 
-    public AreaMessageAddCommand(FlagGame plugin) {
+    public AreaMessageAddCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 3,
                 "<id> <type> <message> <- add message",
                 Perms.AREA_MESSAGE_ADD,
@@ -46,7 +46,7 @@ public class AreaMessageAddCommand extends AreaCommand {
 
     @Override
     public void execute(List<String> args, Player player, Stage stage) throws CommandException {
-        AreaInfo info = stage.getAreas().getAreaInfo(args.get(0));
+        StageAreaInfo info = stage.getAreas().getAreaInfo(args.get(0));
         if (info == null) {
             throw new CommandException("&cその名前のエリアは存在しません！");
         }
@@ -59,7 +59,7 @@ public class AreaMessageAddCommand extends AreaCommand {
                     .collect(Collectors.joining("/"));
             throw new CommandException("&cそのメッセージタイプはサポートされていません！\n&c" + types, ex);
         }
-        AreaInfo.MessageData data = info.addMessage(args.get(2));
+        StageAreaInfo.StageMessageData data = info.addMessage(args.get(2));
         data.setType(type);
         sendMessage(player, "&a'&6" + stage.getName() + "&a'の'&6"
                             + args.get(0) + "&a'エリアにメッセージ'&6"

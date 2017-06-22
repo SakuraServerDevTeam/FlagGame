@@ -16,6 +16,7 @@
  */
 package syam.flaggame.player;
 
+import jp.llv.flaggame.api.player.PlayerAPI;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,8 +26,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import jp.llv.flaggame.events.GameFinishedEvent;
 import jp.llv.flaggame.events.GamePlayerUnloadEvent;
-import jp.llv.flaggame.game.Game;
-import jp.llv.flaggame.reception.GameReception;
+import jp.llv.flaggame.api.game.Game;
 import org.bukkit.Bukkit;
 
 import org.bukkit.World;
@@ -37,34 +37,36 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import syam.flaggame.FlagGame;
-import syam.flaggame.exception.CommandException;
+import jp.llv.flaggame.api.exception.FlagGameException;
+import jp.llv.flaggame.api.reception.Reception;
+import jp.llv.flaggame.api.FlagGameAPI;
+import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.util.OptionSet;
 
 /**
  * A {@link PlayerManager} provides ways of getting
- * {@link syam.flaggame.player.GamePlayer} instance.
+ * {@link syam.flaggame.player.FlagGamePlayer} instance.
  *
  * @author Syamn, Toyblocks
  */
-public class PlayerManager implements Iterable<GamePlayer> {
+public class PlayerManager implements PlayerAPI<FlagGamePlayer> {
 
-    private final FlagGame plugin;
-    private final Map<UUID, GamePlayer> players = new HashMap<>();
+    private final FlagGameAPI api;
+    private final Map<UUID, FlagGamePlayer> players = new HashMap<>();
 
     /**
      * Create new {@link PlayerManager} with new registry. In order to keep
      * consistency, do NOT create new one, use
      * {@link syam.flaggame.FlagGame#getPlayers()}.
      *
-     * @param plugin A plugin instance running on the server to sync this
-     * mamager
+     * @param api An API instance running on the server to sync this mamager
      */
-    public PlayerManager(FlagGame plugin) {
-        this.plugin = plugin;
-        this.plugin.getServer().getPluginManager().registerEvents(new OnlinePlayerListener(), plugin);
-        new StageSaveRemindTask(plugin).runTaskTimer(plugin, 1200L, 1200L);
+    public PlayerManager(FlagGameAPI api) {
+        this.api = api;
+        api.getServer().getPluginManager().registerEvents(new OnlinePlayerListener(), api.getPlugin());
+        new StageSaveRemindTask(api).runTaskTimer(api.getPlugin(), 1200L, 1200L);
         Bukkit.getOnlinePlayers()
-                .forEach(p -> this.players.put(p.getUniqueId(), new GamePlayer(this, p)));
+                .forEach(p -> this.players.put(p.getUniqueId(), new FlagGamePlayer(this, p)));
     }
 
     /**
@@ -72,7 +74,8 @@ public class PlayerManager implements Iterable<GamePlayer> {
      *
      * @return all game players
      */
-    public Collection<GamePlayer> getPlayers() {
+    @Override
+    public Collection<FlagGamePlayer> getPlayers() {
         return Collections.unmodifiableCollection(this.players.values());
     }
 
@@ -82,9 +85,10 @@ public class PlayerManager implements Iterable<GamePlayer> {
      * @param world the world where players are, {@code null} means nowhere
      * @return all game players in the world
      */
-    public Collection<GamePlayer> getPlayersIn(World world) {
+    @Override
+    public Collection<FlagGamePlayer> getPlayersIn(World world) {
         return this.players.values().stream()
-                .filter(GamePlayer::isOnline)
+                .filter(FlagGamePlayer::isOnline)
                 .filter(p -> p.getPlayer().getWorld().equals(world))
                 .collect(Collectors.toSet());
     }
@@ -96,7 +100,8 @@ public class PlayerManager implements Iterable<GamePlayer> {
      * @return the player if the player is online or in a game, otherwise
      * {@code null}
      */
-    public GamePlayer getPlayer(UUID uuid) {
+    @Override
+    public FlagGamePlayer getPlayer(UUID uuid) {
         return this.players.get(uuid);
     }
 
@@ -107,7 +112,8 @@ public class PlayerManager implements Iterable<GamePlayer> {
      * @return the player if the player is online or in a game, otherwise
      * {@code null}
      */
-    public GamePlayer getPlayer(String name) {
+    @Override
+    public FlagGamePlayer getPlayer(String name) {
         return this.players.values().stream().filter(p -> p.getName().equals(name)).findAny().orElse(null);
     }
 
@@ -118,7 +124,8 @@ public class PlayerManager implements Iterable<GamePlayer> {
      * @return the player if the player is online or in a game, otherwise
      * {@code null}.
      */
-    public GamePlayer getPlayer(Player player) {
+    @Override
+    public FlagGamePlayer getPlayer(Player player) {
         return player == null ? null : this.getPlayer(player.getUniqueId());
     }
 
@@ -128,24 +135,24 @@ public class PlayerManager implements Iterable<GamePlayer> {
      * @return an iterator of all players
      */
     @Override
-    public Iterator<GamePlayer> iterator() {
+    public Iterator<FlagGamePlayer> iterator() {
         return this.getPlayers().iterator();
     }
 
     private void gc() {
-        Iterator<GamePlayer> it = players.values().iterator();
+        Iterator<FlagGamePlayer> it = players.values().iterator();
         while (it.hasNext()) {
-            GamePlayer player = it.next();
+            FlagGamePlayer player = it.next();
             if (player.isOnline()) {
                 continue; // the player is still online
             } else if (player.getEntry().isPresent()) {
-                GameReception entry = player.getEntry().get();
+                Reception entry = player.getEntry().get();
                 if (entry.getState().toGameState() != Game.State.FINISHED) {
                     continue; // the player is still in game
                 }
                 entry.leave(player); // remove from the reception
             }
-            plugin.getServer().getPluginManager().callEvent(new GamePlayerUnloadEvent(player));
+            api.getServer().getPluginManager().callEvent(new GamePlayerUnloadEvent(player));
             it.remove(); // otherwise remove player
         }
     }
@@ -160,30 +167,35 @@ public class PlayerManager implements Iterable<GamePlayer> {
     private class OnlinePlayerListener implements Listener {
 
         /**
-         * Create new {@link syam.flaggame.player.GamePlayer} of the joined
+         * Create new {@link syam.flaggame.player.FlagGamePlayer} of the joined
          * player and register it.
          *
          * @param e An event to handle
          */
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         @SuppressWarnings("deprecation")
-        public void on(PlayerJoinEvent e) throws CommandException {
+        public void on(PlayerJoinEvent e) {
             Player p = e.getPlayer();
-            GamePlayer gp = PlayerManager.this.getPlayer(p);
+            FlagGamePlayer gp = PlayerManager.this.getPlayer(p);
             if (gp != null) { // the player is in a game
                 return;
             }
-            gp = new GamePlayer(PlayerManager.this, p);
+            gp = new FlagGamePlayer(PlayerManager.this, p);
             PlayerManager.this.players.put(p.getUniqueId(), gp);
-            for (jp.llv.flaggame.reception.GameReception r : PlayerManager.this.plugin.getReceptions()) {
+            for (jp.llv.flaggame.api.reception.Reception r : api.getReceptions()) {
                 if (r.getPlayers().contains(gp)) {
-                    gp.join(r, Collections.emptyList());
+                    try {
+                        gp.join(r, new OptionSet());
+                    } catch (FlagGameException ex) {
+                        api.getLogger().warn("A player failed re-joining to a reception", ex);
+                    }
                 }
             }
         }
 
         /**
-         * Unregister {@link syam.flaggame.player.GamePlayer} of left player.
+         * Unregister {@link syam.flaggame.player.FlagGamePlayer} of left
+         * player.
          *
          * @param e An event to handle
          */
@@ -191,7 +203,7 @@ public class PlayerManager implements Iterable<GamePlayer> {
         public void on(PlayerQuitEvent e) {
             PlayerManager.this.getPlayer(e.getPlayer()).resetTabName();
             // wait until Player#getOnline returns false
-            plugin.getServer().getScheduler().runTask(plugin, PlayerManager.this::gc);
+            api.getServer().getScheduler().runTask(api.getPlugin(), PlayerManager.this::gc);
         }
 
         @EventHandler

@@ -17,14 +17,15 @@
 package syam.flaggame.command.area;
 
 import java.util.List;
+import jp.llv.flaggame.api.FlagGameAPI;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.session.Reservable;
 import syam.flaggame.command.BaseCommand;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.game.Stage;
+import jp.llv.flaggame.api.exception.CommandException;
 import syam.flaggame.permission.Perms;
-import syam.flaggame.player.GamePlayer;
+import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.stage.Stage;
 
 /**
  *
@@ -32,21 +33,25 @@ import syam.flaggame.player.GamePlayer;
  */
 public abstract class AreaCommand extends BaseCommand {
 
-    public AreaCommand(FlagGame plugin, int argLength, String usage, Perms permission, String name, String... aliases) {
-        super(plugin, true, argLength, usage, permission, name, aliases);
+    public AreaCommand(FlagGameAPI api, int argLength, String usage, Perms permission, String name, String... aliases) {
+        super(api, true, argLength, usage, permission, name, aliases);
     }
 
-    public AreaCommand(FlagGame plugin, int argLength, String usage, String name, String... aliases) {
-        super(plugin, true, argLength, usage, name, aliases);
+    public AreaCommand(FlagGameAPI api, int argLength, String usage, String name, String... aliases) {
+        super(api, true, argLength, usage, name, aliases);
     }
 
     @Override
     public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
-        GamePlayer gp = plugin.getPlayers().getPlayer(player);
+        GamePlayer gp = api.getPlayers().getPlayer(player);
         if (!gp.getSetupSession().isPresent()) {
             throw new CommandException("&c先に編集するゲームを選択してください");
         }
-        this.execute(args, player, gp.getSetupSession().get().getSelectedStage());
+        Reservable selected = gp.getSetupSession().get().getSelected();
+        if (!(selected instanceof Stage)) {
+            throw new CommandException("&cあなたはステージを選択していません！");
+        }
+        this.execute(args, player, (Stage) selected);
     }
 
     public abstract void execute(List<String> args, Player player, Stage stage) throws CommandException;

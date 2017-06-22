@@ -19,13 +19,15 @@ package syam.flaggame.command.stage;
 import java.util.List;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.BaseCommand;
 import syam.flaggame.event.StageCreateEvent;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.game.Stage;
+import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.api.exception.ReservedException;
+import jp.llv.flaggame.api.stage.Stage;
 import syam.flaggame.permission.Perms;
-import syam.flaggame.player.GamePlayer;
+import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.stage.BasicStage;
 import syam.flaggame.util.Actions;
 
 /**
@@ -34,9 +36,9 @@ import syam.flaggame.util.Actions;
  */
 public class StageCreateCommand extends BaseCommand {
 
-    public StageCreateCommand(FlagGame plugin) {
+    public StageCreateCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 true,
                 1,
                 "<stage> <- create a stage",
@@ -48,18 +50,18 @@ public class StageCreateCommand extends BaseCommand {
 
     @Override
     public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
-        if (!Stage.NAME_REGEX.matcher(args.get(0)).matches()) {
+        if (!BasicStage.NAME_REGEX.matcher(args.get(0)).matches()) {
             throw new CommandException("&cこのステージ名は使用できません！");
         }
 
-        if (this.plugin.getStages().getStage(args.get(0)).isPresent()) {
+        if (this.api.getStages().getStage(args.get(0)).isPresent()) {
             throw new CommandException("&cそのステージ名は既に存在します！");
         }
 
         // Call event
-        Stage stage = new Stage(args.get(0));
+        Stage stage = new BasicStage(args.get(0));
         StageCreateEvent stageCreateEvent = new StageCreateEvent(player, stage);
-        plugin.getServer().getPluginManager().callEvent(stageCreateEvent);
+        api.getServer().getPluginManager().callEvent(stageCreateEvent);
         if (stageCreateEvent.isCancelled()) {
             return;
         }
@@ -67,13 +69,16 @@ public class StageCreateCommand extends BaseCommand {
         // 新規ゲーム登録
         stage.setAvailable(false);
         stage.setProtected(false);
-        this.plugin.getStages().addStage(stage);
+        this.api.getStages().addStage(stage);
 
-        GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
-        gPlayer.createSetupSession(stage);
+        GamePlayer gPlayer = this.api.getPlayers().getPlayer(player);
+        try {
+            gPlayer.createSetupSession(stage);
+        } catch (ReservedException ex) {
+            throw new CommandException("&c そのステージは'" + ex.getReservable().getReserver().getName() + "'に占有されています！", ex);
+        }
 
         // update dynmap
-        plugin.getDynmap().updateRegions();
         Actions.message(player, "&a新規ステージ'" + stage.getName() + "'を登録して選択しました！");
     }
 

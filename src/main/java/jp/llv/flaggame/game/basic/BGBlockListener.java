@@ -18,8 +18,10 @@ package jp.llv.flaggame.game.basic;
 
 import java.util.Collection;
 import java.util.Optional;
-import syam.flaggame.game.objective.BannerSlot;
-import syam.flaggame.game.objective.BannerSpawner;
+import jp.llv.flaggame.api.FlagGameAPI;
+import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.stage.objective.BannerSlot;
+import jp.llv.flaggame.api.stage.objective.BannerSpawner;
 import jp.llv.flaggame.reception.Team;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -29,10 +31,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import syam.flaggame.FlagGame;
 import jp.llv.flaggame.reception.TeamColor;
-import syam.flaggame.game.objective.Flag;
-import syam.flaggame.game.objective.Nexus;
+import jp.llv.flaggame.api.stage.objective.Flag;
+import jp.llv.flaggame.api.stage.objective.Nexus;
 import jp.llv.flaggame.profile.record.BannerDeployRecord;
 import jp.llv.flaggame.profile.record.FlagBreakRecord;
 import jp.llv.flaggame.profile.record.FlagCaptureRecord;
@@ -43,7 +44,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Firework;
 import org.bukkit.inventory.meta.FireworkMeta;
-import syam.flaggame.player.GamePlayer;
+import jp.llv.flaggame.api.player.GamePlayer;
 
 /**
  *
@@ -51,19 +52,19 @@ import syam.flaggame.player.GamePlayer;
  */
 public class BGBlockListener extends BGListener {
 
-    private final FlagGame plugin;
+    private final FlagGameAPI api;
     private final Collection<GamePlayer> players;
 
-    public BGBlockListener(FlagGame plugin, BasicGame game) {
+    public BGBlockListener(FlagGameAPI api, BasicGame game) {
         super(game);
-        this.plugin = plugin;
+        this.api = api;
         this.players = game.getReception().getPlayers();
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
-        GamePlayer gplayer = this.plugin.getPlayers().getPlayer(player);
+        GamePlayer gplayer = this.api.getPlayers().getPlayer(player);
         if (!this.players.contains(gplayer)) {
             return;
         }
@@ -80,7 +81,7 @@ public class BGBlockListener extends BGListener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onBlockPlace(BlockPlaceEvent event) {
         Player player = event.getPlayer();
-        GamePlayer gplayer = this.plugin.getPlayers().getPlayer(player);
+        GamePlayer gplayer = this.api.getPlayers().getPlayer(player);
         if (!this.players.contains(gplayer)) {
             return;
         }
@@ -103,7 +104,7 @@ public class BGBlockListener extends BGListener {
         @SuppressWarnings("deprecation")
         TeamColor placedTeamColor = TeamColor.getByColorData(b.getData());
 
-        if (placedTeamColor != placerTeam.getColor()) {
+        if (placedTeamColor != placerTeam.getType()) {
             gplayer.sendMessage(ChatMessageType.ACTION_BAR, "&c味方チーム以外のフラッグは設置できません!");
             event.setCancelled(true);
             return;
@@ -123,7 +124,7 @@ public class BGBlockListener extends BGListener {
                 f.getFlagPoint()
         ));
 
-        if (plugin.getConfigs().getUseFlagEffects()) {
+        if (api.getConfig().getUseFlagEffects()) {
             Location loc = b.getLocation();
             Firework effect = loc.getWorld().spawn(loc, Firework.class);
             FireworkMeta meta = effect.getFireworkMeta();
@@ -148,7 +149,7 @@ public class BGBlockListener extends BGListener {
             return;
         }
         HeldBanner banner = game.getBannerHeld(gplayer).get();
-        if (s.getColor() != gplayer.getTeam().get().getColor()) {
+        if (s.getColor() != gplayer.getTeam().get().getType()) {
             gplayer.sendMessage(ChatMessageType.ACTION_BAR, "&c敵チームのスロットにバナーを設置することはできません！");
             return;
         }
@@ -168,7 +169,7 @@ public class BGBlockListener extends BGListener {
                 event.getBlock().getLocation(),
                 banner.getPoint()
         ));
-        if (plugin.getConfigs().getUseFlagEffects()) {
+        if (api.getConfig().getUseFlagEffects()) {
             Location loc = s.getLocation();
             loc.getWorld().playEffect(loc, Effect.ENDER_SIGNAL, 0, 10);
             loc.getWorld().playEffect(loc, Effect.SMOKE, 4, 2);
@@ -180,7 +181,7 @@ public class BGBlockListener extends BGListener {
         Team placerTeam = gplayer.getTeam().get();
         @SuppressWarnings("deprecation")
         TeamColor brokenTeamColor = TeamColor.getByColorData(event.getBlock().getData());
-        if (placerTeam.getColor() == brokenTeamColor) {
+        if (placerTeam.getType() == brokenTeamColor) {
             gplayer.sendMessage(ChatMessageType.ACTION_BAR, "&c味方チームのフラッグは破壊できません!");
             event.setCancelled(true);
             return;
@@ -201,7 +202,7 @@ public class BGBlockListener extends BGListener {
                 f.getFlagPoint()
         ));
 
-        if (plugin.getConfigs().getUseFlagEffects()) {
+        if (api.getConfig().getUseFlagEffects()) {
             Location loc = event.getBlock().getLocation();
             loc.getWorld().createExplosion(loc, 0F, false);
             GamePlayer.playSound(brokenTeam, Sound.ENTITY_BLAZE_HURT);
@@ -223,7 +224,7 @@ public class BGBlockListener extends BGListener {
 
         if (broken != null) {
             GamePlayer.sendMessage(breaker, ChatMessageType.ACTION_BAR,
-                    gplayer.getColoredName() + "&aが" + broken.getColor().getRichName() + "の&6" + f.getPoint() + "p目標&aを破壊しました!");
+                    gplayer.getColoredName() + "&aが" + broken.getType().getRichName() + "の&6" + f.getPoint() + "p目標&aを破壊しました!");
             GamePlayer.sendMessage(broken, ChatMessageType.ACTION_BAR,
                     gplayer.getColoredName() + "&aに" + f.getPoint() + "p目標&aを破壊されました!");
         } else {
@@ -237,7 +238,7 @@ public class BGBlockListener extends BGListener {
                 f.getPoint()
         ));
 
-        if (plugin.getConfigs().getUseFlagEffects()) {
+        if (api.getConfig().getUseFlagEffects()) {
             Location loc = event.getBlock().getLocation();
             loc.getWorld().playEffect(loc, Effect.ENDER_SIGNAL, 0, 10);
             if (broken != null) {
@@ -263,7 +264,7 @@ public class BGBlockListener extends BGListener {
         GamePlayer.sendMessage(game.getPlayersNotIn(gplayer.getTeam().get()), ChatMessageType.ACTION_BAR,
                 gplayer.getColoredName() + "&aに&6"
                 + s.getPoint() + "pバナー&aを回収されました！");
-        if (plugin.getConfigs().getUseFlagEffects()) {
+        if (api.getConfig().getUseFlagEffects()) {
             Location loc = event.getBlock().getLocation();
             loc.getWorld().createExplosion(loc, 0F, false);
             loc.getWorld().playEffect(loc, Effect.ENDER_SIGNAL, 0, 10);

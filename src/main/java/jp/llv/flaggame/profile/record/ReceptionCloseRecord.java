@@ -16,6 +16,7 @@
  */
 package jp.llv.flaggame.profile.record;
 
+import jp.llv.flaggame.api.profile.RecordType;
 import java.util.UUID;
 import org.bson.Document;
 
@@ -29,7 +30,7 @@ public class ReceptionCloseRecord extends GameRecord {
         super(game);
     }
 
-    /*package*/ ReceptionCloseRecord(Document base) {
+    public ReceptionCloseRecord(Document base) {
         super(base);
     }
 
@@ -37,5 +38,5 @@ public class ReceptionCloseRecord extends GameRecord {
     public RecordType getType() {
         return RecordType.RECEPTION_CLOSE;
     }
-    
+
 }

@@ -18,24 +18,24 @@ package syam.flaggame.command.stage;
 
 import java.util.List;
 import jp.llv.flaggame.profile.record.StageRateRecord;
-import jp.llv.flaggame.reception.GameReception;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.command.BaseCommand;
-import syam.flaggame.exception.CommandException;
+import jp.llv.flaggame.api.exception.CommandException;
 import syam.flaggame.permission.Perms;
-import syam.flaggame.player.GamePlayer;
+import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.reception.Reception;
 
 /**
  *
  * @author SakuraServerDev
  */
 public class StageRateCommand extends BaseCommand {
-    
-    public StageRateCommand(FlagGame plugin) {
+
+    public StageRateCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 true,
                 1,
                 "<rate> <- rate the stage",
@@ -46,25 +46,25 @@ public class StageRateCommand extends BaseCommand {
 
     @Override
     public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
-        GamePlayer gplayer = plugin.getPlayers().getPlayer(player);
+        GamePlayer gplayer = api.getPlayers().getPlayer(player);
         if (!gplayer.getEntry().isPresent()) {
             throw new CommandException("&c評価対象に参加していません！");
         }
-        GameReception reception = gplayer.getEntry().get();
-        if (reception.getState() != GameReception.State.FINISHED) {
+        Reception reception = gplayer.getEntry().get();
+        if (reception.getState() != Reception.State.FINISHED) {
             throw new CommandException("&c評価対象が評価段階ではありません！");
         }
         int rate = -1;
         try {
             rate = Integer.parseInt(args.get(0));
-        } catch(NumberFormatException ex) {
+        } catch (NumberFormatException ex) {
         }
         if (rate < 0 || 5 < rate) {
             throw new CommandException("&c0-5の整数値で評価してください！");
         }
-        reception.getRecordStream().push(new StageRateRecord(reception.getID(), player, plugin.getConfigs().getScoreRate(), rate));
+        reception.getRecordStream().push(new StageRateRecord(reception.getID(), player, api.getConfig().getScoreRate(), rate));
         reception.leave(gplayer);
         sendMessage(sender, "&a投票への協力ありがとうございました！");
     }
-    
+
 }

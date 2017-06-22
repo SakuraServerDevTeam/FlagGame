@@ -16,9 +16,9 @@
  */
 package jp.llv.flaggame.events;
 
-import jp.llv.flaggame.reception.GameReception;
 import org.bukkit.event.HandlerList;
-import syam.flaggame.game.Stage;
+import jp.llv.flaggame.stage.BasicStage;
+import jp.llv.flaggame.api.reception.Reception;
 
 /**
  *
@@ -27,15 +27,15 @@ import syam.flaggame.game.Stage;
 public class StageReservedEvent extends ReceptionEvent {
 
     private static final HandlerList handlers = new HandlerList();
-    
-    private final Stage stage;
-    
-    public StageReservedEvent(GameReception reception, Stage stage) {
+
+    private final BasicStage stage;
+
+    public StageReservedEvent(Reception reception, BasicStage stage) {
         super(reception);
         this.stage = stage;
     }
 
-    public Stage getStage() {
+    public BasicStage getStage() {
         return stage;
     }
 
@@ -43,9 +43,9 @@ public class StageReservedEvent extends ReceptionEvent {
     public HandlerList getHandlers() {
         return handlers;
     }
-    
+
     public static HandlerList getHandlerList() {
         return handlers;
     }
-    
+
 }

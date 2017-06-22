@@ -19,9 +19,9 @@ package jp.llv.flaggame.database;
 import java.util.Map;
 import java.util.UUID;
 import jp.llv.flaggame.profile.RecordStream;
-import jp.llv.flaggame.profile.StatEntry;
-import jp.llv.flaggame.profile.record.RecordType;
-import syam.flaggame.game.Stage;
+import jp.llv.flaggame.api.profile.StatEntry;
+import jp.llv.flaggame.api.profile.RecordType;
+import jp.llv.flaggame.api.stage.Stage;
 
 /**
  *

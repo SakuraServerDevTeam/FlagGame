@@ -18,22 +18,23 @@ package syam.flaggame.command.stage;
 
 import java.util.ArrayList;
 import java.util.List;
-import jp.llv.flaggame.game.permission.GamePermission;
-import jp.llv.flaggame.game.permission.GamePermissionState;
+import jp.llv.flaggame.api.stage.permission.GamePermission;
+import jp.llv.flaggame.api.stage.permission.GamePermissionState;
 
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import jp.llv.flaggame.reception.TeamColor;
-import jp.llv.flaggame.rollback.StageDataType;
+import jp.llv.flaggame.api.stage.rollback.StageDataType;
 import syam.flaggame.command.BaseCommand;
-import syam.flaggame.game.Configables;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.game.AreaInfo;
-import syam.flaggame.game.Stage;
+import jp.llv.flaggame.stage.Configables;
+import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.stage.AreaInfo;
+import jp.llv.flaggame.api.stage.Stage;
 import syam.flaggame.permission.Perms;
-import syam.flaggame.player.GamePlayer;
+import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.stage.area.StageAreaInfo;
 import syam.flaggame.util.Actions;
 import syam.flaggame.util.Cuboid;
 import syam.flaggame.util.WorldEditHandler;
@@ -44,9 +45,9 @@ public class StageSetCommand extends BaseCommand {
      * TODO: 設定によってコンソールから実行可能にする Confiable列挙にbePlayer (boolean)
      * を追加するか、ConfigType.Area
      */
-    public StageSetCommand(FlagGame plugin) {
+    public StageSetCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 true,
                 1,
                 "<option> [value] <- set option",
@@ -71,9 +72,12 @@ public class StageSetCommand extends BaseCommand {
         }
 
         // ゲーム取得
-        GamePlayer gPlayer = this.plugin.getPlayers().getPlayer(player);
+        GamePlayer gPlayer = this.api.getPlayers().getPlayer(player);
         Stage stage = gPlayer.getSetupSession()
-                .orElseThrow(() -> new CommandException("&c先に編集するゲームを選択してください")).getSelectedStage();
+                .orElseThrow(() -> new CommandException("&c先に編集するゲームを選択してください")).getSelected(Stage.class);
+        if (stage == null) {
+            throw new CommandException("&cあなたはステージを選択していません！");
+        }
 
         // 設定可能項目名を回す
         Configables conf;
@@ -195,7 +199,6 @@ public class StageSetCommand extends BaseCommand {
         game.setSpawn(team, player.getLocation());
 
         Actions.message(player, team.getRichName() + "&aのスポーン地点を設定しました！");
-        plugin.getDynmap().updateRegion(game);
     }
 
     /**
@@ -209,7 +212,6 @@ public class StageSetCommand extends BaseCommand {
         game.setSpecSpawn(player.getLocation());
 
         Actions.message(player, "&aステージ'" + game.getName() + "'の観戦者スポーン地点を設定しました！");
-        plugin.getDynmap().updateRegion(game);
     }
 
     // オプション
@@ -268,7 +270,6 @@ public class StageSetCommand extends BaseCommand {
         game.setTeamLimit(cnt);
 
         Actions.message(player, "&aステージ'" + game.getName() + "'のチーム毎人数上限値は " + cnt + "人 に設定されました！");
-        plugin.getDynmap().updateRegion(game);
     }
 
     private void setStageProtect(Player player, Stage stage, List<String> args) throws CommandException {
@@ -290,7 +291,6 @@ public class StageSetCommand extends BaseCommand {
 
         stage.setProtected(protect);
         Actions.message(player, "&aステージ'" + stage.getName() + "'の保護は " + result + " &aに設定されました！");
-        plugin.getDynmap().updateRegion(stage);
     }
 
     private void setStageAvailable(Player player, Stage stage, List<String> args) throws CommandException {
@@ -359,7 +359,6 @@ public class StageSetCommand extends BaseCommand {
         stage.setPrize(prize);
 
         Actions.message(player, "&aステージ'" + stage.getName() + "'の賞金は " + Actions.formatMoney(prize) + " に設定されました！");
-        plugin.getDynmap().updateRegion(stage);
     }
 
     private void setEntryFee(Player player, Stage stage, List<String> args) throws CommandException {
@@ -376,7 +375,6 @@ public class StageSetCommand extends BaseCommand {
         stage.setEntryFee(entryFee);
 
         Actions.message(player, "&aステージ'" + stage.getName() + "'の参加料は " + Actions.formatMoney(entryFee) + " に設定されました！");
-        plugin.getDynmap().updateRegion(stage);
     }
 
     // stage description
@@ -404,8 +402,8 @@ public class StageSetCommand extends BaseCommand {
             throw new CommandException("&c" + ex.getMessage());
         }
         stage.getAreas().setStageArea(region);
-        AreaInfo info = stage.getAreas().getStageAreaInfo();
-        AreaInfo.RollbackData rollback = info.addRollback("init");
+        StageAreaInfo info = stage.getAreas().getStageAreaInfo();
+        StageAreaInfo.StageRollbackData rollback = info.addRollback("init");
         rollback.setTarget(StageDataType.CLASSIC.newInstance());
         sendMessage(player, "&a'&6" + stage.getName() + "&a'のステージエリアを設定しました！");
         sendMessage(player, "&a'&6" + stage.getName() + "&a'のステージエリアの'&6init&a'をセーブしました！");
@@ -429,7 +427,7 @@ public class StageSetCommand extends BaseCommand {
             throw new CommandException("&c" + ex.getMessage());
         }
         game.getAreas().setArea(id, area);
-        AreaInfo info = game.getAreas().getAreaInfo(id);
+        StageAreaInfo info = game.getAreas().getAreaInfo(id);
         System.out.println(info);
         info.getPermission(GamePermission.DOOR).setState(team, GamePermissionState.ALLOW);
         info.getPermission(GamePermission.CONTAINER).setState(team, GamePermissionState.ALLOW);
@@ -438,7 +436,6 @@ public class StageSetCommand extends BaseCommand {
         sendMessage(player, "&aステージ'&6" + game.getName() + "&a'のエリア'&6" + id + "&a'での権限'&6" + GamePermission.DOOR + "&a'を状態'" + GamePermissionState.ALLOW.format() + "&a'に変更しました！");
         sendMessage(player, "&aステージ'&6" + game.getName() + "&a'のエリア'&6" + id + "&a'での権限'&6" + GamePermission.CONTAINER + "&a'を状態'" + GamePermissionState.ALLOW.format() + "&a'に変更しました！");
         sendMessage(player, "&aステージ'&6" + game.getName() + "&a'のエリア'&6" + id + "&a'での権限'&6" + GamePermission.GODMODE + "&a'を状態'" + GamePermissionState.ALLOW.format() + "&a'に変更しました！");
-        plugin.getDynmap().updateRegion(game);
     }
 
     /* ***** ここまで **************************************** */

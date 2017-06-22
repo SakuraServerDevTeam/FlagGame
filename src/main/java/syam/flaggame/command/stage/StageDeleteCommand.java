@@ -17,16 +17,15 @@
 package syam.flaggame.command.stage;
 
 import java.util.List;
-import java.util.logging.Level;
 import jp.llv.flaggame.database.DatabaseException;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.BaseCommand;
-import syam.flaggame.queue.Queueable;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.exception.StageReservedException;
-import syam.flaggame.game.Stage;
+import jp.llv.flaggame.api.queue.Queueable;
+import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.api.exception.FlagGameException;
+import jp.llv.flaggame.api.stage.Stage;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.util.Actions;
 
@@ -36,9 +35,9 @@ import syam.flaggame.util.Actions;
  */
 public class StageDeleteCommand extends BaseCommand {
 
-    public StageDeleteCommand(FlagGame plugin) {
+    public StageDeleteCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 true,
                 1,
                 "<stage> <- delete a specified stage",
@@ -50,18 +49,12 @@ public class StageDeleteCommand extends BaseCommand {
     }
 
     @Override
-    public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
-        Stage stage = this.plugin.getStages().getStage(args.get(0))
+    public void execute(List<String> args, CommandSender sender, Player player) throws FlagGameException {
+        this.api.getStages().getStage(args.get(0))
                 .orElseThrow(() -> new CommandException("&cその名前のステージは存在しません！"));
 
-        try {
-            stage.reserve(null); // the stage cannot be reserved, used, or nor edited
-        } catch (StageReservedException ex) {
-            throw new CommandException("&cそのステージは現在受付中または開始中のため削除できません", ex);
-        }
-
         // confirmキュー追加
-        plugin.getConfirmQueue().addQueue(player, new QueuedStageDeletion(), args, 10);
+        api.getConfirmQueue().addQueue(player, new QueuedStageDeletion(), args, 10);
         Actions.message(player, "&dステージ'&7" + args.get(0) + "&d'を削除しようとしています！");
         Actions.message(player, "&d続行するには &a/flag confirm &dコマンドを入力してください！");
         Actions.message(player, "&a/flag confirm &dコマンドは10秒間のみ有効です。");
@@ -70,30 +63,24 @@ public class StageDeleteCommand extends BaseCommand {
     private class QueuedStageDeletion implements Queueable {
 
         @Override
-        public void executeQueue(List<String> args, CommandSender sender, Player player) throws CommandException {
+        public void executeQueue(List<String> args, CommandSender sender, Player player) throws FlagGameException {
             if (args.size() <= 1) {
                 Actions.message(player, "&cステージ名が不正です");
                 return;
             }
-            Stage stage = plugin.getStages().getStage(args.get(0))
+            Stage stage = api.getStages().getStage(args.get(0))
                     .orElseThrow(() -> new CommandException("&cその名前のステージは存在しません！"));
-
-            if (stage.isReserved()) {
-                Actions.message(player, "&cそのステージは現在受付中または開始中のため削除できません");
-                return;
-            }
-
-            plugin.getDatabases()
+            stage.reserve(null);
+            api.getDatabase()
                     .orElseThrow(() -> new CommandException("&cデータベースへの接続に失敗しました！"))
                     .deleteStage(stage, result -> {
                         try {
                             result.test();
-                            plugin.getStages().removeStage(stage);
+                            api.getStages().removeStage(stage);
                             Actions.message(player, "&aステージ'" + args.get(0) + "'を削除しました！");
-                            plugin.getDynmap().updateRegions();
                         } catch (DatabaseException ex) {
                             Actions.message(player, "&cステージ'" + args.get(0) + "'の削除に失敗しました！");
-                            plugin.getLogger().log(Level.WARNING, "Failed to delete stage", ex);
+                            api.getLogger().warn("Failed to delete stage", ex);
                         }
                     });
         }

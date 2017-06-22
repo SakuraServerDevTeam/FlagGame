@@ -20,15 +20,16 @@ import java.util.List;
 import org.bukkit.entity.Player;
 import java.util.Arrays;
 import java.util.stream.Collectors;
-import jp.llv.flaggame.game.permission.GamePermission;
-import jp.llv.flaggame.game.permission.GamePermissionState;
+import jp.llv.flaggame.api.stage.permission.GamePermission;
+import jp.llv.flaggame.api.stage.permission.GamePermissionState;
 import jp.llv.flaggame.reception.TeamColor;
 import org.bukkit.Location;
-import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.area.AreaCommand;
-import syam.flaggame.exception.CommandException;
-import syam.flaggame.game.AreaInfo;
-import syam.flaggame.game.Stage;
+import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.api.stage.Stage;
+import jp.llv.flaggame.api.stage.area.StageAreaInfo;
+import jp.llv.flaggame.stage.AreaInfo;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.util.Actions;
 
@@ -38,9 +39,9 @@ import syam.flaggame.util.Actions;
  */
 public class AreaPermissionTestCommand extends AreaCommand {
 
-    public AreaPermissionTestCommand(FlagGame plugin) {
+    public AreaPermissionTestCommand(FlagGameAPI api) {
         super(
-                plugin,
+                api,
                 1,
                 "<permission> [color] <- select region",
                 Perms.AREA_PERMISSION_TEST,
@@ -75,7 +76,7 @@ public class AreaPermissionTestCommand extends AreaCommand {
             if (!stage.getAreas().getArea(name).contains(loc)) {
                 continue;
             }
-            AreaInfo info = stage.getAreas().getAreaInfo(name);
+            StageAreaInfo info = stage.getAreas().getAreaInfo(name);
             GamePermissionState s = info.getPermission(permission).getState(color);
             if (s.isForceful()) {
                 cause = "&a'&6" + name + "&a'の定義が適用されています";

@@ -16,11 +16,12 @@
  */
 package jp.llv.flaggame.profile.record;
 
+import jp.llv.flaggame.api.profile.RecordType;
 import java.util.UUID;
 import org.bson.Document;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import syam.flaggame.FlagConfig;
+import jp.llv.flaggame.api.FlagConfig;
 
 /**
  *
@@ -41,7 +42,7 @@ public class BannerDeployRecord extends ScoreRecord {
         super(game, player, score);
     }
 
-    /*package*/ BannerDeployRecord(Document base) {
+    public BannerDeployRecord(Document base) {
         super(base);
     }
 
