@@ -86,8 +86,6 @@ public class FlagGame extends JavaPlugin implements FlagGamePlugin {
             return;
         }
 
-        registerListeners();
-
         // データベース連携
         database = new MongoDB(this, this.config);
         try {
@@ -100,6 +98,8 @@ public class FlagGame extends JavaPlugin implements FlagGamePlugin {
         this.getServer().getScheduler().runTaskTimer(this, database::tryConnect, 600000L, 300000L);
 
         this.api = new FlagGameAPIImpl(this);
+
+        registerListeners();
 
         // コマンド登録
         FlagCommandRegistry.initializeAll(api);
