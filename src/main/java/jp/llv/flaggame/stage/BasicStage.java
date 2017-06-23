@@ -404,7 +404,7 @@ public class BasicStage extends SimpleReservable<Stage> implements Stage {
 
     @Override
     public Optional<Reception> getReception() {
-        if (!isReserved() && getReserver() instanceof Reception) {
+        if (isReserved() && getReserver() instanceof Reception) {
             return Optional.of((Reception) getReserver());
         } else {
             return Optional.empty();
