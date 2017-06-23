@@ -56,7 +56,7 @@ public class FlagGameAPIImpl implements FlagGameAPI {
         this.stages = new StageManager();
         this.confirmQueue = new ConfirmQueue();
         try {
-            Constructor<? extends Logger> loggerConstructor = JDK14LoggerAdapter.class.getConstructor(java.util.logging.Logger.class);
+            Constructor<? extends Logger> loggerConstructor = JDK14LoggerAdapter.class.getDeclaredConstructor(java.util.logging.Logger.class);
             loggerConstructor.setAccessible(true);
             this.logger = loggerConstructor.newInstance(plugin.getLogger());
         } catch (ReflectiveOperationException ex) {
