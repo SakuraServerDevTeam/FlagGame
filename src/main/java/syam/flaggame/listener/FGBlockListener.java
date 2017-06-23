@@ -50,7 +50,7 @@ public class FGBlockListener implements Listener {
     /**
      * ブロックを破壊した
      *
-     * @param event
+     * @param event an event
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onBlockBreak(final BlockBreakEvent event) {
@@ -62,7 +62,7 @@ public class FGBlockListener implements Listener {
     /**
      * ブロックを設置した
      *
-     * @param event
+     * @param event an event
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onBlockPlace(final BlockPlaceEvent event) {

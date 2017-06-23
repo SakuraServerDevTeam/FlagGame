@@ -85,7 +85,7 @@ public class CachedFlagConfig implements FlagConfig {
     /**
      * コンストラクタ
      *
-     * @param plugin
+     * @param plugin a plugin instance
      */
     public CachedFlagConfig(FlagGame plugin) {
         this.plugin = plugin;
@@ -338,15 +338,6 @@ public class CachedFlagConfig implements FlagConfig {
     }
 
     // 設定 getter ここまで
-    /**
-     * 設定ファイルに設定を書き込む (コメントが消えるため使わない)
-     *
-     * @throws Exception
-     */
-    @Deprecated
-    public void save() throws Exception {
-        plugin.saveConfig();
-    }
 
     /**
      * 必要なディレクトリ群を作成する

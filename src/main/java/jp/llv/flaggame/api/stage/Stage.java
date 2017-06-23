@@ -128,7 +128,7 @@ public interface Stage extends Reservable<Stage> {
     /**
      * ステージの有効/無効を設定する
      *
-     * @param available
+     * @param available whether this stage is available
      */
     void setAvailable(boolean available);
 

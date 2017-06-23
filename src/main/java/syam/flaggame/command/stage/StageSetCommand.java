@@ -60,7 +60,7 @@ public class StageSetCommand extends BaseCommand {
     /**
      * コマンド実行時に呼ばれる
      *
-     * @throws CommandException
+     * @throws CommandException when this command fails handiling
      */
     @Override
     public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
