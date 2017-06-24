@@ -40,9 +40,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import jp.llv.flaggame.api.exception.FlagGameException;
 import jp.llv.flaggame.api.reception.Reception;
 import jp.llv.flaggame.api.FlagGameAPI;
-import jp.llv.flaggame.api.player.GamePlayer;
 import jp.llv.flaggame.util.OptionSet;
-import sun.net.www.content.image.jpeg;
 
 /**
  * A {@link PlayerManager} provides ways of getting
