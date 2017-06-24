@@ -50,7 +50,6 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import jp.llv.flaggame.api.exception.CommandException;
 import jp.llv.flaggame.api.exception.FlagGameException;
 import jp.llv.flaggame.api.exception.InvalidOptionException;
-import jp.llv.flaggame.stage.BasicStage;
 import syam.flaggame.permission.Perms;
 import jp.llv.flaggame.api.player.GamePlayer;
 import jp.llv.flaggame.api.stage.Stage;
@@ -204,8 +203,16 @@ public class BasicGameReception implements Reception {
 
     @Override
     public void leave(GamePlayer player) {
-        if (this.getState() == State.STARTED) {
-            throw new IllegalStateException();
+        switch (getState()) {
+            case READY:
+            case STARTING:
+            case STARTED:
+            case CLOSED:
+                throw new IllegalStateException();
+            case OPENED:
+                teaming.leave(player);
+                break;
+            case FINISHED:
         }
         player.leave(this);
         if (getState().toGameState() != Game.State.FINISHED) {

@@ -58,7 +58,7 @@ public class VibeBasedTeaming implements Teaming {
     }
 
     @Override
-    public void leave(GamePlayer player) throws FlagGameException {
+    public void leave(GamePlayer player) {
         players.remove(player);
     }
 
