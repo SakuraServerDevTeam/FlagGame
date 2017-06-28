@@ -328,7 +328,7 @@ public class BasicGameReception implements Reception {
 
     @Override
     public Optional<? extends Game> getGame(GamePlayer player) {
-        return Optional.of(game);
+        return Optional.ofNullable(game);
     }
 
     @Override
