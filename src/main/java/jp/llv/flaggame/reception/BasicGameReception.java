@@ -53,6 +53,7 @@ import jp.llv.flaggame.api.exception.InvalidOptionException;
 import syam.flaggame.permission.Perms;
 import jp.llv.flaggame.api.player.GamePlayer;
 import jp.llv.flaggame.api.stage.Stage;
+import jp.llv.flaggame.game.basic.BGRecordStream;
 import syam.flaggame.util.Actions;
 
 /**
@@ -120,6 +121,7 @@ public class BasicGameReception implements Reception {
         }
 
         this.state = State.OPENED;
+        this.records = new BGRecordStream(api, game, new GameRecordStream(id));
         this.records.push(new ReceptionOpenRecord(this.id));
         GamePlayer.sendMessage(api.getPlayers(), "&2フラッグゲーム'&6" + this.getName() + "&2'の参加受付が開始されました！");
         GamePlayer.sendMessage(api.getPlayers(), "&2 参加料:&6 " + entryFeeMsg + "&2   賞金:&6 " + awardMsg);
@@ -274,7 +276,7 @@ public class BasicGameReception implements Reception {
                         return;
                     }
                     if (Actions.addMoney(uuid, stage.getPrize())) {
-                        player.sendMessage("&a[+]おめでとうございます！賞金として" + Actions.formatMoney(stage.getPrize()) + "Coinを得ました！");
+                        player.sendMessage("&a[+]おめでとうございます！賞金として" + Actions.formatMoney(stage.getPrize()) + "を得ました！");
                     } else {
                         player.sendMessage("&c報酬受け取りにエラーが発生しました。管理人までご連絡ください。");
                     }
