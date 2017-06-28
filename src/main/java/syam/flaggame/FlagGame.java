@@ -27,6 +27,7 @@ import jp.llv.flaggame.database.mongo.MongoDB;
 
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
@@ -118,6 +119,8 @@ public class FlagGame extends JavaPlugin implements FlagGamePlugin {
                 getLogger().log(Level.WARNING, "Failed to load stage!", ex);
             }
         });
+        
+        api.getProfiles().loadPlayerProfiles(api.getPlayers(), false);
 
         // メッセージ表示
         PluginDescriptionFile pdfFile = this.getDescription();

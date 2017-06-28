@@ -34,7 +34,7 @@ public interface ProfileAPI {
 
     void loadPlayerProfile(UUID uuid, boolean notifyLevelUp);
 
-    void loadPlayerProfiles(Iterable<GamePlayer> players, boolean notifyLevelUp);
+    void loadPlayerProfiles(Iterable<? extends GamePlayer> players, boolean notifyLevelUp);
 
     void loadStageProfile(String stage);
 
