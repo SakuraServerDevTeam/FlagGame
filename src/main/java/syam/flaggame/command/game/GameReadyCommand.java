@@ -43,12 +43,6 @@ public class GameReadyCommand extends BaseCommand {
 
     @Override
     public void execute(List<String> args, CommandSender sender, Player player) throws FlagGameException {
-        if (args.size() < 1) {
-            throw new CommandException("&c募集方法を入力してください!");
-        }
-        List<String> readyArgs = new ArrayList<>(args);
-        readyArgs.remove(0);
-
         OptionSet options = new OptionSet(args);
         Reception reception;
         try {

@@ -277,4 +277,9 @@ public class FlagGamePlayer implements GamePlayer {
         Actions.sendTitle(getPlayer(), title, sub, in, stay, out);
     }
 
+    @Override
+    public String toString() {
+        return getName();
+    }
+
 }

@@ -125,6 +125,11 @@ public class ValueSortedMap<K, V> implements Map<K, V> {
         map.clear();
     }
 
+    @Override
+    public String toString() {
+        return map.toString();
+    }
+
     public static <K, V extends Comparable<? super V>> ValueSortedMap<K, V> newInstance() {
         return new ValueSortedMap<>(Comparator.naturalOrder());
     }

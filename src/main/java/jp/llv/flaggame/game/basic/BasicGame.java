@@ -376,13 +376,6 @@ public class BasicGame implements Game {
         );
         OptionalLong maxKills = kills.entrySet().stream().mapToLong(Map.Entry::getValue).max();
         Set<GamePlayer> maxKillers = MapUtils.getKeyByValue(kills, maxKills.orElse(Long.MIN_VALUE));
-        // capture point
-        Map<GamePlayer, Double> captures = this.getRecordStream().groupingBy(
-                FlagCaptureRecord.class, r -> getPlayer(r.getPlayer()),
-                Collectors.summingDouble(t -> t.getExpWeight(api.getConfig()))
-        );
-        OptionalDouble maxCaptures = captures.entrySet().stream().mapToDouble(Map.Entry::getValue).max();
-        Set<GamePlayer> maxCapturers = MapUtils.getKeyByValue(captures, maxCaptures.orElse(Double.NaN));
 
         GamePlayer.sendMessage(this.api.getPlayers(), "&2フラッグゲーム'&6" + this.stage.getName() + "&2'が終わりました!");
         GamePlayer.sendMessage(this.api.getPlayers(), teamPoints.entrySet().stream()
@@ -405,7 +398,7 @@ public class BasicGame implements Game {
                     + "(&6" + maxKills.getAsLong() + "kills&f)"
             );
         }
-        if (!maxCapturers.isEmpty()) {
+        if (!maxExps.isEmpty()) {
             GamePlayer.sendMessage(this.api.getPlayers(),
                     "&6戦略家: "
                     + maxExps.stream().map(GamePlayer::getColoredName).collect(Collectors.joining(", "))
