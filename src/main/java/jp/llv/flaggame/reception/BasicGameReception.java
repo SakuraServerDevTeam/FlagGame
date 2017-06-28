@@ -217,6 +217,7 @@ public class BasicGameReception implements Reception {
                 break;
             case FINISHED:
         }
+        teaming.leave(player);
         player.leave(this);
         if (getState().toGameState() != Game.State.FINISHED) {
             getRecordStream().push(new PlayerLeaveRecord(id, player.getPlayer()));
