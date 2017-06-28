@@ -184,7 +184,7 @@ public class BasicGameReception implements Reception {
 
 
         long level = api.getProfiles().getProfile(player.getUUID()).getLevel().orElse(0);
-        int count = teaming.size();
+        int count = teaming.size() + 1;
         Optional<TeamType> type = teaming.join(player);
         
         player.join(this, options);
