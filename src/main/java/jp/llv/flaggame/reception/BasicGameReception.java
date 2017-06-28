@@ -182,12 +182,13 @@ public class BasicGameReception implements Reception {
             player.sendMessage("&c参加料として " + Actions.formatMoney(cost) + " を支払いました！");
         }
 
-        player.join(this, options);
-        getRecordStream().push(new PlayerEntryRecord(id, player.getPlayer()));
 
         long level = api.getProfiles().getProfile(player.getUUID()).getLevel().orElse(0);
         int count = teaming.size();
         Optional<TeamType> type = teaming.join(player);
+        
+        player.join(this, options);
+        getRecordStream().push(new PlayerEntryRecord(id, player.getPlayer()));
         if (type.isPresent()) {
             GamePlayer.sendMessage(api.getPlayers(),
                     type.get().toColor().getChatColor() + player.getName() + "&7(Lv" + level + ")&aが'&6"
