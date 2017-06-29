@@ -427,9 +427,8 @@ public class BasicGame implements Game {
             double point = points.getOrDefault(player, 0.0);
             long exp = exps.getOrDefault(player, 0L);
             double vibe = vibes.getOrDefault(player, 0.0);
-            player.sendMessage("&aあなたの獲得得点(β): &6" + point);
+            player.sendMessage("&aあなたの獲得得点: &6" + point);
             player.sendMessage("&aあなたの獲得経験値: &6" + exp);
-            player.sendMessage("&aあなたのチョーシ変化量(β): &6" + vibe);
             if (winnerTeams.isEmpty()) {
                 player.sendTitle("&6試合終了: 引き分け", author, 0, 60, 20);
                 getRecordStream().push(new PlayerDrawRecord(getID(), player.getUUID(), loc, exp, vibe));
