@@ -80,6 +80,9 @@ import syam.flaggame.util.Cuboid;
 import jp.llv.flaggame.api.reception.Reception;
 import jp.llv.flaggame.api.stage.Stage;
 import jp.llv.flaggame.api.stage.area.StageAreaInfo;
+import org.bukkit.block.BlockState;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 
 /**
  *
@@ -211,6 +214,7 @@ public class BasicGame implements Game {
 
                 //インベントリ操作
                 vp.getInventory().clear();
+                vp.getEnderChest().clear();
                 vp.getInventory().setHelmet(new ItemStack(Material.WOOL, 1, (short) 0, team.getColor().getBlockData()));
                 vp.getInventory().setChestplate(null);
                 vp.getInventory().setLeggings(null);
@@ -229,6 +233,27 @@ public class BasicGame implements Game {
 
                 //プレイヤーリストへ色適用
                 player.setTabName(team.getColor().getChatColor() + player.getName());
+                
+                //=====TEMPORARY CODE=====///
+                BlockState kitState = teamSpawn.clone().subtract(0, 2, 0).getBlock().getState();
+                if (!(kitState instanceof InventoryHolder)) {
+                    continue;
+                }
+                ItemStack[] kit = ((InventoryHolder) kitState).getInventory().getContents();
+                Inventory inv = player.getPlayer().getInventory();
+                for (int i = 0; i < 24; i++) {
+                    if (kit[i] != null) {
+                        inv.setItem(i, new ItemStack(kit[i]));
+                    }
+                }
+                for (int i = 24; i < 27; i++) {
+                    if (kit[i] != null) {
+                        inv.setItem(i + 13 , new ItemStack(kit[i]));
+                    }
+                }
+                //===TEMPORATY CODE END===///
+                
+                
             }
         }
 
