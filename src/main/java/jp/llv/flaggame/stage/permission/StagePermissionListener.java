@@ -261,7 +261,7 @@ public class StagePermissionListener implements Listener {
         } else {
             color = TeamColor.WHITE;
         }
-        event.setCancelled(!hasPermission(event.getVehicle().getLocation(), color, GamePermission.VEHICLE_ENTER));
+        event.setCancelled(!hasPermission(event.getVehicle().getLocation(), color, GamePermission.VEHICLE_EXIT));
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -278,7 +278,7 @@ public class StagePermissionListener implements Listener {
         } else {
             color = TeamColor.WHITE;
         }
-        event.setCancelled(!hasPermission(event.getVehicle().getLocation(), color, GamePermission.VEHICLE_ENTER));
+        event.setCancelled(!hasPermission(event.getVehicle().getLocation(), color, GamePermission.VEHICLE_DAMAGE));
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
