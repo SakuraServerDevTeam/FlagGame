@@ -28,7 +28,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.util.Vector;
-import syam.flaggame.permission.Perms;
 
 /**
  *
@@ -51,9 +50,10 @@ public class FGActionListener implements Listener {
             || event.getHand() != EquipmentSlot.HAND
             || player.isOnGround()
             || face.getModY() != 0
-            || !Perms.WALL_KICK.has(player)
-            || (event.getItem() != null && event.getItem().getType().isOccluding())
-            || !wallBlock.getType().isSolid()
+            || !player.hasPermission("walljump")
+            || (event.getItem() != null && event.getItem().getType().isSolid())
+            || !wallBlock.getType().isOccluding()
+            || Math.abs(player.getEyeLocation().getPitch()) > api.getConfig().getWallKickPitchLimit()
             || wallBlock.getLocation().add(0.5, 0.5, 0.5).distanceSquared(player.getLocation()) > 1) {
             return;
         }

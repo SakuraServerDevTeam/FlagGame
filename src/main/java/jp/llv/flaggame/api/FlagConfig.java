@@ -85,6 +85,8 @@ public interface FlagConfig {
     double getWallKickPowerXZ();
 
     double getWallKickPowerY();
+    
+    double getWallKickPitchLimit();
 
     boolean isDebug();
 

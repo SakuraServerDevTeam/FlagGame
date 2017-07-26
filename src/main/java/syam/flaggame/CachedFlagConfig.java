@@ -43,7 +43,7 @@ public class CachedFlagConfig implements FlagConfig {
     private static final List<String> DEFAULT_DISABLED_COMMANDS = Arrays.asList("/spawn", "/home", "/setspawn");
     private static final List<String> DEFAULT_PERMISSIONS = Arrays.asList("vault", "superperms", "ops");
 
-    private static final double VERSION = 0.7;
+    private static final double VERSION = 0.8;
 
     private final FlagGame plugin;
     private final File pluginDir;
@@ -57,6 +57,7 @@ public class CachedFlagConfig implements FlagConfig {
 
     private double wallKickPowerXZ = 0.75;
     private double wallKickPowerY = 0.6;
+    private float pitchLimit = 60;
 
     /* Games Configs */
     private int startCountdownInSec = 10;
@@ -124,6 +125,7 @@ public class CachedFlagConfig implements FlagConfig {
         useDynmap = plugin.getConfig().getBoolean("UseDynmap", false);
         wallKickPowerXZ = config.getDouble("WallKick.PowerXZ", wallKickPowerXZ);
         wallKickPowerY = config.getDouble("WallKick.PowerY", wallKickPowerY);
+        pitchLimit = (float) config.getDouble("WallKick.PitchLimit", pitchLimit);
         /* Games Configs */
         startCountdownInSec = plugin.getConfig().getInt("StartCountdownInSec", 10);
         useFlagEffects = plugin.getConfig().getBoolean("UseFlagEffects", true);
@@ -335,6 +337,11 @@ public class CachedFlagConfig implements FlagConfig {
     @Override
     public long getScoreRate() {
         return (long) scoreRate;
+    }
+
+    @Override
+    public double getWallKickPitchLimit() {
+        return pitchLimit;
     }
 
     // 設定 getter ここまで
