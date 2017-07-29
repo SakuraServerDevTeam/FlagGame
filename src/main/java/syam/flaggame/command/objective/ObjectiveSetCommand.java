@@ -173,7 +173,7 @@ public class ObjectiveSetCommand extends ObjectiveCommand {
         String tool = Material.getMaterial(api.getConfig().getToolID()).name();
         Actions.message(player, "&aチェスト管理モードを開始しました。選択ツール: " + tool);
     }
-    
+
     private void setSuperJump(Player player, Stage game, List<String> args) throws ReservedException, CommandException, ObjectiveCollisionException {
         if (args.size() < 2) {
             throw new CommandException("&cスーパージャンプの半径と強さを指定してください！");
@@ -182,11 +182,12 @@ public class ObjectiveSetCommand extends ObjectiveCommand {
         try {
             range = Double.parseDouble(args.get(0));
             power = Double.parseDouble(args.get(1));
-        } catch(NumberFormatException ex) {
+        } catch (NumberFormatException ex) {
             throw new CommandException("&cスーパージャンプの半径と強さを正しい数値で指定してください！", ex);
         }
         SuperJump jump = new SuperJump(player.getLocation(), range, player.getEyeLocation().getDirection().multiply(power));
         game.addObjective(jump);
+        Actions.message(player, "&aステージ'" + game.getName() + "'のスーパージャンプを登録しました！");
     }
 
 }

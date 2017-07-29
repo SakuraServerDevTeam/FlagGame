@@ -115,7 +115,7 @@ public class FGActionListener implements Listener {
         Player player = event.getPlayer();
         if (!event.isSneaking()
             || api.getGameWorld() != player.getWorld()
-            || Perms.SUPER_JUMP.has(player)) {
+            || !Perms.SUPER_JUMP.has(player)) {
             return;
         }
         Location loc = player.getLocation();
