@@ -18,6 +18,9 @@ package syam.flaggame.listener;
 
 import jp.llv.flaggame.api.FlagConfig;
 import jp.llv.flaggame.api.FlagGameAPI;
+import jp.llv.flaggame.api.stage.Stage;
+import jp.llv.flaggame.api.stage.objective.SuperJump;
+import jp.llv.flaggame.events.PlayerSuperJumpEvent;
 import jp.llv.flaggame.events.PlayerWallKickEvent;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -28,8 +31,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.util.Vector;
+import syam.flaggame.permission.Perms;
 
 /**
  *
@@ -53,7 +58,7 @@ public class FGActionListener implements Listener {
             || event.getHand() != EquipmentSlot.HAND
             || player.isOnGround()
             || face.getModY() != 0
-            || !player.hasPermission("walljump")
+            || !Perms.WALL_KICK.has(player)
             || (event.getItem() != null && event.getItem().getType().isSolid())
             || !wallBlock.getType().isOccluding()
             || Math.abs(player.getEyeLocation().getPitch()) > api.getConfig().getWallKickPitchLimit()
@@ -103,6 +108,31 @@ public class FGActionListener implements Listener {
         // apply
         player.getWorld().playEffect(player.getLocation(), Effect.STEP_SOUND, wallBlock.getType());
         player.setVelocity(actionEvent.getVelocity());
+    }
+
+    @EventHandler
+    public void on(PlayerToggleSneakEvent event) {
+        Player player = event.getPlayer();
+        if (!event.isSneaking()
+            || api.getGameWorld() != player.getWorld()
+            || Perms.SUPER_JUMP.has(player)) {
+            return;
+        }
+        Location loc = player.getLocation();
+        outer: for (Stage stage : api.getStages()) {
+            for (SuperJump superJump : stage.getObjectives(SuperJump.class).values()) {
+                if (superJump.getRange() * superJump.getRange() < superJump.getLocation().distanceSquared(loc)) {
+                    continue;
+                }
+                PlayerSuperJumpEvent actionEvent = new PlayerSuperJumpEvent(player, stage, superJump);
+                api.getServer().getPluginManager().callEvent(actionEvent);
+                if (actionEvent.isCancelled()) {
+                    continue;
+                }
+                player.setVelocity(superJump.getVelocity());
+                break outer;
+            }
+        }
     }
 
 }

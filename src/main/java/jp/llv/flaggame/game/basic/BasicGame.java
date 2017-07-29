@@ -80,6 +80,7 @@ import syam.flaggame.util.Cuboid;
 import jp.llv.flaggame.api.reception.Reception;
 import jp.llv.flaggame.api.stage.Stage;
 import jp.llv.flaggame.api.stage.area.StageAreaInfo;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;

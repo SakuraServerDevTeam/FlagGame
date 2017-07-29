@@ -31,6 +31,7 @@ public enum Perms {
     IGNORE_PROTECT("ignoreprotect"),
     SIGN("sign"),
     WALL_KICK("wallkick"),
+    SUPER_JUMP("superjump"),
     AREA_DASHBOARD("area.dashboard"),
     AREA_DELETE("area.delete"),
     AREA_INIT("area.init"),

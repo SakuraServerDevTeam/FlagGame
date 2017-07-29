@@ -17,7 +17,6 @@
 package jp.llv.flaggame.api.stage.objective;
 
 import jp.llv.flaggame.util.StringUtil;
-import jp.llv.flaggame.api.stage.objective.StageObjective;
 
 /**
  *
@@ -29,7 +28,8 @@ public enum ObjectiveType {
     CHEST(GameChest.class),
     NEXUS(Nexus.class),
     BANNER_SLOT(BannerSlot.class),
-    BANNER_SPAWNER(BannerSpawner.class),;
+    BANNER_SPAWNER(BannerSpawner.class),
+    SUPER_JUMP(SuperJump.class),;
 
     private final Class<? extends StageObjective> clazz;
 

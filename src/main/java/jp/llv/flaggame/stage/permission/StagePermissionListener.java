@@ -53,6 +53,7 @@ import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import jp.llv.flaggame.api.player.GamePlayer;
 import jp.llv.flaggame.api.stage.area.StageAreaSet;
+import jp.llv.flaggame.events.PlayerSuperJumpEvent;
 
 /**
  *
@@ -308,6 +309,16 @@ public class StagePermissionListener implements Listener {
         }
         TeamType color = gplayer.getTeam().map(Team::getType).orElse(TeamColor.WHITE);
         event.setCancelled(!hasPermission(event.getPlayer().getLocation(), color, GamePermission.WALL_KICK));
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void on(PlayerSuperJumpEvent event) {
+        GamePlayer gplayer = api.getPlayers().getPlayer(event.getPlayer());
+        if (!game.getReception().hasReceived(gplayer)) {
+            return;
+        }
+        TeamType color = gplayer.getTeam().map(Team::getType).orElse(TeamColor.WHITE);
+        event.setCancelled(!hasPermission(event.getPlayer().getLocation(), color, GamePermission.SUPER_JUMP));
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)

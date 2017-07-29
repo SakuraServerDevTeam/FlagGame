@@ -48,12 +48,38 @@ import jp.llv.flaggame.api.stage.area.StageAreaSet;
 import jp.llv.flaggame.api.stage.permission.StagePermissionStateSet;
 import jp.llv.flaggame.stage.BasicStage;
 import jp.llv.flaggame.api.stage.objective.GameChest;
+import jp.llv.flaggame.api.stage.objective.SuperJump;
+import org.bukkit.util.Vector;
 import syam.flaggame.util.Cuboid;
 
 public final class StageBsonMapper {
 
     private StageBsonMapper() {
         throw new UnsupportedOperationException();
+    }
+
+    private static void writeVector(BsonDocument bson, String key, Vector value) {
+        if (value == null) {
+            return;
+        }
+        BsonDocument section = new BsonDocument();
+        section.append("x", new BsonDouble(value.getX()));
+        section.append("y", new BsonDouble(value.getY()));
+        section.append("z", new BsonDouble(value.getZ()));
+        bson.append(key, section);
+    }
+
+    private static Vector readVector(BsonDocument bson, String key) {
+        try {
+            BsonDocument section = bson.getDocument(key);
+            String world = section.getString("world").getValue();
+            double x = section.getDouble("x").getValue();
+            double y = section.getDouble("y").getValue();
+            double z = section.getDouble("z").getValue();
+            return new Vector(x, y, z);
+        } catch (BsonInvalidOperationException ex) {
+            return null;
+        }
     }
 
     private static void writeLocation(BsonDocument bson, String key, Location value) {
@@ -249,6 +275,22 @@ public final class StageBsonMapper {
         Location loc = readLocation(bson, key);
         return new GameChest(loc);
     }
+    
+    private static void writeSuperJump(BsonDocument bson, String key, SuperJump value) {
+        BsonDocument section = new BsonDocument();
+        writeLocation(section, "loc", value.getLocation());
+        writeVector(section, "velocity", value.getVelocity());
+        section.append("range", new BsonDouble(value.getRange()));
+        bson.append(key, section);
+    }
+
+    private static SuperJump readSuperJump(BsonDocument bson, String key) {
+        BsonDocument section = bson.getDocument(key);
+        Location loc = readLocation(section, "loc");
+        double range = section.getDouble("range").getValue();
+        Vector velocity = readVector(section, "velocity");
+        return new SuperJump(loc, range, velocity);
+    }
 
     public static BsonDocument writeStage(Stage value) {
         BsonDocument section = new BsonDocument();
@@ -270,6 +312,7 @@ public final class StageBsonMapper {
         writeList(section, "banner-spawners", value.getObjectives(BannerSlot.class).values(), StageBsonMapper::writeBannerSlot);
         writeList(section, "banner-slots", value.getObjectives(BannerSpawner.class).values(), StageBsonMapper::writeBannerSpawner);
         writeList(section, "containers", value.getObjectives(GameChest.class).values(), StageBsonMapper::writeGameChest);
+        writeList(section, "superjumps", value.getObjectives(SuperJump.class).values(), StageBsonMapper::writeSuperJump);
 
         writeAreaSet(section, "areas", value.getAreas());
         section.append("author", new BsonString(value.getAuthor()));
@@ -297,6 +340,7 @@ public final class StageBsonMapper {
             stage.addObjectives(readList(bson, "banner-spawners", StageBsonMapper::readBannerSpawner));
             stage.addObjectives(readList(bson, "banner-slots", StageBsonMapper::readBannerSlot));
             stage.addObjectives(readList(bson, "containers", StageBsonMapper::readGameChest));
+            stage.addObjectives(readList(bson, "superjumps", StageBsonMapper::readSuperJump));
             stage.setAreas(readAreaSet(bson, "areas"));
             stage.setAuthor(bson.getString("author").getValue());
             stage.setDescription(bson.getString("description").getValue());
