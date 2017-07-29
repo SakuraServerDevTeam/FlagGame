@@ -88,6 +88,14 @@ public interface FlagConfig {
     
     double getWallKickPitchLimit();
 
+    double getWallKickMinNormalVectorPower();
+
+    int getWallKickCornerDetectionRange();
+
+    double getWallKickCornerDetectionMultiplier();
+
+    double getWallKickMaxPower();
+
     boolean isDebug();
 
     boolean isProtected();

@@ -16,9 +16,11 @@
  */
 package syam.flaggame.listener;
 
+import jp.llv.flaggame.api.FlagConfig;
 import jp.llv.flaggame.api.FlagGameAPI;
 import jp.llv.flaggame.events.PlayerWallKickEvent;
 import org.bukkit.Effect;
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
@@ -43,6 +45,7 @@ public class FGActionListener implements Listener {
 
     @EventHandler
     public void on(PlayerInteractEvent event) {
+        FlagConfig config = api.getConfig();
         Player player = event.getPlayer();
         BlockFace face = event.getBlockFace();
         Block wallBlock = player.getLocation().getBlock().getRelative(face.getOppositeFace());
@@ -59,14 +62,45 @@ public class FGActionListener implements Listener {
         }
         Vector in = player.getEyeLocation().getDirection();
         Vector wall = new Vector(face.getModX(), face.getModY(), face.getModZ());
-        Vector out = in.add(wall.multiply(-2 * in.dot(wall)))
-                .multiply(api.getConfig().getWallKickPowerXZ())
-                .setY(api.getConfig().getWallKickPowerY());
+        Vector out = in.add(wall.clone().multiply(-2 * in.dot(wall)))
+                .multiply(config.getWallKickPowerXZ()).setY(config.getWallKickPowerY());
+
+        // detect wall running
+        double normalVectorPower = (wall.getX() * out.getX()) + (wall.getZ() * out.getZ());
+        if (Math.abs(normalVectorPower) < config.getWallKickMinNormalVectorPower()) {
+            out.add(wall.clone().multiply(config.getWallKickMinNormalVectorPower()));
+        }
+        // detect corner climbing
+        if (0 < config.getWallKickCornerDetectionRange()) {
+            Location base = player.getLocation();
+            Vector dest = new Vector(
+                    wall.getX() == 0 ? out.getX() / Math.abs(out.getX()) : 0,
+                    0,
+                    wall.getZ() == 0 ? out.getZ() / Math.abs(out.getZ()) : 0
+            );
+            for (int i = 1; i <= config.getWallKickCornerDetectionRange(); i++) {
+                base.add(dest);
+                if (base.getBlock().getType().isOccluding()) {
+                    double multiplier = config.getWallKickCornerDetectionMultiplier() * i;
+                    out.multiply(new Vector(dest.getX() == 0 ? 1 : multiplier, multiplier, dest.getY() == 0 ? 1 : multiplier));
+                    break;
+                }
+            }
+        }
+
+        // max power limit
+        if (config.getWallKickMaxPower() * config.getWallKickMaxPower() < out.lengthSquared()) {
+            out.normalize().multiply(config.getWallKickMaxPower());
+        }
+
+        // fire event
         PlayerWallKickEvent actionEvent = new PlayerWallKickEvent(player, wallBlock, out);
         api.getServer().getPluginManager().callEvent(actionEvent);
         if (actionEvent.isCancelled()) {
             return;
         }
+
+        // apply
         player.getWorld().playEffect(player.getLocation(), Effect.STEP_SOUND, wallBlock.getType());
         player.setVelocity(actionEvent.getVelocity());
     }

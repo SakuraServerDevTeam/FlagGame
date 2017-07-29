@@ -43,7 +43,7 @@ public class CachedFlagConfig implements FlagConfig {
     private static final List<String> DEFAULT_DISABLED_COMMANDS = Arrays.asList("/spawn", "/home", "/setspawn");
     private static final List<String> DEFAULT_PERMISSIONS = Arrays.asList("vault", "superperms", "ops");
 
-    private static final double VERSION = 0.8;
+    private static final double VERSION = 0.9;
 
     private final FlagGame plugin;
     private final File pluginDir;
@@ -57,7 +57,11 @@ public class CachedFlagConfig implements FlagConfig {
 
     private double wallKickPowerXZ = 0.75;
     private double wallKickPowerY = 0.6;
-    private float pitchLimit = 60;
+    private float pitchLimit = 60;    
+    private double minNormalVectorPower = 0.3;
+    private int cornerDetectionRange = 5;
+    private double cornerDetectionMultiplier = 0.15;
+    private double maxPower = 1.2;
 
     /* Games Configs */
     private int startCountdownInSec = 10;
@@ -123,9 +127,15 @@ public class CachedFlagConfig implements FlagConfig {
         isProtected = plugin.getConfig().getBoolean("WorldProtect", true);
         isDebug = plugin.getConfig().getBoolean("Debug", false);
         useDynmap = plugin.getConfig().getBoolean("UseDynmap", false);
+        
         wallKickPowerXZ = config.getDouble("WallKick.PowerXZ", wallKickPowerXZ);
         wallKickPowerY = config.getDouble("WallKick.PowerY", wallKickPowerY);
         pitchLimit = (float) config.getDouble("WallKick.PitchLimit", pitchLimit);
+        maxPower = config.getDouble("WallKick.MaxPower", maxPower);
+        minNormalVectorPower = config.getDouble("MinNormalVectorPower", minNormalVectorPower);
+        cornerDetectionMultiplier = config.getDouble("CornerDetectionMultiplier", cornerDetectionMultiplier);
+        cornerDetectionRange = config.getInt("CornerDetectionRange", cornerDetectionRange);
+        
         /* Games Configs */
         startCountdownInSec = plugin.getConfig().getInt("StartCountdownInSec", 10);
         useFlagEffects = plugin.getConfig().getBoolean("UseFlagEffects", true);
@@ -342,6 +352,26 @@ public class CachedFlagConfig implements FlagConfig {
     @Override
     public double getWallKickPitchLimit() {
         return pitchLimit;
+    }
+
+    @Override
+    public double getWallKickMinNormalVectorPower() {
+        return minNormalVectorPower;
+    }
+
+    @Override
+    public int getWallKickCornerDetectionRange() {
+        return cornerDetectionRange;
+    }
+
+    @Override
+    public double getWallKickCornerDetectionMultiplier() {
+        return cornerDetectionMultiplier;
+    }
+
+    @Override
+    public double getWallKickMaxPower() {
+        return maxPower;
     }
 
     // 設定 getter ここまで
