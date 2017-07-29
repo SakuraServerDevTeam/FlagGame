@@ -174,7 +174,7 @@ public class ObjectiveListCommand extends ObjectiveCommand {
                             .buttonRun("delete").append("objective delete")
                             .append(obj.getType())
                             .append(loc.getBlockX()).append(loc.getBlockY()).append(loc.getBlockZ()).create();
-                }).buttonSuggest("enable manager").append("objective set nexus").create()
+                }).buttonSuggest("create new").append("objective set super_jump").create()
                 .sendTo(player);
     }
 
