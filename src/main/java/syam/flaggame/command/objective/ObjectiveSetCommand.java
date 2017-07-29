@@ -85,7 +85,7 @@ public class ObjectiveSetCommand extends ObjectiveCommand {
 
         // マネージャーセット
         GamePlayer gPlayer = this.api.getPlayers().getPlayer(player);
-        gPlayer.createSetupSession(game).setSetting(ObjectiveType.FLAG).setSelectedPoint(type);
+        gPlayer.getSetupSession().get().setSetting(ObjectiveType.FLAG).setSelectedPoint(type);
         String tool = Material.getMaterial(api.getConfig().getToolID()).name();
         Actions.message(player, "&aフラッグ管理モードを開始しました。選択ツール: " + tool);
     }
@@ -114,7 +114,7 @@ public class ObjectiveSetCommand extends ObjectiveCommand {
         }
 
         GamePlayer gPlayer = this.api.getPlayers().getPlayer(player);
-        gPlayer.createSetupSession(stage).setSetting(ObjectiveType.NEXUS)
+        gPlayer.getSetupSession().get().setSetting(ObjectiveType.NEXUS)
                 .setSelectedPoint(point)
                 .setSelectedColor(color);
         String tool = Material.getMaterial(api.getConfig().getToolID()).name();
@@ -135,7 +135,7 @@ public class ObjectiveSetCommand extends ObjectiveCommand {
         }
 
         GamePlayer gPlayer = this.api.getPlayers().getPlayer(player);
-        gPlayer.createSetupSession(stage).setSetting(ObjectiveType.BANNER_SPAWNER)
+        gPlayer.getSetupSession().get().setSetting(ObjectiveType.BANNER_SPAWNER)
                 .setSelectedPoint(point)
                 .setHp(hp);
         String tool = Material.getMaterial(api.getConfig().getToolID()).name();
@@ -155,7 +155,7 @@ public class ObjectiveSetCommand extends ObjectiveCommand {
         }
 
         GamePlayer gPlayer = this.api.getPlayers().getPlayer(player);
-        gPlayer.createSetupSession(stage).setSetting(ObjectiveType.BANNER_SLOT)
+        gPlayer.getSetupSession().get().setSetting(ObjectiveType.BANNER_SLOT)
                 .setSelectedColor(color);
         String tool = Material.getMaterial(api.getConfig().getToolID()).name();
         Actions.message(player, "&aスロット管理モードを開始しました。選択ツール: " + tool);
@@ -164,7 +164,7 @@ public class ObjectiveSetCommand extends ObjectiveCommand {
     private void setChest(Player player, Stage game, List<String> args) throws ReservedException {
         // マネージャーセット
         GamePlayer gPlayer = this.api.getPlayers().getPlayer(player);
-        gPlayer.createSetupSession(game).setSetting(ObjectiveType.CHEST);
+        gPlayer.getSetupSession().get().setSetting(ObjectiveType.CHEST);
         String tool = Material.getMaterial(api.getConfig().getToolID()).name();
         Actions.message(player, "&aチェスト管理モードを開始しました。選択ツール: " + tool);
     }
