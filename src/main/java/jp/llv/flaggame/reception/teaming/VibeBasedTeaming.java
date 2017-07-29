@@ -116,7 +116,6 @@ public class VibeBasedTeaming implements Teaming {
         for (Map.Entry<TeamType, List<GamePlayer>> entry : teams.entrySet()) {
             Collections.shuffle(entry.getValue());
         }
-        System.out.println(teams);
         return teams;
     }
 
