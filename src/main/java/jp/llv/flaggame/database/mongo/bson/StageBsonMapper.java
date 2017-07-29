@@ -72,7 +72,6 @@ public final class StageBsonMapper {
     private static Vector readVector(BsonDocument bson, String key) {
         try {
             BsonDocument section = bson.getDocument(key);
-            String world = section.getString("world").getValue();
             double x = section.getDouble("x").getValue();
             double y = section.getDouble("y").getValue();
             double z = section.getDouble("z").getValue();
