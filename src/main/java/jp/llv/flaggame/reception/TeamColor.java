@@ -92,7 +92,7 @@ public enum TeamColor implements TeamType {
     }
 
     /**
-     * チームの色タグ "&(char)" を返す
+     * チームの色タグ "&amp;(char)" を返す
      *
      * @return color code corresponding to the team
      */

@@ -48,7 +48,7 @@ public class HelpCommand extends BaseCommand {
             prefix = label;
         }
         Actions.message(sender, "&c===================================");
-        Actions.message(sender, "&bFlagGameAPI api version &3" + api.getPlugin().getDescription().getVersion() + " &bby " + String.join(", ", api.getPlugin().getDescription().getAuthors()));
+        Actions.message(sender, "&bFlagGame version &3" + api.getPlugin().getDescription().getVersion() + " &bby " + String.join(", ", api.getPlugin().getDescription().getAuthors()));
         Actions.message(sender, " &b<>&f = required, &b[]&f = optional");
         if (registry == null) {
             Actions.message(sender, "&cNo command starts with " + prefix);

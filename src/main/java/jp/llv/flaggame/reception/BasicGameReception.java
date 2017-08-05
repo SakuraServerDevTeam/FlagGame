@@ -50,10 +50,10 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import jp.llv.flaggame.api.exception.CommandException;
 import jp.llv.flaggame.api.exception.FlagGameException;
 import jp.llv.flaggame.api.exception.InvalidOptionException;
-import jp.llv.flaggame.stage.BasicStage;
 import syam.flaggame.permission.Perms;
 import jp.llv.flaggame.api.player.GamePlayer;
 import jp.llv.flaggame.api.stage.Stage;
+import jp.llv.flaggame.game.basic.BGRecordStream;
 import syam.flaggame.util.Actions;
 
 /**
@@ -121,6 +121,7 @@ public class BasicGameReception implements Reception {
         }
 
         this.state = State.OPENED;
+        this.records = new BGRecordStream(api, game, new GameRecordStream(id));
         this.records.push(new ReceptionOpenRecord(this.id));
         GamePlayer.sendMessage(api.getPlayers(), "&2フラッグゲーム'&6" + this.getName() + "&2'の参加受付が開始されました！");
         GamePlayer.sendMessage(api.getPlayers(), "&2 参加料:&6 " + entryFeeMsg + "&2   賞金:&6 " + awardMsg);
@@ -181,12 +182,13 @@ public class BasicGameReception implements Reception {
             player.sendMessage("&c参加料として " + Actions.formatMoney(cost) + " を支払いました！");
         }
 
-        player.join(this, options);
-        getRecordStream().push(new PlayerEntryRecord(id, player.getPlayer()));
 
         long level = api.getProfiles().getProfile(player.getUUID()).getLevel().orElse(0);
-        int count = teaming.size();
+        int count = teaming.size() + 1;
         Optional<TeamType> type = teaming.join(player);
+        
+        player.join(this, options);
+        getRecordStream().push(new PlayerEntryRecord(id, player.getPlayer()));
         if (type.isPresent()) {
             GamePlayer.sendMessage(api.getPlayers(),
                     type.get().toColor().getChatColor() + player.getName() + "&7(Lv" + level + ")&aが'&6"
@@ -204,9 +206,18 @@ public class BasicGameReception implements Reception {
 
     @Override
     public void leave(GamePlayer player) {
-        if (this.getState() == State.STARTED) {
-            throw new IllegalStateException();
+        switch (getState()) {
+            case READY:
+            case STARTING:
+            case STARTED:
+            case CLOSED:
+                throw new IllegalStateException();
+            case OPENED:
+                teaming.leave(player);
+                break;
+            case FINISHED:
         }
+        teaming.leave(player);
         player.leave(this);
         if (getState().toGameState() != Game.State.FINISHED) {
             getRecordStream().push(new PlayerLeaveRecord(id, player.getPlayer()));
@@ -267,7 +278,7 @@ public class BasicGameReception implements Reception {
                         return;
                     }
                     if (Actions.addMoney(uuid, stage.getPrize())) {
-                        player.sendMessage("&a[+]おめでとうございます！賞金として" + Actions.formatMoney(stage.getPrize()) + "Coinを得ました！");
+                        player.sendMessage("&a[+]おめでとうございます！賞金として" + Actions.formatMoney(stage.getPrize()) + "を得ました！");
                     } else {
                         player.sendMessage("&c報酬受け取りにエラーが発生しました。管理人までご連絡ください。");
                     }
@@ -317,7 +328,7 @@ public class BasicGameReception implements Reception {
 
     @Override
     public Optional<? extends Game> getGame(GamePlayer player) {
-        return Optional.of(game);
+        return Optional.ofNullable(game);
     }
 
     @Override

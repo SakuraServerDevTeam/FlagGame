@@ -18,6 +18,7 @@ package jp.llv.flaggame.database.mongo.bson;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
@@ -87,6 +88,9 @@ public final class BsonMapper {
     }
 
     static <V> Map<String, V> readMap(BsonDocument bson, String key, BiFunction<BsonDocument, String, ? extends V> reader) {
+        if (!bson.containsKey(key)) {
+            return Collections.emptyMap();
+        }
         BsonDocument section = bson.getDocument(key);
         Map<String, V> result = new HashMap<>();
         for (String k : section.keySet()) {
@@ -105,6 +109,9 @@ public final class BsonMapper {
     }
 
     static <T> List<T> readList(BsonDocument bson, String key, BiFunction<BsonDocument, String, ? extends T> reader) {
+        if (!bson.containsKey(key)) {
+            return Collections.emptyList();
+        }
         BsonDocument section = bson.getDocument(key);
         List<T> result = new ArrayList<>();
         for (String k : section.keySet()) {

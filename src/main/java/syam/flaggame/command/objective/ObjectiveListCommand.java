@@ -30,6 +30,7 @@ import jp.llv.flaggame.api.stage.objective.BannerSlot;
 import jp.llv.flaggame.api.stage.objective.BannerSpawner;
 import jp.llv.flaggame.api.stage.objective.GameChest;
 import jp.llv.flaggame.api.stage.objective.Nexus;
+import jp.llv.flaggame.api.stage.objective.SuperJump;
 import syam.flaggame.permission.Perms;
 
 /**
@@ -66,6 +67,9 @@ public class ObjectiveListCommand extends ObjectiveCommand {
                 return;
             case NEXUS:
                 listNexus(player, stage, args);
+                return;
+            case SUPER_JUMP:
+                listSuperJump(player, stage, args);
                 return;
             default:
                 throw new CommandException("&c不明なオブジェクティブです！");
@@ -155,6 +159,22 @@ public class ObjectiveListCommand extends ObjectiveCommand {
                             .append(obj.getType())
                             .append(loc.getBlockX()).append(loc.getBlockY()).append(loc.getBlockZ()).create();
                 }).buttonSuggest("enable manager").append("objective set nexus").create()
+                .sendTo(player);
+    }
+
+    private void listSuperJump(Player player, Stage stage, List<String> args) {
+        Collection<SuperJump> superjumps = stage.getObjectives(SuperJump.class).values();
+        DashboardBuilder.newBuilder("SuperJumps", superjumps.size())
+                .appendList(superjumps, (d, obj) -> {
+                    Location loc = obj.getLocation();
+                    d.key(obj.getName())
+                            .green("半径").green(obj.getRange()).space()
+                            .green("強さ").green(obj.getVelocity().length());
+                    d.buttonTp("tp", player, loc)
+                            .buttonRun("delete").append("objective delete")
+                            .append(obj.getType())
+                            .append(loc.getBlockX()).append(loc.getBlockY()).append(loc.getBlockZ()).create();
+                }).buttonSuggest("create new").append("objective set super_jump").create()
                 .sendTo(player);
     }
 

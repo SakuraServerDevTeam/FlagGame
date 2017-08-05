@@ -30,7 +30,6 @@ import jp.llv.flaggame.api.stage.rollback.StageDataType;
 import syam.flaggame.command.BaseCommand;
 import jp.llv.flaggame.stage.Configables;
 import jp.llv.flaggame.api.exception.CommandException;
-import jp.llv.flaggame.stage.AreaInfo;
 import jp.llv.flaggame.api.stage.Stage;
 import syam.flaggame.permission.Perms;
 import jp.llv.flaggame.api.player.GamePlayer;
@@ -60,7 +59,7 @@ public class StageSetCommand extends BaseCommand {
     /**
      * コマンド実行時に呼ばれる
      *
-     * @throws CommandException
+     * @throws CommandException when this command fails handiling
      */
     @Override
     public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
@@ -428,7 +427,6 @@ public class StageSetCommand extends BaseCommand {
         }
         game.getAreas().setArea(id, area);
         StageAreaInfo info = game.getAreas().getAreaInfo(id);
-        System.out.println(info);
         info.getPermission(GamePermission.DOOR).setState(team, GamePermissionState.ALLOW);
         info.getPermission(GamePermission.CONTAINER).setState(team, GamePermissionState.ALLOW);
         info.getPermission(GamePermission.GODMODE).setState(team, GamePermissionState.ALLOW);

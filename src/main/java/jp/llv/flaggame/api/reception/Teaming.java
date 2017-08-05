@@ -32,7 +32,7 @@ public interface Teaming {
 
     Optional<TeamType> join(GamePlayer player) throws FlagGameException;
 
-    void leave(GamePlayer player) throws FlagGameException;
+    void leave(GamePlayer player);
 
     Collection<GamePlayer> getPlayers();
 

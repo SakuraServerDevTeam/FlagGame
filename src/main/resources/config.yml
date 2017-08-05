@@ -19,6 +19,10 @@ UseDynmap: false
 WallKick:
   PowerXZ: 0.75
   PowerY: 0.6
+  PitchLimit: 60
+  MinNormalVectorPower: 0.3
+  CornerDetectionRange: 5
+  CornerDetectionMultiplier: 0.15
 
 #==================#
 #   Games Config   #
@@ -81,4 +85,4 @@ score:
 #   DO NOT TOUCH   #
 #==================#
 # Do not touch this option! It is a check if you are running the recent configuration version
-Version: 0.7
+Version: 0.9

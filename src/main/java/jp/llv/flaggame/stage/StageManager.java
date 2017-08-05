@@ -98,7 +98,7 @@ public class StageManager implements StageAPI {
      *
      * @param filter filters to
      * @return Stage
-     * @throws jp.llv.flaggame.api.exception.InvalidOptionException
+     * @throws jp.llv.flaggame.api.exception.InvalidOptionException if a option is invalid
      */
     @Override
     public Stage getRandomAvailableStage(OptionSet filter) throws InvalidOptionException {
@@ -124,7 +124,7 @@ public class StageManager implements StageAPI {
     /**
      * ステージ名からステージを返す
      *
-     * @param stageName
+     * @param stageName a name of a stage to find
      * @return Game
      */
     @Override

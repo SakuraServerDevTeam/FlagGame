@@ -83,7 +83,7 @@ public class BasicStage extends SimpleReservable<Stage> implements Stage {
     /**
      * コンストラクタ
      *
-     * @param name
+     * @param name a name of a stage
      */
     public BasicStage(String name) {
         this.stageName = name;
@@ -385,7 +385,7 @@ public class BasicStage extends SimpleReservable<Stage> implements Stage {
     /**
      * ステージの有効/無効を設定する
      *
-     * @param available
+     * @param available whether this stage is available
      */
     @Override
     public void setAvailable(boolean available) {
@@ -404,7 +404,7 @@ public class BasicStage extends SimpleReservable<Stage> implements Stage {
 
     @Override
     public Optional<Reception> getReception() {
-        if (!isReserved() && getReserver() instanceof Reception) {
+        if (isReserved() && getReserver() instanceof Reception) {
             return Optional.of((Reception) getReserver());
         } else {
             return Optional.empty();

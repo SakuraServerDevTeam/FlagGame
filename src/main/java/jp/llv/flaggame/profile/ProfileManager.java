@@ -120,7 +120,7 @@ public class ProfileManager implements Listener, ProfileAPI {
     }
 
     @Override
-    public void loadPlayerProfiles(Iterable<GamePlayer> players, boolean notifyLevelUp) {
+    public void loadPlayerProfiles(Iterable<? extends GamePlayer> players, boolean notifyLevelUp) {
         for (GamePlayer player : players) {
             loadPlayerProfile(player.getUUID(), notifyLevelUp);
         }

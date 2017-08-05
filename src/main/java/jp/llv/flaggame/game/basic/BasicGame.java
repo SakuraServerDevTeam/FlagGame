@@ -80,6 +80,10 @@ import syam.flaggame.util.Cuboid;
 import jp.llv.flaggame.api.reception.Reception;
 import jp.llv.flaggame.api.stage.Stage;
 import jp.llv.flaggame.api.stage.area.StageAreaInfo;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 
 /**
  *
@@ -211,6 +215,7 @@ public class BasicGame implements Game {
 
                 //インベントリ操作
                 vp.getInventory().clear();
+                vp.getEnderChest().clear();
                 vp.getInventory().setHelmet(new ItemStack(Material.WOOL, 1, (short) 0, team.getColor().getBlockData()));
                 vp.getInventory().setChestplate(null);
                 vp.getInventory().setLeggings(null);
@@ -229,6 +234,27 @@ public class BasicGame implements Game {
 
                 //プレイヤーリストへ色適用
                 player.setTabName(team.getColor().getChatColor() + player.getName());
+                
+                //=====TEMPORARY CODE=====///
+                BlockState kitState = teamSpawn.clone().subtract(0, 2, 0).getBlock().getState();
+                if (!(kitState instanceof InventoryHolder)) {
+                    continue;
+                }
+                ItemStack[] kit = ((InventoryHolder) kitState).getInventory().getContents();
+                Inventory inv = player.getPlayer().getInventory();
+                for (int i = 0; i < 24; i++) {
+                    if (kit[i] != null) {
+                        inv.setItem(i, new ItemStack(kit[i]));
+                    }
+                }
+                for (int i = 24; i < 27; i++) {
+                    if (kit[i] != null) {
+                        inv.setItem(i + 13 , new ItemStack(kit[i]));
+                    }
+                }
+                //===TEMPORATY CODE END===///
+                
+                
             }
         }
 
@@ -376,13 +402,6 @@ public class BasicGame implements Game {
         );
         OptionalLong maxKills = kills.entrySet().stream().mapToLong(Map.Entry::getValue).max();
         Set<GamePlayer> maxKillers = MapUtils.getKeyByValue(kills, maxKills.orElse(Long.MIN_VALUE));
-        // capture point
-        Map<GamePlayer, Double> captures = this.getRecordStream().groupingBy(
-                FlagCaptureRecord.class, r -> getPlayer(r.getPlayer()),
-                Collectors.summingDouble(t -> t.getExpWeight(api.getConfig()))
-        );
-        OptionalDouble maxCaptures = captures.entrySet().stream().mapToDouble(Map.Entry::getValue).max();
-        Set<GamePlayer> maxCapturers = MapUtils.getKeyByValue(captures, maxCaptures.orElse(Double.NaN));
 
         GamePlayer.sendMessage(this.api.getPlayers(), "&2フラッグゲーム'&6" + this.stage.getName() + "&2'が終わりました!");
         GamePlayer.sendMessage(this.api.getPlayers(), teamPoints.entrySet().stream()
@@ -405,7 +424,7 @@ public class BasicGame implements Game {
                     + "(&6" + maxKills.getAsLong() + "kills&f)"
             );
         }
-        if (!maxCapturers.isEmpty()) {
+        if (!maxExps.isEmpty()) {
             GamePlayer.sendMessage(this.api.getPlayers(),
                     "&6戦略家: "
                     + maxExps.stream().map(GamePlayer::getColoredName).collect(Collectors.joining(", "))
@@ -434,9 +453,8 @@ public class BasicGame implements Game {
             double point = points.getOrDefault(player, 0.0);
             long exp = exps.getOrDefault(player, 0L);
             double vibe = vibes.getOrDefault(player, 0.0);
-            player.sendMessage("&aあなたの獲得得点(β): &6" + point);
+            player.sendMessage("&aあなたの獲得得点: &6" + point);
             player.sendMessage("&aあなたの獲得経験値: &6" + exp);
-            player.sendMessage("&aあなたのチョーシ変化量(β): &6" + vibe);
             if (winnerTeams.isEmpty()) {
                 player.sendTitle("&6試合終了: 引き分け", author, 0, 60, 20);
                 getRecordStream().push(new PlayerDrawRecord(getID(), player.getUUID(), loc, exp, vibe));

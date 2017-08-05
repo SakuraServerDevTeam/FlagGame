@@ -24,10 +24,12 @@ import org.bukkit.entity.Player;
 import jp.llv.flaggame.api.FlagGameAPI;
 import jp.llv.flaggame.api.exception.CommandException;
 import jp.llv.flaggame.api.exception.FlagGameException;
+import jp.llv.flaggame.api.exception.ObjectiveCollisionException;
 import jp.llv.flaggame.api.exception.ReservedException;
 import syam.flaggame.permission.Perms;
 import jp.llv.flaggame.api.player.GamePlayer;
 import jp.llv.flaggame.api.stage.Stage;
+import jp.llv.flaggame.api.stage.objective.SuperJump;
 import syam.flaggame.util.Actions;
 
 /**
@@ -64,6 +66,9 @@ public class ObjectiveSetCommand extends ObjectiveCommand {
             case NEXUS:
                 setNexus(player, stage, args);
                 return;
+            case SUPER_JUMP:
+                setSuperJump(player, stage, args);
+                return;
             default:
                 throw new CommandException("&c不明なオブジェクティブです！");
         }
@@ -85,7 +90,7 @@ public class ObjectiveSetCommand extends ObjectiveCommand {
 
         // マネージャーセット
         GamePlayer gPlayer = this.api.getPlayers().getPlayer(player);
-        gPlayer.createSetupSession(game).setSetting(ObjectiveType.FLAG).setSelectedPoint(type);
+        gPlayer.getSetupSession().get().setSetting(ObjectiveType.FLAG).setSelectedPoint(type);
         String tool = Material.getMaterial(api.getConfig().getToolID()).name();
         Actions.message(player, "&aフラッグ管理モードを開始しました。選択ツール: " + tool);
     }
@@ -114,7 +119,7 @@ public class ObjectiveSetCommand extends ObjectiveCommand {
         }
 
         GamePlayer gPlayer = this.api.getPlayers().getPlayer(player);
-        gPlayer.createSetupSession(stage).setSetting(ObjectiveType.NEXUS)
+        gPlayer.getSetupSession().get().setSetting(ObjectiveType.NEXUS)
                 .setSelectedPoint(point)
                 .setSelectedColor(color);
         String tool = Material.getMaterial(api.getConfig().getToolID()).name();
@@ -135,7 +140,7 @@ public class ObjectiveSetCommand extends ObjectiveCommand {
         }
 
         GamePlayer gPlayer = this.api.getPlayers().getPlayer(player);
-        gPlayer.createSetupSession(stage).setSetting(ObjectiveType.BANNER_SPAWNER)
+        gPlayer.getSetupSession().get().setSetting(ObjectiveType.BANNER_SPAWNER)
                 .setSelectedPoint(point)
                 .setHp(hp);
         String tool = Material.getMaterial(api.getConfig().getToolID()).name();
@@ -155,7 +160,7 @@ public class ObjectiveSetCommand extends ObjectiveCommand {
         }
 
         GamePlayer gPlayer = this.api.getPlayers().getPlayer(player);
-        gPlayer.createSetupSession(stage).setSetting(ObjectiveType.BANNER_SLOT)
+        gPlayer.getSetupSession().get().setSetting(ObjectiveType.BANNER_SLOT)
                 .setSelectedColor(color);
         String tool = Material.getMaterial(api.getConfig().getToolID()).name();
         Actions.message(player, "&aスロット管理モードを開始しました。選択ツール: " + tool);
@@ -164,9 +169,25 @@ public class ObjectiveSetCommand extends ObjectiveCommand {
     private void setChest(Player player, Stage game, List<String> args) throws ReservedException {
         // マネージャーセット
         GamePlayer gPlayer = this.api.getPlayers().getPlayer(player);
-        gPlayer.createSetupSession(game).setSetting(ObjectiveType.CHEST);
+        gPlayer.getSetupSession().get().setSetting(ObjectiveType.CHEST);
         String tool = Material.getMaterial(api.getConfig().getToolID()).name();
         Actions.message(player, "&aチェスト管理モードを開始しました。選択ツール: " + tool);
+    }
+
+    private void setSuperJump(Player player, Stage game, List<String> args) throws ReservedException, CommandException, ObjectiveCollisionException {
+        if (args.size() < 2) {
+            throw new CommandException("&cスーパージャンプの半径と強さを指定してください！");
+        }
+        double range, power;
+        try {
+            range = Double.parseDouble(args.get(0));
+            power = Double.parseDouble(args.get(1));
+        } catch (NumberFormatException ex) {
+            throw new CommandException("&cスーパージャンプの半径と強さを正しい数値で指定してください！", ex);
+        }
+        SuperJump jump = new SuperJump(player.getLocation(), range, player.getEyeLocation().getDirection().multiply(power));
+        game.addObjective(jump);
+        Actions.message(player, "&aステージ'" + game.getName() + "'のスーパージャンプを登録しました！");
     }
 
 }

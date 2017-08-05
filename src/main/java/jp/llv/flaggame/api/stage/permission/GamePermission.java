@@ -47,7 +47,9 @@ public enum GamePermission {
     CONTAINER,
     DOOR,
     WALL_KICK,
-    FEATHER_FALL,;
+    FEATHER_FALL,
+    SUPER_JUMP,
+    ;
 
     public static GamePermission of(String name) {
         return valueOf(name.toUpperCase());

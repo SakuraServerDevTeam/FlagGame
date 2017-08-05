@@ -40,7 +40,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import jp.llv.flaggame.api.exception.FlagGameException;
 import jp.llv.flaggame.api.reception.Reception;
 import jp.llv.flaggame.api.FlagGameAPI;
-import jp.llv.flaggame.api.player.GamePlayer;
 import jp.llv.flaggame.util.OptionSet;
 
 /**
@@ -57,7 +56,7 @@ public class PlayerManager implements PlayerAPI<FlagGamePlayer> {
     /**
      * Create new {@link PlayerManager} with new registry. In order to keep
      * consistency, do NOT create new one, use
-     * {@link syam.flaggame.FlagGame#getPlayers()}.
+     * {@link jp.llv.flaggame.api.FlagGameAPI#getPlayers}.
      *
      * @param api An API instance running on the server to sync this mamager
      */

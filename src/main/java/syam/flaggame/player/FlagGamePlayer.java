@@ -103,7 +103,7 @@ public class FlagGamePlayer implements GamePlayer {
      * @throws jp.llv.flaggame.api.exception.CommandException caused by illegal
      * state or arguments
      * @deprecated use
-     * {@link jp.llv.flaggame.reception.GameReception#join(syam.flaggame.player.GamePlayer, java.util.List)}
+     * {@link jp.llv.flaggame.api.reception.Reception#join(jp.llv.flaggame.api.player.GamePlayer, jp.llv.flaggame.util.OptionSet) }
      */
     @Deprecated
     @Override
@@ -121,7 +121,7 @@ public class FlagGamePlayer implements GamePlayer {
      *
      * @param reception the reception to join
      * @deprecated use
-     * {@link jp.llv.flaggame.reception.GameReception#leave(syam.flaggame.player.GamePlayer)}
+     * {@link jp.llv.flaggame.api.reception.Reception#leave(jp.llv.flaggame.api.player.GamePlayer) }
      */
     @Deprecated
     @Override
@@ -275,6 +275,11 @@ public class FlagGamePlayer implements GamePlayer {
             return;
         }
         Actions.sendTitle(getPlayer(), title, sub, in, stay, out);
+    }
+
+    @Override
+    public String toString() {
+        return getName();
     }
 
 }

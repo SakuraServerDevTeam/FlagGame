@@ -16,9 +16,7 @@
  */
 package jp.llv.flaggame.api.stage;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 import jp.llv.flaggame.api.exception.InvalidOptionException;
@@ -47,16 +45,16 @@ public interface StageAPI extends Iterable<Stage> {
     /**
      * 実行可能なステージからランダムで1つ抽出する
      *
-     * @param filter filters to
+     * @param filter filter
      * @return Stage
-     * @throws jp.llv.flaggame.api.exception.InvalidOptionException
+     * @throws jp.llv.flaggame.api.exception.InvalidOptionException if an option is invalid
      */
     Stage getRandomAvailableStage(OptionSet filter) throws InvalidOptionException;
 
     /**
      * ステージ名からステージを返す
      *
-     * @param stageName
+     * @param stageName a name of a stage to find
      * @return Game
      */
     Optional<Stage> getStage(String stageName);

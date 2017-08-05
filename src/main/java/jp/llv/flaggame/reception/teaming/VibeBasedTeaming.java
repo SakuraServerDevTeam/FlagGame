@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -58,7 +57,7 @@ public class VibeBasedTeaming implements Teaming {
     }
 
     @Override
-    public void leave(GamePlayer player) throws FlagGameException {
+    public void leave(GamePlayer player) {
         players.remove(player);
     }
 
@@ -70,7 +69,9 @@ public class VibeBasedTeaming implements Teaming {
     @Override
     public Map<TeamType, ? extends Collection<GamePlayer>> build() throws InvalidTeamException {
         //-stage1; get all players' vibe
-        ValueSortedMap<GamePlayer, Double> vibes = ValueSortedMap.newInstance(Comparator.reverseOrder());
+        ValueSortedMap<GamePlayer, Double> vibes = ValueSortedMap.newInstance(
+                (v1, v2) -> v1.equals(v2) ? 1 : -v1.compareTo(v2)
+        );
         for (GamePlayer player : players) {
             vibes.put(player, api.getProfiles().getProfile(player.getUUID()).getVibe().orElse(0.0));
         }
@@ -83,7 +84,9 @@ public class VibeBasedTeaming implements Teaming {
         // without this, the strongest player is always in the fixed team
         Collections.shuffle(types);
         Map<TeamType, List<GamePlayer>> teams = new HashMap<>();
-        ValueSortedMap<TeamType, Double> teamVibes = ValueSortedMap.newInstance();
+        ValueSortedMap<TeamType, Double> teamVibes = ValueSortedMap.newInstance(
+                (v1, v2) -> v1.equals(v2) ? 1 : v1.compareTo(v2)
+        );
         for (TeamType type : types) {
             teams.put(type, new ArrayList<>(players.size() / types.size() + 1));
             teamVibes.put(type, 0.0);
@@ -98,7 +101,7 @@ public class VibeBasedTeaming implements Teaming {
             Map.Entry<GamePlayer, Double> entry = it.next();
             TeamType teamColor = types.get(teamIndex++ % types.size());
             teams.get(teamColor).add(entry.getKey());
-            teamVibes.compute(teamColor, (k, v) -> v + entry.getValue());
+            teamVibes.put(teamColor, teamVibes.get(teamColor) + entry.getValue());
         }
 
         //-stage4; teaming the others

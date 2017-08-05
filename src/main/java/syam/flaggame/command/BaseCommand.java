@@ -156,7 +156,7 @@ public abstract class BaseCommand {
      * @param args arguments presented
      * @param sender the sender who executed this command
      * @param player the player who executed this command - equal to sender
-     * @throws CommandException
+     * @throws CommandException when this command fails handling
      */
     protected void execute(List<String> args, CommandSender sender, Player player) throws FlagGameException {
         throw new CommandException("&cThis command is not implemented yet.");
