@@ -17,7 +17,6 @@
 package jp.llv.flaggame.api.profile;
 
 import java.util.Optional;
-import jp.llv.flaggame.api.profile.RecordType;
 
 /**
  *

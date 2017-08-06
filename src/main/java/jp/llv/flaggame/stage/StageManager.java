@@ -16,6 +16,7 @@
  */
 package jp.llv.flaggame.stage;
 
+import java.security.SecureRandom;
 import jp.llv.flaggame.api.stage.StageAPI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,8 +25,11 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import jp.llv.flaggame.api.FlagGameAPI;
 import jp.llv.flaggame.util.OptionSet;
 import jp.llv.flaggame.api.exception.InvalidOptionException;
+import jp.llv.flaggame.api.profile.RecordType;
+import jp.llv.flaggame.api.profile.StatEntry;
 import jp.llv.flaggame.api.stage.Stage;
 
 /**
@@ -35,7 +39,13 @@ import jp.llv.flaggame.api.stage.Stage;
  */
 public class StageManager implements StageAPI {
 
+    private final FlagGameAPI api;
     private final Map<String, Stage> stages = Collections.synchronizedMap(new HashMap<>());
+    private final Random random = new SecureRandom();
+
+    public StageManager(FlagGameAPI api) {
+        this.api = api;
+    }
 
     /**
      * 全ステージのマップを返す
@@ -101,7 +111,7 @@ public class StageManager implements StageAPI {
      * @throws jp.llv.flaggame.api.exception.InvalidOptionException if a option is invalid
      */
     @Override
-    public Stage getRandomAvailableStage(OptionSet filter) throws InvalidOptionException {
+    public Optional<Stage> getRandomAvailableStage(OptionSet filter) throws InvalidOptionException {
         ArrayList<Stage> availables = getAvailableStages();
 
         if (filter.isPresent("S")) {
@@ -112,13 +122,34 @@ public class StageManager implements StageAPI {
             String name = filter.getString("s").toLowerCase();
             availables.removeIf(s -> !s.getName().toLowerCase().startsWith(name));
         }
-
-        Random rnd = new Random();
-        if (availables.size() <= 0) {
-            return null;
+        if (filter.isPresent("r")) {
+            double minRate =filter.getDouble("r");
+            availables.removeIf(stage -> minRate <= api.getProfiles()
+                    .getProfile(stage.getName()).getStat(RecordType.RATE)
+                    .map(StatEntry::getAverage).orElse(2.5)
+            );
+        }
+        if (filter.isPresent("R")) {
+            double maxRate =filter.getDouble("r");
+            availables.removeIf(stage -> api.getProfiles()
+                    .getProfile(stage.getName()).getStat(RecordType.RATE)
+                    .map(StatEntry::getAverage).orElse(2.5) <= maxRate
+            );
+        }
+        if (filter.isPresent("t")) {
+            String tag = filter.getString("t");
+            availables.removeIf(s -> !s.getTags().contains(tag));
+        }
+        if (filter.isPresent("t!")) {
+            String tag = filter.getString("t!");
+            availables.removeIf(s -> s.getTags().contains(tag));
         }
 
-        return availables.get(rnd.nextInt(availables.size()));
+        if (availables.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(availables.get(random.nextInt(availables.size())));
     }
 
     /**

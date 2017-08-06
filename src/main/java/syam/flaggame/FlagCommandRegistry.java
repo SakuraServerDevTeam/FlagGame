@@ -74,6 +74,8 @@ import syam.flaggame.command.stage.StageSaveCommand;
 import syam.flaggame.command.stage.StageSelectCommand;
 import syam.flaggame.command.stage.StageSetCommand;
 import syam.flaggame.command.stage.StageStatsCommand;
+import syam.flaggame.command.stage.StageTagAddCommand;
+import syam.flaggame.command.stage.StageTagRemoveCommand;
 import syam.flaggame.util.Actions;
 
 /**
@@ -156,7 +158,9 @@ public enum FlagCommandRegistry implements TabExecutor {
             StageSaveCommand::new,
             StageSelectCommand::new,
             StageSetCommand::new,
-            StageStatsCommand::new
+            StageStatsCommand::new,
+            StageTagAddCommand::new,
+            StageTagRemoveCommand::new
     ),
     GENERAL(
             "<- general commands",

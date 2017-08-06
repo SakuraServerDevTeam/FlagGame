@@ -41,6 +41,8 @@ import jp.llv.flaggame.profile.record.PlayerRecord;
 import jp.llv.flaggame.profile.record.PlayerResultRecord;
 import jp.llv.flaggame.api.profile.RecordType;
 import jp.llv.flaggame.api.stage.Stage;
+import jp.llv.flaggame.database.mongo.bson.StageDeserializer;
+import jp.llv.flaggame.database.mongo.bson.StageSerializer;
 import jp.llv.flaggame.profile.record.ScoreRecord;
 import jp.llv.flaggame.util.MapUtils;
 import org.bson.BsonDocument;
@@ -48,7 +50,6 @@ import org.bson.BsonValue;
 import org.bson.Document;
 import syam.flaggame.CachedFlagConfig;
 import syam.flaggame.FlagGame;
-import jp.llv.flaggame.database.mongo.bson.StageBsonMapper;
 
 /**
  *
@@ -85,21 +86,21 @@ public class MongoDB implements Database {
         if (client == null) {
             client = MongoClients.create(
                     MongoClientSettings.builder()
-                    .clusterSettings(
-                            ClusterSettings.builder().hosts(
-                                    Collections.singletonList(new ServerAddress(
-                                            config.getDatabaseAddress(),
-                                            config.getDatabasePort()
-                                    ))).build()
-                    ).credentialList(
-                            config.getDatabaseUsername() == null
+                            .clusterSettings(
+                                    ClusterSettings.builder().hosts(
+                                            Collections.singletonList(new ServerAddress(
+                                                    config.getDatabaseAddress(),
+                                                    config.getDatabasePort()
+                                            ))).build()
+                            ).credentialList(
+                                    config.getDatabaseUsername() == null
                                     ? Collections.emptyList()
                                     : Collections.singletonList(MongoCredential.createCredential(
                                             config.getDatabaseUsername(),
                                             config.getDatabaseDbname(),
                                             config.getDatabaseUserpass().toCharArray()
                                     )))
-                    .build()
+                            .build()
             );
         }
         database = client.getDatabase(config.getDatabaseDbname());
@@ -132,7 +133,7 @@ public class MongoDB implements Database {
         try {
             getStageCollection().find()
                     .map(BsonDocument.class::cast)
-                    .map(StageBsonMapper::readStage)
+                    .map(StageDeserializer.Version::readStage)
                     .forEach(
                             new MongoDBResultCallback<>(consumer),
                             new MongoDBErrorCallback<>(callback)
@@ -146,7 +147,7 @@ public class MongoDB implements Database {
     public void saveStage(Stage stage, DatabaseCallback<Void, DatabaseException> callback) {
         try {
             MongoCollection<BsonValue> coll = getStageCollection();
-            BsonDocument bson = StageBsonMapper.writeStage(stage);
+            BsonDocument bson = StageSerializer.getInstance().writeStage(stage);
             coll.updateOne(Filters.eq(FIELD_ID, bson.get(FIELD_ID)),
                     new BsonDocument(SET, bson),
                     new UpdateOptions().upsert(true),
@@ -197,9 +198,9 @@ public class MongoDB implements Database {
         MongoCollection<Document> coll = database.getCollection(VIEW_PLAYER_STATS);
         coll.find(new Document(FIELD_ID + FIELD_SEPARATOR + PlayerRecord.FIELD_PLAYER, player))
                 .map(d -> MapUtils.tuple(
-                        RecordType.of(d.get(FIELD_ID, Document.class).getString(RecordType.FIELD_TYPE)),
-                        new StatEntry(d.getInteger(FIELD_COUNT, 0), getDouble(d, ScoreRecord.FIELD_SCORE))
-                )).forEach(new MongoDBResultCallback<>(consumer), new MongoDBErrorCallback<>(callback));
+                RecordType.of(d.get(FIELD_ID, Document.class).getString(RecordType.FIELD_TYPE)),
+                new StatEntry(d.getInteger(FIELD_COUNT, 0), getDouble(d, ScoreRecord.FIELD_SCORE))
+        )).forEach(new MongoDBResultCallback<>(consumer), new MongoDBErrorCallback<>(callback));
     }
 
     @Override
@@ -235,9 +236,9 @@ public class MongoDB implements Database {
         MongoCollection<Document> coll = database.getCollection(VIEW_STAGE_STATS);
         coll.find(new Document(FIELD_ID + FIELD_SEPARATOR + GameStartRecord.FIELD_STAGE, stage))
                 .map(d -> MapUtils.tuple(
-                        RecordType.of(d.get(FIELD_ID, Document.class).getString(RecordType.FIELD_TYPE)),
-                        new StatEntry(d.getInteger(FIELD_COUNT, 0), getDouble(d, ScoreRecord.FIELD_SCORE))
-                )).forEach(new MongoDBResultCallback<>(consumer), new MongoDBErrorCallback<>(callback));
+                RecordType.of(d.get(FIELD_ID, Document.class).getString(RecordType.FIELD_TYPE)),
+                new StatEntry(d.getInteger(FIELD_COUNT, 0), getDouble(d, ScoreRecord.FIELD_SCORE))
+        )).forEach(new MongoDBResultCallback<>(consumer), new MongoDBErrorCallback<>(callback));
     }
 
     private static Double getDouble(Document doc, String key) {

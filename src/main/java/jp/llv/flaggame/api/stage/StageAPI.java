@@ -49,7 +49,7 @@ public interface StageAPI extends Iterable<Stage> {
      * @return Stage
      * @throws jp.llv.flaggame.api.exception.InvalidOptionException if an option is invalid
      */
-    Stage getRandomAvailableStage(OptionSet filter) throws InvalidOptionException;
+    Optional<Stage> getRandomAvailableStage(OptionSet filter) throws InvalidOptionException;
 
     /**
      * ステージ名からステージを返す

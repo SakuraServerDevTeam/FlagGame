@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
+import jp.llv.flaggame.api.exception.InvalidNameException;
 import jp.llv.flaggame.api.reception.Reception;
 import jp.llv.flaggame.reception.TeamColor;
 import jp.llv.flaggame.reception.TeamType;
@@ -137,6 +138,12 @@ public interface Stage extends Reservable<Stage> {
     void setDeathScore(double deathScore);
 
     void setDescription(String value);
+
+    Set<String> getTags();
+
+    void addTag(String tag) throws InvalidNameException;
+
+    void removeTag(String tag);
 
     void setEntryFee(double entryFee);
 

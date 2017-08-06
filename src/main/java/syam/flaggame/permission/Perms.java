@@ -69,6 +69,7 @@ public enum Perms {
     STAGE_SELECT("stage.select"),
     STAGE_SET("stage.set"),
     STAGE_STATS("stage.stats"),
+    STAGE_TAG("stage.tag"),
     FESTIVAL_MATCH_CREATE("festival.match.create"),
     FESTIVAL_MATCH_DELETE("festival.match.delete"),
     FESTIVAL_MATCH_TEAM("festival.match.team"),

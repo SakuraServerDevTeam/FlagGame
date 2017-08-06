@@ -19,8 +19,6 @@ package jp.llv.flaggame.api.profile;
 import java.util.UUID;
 import jp.llv.flaggame.api.player.GamePlayer;
 import jp.llv.flaggame.api.stage.Stage;
-import jp.llv.flaggame.profile.CachedPlayerProfile;
-import jp.llv.flaggame.profile.CachedStageProfile;
 
 /**
  *
@@ -28,9 +26,9 @@ import jp.llv.flaggame.profile.CachedStageProfile;
  */
 public interface ProfileAPI {
 
-    CachedPlayerProfile getProfile(UUID uuid);
+    PlayerProfile getProfile(UUID uuid);
 
-    CachedStageProfile getProfile(String name);
+    StageProfile getProfile(String name);
 
     void loadPlayerProfile(UUID uuid, boolean notifyLevelUp);
 

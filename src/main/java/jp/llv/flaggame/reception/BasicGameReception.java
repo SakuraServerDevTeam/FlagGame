@@ -88,7 +88,8 @@ public class BasicGameReception implements Reception {
         }
 
         try {
-            this.stage = api.getStages().getRandomAvailableStage(options);
+            this.stage = api.getStages().getRandomAvailableStage(options)
+                    .orElseThrow(() -> new CommandException("&c条件に合致するステージはありません！"));
         } catch (InvalidOptionException ex) {
             throw new CommandException("&c無効なオプションが設定されています！", ex);
         }
