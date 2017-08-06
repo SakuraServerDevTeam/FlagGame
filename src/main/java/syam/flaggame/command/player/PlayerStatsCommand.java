@@ -18,7 +18,6 @@ package syam.flaggame.command.player;
 
 import java.util.Arrays;
 import java.util.List;
-import jp.llv.flaggame.profile.CachedPlayerProfile;
 import jp.llv.flaggame.api.profile.RecordType;
 import jp.llv.flaggame.util.StringUtil;
 import org.bukkit.command.CommandSender;
@@ -27,6 +26,7 @@ import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.BaseCommand;
 import jp.llv.flaggame.util.DashboardBuilder;
 import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.api.profile.PlayerProfile;
 import syam.flaggame.permission.Perms;
 
 /**
@@ -58,7 +58,7 @@ public class PlayerStatsCommand extends BaseCommand {
         if (target == null) {
             throw new CommandException("&cプレイヤーを指定してください！");
         }
-        CachedPlayerProfile profile = api.getProfiles().getProfile(target.getUniqueId());
+        PlayerProfile profile = api.getProfiles().getProfile(target.getUniqueId());
         DashboardBuilder.newBuilder("Player Stats", target.getName())
                 .appendList(Arrays.asList(StatCategory.values()), (d, stat) -> {
                     stat.appendTo(d, profile);
@@ -81,7 +81,7 @@ public class PlayerStatsCommand extends BaseCommand {
             this.stats = stats;
         }
 
-        public void appendTo(DashboardBuilder dashboard, CachedPlayerProfile profile) {
+        public void appendTo(DashboardBuilder dashboard, PlayerProfile profile) {
             for (Stat stat : stats) {
                 stat.appendTo(dashboard, profile);
             }
@@ -100,7 +100,7 @@ public class PlayerStatsCommand extends BaseCommand {
         DEATH(RecordType.DEATH),
         KD(null) {
             @Override
-            public void appendTo(DashboardBuilder dashboard, CachedPlayerProfile profile) {
+            public void appendTo(DashboardBuilder dashboard, PlayerProfile profile) {
                 dashboard.key("K/D")
                         .value(
                                 profile.getStat(RecordType.KILL).flatMap(kill
@@ -127,7 +127,7 @@ public class PlayerStatsCommand extends BaseCommand {
             this.record = record;
         }
 
-        public void appendTo(DashboardBuilder dashboard, CachedPlayerProfile profile) {
+        public void appendTo(DashboardBuilder dashboard, PlayerProfile profile) {
             dashboard.key(StringUtil.capitalize(name()))
                     .value(profile.getStat(record).map(e -> Integer.toString(e.getCount())).orElse("N/A"));
         }

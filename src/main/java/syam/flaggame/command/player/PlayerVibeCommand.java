@@ -17,13 +17,13 @@
 package syam.flaggame.command.player;
 
 import java.util.List;
-import jp.llv.flaggame.profile.CachedPlayerProfile;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.BaseCommand;
 import jp.llv.flaggame.util.OnelineBuilder;
 import jp.llv.flaggame.api.exception.CommandException;
+import jp.llv.flaggame.api.profile.PlayerProfile;
 import syam.flaggame.permission.Perms;
 
 /**
@@ -55,7 +55,7 @@ public class PlayerVibeCommand extends BaseCommand {
         if (target == null) {
             throw new CommandException("&cプレイヤーを指定してください！");
         }
-        CachedPlayerProfile profile = api.getProfiles().getProfile(target.getUniqueId());
+        PlayerProfile profile = api.getProfiles().getProfile(target.getUniqueId());
         OnelineBuilder.newBuilder()
                 .value(target.getName()).info("のチョーシは")
                 .value(profile.getVibe().orElseThrow(() -> new CommandException("&c対象のプロファイルがが読み込まれていません！")))

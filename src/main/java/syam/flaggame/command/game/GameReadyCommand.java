@@ -46,8 +46,8 @@ public class GameReadyCommand extends BaseCommand {
         OptionSet options = new OptionSet(args);
         Reception reception;
         try {
-            reception = options.isPresent("r")
-                    ? api.getReceptions().newReception(options.getString("r"))
+            reception = options.isPresent("reception")
+                    ? api.getReceptions().newReception(options.getString("reception"))
                     : api.getReceptions().newReception();
         } catch (IllegalArgumentException ex) {
             throw new CommandException("&c" + ex.getMessage(), ex);

@@ -18,7 +18,6 @@ package syam.flaggame.command.stage;
 
 import java.util.Arrays;
 import java.util.List;
-import jp.llv.flaggame.profile.CachedStageProfile;
 import jp.llv.flaggame.api.profile.RecordType;
 import jp.llv.flaggame.util.StringUtil;
 import org.bukkit.command.CommandSender;
@@ -30,6 +29,7 @@ import jp.llv.flaggame.api.exception.CommandException;
 import jp.llv.flaggame.api.stage.Stage;
 import syam.flaggame.permission.Perms;
 import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.profile.StageProfile;
 
 /**
  *
@@ -60,7 +60,7 @@ public class StageStatsCommand extends BaseCommand {
         if (stage == null) {
             throw new CommandException("&cステージを指定してください！");
         }
-        CachedStageProfile profile = api.getProfiles().getProfile(stage.getName());
+        StageProfile profile = api.getProfiles().getProfile(stage.getName());
         int gameCount = profile.getStat(RecordType.GAME_START).map(e -> e.getCount())
                 .orElseThrow(() -> new CommandException("&cそのステージは開催記録がありません！"));
         DashboardBuilder.newBuilder("Stage Stats", stage.getName())
@@ -85,7 +85,7 @@ public class StageStatsCommand extends BaseCommand {
             this.stats = stats;
         }
 
-        public void appendTo(DashboardBuilder dashboard, CachedStageProfile profile, int gameCount) {
+        public void appendTo(DashboardBuilder dashboard, StageProfile profile, int gameCount) {
             for (Stat stat : stats) {
                 stat.appendTo(dashboard, profile, gameCount);
             }
@@ -108,7 +108,7 @@ public class StageStatsCommand extends BaseCommand {
         BANNER_KEEP(RecordType.BANNER_KEEP),
         RATE(null) {
             @Override
-            public void appendTo(DashboardBuilder dashboard, CachedStageProfile profile, int gameCount) {
+            public void appendTo(DashboardBuilder dashboard, StageProfile profile, int gameCount) {
                 dashboard.key(StringUtil.capitalize(name()))
                         .value(profile.getStat(RecordType.RATE).map(e -> Double.toString(e.getAverage())).orElse("N/A"));
             }
@@ -120,7 +120,7 @@ public class StageStatsCommand extends BaseCommand {
             this.record = record;
         }
 
-        public void appendTo(DashboardBuilder dashboard, CachedStageProfile profile, int gameCount) {
+        public void appendTo(DashboardBuilder dashboard, StageProfile profile, int gameCount) {
             double count = profile.getStat(record).map(e -> (double) e.getCount()).orElse(Double.NaN);
             dashboard.key(StringUtil.capitalize(name()))
                     .value(Double.isNaN(count) ? "N/A" : count).space()

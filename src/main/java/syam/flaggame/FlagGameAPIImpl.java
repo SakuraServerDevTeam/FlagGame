@@ -53,7 +53,7 @@ public class FlagGameAPIImpl implements FlagGameAPI {
         this.profiles = new ProfileManager(this);
         this.receptions = new ReceptionManager(this);
         this.games = new GameManager(this);
-        this.stages = new StageManager();
+        this.stages = new StageManager(this);
         this.confirmQueue = new ConfirmQueue();
         try {
             Constructor<? extends Logger> loggerConstructor = JDK14LoggerAdapter.class.getDeclaredConstructor(java.util.logging.Logger.class);

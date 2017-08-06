@@ -24,7 +24,7 @@ import java.util.OptionalLong;
  *
  * @author toyblocks
  */
-public interface PlayerProfile {
+public interface PlayerProfile extends Profile {
 
     OptionalLong getExp();
 
