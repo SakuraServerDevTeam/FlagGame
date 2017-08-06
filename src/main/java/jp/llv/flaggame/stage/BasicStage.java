@@ -16,21 +16,20 @@
  */
 package jp.llv.flaggame.stage;
 
+import java.util.ArrayList;
 import jp.llv.flaggame.api.stage.Stage;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import jp.llv.flaggame.api.exception.InvalidNameException;
 import org.bukkit.Location;
 import jp.llv.flaggame.reception.TeamColor;
-import jp.llv.flaggame.reception.TeamType;
 import jp.llv.flaggame.stage.rollback.QueuedSerializeTask;
 import jp.llv.flaggame.api.exception.RollbackException;
 import jp.llv.flaggame.api.stage.rollback.SerializeTask;
@@ -40,6 +39,7 @@ import jp.llv.flaggame.api.exception.ReservedException;
 import syam.flaggame.util.Cuboid;
 import jp.llv.flaggame.api.reception.Reception;
 import jp.llv.flaggame.api.stage.area.StageAreaInfo;
+import jp.llv.flaggame.api.stage.objective.Spawn;
 import org.bukkit.plugin.Plugin;
 import jp.llv.flaggame.api.stage.objective.StageObjective;
 
@@ -69,13 +69,11 @@ public class BasicStage extends SimpleReservable<Stage> implements Stage {
     private double prize = 0;
 
     // フラッグ・チェスト
-    private final Map<Location, StageObjective> objectives = new HashMap<>();
+    private final List<StageObjective> objectives = new ArrayList<>();
 
     // 地点・エリア
     private boolean protect = true;
-    private final Map<TeamColor, Location> spawnMap = Collections.synchronizedMap(new EnumMap<>(TeamColor.class));
     private final AreaSet areas = new AreaSet();
-    private Location specSpawn = null;
 
     // stage description
     private String guide = "";
@@ -94,25 +92,27 @@ public class BasicStage extends SimpleReservable<Stage> implements Stage {
 
     @Override
     public void addObjective(StageObjective objective) throws ObjectiveCollisionException {
-        if (objectives.containsKey(objective.getLocation())) {
-            throw new ObjectiveCollisionException();
+        if (objective.isBlock()) {
+            if (objectives.stream()
+                    .filter(StageObjective::isBlock)
+                    .anyMatch(other -> other.getLocation().equals(objective.getLocation()))) {
+                throw new ObjectiveCollisionException();
+            }
         }
-        objectives.put(objective.getLocation(), objective);
+        objectives.add(objective);
     }
 
     @Override
     public Optional<StageObjective> getObjective(Location loc) {
-        return Optional.ofNullable(objectives.get(loc));
+        return objectives.stream()
+                .filter(StageObjective::isBlock)
+                .filter(objective -> objective.getLocation().equals(loc))
+                .findAny();
     }
 
     @Override
     public <O extends StageObjective> Optional<O> getObjective(Location loc, Class<? extends O> clazz) {
-        StageObjective objective = objectives.get(loc);
-        if (clazz.isInstance(objective)) {
-            return Optional.of(clazz.cast(objective));
-        } else {
-            return Optional.empty();
-        }
+        return getObjective(loc).map(obj -> clazz.isInstance(obj) ? clazz.cast(obj) : null);
     }
 
     @Override
@@ -127,28 +127,25 @@ public class BasicStage extends SimpleReservable<Stage> implements Stage {
 
     @Override
     public void removeObjective(Location loc) {
-        objectives.remove(loc);
+        objectives.removeIf(obj -> obj.isBlock() && obj.getLocation().equals(loc));
     }
 
     @Override
     public void removeObjective(StageObjective objective) {
-        objectives.remove(objective.getLocation(), objective);
+        objectives.remove(objective);
     }
 
     @Override
-    public Map<Location, StageObjective> getObjectives() {
-        return Collections.unmodifiableMap(objectives);
+    public List<StageObjective> getObjectives() {
+        return Collections.unmodifiableList(objectives);
     }
 
     @Override
-    public <O> Map<Location, O> getObjectives(Class<? extends O> clazz) {
-        Map<Location, O> result = new HashMap<>();
-        objectives.forEach((l, o) -> {
-            if (clazz.isInstance(o)) {
-                result.put(l, clazz.cast(o));
-            }
-        });
-        return Collections.unmodifiableMap(result);
+    public <O> List<O> getObjectives(Class<? extends O> clazz) {
+        return objectives.stream()
+                .filter(clazz::isInstance)
+                .map(clazz::cast)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -156,52 +153,6 @@ public class BasicStage extends SimpleReservable<Stage> implements Stage {
         for (StageObjective objective : objectives) {
             addObjective(objective);
         }
-    }
-
-    /* ***** スポーン地点関係 ***** */
-
- /*
-     * チームのスポーン地点を設置/取得する
-     * 
-     * @param loc
-     * @throws syam.flaggame.exception.StageReservedException when this stage is being used
-     */
-    @Override
-    public void setSpawn(TeamColor team, Location loc) {
-        if (loc == null) {
-            spawnMap.remove(team);
-        } else {
-            spawnMap.put(team, loc);
-        }
-    }
-
-    @Override
-    public Location getSpawn(TeamType team) {
-        if (team == null || !spawnMap.containsKey(team.toColor())) {
-            return null;
-        }
-        return spawnMap.get(team.toColor()).clone();
-    }
-
-    @Override
-    public Map<TeamColor, Location> getSpawns() {
-        return Collections.unmodifiableMap(spawnMap);
-    }
-
-    @Override
-    public void setSpawns(Map<TeamColor, Location> spawns) {
-        this.spawnMap.clear();
-        this.spawnMap.putAll(spawns);
-    }
-
-    @Override
-    public Optional<Location> getSpecSpawn() {
-        return Optional.ofNullable(this.specSpawn).map(Location::clone);
-    }
-
-    @Override
-    public void setSpecSpawn(Location loc) {
-        this.specSpawn = loc != null ? loc.clone() : null;
     }
 
     @Override
@@ -226,7 +177,7 @@ public class BasicStage extends SimpleReservable<Stage> implements Stage {
 
     @Override
     public Set<TeamColor> getTeams() {
-        return Collections.unmodifiableSet(this.getSpawns().keySet());
+        return getObjectives(Spawn.class).stream().map(Spawn::getColor).collect(Collectors.toSet());
     }
 
     /**

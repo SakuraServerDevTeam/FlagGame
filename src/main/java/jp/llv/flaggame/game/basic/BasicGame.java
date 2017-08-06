@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -80,10 +81,8 @@ import syam.flaggame.util.Cuboid;
 import jp.llv.flaggame.api.reception.Reception;
 import jp.llv.flaggame.api.stage.Stage;
 import jp.llv.flaggame.api.stage.area.StageAreaInfo;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
+import jp.llv.flaggame.api.stage.objective.Spawn;
+import jp.llv.flaggame.api.stage.objective.SpecSpawn;
 
 /**
  *
@@ -192,24 +191,23 @@ public class BasicGame implements Game {
                 "&2ゲーム'&6" + this.reception.getName() + "&2'が始まりました！",
                 "&2開催ステージ: '&6" + this.stage.getName() + "&2' &f| &2制限時間: " + Actions.getTimeString(this.stage.getGameTime()),
                 this.getTeams().stream()
-                .map(t -> t.getType().getRichName() + "&f" + t.getPlayers().size() + "人&r").collect(Collectors.joining(", "))
+                        .map(t -> t.getType().getRichName() + "&f" + t.getPlayers().size() + "人&r").collect(Collectors.joining(", "))
         );
-        this.stage.getSpecSpawn().ifPresent(l -> {
+
+        if (!stage.getObjectives(SpecSpawn.class).isEmpty()) {
             BaseComponent[] message = new ComponentBuilder("ここをクリック").bold(true).color(ChatColor.GOLD).bold(false)
                     .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("クリックして観戦します").color(ChatColor.GOLD).create()))
                     .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/flag game watch " + this.stage.getName()))
                     .append("して観戦することができます！").color(ChatColor.DARK_GREEN).create();
             GamePlayer.sendMessage(this.api.getPlayers(), message);
-        });
+        }
 
         for (Team team : this.getTeams()) {
-            Location teamSpawn = this.stage.getSpawn(team.getColor());
             for (GamePlayer player : team) {
                 Player vp = player.getPlayer();
                 if (!player.getPlayer().isOnline()) {
                     continue;
                 }
-                vp.teleport(teamSpawn, TeleportCause.PLUGIN);
                 vp.setGameMode(GameMode.SURVIVAL);
                 vp.setFlying(false);
 
@@ -234,29 +232,10 @@ public class BasicGame implements Game {
 
                 //プレイヤーリストへ色適用
                 player.setTabName(team.getColor().getChatColor() + player.getName());
-                
-                //=====TEMPORARY CODE=====///
-                BlockState kitState = teamSpawn.clone().subtract(0, 2, 0).getBlock().getState();
-                if (!(kitState instanceof InventoryHolder)) {
-                    continue;
-                }
-                ItemStack[] kit = ((InventoryHolder) kitState).getInventory().getContents();
-                Inventory inv = player.getPlayer().getInventory();
-                for (int i = 0; i < 24; i++) {
-                    if (kit[i] != null) {
-                        inv.setItem(i, new ItemStack(kit[i]));
-                    }
-                }
-                for (int i = 24; i < 27; i++) {
-                    if (kit[i] != null) {
-                        inv.setItem(i + 13 , new ItemStack(kit[i]));
-                    }
-                }
-                //===TEMPORATY CODE END===///
-                
-                
+
             }
         }
+        teleportPlayers();
 
         // stage rollback and message
         for (String areaID : stage.getAreas().getAreas()) {
@@ -347,14 +326,16 @@ public class BasicGame implements Game {
         }
 
         // calcurate flag score
-        this.stage.getObjectives(Flag.class).entrySet().stream()
-                .filter(e -> e.getValue().getOwner() != null)
-                .map(e -> new FlagScoreRecord(
-                        this.getID(),
-                        this.getRecordStream().stream(FlagCaptureRecord.class).filter(StreamUtil.isLocatedIn(e.getKey())).reduce(StreamUtil.toLastElement()).get().getPlayer(),
-                        e.getValue().getLocation(),
-                        e.getValue().getFlagPoint()
-                )).forEach(this.getRecordStream()::push);
+        this.stage.getObjectives(Flag.class).stream()
+                .filter(flag -> flag.getOwner() != null)
+                .map(flag -> new FlagScoreRecord(
+                this.getID(),
+                this.getRecordStream().stream(FlagCaptureRecord.class)
+                        .filter(StreamUtil.isLocatedIn(flag.getLocation()))
+                        .reduce(StreamUtil.toLastElement()).get().getPlayer(),
+                flag.getLocation(),
+                flag.getFlagPoint()
+        )).forEach(this.getRecordStream()::push);
         // calcurate banner score
         if (stage.getObjectives(BannerSlot.class).isEmpty()) {
             heldBanners.entrySet().stream().forEach(e -> getRecordStream().push(
@@ -446,10 +427,9 @@ public class BasicGame implements Game {
 
         String author = "".equals(stage.getAuthor()) ? "" : "presented by " + stage.getAuthor();
         for (GamePlayer player : this) {
-            Location spawn = stage.getSpawn(player.getTeam().get().getType());
             Location loc = player.isOnline()
                     ? player.getPlayer().getLocation()
-                    : spawn;
+                    : new Location(api.getGameWorld(), 0, 0, 0);
             double point = points.getOrDefault(player, 0.0);
             long exp = exps.getOrDefault(player, 0L);
             double vibe = vibes.getOrDefault(player, 0.0);
@@ -466,11 +446,11 @@ public class BasicGame implements Game {
                 getRecordStream().push(new PlayerLoseRecord(getID(), player.getUUID(), loc, exp, vibe));
             }
             if (player.isOnline()) {
-                player.getPlayer().teleport(spawn);
                 player.getPlayer().getInventory().clear();
                 player.resetTabName();
             }
         }
+        teleportPlayers();
 
         this.records = null; // after this, access via reception
         reception.stop("The game has finished");
@@ -490,18 +470,36 @@ public class BasicGame implements Game {
 
         for (GamePlayer g : this.reception.getPlayers()) {
             if (g.getPlayer().isOnline()) {
-                g.getPlayer().teleport(this.stage.getSpawn(g.getTeam().get().getType()));
                 g.getPlayer().setFallDistance(0f);
                 g.getPlayer().getInventory().clear();
                 g.resetTabName();
             }
         }
+        teleportPlayers();
 
         GamePlayer.sendMessage(this.reception.getPlayers(), "&2フラッグゲーム'&6" + this.stage.getName() + "&2'は強制終了されました: "
                                                             + message);
 
         this.records = null; // after this, access via reception
         this.reception.stop("The game has finished");
+    }
+
+    private void teleportPlayers() {
+        for (Team team : getTeams()) {
+            List<Spawn> spawns = stage.getObjectives(Spawn.class).stream()
+                    .filter(spawn -> spawn.getColor() == team.getColor())
+                    .collect(Collectors.toList());
+            int index = 0;
+            for (GamePlayer player : team) {
+                Player vp = player.getPlayer();
+                if (!player.getPlayer().isOnline()) {
+                    continue;
+                }
+                Spawn spawn = spawns.get(index++ % spawns.size());
+                vp.teleport(spawn.getLocation(), TeleportCause.PLUGIN);
+            }
+
+        }
     }
 
     public long getRemainTime() {

@@ -40,7 +40,7 @@ public class ObjectiveEffectTask extends BukkitRunnable {
 
     @Override
     public void run() {
-        game.getStage().getObjectives().values().stream()
+        game.getStage().getObjectives().stream()
                 .filter(o -> o instanceof Flag || o instanceof BannerSlot || o instanceof Nexus)
                 .map(StageObjective::getLocation)
                 .forEach(this::spawnParticle);

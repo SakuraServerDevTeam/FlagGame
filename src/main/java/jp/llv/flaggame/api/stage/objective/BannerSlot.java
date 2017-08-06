@@ -23,28 +23,17 @@ import jp.llv.flaggame.reception.TeamColor;
  *
  * @author Toyblocks
  */
-public class BannerSlot implements StageObjective {
+public class BannerSlot extends StageObjective {
 
-    private final Location loc;
     private final TeamColor color;
 
     public BannerSlot(Location loc, TeamColor color) {
-        this.loc = loc;
+        super(loc, ObjectiveType.BANNER_SLOT, true);
         this.color = color;
-    }
-
-    @Override
-    public Location getLocation() {
-        return loc;
     }
 
     public TeamColor getColor() {
         return color;
-    }
-
-    @Override
-    public ObjectiveType getType() {
-        return ObjectiveType.BANNER_SLOT;
     }
 
 }

@@ -24,8 +24,6 @@ package jp.llv.flaggame.stage;
 public enum Configables {
 
     // 一般
-    SPAWN(ConfigType.POINT),
-    SPECSPAWN(ConfigType.POINT),
     // オプション
     GAMETIME(ConfigType.SIMPLE),
     TEAMLIMIT(ConfigType.SIMPLE),
@@ -55,7 +53,6 @@ public enum Configables {
     }
 
     public enum ConfigType {
-        POINT, // プレイヤーの現在値を取得する設定
         SIMPLE, // お金など単にそのコマンドだけで変更可能な設定
         AREA, // 範囲設定
     }

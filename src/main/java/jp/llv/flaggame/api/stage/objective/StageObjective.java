@@ -22,14 +22,41 @@ import org.bukkit.Location;
  *
  * @author SakuraServerDev
  */
-public interface StageObjective {
+public abstract class StageObjective {
 
-    default String getName() {
-        return getType().getName();
+    private final String name;
+    private final Location location;
+    private final ObjectiveType type;
+    private final boolean block;
+
+    public StageObjective(String name, Location location, ObjectiveType type, boolean block) {
+        this.name = name;
+        this.location = location.clone();
+        this.type = type;
+        this.block = block;
     }
 
-    ObjectiveType getType();
+    public StageObjective(Location location, ObjectiveType type, boolean block) {
+        this.name = type.getName();
+        this.location = location;
+        this.type = type;
+        this.block = block;
+    }
 
-    Location getLocation();
+    public final String getName() {
+        return name;
+    }
+
+    public final Location getLocation() {
+        return location.clone();
+    }
+
+    public final ObjectiveType getType() {
+        return type;
+    }
+
+    public final boolean isBlock() {
+        return block;
+    }
 
 }

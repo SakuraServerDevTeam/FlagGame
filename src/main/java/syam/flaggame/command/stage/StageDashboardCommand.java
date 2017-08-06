@@ -90,31 +90,6 @@ public class StageDashboardCommand extends BaseCommand {
                 .buttonSuggest("edit").append("stage set entryfee").create().space()
                 .key("Prize").value(Actions.formatMoney(stage.getPrize()))
                 .buttonSuggest("edit").append("stage set prize").create().br()
-                .key("Spawns");
-        if (stage.getSpawns().isEmpty()) {
-            builder.value("undefined");
-        } else {
-            boolean head = true;
-            for (TeamColor color : stage.getSpawns().keySet()) {
-                if (!head) {
-                    builder.space();
-                }
-                head = false;
-                builder.text(color.getBungeeChatColor(), color.toString().toLowerCase())
-                        .buttonRun("set here").append("stage set spawn").append(color).create()
-                        .buttonRun("delete").append("stage set spawn").append(color).append("none").create();
-                if (sender instanceof Player) {
-                    builder.buttonTp("tp", (Player) sender, stage.getSpawns().get(color));
-                }
-            }
-        }
-        builder.buttonSuggest("add").append("stage set spawn").create().br()
-                .key("SpecSpawn").value(stage.getSpecSpawn().isPresent() ? "defined" : "undefined")
-                .buttonRun("set here").append("stage set specspawn").create();
-        if (sender instanceof Player && stage.getSpecSpawn().isPresent()) {
-            builder.buttonTp("tp", (Player) sender, stage.getSpecSpawn().get());
-        }
-        builder.br()
                 .buttonRun("area").append("area list").create();
         for (ObjectiveType obj : ObjectiveType.values()) {
             builder.buttonRun(obj.toString().toLowerCase())

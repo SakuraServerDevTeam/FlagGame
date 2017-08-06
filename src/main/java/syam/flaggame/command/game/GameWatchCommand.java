@@ -18,6 +18,8 @@ package syam.flaggame.command.game;
 
 import java.util.List;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Random;
 import jp.llv.flaggame.api.game.Game;
 
 import org.bukkit.Location;
@@ -31,6 +33,7 @@ import jp.llv.flaggame.api.exception.CommandException;
 import syam.flaggame.permission.Perms;
 import jp.llv.flaggame.api.player.GamePlayer;
 import jp.llv.flaggame.api.stage.Stage;
+import jp.llv.flaggame.api.stage.objective.SpecSpawn;
 import syam.flaggame.util.Actions;
 
 public class GameWatchCommand extends BaseCommand {
@@ -71,8 +74,11 @@ public class GameWatchCommand extends BaseCommand {
             }
         }
 
-        Location specSpawn = stage.getSpecSpawn().orElseThrow(() -> new CommandException(
-                "&cステージ'" + stage.getName() + "'は観戦者のスポーン地点が設定されていません"));
+        List<SpecSpawn> specSpawns = stage.getObjectives(SpecSpawn.class);
+        if (specSpawns.isEmpty()) {
+            throw new CommandException("&cステージ'" + stage.getName() + "'は観戦者のスポーン地点が設定されていません");
+        }
+        Location specSpawn = specSpawns.get(new Random().nextInt(specSpawns.size())).getLocation();
 
         if (gPlayer.getGame().isPresent() && gPlayer.getGame().get().getState() == Game.State.STARTED) {
             Actions.message(player, "&cあなたはゲームに参加しているため移動できません！");

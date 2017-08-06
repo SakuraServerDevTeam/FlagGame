@@ -23,7 +23,8 @@ import jp.llv.flaggame.util.StringUtil;
  * @author SakuraServerDev
  */
 public enum ObjectiveType {
-
+    SPAWN(Spawn.class),
+    SPEC_SPAWN(SpecSpawn.class),
     FLAG(Flag.class),
     CHEST(GameChest.class),
     NEXUS(Nexus.class),

@@ -94,7 +94,7 @@ public class BasicGameReception implements Reception {
             throw new CommandException("&c無効なオプションが設定されています！", ex);
         }
 
-        TeamType[] teams = stage.getSpawns().keySet().toArray(new TeamColor[stage.getSpawns().size()]);
+        TeamType[] teams = stage.getTeams().toArray(new TeamColor[stage.getTeams().size()]);
         if (options.isPresent("t")) {
             teaming = api.getRegistry().getTeaming(options.getString("t")).apply(api, teams);
         } else {

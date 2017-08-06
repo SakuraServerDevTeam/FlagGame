@@ -77,7 +77,7 @@ public class ObjectiveListCommand extends ObjectiveCommand {
     }
 
     private void listFlag(Player player, Stage stage, List<String> args) {
-        Collection<Flag> flags = stage.getObjectives(Flag.class).values();
+        Collection<Flag> flags = stage.getObjectives(Flag.class);
         DashboardBuilder.newBuilder("Flags", flags.size())
                 .appendList(flags, (d, obj) -> {
                     Location loc = obj.getLocation();
@@ -93,7 +93,7 @@ public class ObjectiveListCommand extends ObjectiveCommand {
     }
 
     private void listChest(Player player, Stage stage, List<String> args) {
-        Collection<GameChest> chests = stage.getObjectives(GameChest.class).values();
+        Collection<GameChest> chests = stage.getObjectives(GameChest.class);
         DashboardBuilder.newBuilder("Containers", chests.size())
                 .appendList(chests, (d, obj) -> {
                     Location loc = obj.getLocation();
@@ -107,7 +107,7 @@ public class ObjectiveListCommand extends ObjectiveCommand {
     }
 
     private void listBannerSlot(Player player, Stage stage, List<String> args) {
-        Collection<BannerSlot> slots = stage.getObjectives(BannerSlot.class).values();
+        Collection<BannerSlot> slots = stage.getObjectives(BannerSlot.class);
         DashboardBuilder.newBuilder("Banner Slots", slots.size())
                 .appendList(slots, (d, obj) -> {
                     Location loc = obj.getLocation();
@@ -126,7 +126,7 @@ public class ObjectiveListCommand extends ObjectiveCommand {
     }
 
     private void listBannerSpawner(Player player, Stage stage, List<String> args) {
-        Collection<BannerSpawner> spawners = stage.getObjectives(BannerSpawner.class).values();
+        Collection<BannerSpawner> spawners = stage.getObjectives(BannerSpawner.class);
         DashboardBuilder.newBuilder("Banner Spawners", spawners.size())
                 .appendList(spawners, (d, obj) -> {
                     Location loc = obj.getLocation();
@@ -143,7 +143,7 @@ public class ObjectiveListCommand extends ObjectiveCommand {
     }
 
     private void listNexus(Player player, Stage stage, List<String> args) {
-        Collection<Nexus> nexuses = stage.getObjectives(Nexus.class).values();
+        Collection<Nexus> nexuses = stage.getObjectives(Nexus.class);
         DashboardBuilder.newBuilder("Nexuses", nexuses.size())
                 .appendList(nexuses, (d, obj) -> {
                     Location loc = obj.getLocation();
@@ -163,7 +163,7 @@ public class ObjectiveListCommand extends ObjectiveCommand {
     }
 
     private void listSuperJump(Player player, Stage stage, List<String> args) {
-        Collection<SuperJump> superjumps = stage.getObjectives(SuperJump.class).values();
+        Collection<SuperJump> superjumps = stage.getObjectives(SuperJump.class);
         DashboardBuilder.newBuilder("SuperJumps", superjumps.size())
                 .appendList(superjumps, (d, obj) -> {
                     Location loc = obj.getLocation();

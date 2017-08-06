@@ -18,14 +18,13 @@ package jp.llv.flaggame.api.stage;
 
 import jp.llv.flaggame.api.stage.area.StageAreaSet;
 import java.util.Collection;
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import jp.llv.flaggame.api.exception.InvalidNameException;
 import jp.llv.flaggame.api.reception.Reception;
 import jp.llv.flaggame.reception.TeamColor;
-import jp.llv.flaggame.reception.TeamType;
 import jp.llv.flaggame.api.exception.RollbackException;
 import jp.llv.flaggame.api.stage.rollback.SerializeTask;
 import org.bukkit.Location;
@@ -84,19 +83,13 @@ public interface Stage extends Reservable<Stage> {
 
     <O extends StageObjective> Optional<O> getObjective(Location loc, Class<? extends O> clazz);
 
-    Map<Location, StageObjective> getObjectives();
+    List<StageObjective> getObjectives();
 
-    <O> Map<Location, O> getObjectives(Class<? extends O> clazz);
+    <O> List<O> getObjectives(Class<? extends O> clazz);
 
     double getPrize();
 
     Optional<Reception> getReception();
-
-    Location getSpawn(TeamType team);
-
-    Map<TeamColor, Location> getSpawns();
-
-    Optional<Location> getSpecSpawn();
 
     /**
      * チーム毎の人数上限を取得
@@ -164,19 +157,6 @@ public interface Stage extends Reservable<Stage> {
     void setPrize(double prize);
 
     void setProtected(boolean protect);
-
-    /* ***** スポーン地点関係 ***** */
- /*
-     * チームのスポーン地点を設置/取得する
-     *
-     * @param loc
-     * @throws syam.flaggame.exception.StageReservedException when this stage is being used
-     */
-    void setSpawn(TeamColor team, Location loc);
-
-    void setSpawns(Map<TeamColor, Location> spawns);
-
-    void setSpecSpawn(Location loc);
 
     /**
      * チーム毎の人数上限を設定する

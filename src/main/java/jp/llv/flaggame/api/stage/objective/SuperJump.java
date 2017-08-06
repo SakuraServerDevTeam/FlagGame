@@ -23,26 +23,15 @@ import org.bukkit.util.Vector;
  *
  * @author toyblocks
  */
-public class SuperJump implements StageObjective {
+public class SuperJump extends StageObjective {
 
-    private final Location location;
     private final double range;
     private final Vector velocity;
 
     public SuperJump(Location location, double range, Vector velocity) {
-        this.location = location.clone();
+        super(location, ObjectiveType.SUPER_JUMP, false);
         this.range = range;
         this.velocity = velocity.clone();
-    }
-
-    @Override
-    public ObjectiveType getType() {
-        return ObjectiveType.SUPER_JUMP;
-    }
-
-    @Override
-    public Location getLocation() {
-        return location.clone();
     }
 
     public double getRange() {

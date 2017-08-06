@@ -24,6 +24,8 @@ import jp.llv.flaggame.api.stage.objective.BannerSpawner;
 import jp.llv.flaggame.api.stage.objective.Flag;
 import jp.llv.flaggame.api.stage.objective.GameChest;
 import jp.llv.flaggame.api.stage.objective.Nexus;
+import jp.llv.flaggame.api.stage.objective.Spawn;
+import jp.llv.flaggame.api.stage.objective.SpecSpawn;
 import jp.llv.flaggame.api.stage.objective.SuperJump;
 import jp.llv.flaggame.api.stage.permission.StagePermissionStateSet;
 import org.bson.BsonBinary;
@@ -162,6 +164,17 @@ public final class StageSerializer extends BaseSerializer {
         bson.append(key, section);
     }
 
+    void writeSpawn(BsonDocument bson, String key, Spawn value) {
+        BsonDocument section = new BsonDocument();
+        writeLocation(section, "loc", value.getLocation());
+        writeEnum(section, "color", value.getColor());
+        bson.append(key, section);
+    }
+
+    void writeSpecSpawn(BsonDocument bson, String key, SpecSpawn value) {
+        writeLocation(bson, key, value.getLocation());
+    }
+
     public BsonDocument writeStage(Stage value) {
         BsonDocument section = new BsonDocument();
         section.append("_id", new BsonString(value.getName()));
@@ -175,15 +188,15 @@ public final class StageSerializer extends BaseSerializer {
         section.append("entryfee", new BsonDouble(value.getEntryFee()));
         section.append("prize", new BsonDouble(value.getPrize()));
         section.append("cooldown", new BsonInt64(value.getCooldown()));
-        writeEnumMap(section, "spawn", value.getSpawns(), this::writeLocation);
-        writeLocation(section, "specspawn", value.getSpecSpawn().orElse(null));
 
-        writeCollection(section, "flags", value.getObjectives(Flag.class).values(), this::writeFlag);
-        writeCollection(section, "nexuses", value.getObjectives(Nexus.class).values(), this::writeNexus);
-        writeCollection(section, "banner-spawners", value.getObjectives(BannerSlot.class).values(), this::writeBannerSlot);
-        writeCollection(section, "banner-slots", value.getObjectives(BannerSpawner.class).values(), this::writeBannerSpawner);
-        writeCollection(section, "containers", value.getObjectives(GameChest.class).values(), this::writeGameChest);
-        writeCollection(section, "superjumps", value.getObjectives(SuperJump.class).values(), this::writeSuperJump);
+        writeCollection(section, "spawns", value.getObjectives(Spawn.class), this::writeSpawn);
+        writeCollection(section, "specspawns", value.getObjectives(SpecSpawn.class), this::writeSpecSpawn);
+        writeCollection(section, "flags", value.getObjectives(Flag.class), this::writeFlag);
+        writeCollection(section, "nexuses", value.getObjectives(Nexus.class), this::writeNexus);
+        writeCollection(section, "banner-spawners", value.getObjectives(BannerSlot.class), this::writeBannerSlot);
+        writeCollection(section, "banner-slots", value.getObjectives(BannerSpawner.class), this::writeBannerSpawner);
+        writeCollection(section, "containers", value.getObjectives(GameChest.class), this::writeGameChest);
+        writeCollection(section, "superjumps", value.getObjectives(SuperJump.class), this::writeSuperJump);
 
         writeAreaSet(section, "areas", value.getAreas());
         section.append("author", new BsonString(value.getAuthor()));

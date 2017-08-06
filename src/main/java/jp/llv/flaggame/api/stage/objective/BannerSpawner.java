@@ -16,25 +16,21 @@
  */
 package jp.llv.flaggame.api.stage.objective;
 
-import jp.llv.flaggame.api.stage.objective.ObjectiveType;
-import java.util.Objects;
 import jp.llv.flaggame.util.BannerUtils;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Banner;
 import org.bukkit.block.BlockFace;
-import jp.llv.flaggame.api.stage.objective.StageObjective;
 
 /**
  *
  * @author Toyblocks
  */
-public class BannerSpawner implements StageObjective {
+public class BannerSpawner extends StageObjective {
 
     public static final Material[] BANNER_IDS = {Material.BANNER, Material.WALL_BANNER};
 
-    private final Location loc;
     private final byte point;
     private final byte hp;
     private final boolean producing;
@@ -43,18 +39,12 @@ public class BannerSpawner implements StageObjective {
     private final BlockFace face;
 
     public BannerSpawner(Location loc, byte point, byte hp, boolean producing, boolean wall, BlockFace face) {
-        Objects.requireNonNull(loc, "A banner spawner must be located");
-        this.loc = loc;
+        super(loc, ObjectiveType.BANNER_SPAWNER, true);
         this.point = point;
         this.hp = hp;
         this.producing = producing;
         this.wall = wall;
         this.face = face;
-    }
-
-    @Override
-    public Location getLocation() {
-        return loc;
     }
 
     public byte getPoint() {
@@ -82,15 +72,11 @@ public class BannerSpawner implements StageObjective {
     }
 
     public void spawnBanner() {
+        Location loc = getLocation();
         loc.getBlock().setType(wall ? Material.WALL_BANNER : Material.BANNER);
         Banner b = (Banner) loc.getBlock().getState();
         b.setBaseColor(DyeColor.CYAN);
         BannerUtils.paintNum(b, point, DyeColor.WHITE, DyeColor.CYAN);
-    }
-
-    @Override
-    public ObjectiveType getType() {
-        return ObjectiveType.BANNER_SPAWNER;
     }
 
 }

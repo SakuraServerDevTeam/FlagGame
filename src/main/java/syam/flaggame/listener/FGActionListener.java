@@ -120,7 +120,7 @@ public class FGActionListener implements Listener {
         }
         Location loc = player.getLocation();
         outer: for (Stage stage : api.getStages()) {
-            for (SuperJump superJump : stage.getObjectives(SuperJump.class).values()) {
+            for (SuperJump superJump : stage.getObjectives(SuperJump.class)) {
                 if (superJump.getRange() * superJump.getRange() < superJump.getLocation().distanceSquared(loc)) {
                     continue;
                 }

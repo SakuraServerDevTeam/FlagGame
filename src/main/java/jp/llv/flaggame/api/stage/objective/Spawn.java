@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 SakuraServerDev
+ * Copyright (C) 2017 toyblocks
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,16 +16,24 @@
  */
 package jp.llv.flaggame.api.stage.objective;
 
+import jp.llv.flaggame.reception.TeamColor;
 import org.bukkit.Location;
 
 /**
  *
- * @author SakuraServerDev
+ * @author toyblocks
  */
-public class GameChest extends StageObjective {
+public class Spawn extends StageObjective {
 
-    public GameChest(Location loc) {
-        super(loc, ObjectiveType.CHEST, true);
+    private final TeamColor color;
+
+    public Spawn(Location location, TeamColor color) {
+        super(location, ObjectiveType.SPAWN, false);
+        this.color = color;
     }
-
+    
+    public TeamColor getColor() {
+        return color;
+    }
+    
 }

@@ -22,10 +22,9 @@ import org.bukkit.block.Block;
 
 import jp.llv.flaggame.reception.TeamColor;
 
-public class Flag implements StageObjective {
+public class Flag extends StageObjective {
 
     public static final Material[] FLAG_BLOCK_IDS = {Material.WOOL, Material.STAINED_CLAY, Material.STAINED_GLASS};
-    private final Location loc; // フラッグ座標
     private final double type; // フラッグの種類
     private final boolean producing;
 
@@ -35,12 +34,7 @@ public class Flag implements StageObjective {
      * @param plugin
      */
     public Flag(final Location loc, final double type, boolean producing) {
-        if (loc == null) {
-            throw new NullPointerException();
-        }
-
-        // フラッグデータ登録
-        this.loc = loc;
+        super(loc, ObjectiveType.FLAG, true);
         this.type = type;
         this.producing = producing;
     }
@@ -51,14 +45,14 @@ public class Flag implements StageObjective {
      * @return Block
      */
     public Block getNowBlock() {
-        return loc.getBlock();
+        return getLocation().getBlock();
     }
 
     /**
      * ブロックを元のブロックにロールバックする
      */
     public void rollback() {
-        Block block = loc.getBlock();
+        Block block = getNowBlock();
         // 既に同じブロックの場合は何もしない
         if (block.getTypeId() != 0 || block.getData() != 0) {
             // ブロック変更
@@ -84,22 +78,12 @@ public class Flag implements StageObjective {
         return Double.toString(type);
     }
 
-    @Override
-    public Location getLocation() {
-        return loc;
-    }
-
     public TeamColor getOwner() {
-        Block b = this.loc.getBlock();
+        Block b = getNowBlock();
         if (!isFlag(b.getType())) {
             return null;
         }
         return TeamColor.getByColorData(b.getData());
-    }
-
-    @Override
-    public ObjectiveType getType() {
-        return ObjectiveType.FLAG;
     }
 
     public static boolean isFlag(Material material) {

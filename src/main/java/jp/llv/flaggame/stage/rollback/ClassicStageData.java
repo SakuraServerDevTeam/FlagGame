@@ -41,14 +41,15 @@ public class ClassicStageData extends VoidStageData {
 
     @Override
     public SerializeTask load(Stage stage, Cuboid area, Consumer<RollbackException> callback) {
-        stage.getObjectives(Flag.class).values().stream()
+        stage.getObjectives(Flag.class).stream()
                 .filter(f -> area.contains(f.getLocation()))
                 .forEach(Flag::rollback);
-        stage.getObjectives(BannerSpawner.class).values().stream()
+        stage.getObjectives(BannerSpawner.class).stream()
                 .filter(b -> area.contains(b.getLocation()))
                 .forEach(BannerSpawner::spawnBanner);
 
-        for (Location loc : stage.getObjectives(GameChest.class).keySet()) {
+        for (GameChest chest : stage.getObjectives(GameChest.class)) {
+            Location loc = chest.getLocation();
             if (!area.contains(loc)) {
                 continue;
             }
@@ -87,7 +88,7 @@ public class ClassicStageData extends VoidStageData {
                     newIs[i] = new ItemStack(oldIs[i]);
                 }
                 toContainer.getInventory().setContents(newIs);
-            } catch (Exception ex) {
+            } catch (IllegalArgumentException ex) {
                 return new FailedSerializeTask(callback,
                         new RollbackException(ex)
                 );

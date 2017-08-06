@@ -16,30 +16,22 @@
  */
 package jp.llv.flaggame.api.stage.objective;
 
-import jp.llv.flaggame.api.stage.objective.ObjectiveType;
 import org.bukkit.Location;
 import jp.llv.flaggame.reception.TeamColor;
-import jp.llv.flaggame.api.stage.objective.StageObjective;
 
 /**
  *
  * @author Toyblocks
  */
-public class Nexus implements StageObjective {
+public class Nexus extends StageObjective {
 
-    private final Location loc;
     private final TeamColor color;
     private final double point;
 
     public Nexus(Location loc, TeamColor color, double point) {
-        this.loc = loc;
+        super(loc, ObjectiveType.NEXUS, true);
         this.color = color;
         this.point = point;
-    }
-
-    @Override
-    public Location getLocation() {
-        return loc;
     }
 
     public TeamColor getColor() {
@@ -48,11 +40,6 @@ public class Nexus implements StageObjective {
 
     public double getPoint() {
         return point;
-    }
-
-    @Override
-    public ObjectiveType getType() {
-        return ObjectiveType.NEXUS;
     }
 
 }

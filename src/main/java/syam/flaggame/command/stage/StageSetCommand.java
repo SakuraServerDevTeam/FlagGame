@@ -97,14 +97,6 @@ public class StageSetCommand extends BaseCommand {
 
         // 設定項目によって処理を分ける
         switch (conf) {
-            /* 一般 */
-            case SPAWN: // スポーン地点設定
-                setSpawn(player, stage, args);
-                return;
-            case SPECSPAWN: // 観戦者スポーン設定
-                setSpecSpawn(player, stage, args);
-                return;
-
             /* オプション */
             case GAMETIME: // 制限時間
                 setGameTime(player, stage, args);
@@ -160,59 +152,6 @@ public class StageSetCommand extends BaseCommand {
     }
 
     /* ***** ここから各設定関数 ****************************** */
-    // 一般
-    /**
-     * スポーン地点設定
-     *
-     * @param game
-     * @return true
-     * @throws CommandException
-     */
-    private void setSpawn(Player player, Stage game, List<String> args) throws CommandException {
-        // 引数チェック
-        if (args.size() < 2) {
-            throw new CommandException("&c引数が足りません！設定するチームを指定してください！");
-        }
-
-        // チーム取得
-        TeamColor team = null;
-        for (TeamColor tm : TeamColor.values()) {
-            if (tm.name().toLowerCase().equalsIgnoreCase(args.get(1))) {
-                team = tm;
-                break;
-            }
-        }
-        if (team == null) {
-            throw new CommandException("&cチーム'" + args.get(1) + "'が見つかりません！");
-        }
-        if (team == TeamColor.WHITE) {
-            throw new CommandException(team.getRichName() + "&cのスポーン地点を設定することはできません！");
-        }
-        if (args.size() >= 3 && args.get(2).equalsIgnoreCase("none")) {
-            game.setSpawn(team, null);
-            Actions.message(player, team.getRichName() + "&aのスポーン地点を削除しました！");
-            return;
-        }
-
-        // スポーン地点設定
-        game.setSpawn(team, player.getLocation());
-
-        Actions.message(player, team.getRichName() + "&aのスポーン地点を設定しました！");
-    }
-
-    /**
-     * 観戦者スポーン地点
-     *
-     * @param game 設定対象のゲームイン寸タンス
-     * @return
-     */
-    private void setSpecSpawn(Player player, Stage game, List<String> args) {
-        // 観戦者スポーン地点設定
-        game.setSpecSpawn(player.getLocation());
-
-        Actions.message(player, "&aステージ'" + game.getName() + "'の観戦者スポーン地点を設定しました！");
-    }
-
     // オプション
     private void setGameTime(Player player, Stage game, List<String> args) throws CommandException {
         int num = 60 * 10; // デフォルト10分

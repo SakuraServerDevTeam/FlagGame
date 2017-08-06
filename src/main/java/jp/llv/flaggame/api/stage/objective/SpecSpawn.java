@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 SakuraServerDev
+ * Copyright (C) 2017 toyblocks
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,12 +20,12 @@ import org.bukkit.Location;
 
 /**
  *
- * @author SakuraServerDev
+ * @author toyblocks
  */
-public class GameChest extends StageObjective {
+public class SpecSpawn extends StageObjective{
 
-    public GameChest(Location loc) {
-        super(loc, ObjectiveType.CHEST, true);
+    public SpecSpawn(Location location) {
+        super(location, ObjectiveType.SPEC_SPAWN, false);
     }
-
+    
 }

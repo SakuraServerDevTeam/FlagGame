@@ -16,6 +16,7 @@
  */
 package jp.llv.flaggame.database.mongo.bson;
 
+import java.util.Map;
 import jp.llv.flaggame.api.exception.ObjectiveCollisionException;
 import jp.llv.flaggame.api.exception.ReservedException;
 import jp.llv.flaggame.api.stage.area.GameMessageType;
@@ -24,6 +25,8 @@ import jp.llv.flaggame.api.stage.objective.BannerSpawner;
 import jp.llv.flaggame.api.stage.objective.Flag;
 import jp.llv.flaggame.api.stage.objective.GameChest;
 import jp.llv.flaggame.api.stage.objective.Nexus;
+import jp.llv.flaggame.api.stage.objective.Spawn;
+import jp.llv.flaggame.api.stage.objective.SpecSpawn;
 import jp.llv.flaggame.api.stage.objective.SuperJump;
 import jp.llv.flaggame.api.stage.permission.GamePermission;
 import jp.llv.flaggame.api.stage.permission.GamePermissionState;
@@ -183,8 +186,10 @@ public class StageDeserializer0 extends BaseDeserializer implements StageDeseria
             stage.setEntryFee(bson.getDouble("entryfee").getValue());
             stage.setPrize(bson.getDouble("prize").getValue());
             stage.setCooldown(bson.getInt64("cooldown").getValue());
-            stage.setSpawns(readEnumMap(bson, "spawn", TeamColor.class, this::readLocation));
-            stage.setSpecSpawn(readLocation(bson, "specspawn"));
+            for (Map.Entry<TeamColor, Location> entry : readEnumMap(bson, "spawn", TeamColor.class, this::readLocation).entrySet()) {
+                stage.addObjective(new Spawn(entry.getValue(), entry.getKey()));
+            }
+            stage.addObjective(new SpecSpawn(readLocation(bson, "specspawn")));
             stage.addObjectives(readList(bson, "flags", this::readFlag));
             stage.addObjectives(readList(bson, "nexuses", this::readNexus));
             stage.addObjectives(readList(bson, "banner-spawners", this::readBannerSpawner));
