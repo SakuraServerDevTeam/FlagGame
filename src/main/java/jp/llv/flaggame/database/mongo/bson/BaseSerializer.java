@@ -57,7 +57,7 @@ public class BaseSerializer {
         bson.append(key, section);
     }
 
-    <T> void writeList(BsonDocument bson, String key, Collection<? extends T> value, TriConsumer<BsonDocument, String, T> writer) {
+    <T> void writeCollection(BsonDocument bson, String key, Collection<? extends T> value, TriConsumer<BsonDocument, String, T> writer) {
         BsonDocument section = new BsonDocument();
         int i = 0;
         for (T t : value) {

@@ -14,22 +14,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jp.llv.flaggame.database.mongo.bson;
-
-import jp.llv.flaggame.stage.BasicStage;
-import org.bson.BsonDocument;
+package jp.llv.flaggame.api.exception;
 
 /**
  *
  * @author toyblocks
  */
-public class StageDeserializer1 extends StageDeserializer0 {
+public class InvalidNameException extends FlagGameException {
 
-    @Override
-    public BasicStage readStage(BsonDocument bson) {
-        BasicStage stage = super.readStage(bson);
-        stage.setTags(readSet(bson, "tags", (b, k) -> b.getString(k).getValue()));
-        return stage;
+    public InvalidNameException() {
+    }
+
+    public InvalidNameException(String message) {
+        super(message);
+    }
+
+    public InvalidNameException(Throwable cause) {
+        super(cause);
+    }
+
+    public InvalidNameException(String message, Throwable cause) {
+        super(message, cause);
     }
     
 }

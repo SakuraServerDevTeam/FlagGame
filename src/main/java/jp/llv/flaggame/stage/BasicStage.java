@@ -21,11 +21,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
+import jp.llv.flaggame.api.exception.InvalidNameException;
 import org.bukkit.Location;
 import jp.llv.flaggame.reception.TeamColor;
 import jp.llv.flaggame.reception.TeamType;
@@ -48,7 +50,7 @@ import jp.llv.flaggame.api.stage.objective.StageObjective;
  */
 public class BasicStage extends SimpleReservable<Stage> implements Stage {
 
-    public static final Pattern NAME_REGEX = Pattern.compile("^[a-z0-9](?:[a-z0-9_-]*[a-z0-9])?$");
+    public static final Pattern NAME_REGEX = Pattern.compile("^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$");
 
     // ***** ステージデータ *****
     private final String stageName;
@@ -79,6 +81,7 @@ public class BasicStage extends SimpleReservable<Stage> implements Stage {
     private String guide = "";
     private String description = "";
     private String author = "";
+    private final Set<String> tags = new HashSet<>();
 
     /**
      * コンストラクタ
@@ -331,6 +334,33 @@ public class BasicStage extends SimpleReservable<Stage> implements Stage {
     @Override
     public String getGuide() {
         return guide;
+    }
+
+    @Override
+    public Set<String> getTags() {
+        return Collections.unmodifiableSet(tags);
+    }
+
+    public void setTags(Set<String> tags) {
+        tags.forEach((tag) -> {
+            try {
+                this.addTag(tag);
+            } catch (InvalidNameException ex) {
+            }
+        });
+    }
+
+    @Override
+    public void addTag(String tag) throws InvalidNameException {
+        if (!NAME_REGEX.matcher(tag).matches()) {
+            throw new InvalidNameException();
+        }
+        tags.add(tag);
+    }
+
+    @Override
+    public void removeTag(String tag) {
+        tags.remove(tag);
     }
 
     @Override

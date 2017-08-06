@@ -20,8 +20,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.BiFunction;
 import org.bson.BsonDocument;
 import org.bson.BsonInvalidOperationException;
@@ -74,6 +76,18 @@ public class BaseDeserializer {
         }
         BsonDocument section = bson.getDocument(key);
         List<T> result = new ArrayList<>();
+        for (String k : section.keySet()) {
+            result.add(reader.apply(section, k));
+        }
+        return result;
+    }
+
+    <T> Set<T> readSet(BsonDocument bson, String key, BiFunction<BsonDocument, String, ? extends T> reader) {
+        if (!bson.containsKey(key)) {
+            return Collections.emptySet();
+        }
+        BsonDocument section = bson.getDocument(key);
+        Set<T> result = new HashSet<>();
         for (String k : section.keySet()) {
             result.add(reader.apply(section, k));
         }

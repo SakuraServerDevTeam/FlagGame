@@ -105,7 +105,7 @@ public final class StageSerializer extends BaseSerializer {
         BsonDocument section = new BsonDocument();
         writeMap(section, "rollbacks", value.getRollbacks(), this::writeRollback);
         writeEnumMap(section, "permissions", value.getPermissions(), this::writeGamePermissionStateSet);
-        writeList(section, "messages", value.getMessages(), this::writeMessageData);
+        writeCollection(section, "messages", value.getMessages(), this::writeMessageData);
         bson.append(key, section);
     }
 
@@ -178,12 +178,12 @@ public final class StageSerializer extends BaseSerializer {
         writeEnumMap(section, "spawn", value.getSpawns(), this::writeLocation);
         writeLocation(section, "specspawn", value.getSpecSpawn().orElse(null));
 
-        writeList(section, "flags", value.getObjectives(Flag.class).values(), this::writeFlag);
-        writeList(section, "nexuses", value.getObjectives(Nexus.class).values(), this::writeNexus);
-        writeList(section, "banner-spawners", value.getObjectives(BannerSlot.class).values(), this::writeBannerSlot);
-        writeList(section, "banner-slots", value.getObjectives(BannerSpawner.class).values(), this::writeBannerSpawner);
-        writeList(section, "containers", value.getObjectives(GameChest.class).values(), this::writeGameChest);
-        writeList(section, "superjumps", value.getObjectives(SuperJump.class).values(), this::writeSuperJump);
+        writeCollection(section, "flags", value.getObjectives(Flag.class).values(), this::writeFlag);
+        writeCollection(section, "nexuses", value.getObjectives(Nexus.class).values(), this::writeNexus);
+        writeCollection(section, "banner-spawners", value.getObjectives(BannerSlot.class).values(), this::writeBannerSlot);
+        writeCollection(section, "banner-slots", value.getObjectives(BannerSpawner.class).values(), this::writeBannerSpawner);
+        writeCollection(section, "containers", value.getObjectives(GameChest.class).values(), this::writeGameChest);
+        writeCollection(section, "superjumps", value.getObjectives(SuperJump.class).values(), this::writeSuperJump);
 
         writeAreaSet(section, "areas", value.getAreas());
         section.append("author", new BsonString(value.getAuthor()));
