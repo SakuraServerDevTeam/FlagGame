@@ -30,6 +30,8 @@ import jp.llv.flaggame.api.stage.objective.BannerSlot;
 import jp.llv.flaggame.api.stage.objective.BannerSpawner;
 import jp.llv.flaggame.api.stage.objective.GameChest;
 import jp.llv.flaggame.api.stage.objective.Nexus;
+import jp.llv.flaggame.api.stage.objective.Spawn;
+import jp.llv.flaggame.api.stage.objective.SpecSpawn;
 import jp.llv.flaggame.api.stage.objective.SuperJump;
 import syam.flaggame.permission.Perms;
 
@@ -53,6 +55,12 @@ public class ObjectiveListCommand extends ObjectiveCommand {
     @Override
     public void execute(List<String> args, Player player, Stage stage, ObjectiveType type) throws CommandException {
         switch (type) {
+            case SPAWN:
+                listSpawn(player, stage, args);
+                return;
+            case SPEC_SPAWN:
+                listSpecSpawn(player, stage, args);
+                return;
             case FLAG:
                 listFlag(player, stage, args);
                 return;
@@ -74,6 +82,34 @@ public class ObjectiveListCommand extends ObjectiveCommand {
             default:
                 throw new CommandException("&c不明なオブジェクティブです！");
         }
+    }
+
+    private void listSpawn(Player player, Stage stage, List<String> args) {
+        Collection<Spawn> chests = stage.getObjectives(Spawn.class);
+        DashboardBuilder.newBuilder("Spawns", chests.size())
+                .appendList(chests, (d, obj) -> {
+                    Location loc = obj.getLocation();
+                    d.text(obj.getColor().getBungeeChatColor(), obj.getName())
+                            .buttonTp("tp", player, loc)
+                            .buttonRun("delete").append("objective delete")
+                            .append(obj.getType())
+                            .append(loc.getBlockX()).append(loc.getBlockY()).append(loc.getBlockZ()).create();
+                }).buttonRun("enable manager").append("objective set spawn").create()
+                .sendTo(player);
+    }
+
+    private void listSpecSpawn(Player player, Stage stage, List<String> args) {
+        Collection<SpecSpawn> chests = stage.getObjectives(SpecSpawn.class);
+        DashboardBuilder.newBuilder("SpecSpawns", chests.size())
+                .appendList(chests, (d, obj) -> {
+                    Location loc = obj.getLocation();
+                    d.gold(obj.getName())
+                            .buttonTp("tp", player, loc)
+                            .buttonRun("delete").append("objective delete")
+                            .append(obj.getType())
+                            .append(loc.getBlockX()).append(loc.getBlockY()).append(loc.getBlockZ()).create();
+                }).buttonRun("enable manager").append("objective set specspawn").create()
+                .sendTo(player);
     }
 
     private void listFlag(Player player, Stage stage, List<String> args) {
