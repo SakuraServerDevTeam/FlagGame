@@ -83,6 +83,9 @@ import jp.llv.flaggame.api.stage.Stage;
 import jp.llv.flaggame.api.stage.area.StageAreaInfo;
 import jp.llv.flaggame.api.stage.objective.Spawn;
 import jp.llv.flaggame.api.stage.objective.SpecSpawn;
+import org.bukkit.block.BlockState;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 
 /**
  *
@@ -236,6 +239,30 @@ public class BasicGame implements Game {
             }
         }
         teleportPlayers();
+
+        //=====TEMPORARY CODE=====///
+        for (GamePlayer player : this) {
+            if (!player.isOnline()) {
+                continue;
+            }
+            BlockState kitState = player.getPlayer().getLocation().clone().subtract(0, 2, 0).getBlock().getState();
+            if (!(kitState instanceof InventoryHolder)) {
+                continue;
+            }
+            ItemStack[] kit = ((InventoryHolder) kitState).getInventory().getContents();
+            Inventory inv = player.getPlayer().getInventory();
+            for (int i = 0; i < 24; i++) {
+                if (kit[i] != null) {
+                    inv.setItem(i, new ItemStack(kit[i]));
+                }
+            }
+            for (int i = 24; i < 27; i++) {
+                if (kit[i] != null) {
+                    inv.setItem(i + 13, new ItemStack(kit[i]));
+                }
+            }
+        }
+        //===TEMPORATY CODE END===///
 
         // stage rollback and message
         for (String areaID : stage.getAreas().getAreas()) {
@@ -478,7 +505,7 @@ public class BasicGame implements Game {
         teleportPlayers();
 
         GamePlayer.sendMessage(this.reception.getPlayers(), "&2フラッグゲーム'&6" + this.stage.getName() + "&2'は強制終了されました: "
-                                                            + message);
+                + message);
 
         this.records = null; // after this, access via reception
         this.reception.stop("The game has finished");
