@@ -183,11 +183,10 @@ public class BasicGameReception implements Reception {
             player.sendMessage("&c参加料として " + Actions.formatMoney(cost) + " を支払いました！");
         }
 
-
         long level = api.getProfiles().getProfile(player.getUUID()).getLevel().orElse(0);
         int count = teaming.size() + 1;
         Optional<TeamType> type = teaming.join(player);
-        
+
         player.join(this, options);
         getRecordStream().push(new PlayerEntryRecord(id, player.getPlayer()));
         if (type.isPresent()) {
@@ -221,7 +220,9 @@ public class BasicGameReception implements Reception {
         teaming.leave(player);
         player.leave(this);
         if (getState().toGameState() != Game.State.FINISHED) {
-            getRecordStream().push(new PlayerLeaveRecord(id, player.getPlayer()));
+            if (player.isOnline()) {
+                getRecordStream().push(new PlayerLeaveRecord(id, player.getPlayer()));
+            }
             GamePlayer.sendMessage(api.getPlayers(), player.getColoredName() + "&aが'" + this.getName() + "'で開催予定のゲームへのエントリーを取り消しました");
         }
     }
@@ -321,8 +322,8 @@ public class BasicGameReception implements Reception {
                 .create();
         GamePlayer.sendMessage(
                 getPlayers().stream().filter(g -> g.isOnline())
-                .filter(g -> Perms.STAGE_RATE.has(g.getPlayer()))
-                .collect(Collectors.toSet()),
+                        .filter(g -> Perms.STAGE_RATE.has(g.getPlayer()))
+                        .collect(Collectors.toSet()),
                 rateMessage
         );
     }
@@ -346,7 +347,7 @@ public class BasicGameReception implements Reception {
     public State getState() {
         //まずゲームと状態を同期
         if (this.state == State.STARTING
-            && this.game.getState() != Game.State.PREPARATION) {
+                && this.game.getState() != Game.State.PREPARATION) {
             this.state = State.STARTED;
         }
         if (this.state == State.STARTED && this.game.getState() == Game.State.FINISHED) {
