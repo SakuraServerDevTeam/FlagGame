@@ -52,7 +52,7 @@ public interface StageDeserializer {
 
         public static BasicStage readStage(BsonDocument bson) {
             if (bson.containsKey(FIELD_NAME)) {
-                return values()[bson.getInt32(FIELD_NAME).getValue()].readStage(bson);
+                return values()[bson.getInt32(FIELD_NAME).getValue()].getInstance().readStage(bson);
             } else {
                 return V0.getInstance().readStage(bson);
             }
