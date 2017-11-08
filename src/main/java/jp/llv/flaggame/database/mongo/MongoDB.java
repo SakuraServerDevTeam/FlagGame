@@ -26,9 +26,11 @@ import com.mongodb.async.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.connection.ClusterSettings;
+import java.io.UncheckedIOException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
+import jp.llv.flaggame.api.kit.Kit;
 import jp.llv.flaggame.database.Database;
 import jp.llv.flaggame.database.DatabaseCallback;
 import jp.llv.flaggame.database.DatabaseException;
@@ -41,6 +43,8 @@ import jp.llv.flaggame.profile.record.PlayerRecord;
 import jp.llv.flaggame.profile.record.PlayerResultRecord;
 import jp.llv.flaggame.api.profile.RecordType;
 import jp.llv.flaggame.api.stage.Stage;
+import jp.llv.flaggame.database.mongo.bson.KitDeserializer;
+import jp.llv.flaggame.database.mongo.bson.KitSerializer;
 import jp.llv.flaggame.database.mongo.bson.StageDeserializer;
 import jp.llv.flaggame.database.mongo.bson.StageSerializer;
 import jp.llv.flaggame.profile.record.ScoreRecord;
@@ -63,7 +67,7 @@ public class MongoDB implements Database {
     public static final String VIEW_STAGE_STATS = "stage_stats";
     public static final String VIEW_GAME_HISTORY = "game_history";
     public static final String COLLECTION_STAGE = "stage";
-    public static final String COLLECTION_FESTIVAL = "festival";
+    public static final String COLLECTION_KIT = "kit";
     public static final String COLLECTION_RECORD = "record";
     public static final String FIELD_ID = "_id";
     public static final String FIELD_COUNT = "count";
@@ -162,6 +166,54 @@ public class MongoDB implements Database {
     public void deleteStage(Stage stage, DatabaseCallback<Void, DatabaseException> callback) {
         try {
             getStageCollection().deleteOne(Filters.eq(FIELD_ID, stage.getName()),
+                    new MongoDBErrorCallback<>(callback)
+            );
+        } catch (DatabaseException ex) {
+            callback.call(DatabaseResult.fail(ex));
+        }
+    }
+
+    private MongoCollection<BsonValue> getKitCollection() throws DatabaseException {
+        if (database == null) {
+            throw new DatabaseException("Not connected");
+        }
+        return database.getCollection(COLLECTION_KIT).withDocumentClass(BsonValue.class);
+    }
+
+    @Override
+    public void loadKits(DatabaseCallback<Kit, RuntimeException> consumer, DatabaseCallback<Void, DatabaseException> callback) {
+        try {
+            getKitCollection().find()
+                    .map(BsonDocument.class::cast)
+                    .map(KitDeserializer.Version::readKit)
+                    .forEach(
+                            new MongoDBResultCallback<>(consumer),
+                            new MongoDBErrorCallback<>(callback)
+                    );
+        } catch (DatabaseException | UncheckedIOException ex) {
+            callback.call(DatabaseResult.fail(ex));
+        }
+    }
+
+    @Override
+    public void saveKit(Kit kit, DatabaseCallback<Void, DatabaseException> callback) {
+        try {
+            MongoCollection<BsonValue> coll = getKitCollection();
+            BsonDocument bson = KitSerializer.getInstance().writeKit(kit);
+            coll.updateOne(Filters.eq(FIELD_ID, bson.get(FIELD_ID)),
+                    new BsonDocument(SET, bson),
+                    new UpdateOptions().upsert(true),
+                    new MongoDBErrorCallback<>(callback)
+            );
+        } catch (DatabaseException | UncheckedIOException ex) {
+            callback.call(DatabaseResult.fail(ex));
+        }
+    }
+
+    @Override
+    public void deleteKit(Kit kit, DatabaseCallback<Void, DatabaseException> callback) {
+        try {
+            getKitCollection().deleteOne(Filters.eq(FIELD_ID, kit.getName()),
                     new MongoDBErrorCallback<>(callback)
             );
         } catch (DatabaseException ex) {

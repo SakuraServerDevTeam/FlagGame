@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.Map;
 import jp.llv.flaggame.util.function.TriConsumer;
 import org.bson.BsonDocument;
+import org.bson.BsonInt32;
 import org.bson.BsonString;
 
 /**
@@ -33,6 +34,10 @@ public class BaseSerializer {
 
     void writeString(BsonDocument bson, String key, String value) {
         bson.append(key, new BsonString(value));
+    }
+    
+    void writeInt(BsonDocument bson, String key, Integer value) {
+        bson.append(key, new BsonInt32(value));
     }
 
     <E extends Enum<E>> void writeEnum(BsonDocument bson, String key, E value) {

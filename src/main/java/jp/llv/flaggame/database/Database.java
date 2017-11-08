@@ -18,6 +18,7 @@ package jp.llv.flaggame.database;
 
 import java.util.Map;
 import java.util.UUID;
+import jp.llv.flaggame.api.kit.Kit;
 import jp.llv.flaggame.profile.RecordStream;
 import jp.llv.flaggame.api.profile.StatEntry;
 import jp.llv.flaggame.api.profile.RecordType;
@@ -46,6 +47,12 @@ public interface Database extends AutoCloseable {
 
     void deleteStage(Stage stage, DatabaseCallback<Void, DatabaseException> callback);
 
+    void loadKits(DatabaseCallback<Kit, RuntimeException> consumer, DatabaseCallback<Void, DatabaseException> callback);
+    
+    void saveKit(Kit kit, DatabaseCallback<Void, DatabaseException> callback);
+    
+    void deleteKit(Kit kit, DatabaseCallback<Void, DatabaseException> callback);
+    
     void saveReocrds(RecordStream records, DatabaseCallback<Void, DatabaseException> callback);
 
     void loadPlayerStat(UUID player, DatabaseCallback<Map.Entry<RecordType, StatEntry>, RuntimeException> consumer, DatabaseCallback<Void, DatabaseException> callback);

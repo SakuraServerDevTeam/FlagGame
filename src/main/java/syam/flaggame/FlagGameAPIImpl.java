@@ -29,6 +29,7 @@ import jp.llv.flaggame.stage.StageManager;
 import syam.flaggame.player.PlayerManager;
 import syam.flaggame.queue.ConfirmQueue;
 import jp.llv.flaggame.api.FlagGameAPI;
+import jp.llv.flaggame.kit.KitManager;
 
 /**
  *
@@ -43,6 +44,7 @@ public class FlagGameAPIImpl implements FlagGameAPI {
     private final ReceptionManager receptions;
     private final GameManager games;
     private final StageManager stages;
+    private final KitManager kits;
     private final ConfirmQueue confirmQueue;
     private final Logger logger;
 
@@ -54,6 +56,7 @@ public class FlagGameAPIImpl implements FlagGameAPI {
         this.receptions = new ReceptionManager(this);
         this.games = new GameManager(this);
         this.stages = new StageManager(this);
+        this.kits = new KitManager();
         this.confirmQueue = new ConfirmQueue();
         try {
             Constructor<? extends Logger> loggerConstructor = JDK14LoggerAdapter.class.getDeclaredConstructor(java.util.logging.Logger.class);
@@ -92,6 +95,11 @@ public class FlagGameAPIImpl implements FlagGameAPI {
     @Override
     public StageManager getStages() {
         return stages;
+    }
+
+    @Override
+    public KitManager getKits() {
+        return kits;
     }
 
     @Override

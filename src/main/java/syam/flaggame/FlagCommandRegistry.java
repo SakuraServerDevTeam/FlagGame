@@ -57,6 +57,9 @@ import syam.flaggame.command.game.GameListCommand;
 import syam.flaggame.command.game.GameReadyCommand;
 import syam.flaggame.command.game.GameStartCommand;
 import syam.flaggame.command.game.GameWatchCommand;
+import syam.flaggame.command.kit.KitCreateCommand;
+import syam.flaggame.command.kit.KitDeleteCommand;
+import syam.flaggame.command.kit.KitGetCommand;
 import syam.flaggame.command.objective.ObjectiveDeleteCommand;
 import syam.flaggame.command.objective.ObjectiveListCommand;
 import syam.flaggame.command.objective.ObjectiveSetCommand;
@@ -162,10 +165,17 @@ public enum FlagCommandRegistry implements TabExecutor {
             StageTagAddCommand::new,
             StageTagRemoveCommand::new
     ),
+    KIT(
+            "<- manage kits",
+            names("kit", "k"),
+            KitCreateCommand::new,
+            KitGetCommand::new,
+            KitDeleteCommand::new
+    ),
     GENERAL(
             "<- general commands",
             names("flag", "fg", "f"),
-            subcategories(AREA, GAME, OBJECTIVE, PLAYER, STAGE),
+            subcategories(AREA, GAME, OBJECTIVE, PLAYER, STAGE, KIT),
             HelpCommand::new,
             ConfirmCommand::new,
             ReloadCommand::new,
@@ -174,7 +184,7 @@ public enum FlagCommandRegistry implements TabExecutor {
     ROOT(
             null,
             null,
-            subcategories(GENERAL, AREA, GAME, OBJECTIVE, PLAYER, STAGE)
+            subcategories(GENERAL, AREA, GAME, OBJECTIVE, PLAYER, STAGE, KIT)
     );
 
     private static final String PLUGIN_PREFIX = "flaggame:";

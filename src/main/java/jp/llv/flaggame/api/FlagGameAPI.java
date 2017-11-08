@@ -18,6 +18,7 @@ package jp.llv.flaggame.api;
 
 import java.util.Optional;
 import jp.llv.flaggame.api.game.GameAPI;
+import jp.llv.flaggame.api.kit.KitAPI;
 import jp.llv.flaggame.api.player.GamePlayer;
 import jp.llv.flaggame.api.player.PlayerAPI;
 import jp.llv.flaggame.api.profile.ProfileAPI;
@@ -50,6 +51,8 @@ public interface FlagGameAPI {
     GameAPI getGames();
 
     StageAPI getStages();
+
+    KitAPI getKits();
 
     Optional<Database> getDatabase();
 

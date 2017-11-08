@@ -37,6 +37,10 @@ public class BaseDeserializer {
     BaseDeserializer() {
     }
 
+    Integer readInt(BsonDocument bson, String key) {
+        return bson.getInt32(key).getValue();
+    }
+    
     String readString(BsonDocument bson, String key) {
         return bson.getString(key).getValue();
     }
