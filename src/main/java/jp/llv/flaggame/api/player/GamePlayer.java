@@ -18,6 +18,8 @@ package jp.llv.flaggame.api.player;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.locks.ReadWriteLock;
+import jp.llv.flaggame.api.exception.AccountNotReadyException;
 import jp.llv.flaggame.api.reception.Reception;
 import jp.llv.flaggame.api.session.Reservable;
 import jp.llv.flaggame.api.session.Reserver;
@@ -106,6 +108,10 @@ public interface GamePlayer extends Reserver {
     void setTpBackLocation(Location tpBack);
 
     boolean tpBack();
+    
+    Account getAccount() throws AccountNotReadyException;
+    
+    AccountState getAccountState();
 
     static void sendMessage(Iterable<? extends GamePlayer> players, ChatMessageType type, String... messages) {
         for (GamePlayer p : players) {

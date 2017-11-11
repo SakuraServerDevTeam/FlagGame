@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2017 SakuraServerDev
  *
  * This program is free software: you can redistribute it and/or modify
@@ -30,6 +30,8 @@ import java.io.UncheckedIOException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
+import syam.flaggame.player.CachedAccount;
+import jp.llv.flaggame.api.player.Account;
 import jp.llv.flaggame.api.kit.Kit;
 import jp.llv.flaggame.database.Database;
 import jp.llv.flaggame.database.DatabaseCallback;
@@ -43,6 +45,8 @@ import jp.llv.flaggame.profile.record.PlayerRecord;
 import jp.llv.flaggame.profile.record.PlayerResultRecord;
 import jp.llv.flaggame.api.profile.RecordType;
 import jp.llv.flaggame.api.stage.Stage;
+import jp.llv.flaggame.database.mongo.bson.AccountDeserializer;
+import jp.llv.flaggame.database.mongo.bson.AccountSerializer;
 import jp.llv.flaggame.database.mongo.bson.KitDeserializer;
 import jp.llv.flaggame.database.mongo.bson.KitSerializer;
 import jp.llv.flaggame.database.mongo.bson.StageDeserializer;
@@ -52,6 +56,9 @@ import jp.llv.flaggame.util.MapUtils;
 import org.bson.BsonDocument;
 import org.bson.BsonValue;
 import org.bson.Document;
+import org.bson.UuidRepresentation;
+import org.bson.codecs.UuidCodec;
+import org.bson.codecs.configuration.CodecRegistries;
 import syam.flaggame.CachedFlagConfig;
 import syam.flaggame.FlagGame;
 
@@ -68,6 +75,7 @@ public class MongoDB implements Database {
     public static final String VIEW_GAME_HISTORY = "game_history";
     public static final String COLLECTION_STAGE = "stage";
     public static final String COLLECTION_KIT = "kit";
+    public static final String COLLECTION_ACCOUNT = "account";
     public static final String COLLECTION_RECORD = "record";
     public static final String FIELD_ID = "_id";
     public static final String FIELD_COUNT = "count";
@@ -104,7 +112,12 @@ public class MongoDB implements Database {
                                             config.getDatabaseDbname(),
                                             config.getDatabaseUserpass().toCharArray()
                                     )))
-                            .build()
+                            .codecRegistry(
+                                    CodecRegistries.fromRegistries(
+                                            CodecRegistries.fromCodecs(new UuidCodec(UuidRepresentation.STANDARD)),
+                                            MongoClients.getDefaultCodecRegistry()
+                                    )
+                            ).build()
             );
         }
         database = client.getDatabase(config.getDatabaseDbname());
@@ -291,6 +304,39 @@ public class MongoDB implements Database {
                 RecordType.of(d.get(FIELD_ID, Document.class).getString(RecordType.FIELD_TYPE)),
                 new StatEntry(d.getInteger(FIELD_COUNT, 0), getDouble(d, ScoreRecord.FIELD_SCORE))
         )).forEach(new MongoDBResultCallback<>(consumer), new MongoDBErrorCallback<>(callback));
+    }
+
+    private MongoCollection<BsonValue> getAccountCollection() throws DatabaseException {
+        if (database == null) {
+            throw new DatabaseException("Not connected");
+        }
+        return database.getCollection(COLLECTION_ACCOUNT).withDocumentClass(BsonValue.class);
+    }
+
+    @Override
+    public void loadPlayerAccount(UUID player, DatabaseCallback<CachedAccount, DatabaseException> callback) {
+        try {
+            getAccountCollection().find(new Document(FIELD_ID, player))
+                    .map(AccountDeserializer.Version::readAccount)
+                    .first(new MongoDBCallback<>(callback));
+        } catch (DatabaseException ex) {
+            callback.call(DatabaseResult.fail(ex));
+        }
+    }
+
+    @Override
+    public void savePlayerAccount(Account account, DatabaseCallback<Void, DatabaseException> callback) {
+        try {
+            MongoCollection<BsonValue> coll = getAccountCollection();
+            BsonDocument bson = AccountSerializer.getInstance().writeAccount(account);
+            coll.updateOne(Filters.eq(FIELD_ID, bson.get(FIELD_ID)),
+                    new BsonDocument(SET, bson),
+                    new UpdateOptions().upsert(true),
+                    new MongoDBErrorCallback<>(callback)
+            );
+        } catch (DatabaseException | UncheckedIOException ex) {
+            callback.call(DatabaseResult.fail(ex));
+        }
     }
 
     private static Double getDouble(Document doc, String key) {

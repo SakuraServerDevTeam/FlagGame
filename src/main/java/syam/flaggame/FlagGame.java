@@ -49,6 +49,9 @@ public class FlagGame extends JavaPlugin implements FlagGamePlugin {
      * 
      * 参加チームの選択
      */
+    
+    private static final long SLEEP_FOR_DATA_SAVING = 1000L;
+    
     // ** Private classes **
     private CachedFlagConfig config;
     private Database database;
@@ -145,6 +148,7 @@ public class FlagGame extends JavaPlugin implements FlagGamePlugin {
     public void onDisable() {
         if (api != null) {
             api.getReceptions().closeAll("&cDisabled");
+            api.getPlayers().saveAccounts();
         }
 
         // タスクをすべて止める
@@ -155,8 +159,9 @@ public class FlagGame extends JavaPlugin implements FlagGamePlugin {
         getLogger().log(Level.INFO, "[{0}] version {1} is disabled!", new Object[]{pdfFile.getName(), pdfFile.getVersion()});
 
         try {
+            Thread.sleep(SLEEP_FOR_DATA_SAVING);
             this.database.close();
-        } catch (DatabaseException ex) {
+        } catch (DatabaseException | InterruptedException ex) {
         }
     }
 

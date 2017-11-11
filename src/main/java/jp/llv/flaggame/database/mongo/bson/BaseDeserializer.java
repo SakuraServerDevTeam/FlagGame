@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.BiFunction;
 import org.bson.BsonDocument;
 import org.bson.BsonInvalidOperationException;
@@ -43,6 +44,19 @@ public class BaseDeserializer {
     
     String readString(BsonDocument bson, String key) {
         return bson.getString(key).getValue();
+    }
+    
+    UUID readUUID(BsonDocument bson, String key) {
+        byte[] binary = bson.getBinary(key).getData();
+        long most = 0;
+        for (int i = 0; i <0b1000; i++) {
+            most |= (0xFFL & binary[i]) << (56 - (i << 3));
+        }
+        long least = 0;
+        for (int i = 0; i <0b1000; i++) {
+            least |= (0xFFL & binary[0b1000 | i]) << (56 - (i << 3));
+        }
+        return new UUID(most, least);
     }
 
     <E extends Enum<E>> E readEnum(BsonDocument bson, String key, Class<E> clazz) {

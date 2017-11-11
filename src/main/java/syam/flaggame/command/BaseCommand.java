@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import jp.llv.flaggame.api.FlagGameAPI;
+import jp.llv.flaggame.api.exception.AccountNotReadyException;
 import jp.llv.flaggame.util.FlagTabCompleter;
 
 import org.bukkit.command.CommandSender;
@@ -105,7 +106,9 @@ public abstract class BaseCommand {
         } catch (CommandException ex) {
             Actions.message(sender, ex.getMessage());
         } catch (ReservedException ex) {
-            Actions.message(sender, "&c そのステージは'" + ex.getReservable().getReserver().getName() + "'に占有されています！");
+            Actions.message(sender, "&cそのステージは'" + ex.getReservable().getReserver().getName() + "'に占有されています！");
+        } catch (AccountNotReadyException ex) {
+            Actions.message(sender, "&cこの操作を完了するにはアカウントのロードを待つ必要があります！");
         } catch (FlagGameException ex) {
             Actions.message(sender, "&cAn unhandled plugin error has occured.");
             api.getLogger().warn("Failed to handle command", ex);

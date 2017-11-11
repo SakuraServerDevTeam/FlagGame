@@ -37,10 +37,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import jp.llv.flaggame.api.exception.FlagGameException;
 import jp.llv.flaggame.api.reception.Reception;
 import jp.llv.flaggame.api.FlagGameAPI;
-import jp.llv.flaggame.util.OptionSet;
 
 /**
  * A {@link PlayerManager} provides ways of getting
@@ -51,7 +49,7 @@ import jp.llv.flaggame.util.OptionSet;
 public class PlayerManager implements PlayerAPI<FlagGamePlayer> {
 
     private final FlagGameAPI api;
-    private final Map<UUID, FlagGamePlayer> players = new HashMap<>();
+    private final Map<UUID, FlagGamePlayer> players = Collections.synchronizedMap(new HashMap<>());
 
     /**
      * Create new {@link PlayerManager} with new registry. In order to keep
@@ -64,8 +62,10 @@ public class PlayerManager implements PlayerAPI<FlagGamePlayer> {
         this.api = api;
         api.getServer().getPluginManager().registerEvents(new OnlinePlayerListener(), api.getPlugin());
         new StageSaveRemindTask(api).runTaskTimer(api.getPlugin(), 1200L, 1200L);
-        Bukkit.getOnlinePlayers()
-                .forEach(p -> this.players.put(p.getUniqueId(), new FlagGamePlayer(this, p)));
+        synchronized (players) {
+            Bukkit.getOnlinePlayers()
+                    .forEach(p -> this.players.put(p.getUniqueId(), new FlagGamePlayer(p)));
+        }
     }
 
     /**
@@ -135,25 +135,34 @@ public class PlayerManager implements PlayerAPI<FlagGamePlayer> {
      */
     @Override
     public Iterator<FlagGamePlayer> iterator() {
-        return this.getPlayers().iterator();
+        return Collections.unmodifiableCollection(this.getPlayers()).iterator();
     }
 
     private void gc() {
-        Iterator<FlagGamePlayer> it = players.values().iterator();
-        while (it.hasNext()) {
-            FlagGamePlayer player = it.next();
-            if (player.isOnline()) {
-                continue; // the player is still online
-            } else if (player.getEntry().isPresent()) {
-                Reception entry = player.getEntry().get();
-                if (entry.getState().toGameState() != Game.State.FINISHED) {
-                    continue; // the player is still in game
+        synchronized (players) {
+            Iterator<FlagGamePlayer> it = players.values().iterator();
+            while (it.hasNext()) {
+                FlagGamePlayer player = it.next();
+                if (player.isOnline()) {
+                    continue; // the player is still online
+                } else if (player.getEntry().isPresent()) {
+                    Reception entry = player.getEntry().get();
+                    if (entry.getState().toGameState() != Game.State.FINISHED) {
+                        continue; // the player is still in game
+                    }
+                    entry.leave(player); // remove from the reception
                 }
-                entry.leave(player); // remove from the reception
+                player.unloadAccount(api, () -> {// otherwise remove player
+                    api.getServer().getPluginManager().callEvent(new GamePlayerUnloadEvent(player));
+                    it.remove();
+                });
             }
-            api.getServer().getPluginManager().callEvent(new GamePlayerUnloadEvent(player));
-            it.remove(); // otherwise remove player
         }
+    }
+
+    @Override
+    public void saveAccounts() {
+        players.values().forEach(FlagGamePlayer::saveAccount);
     }
 
     /**
@@ -175,20 +184,18 @@ public class PlayerManager implements PlayerAPI<FlagGamePlayer> {
         @SuppressWarnings("deprecation")
         public void on(PlayerJoinEvent e) {
             Player p = e.getPlayer();
-            FlagGamePlayer gp = PlayerManager.this.getPlayer(p);
-            if (gp != null) { // the player is in a game
-                return;
-            }
-            gp = new FlagGamePlayer(PlayerManager.this, p);
-            PlayerManager.this.players.put(p.getUniqueId(), gp);
-            for (jp.llv.flaggame.api.reception.Reception r : api.getReceptions()) {
-                if (r.getPlayers().contains(gp)) {
-                    try {
-                        gp.join(r, new OptionSet());
-                    } catch (FlagGameException ex) {
-                        api.getLogger().warn("A player failed re-joining to a reception", ex);
-                    }
+            FlagGamePlayer gp;
+            synchronized (players) {
+                gp = PlayerManager.this.getPlayer(p);
+                if (gp == null) { // the player is in a game or saving account
+                    gp = new FlagGamePlayer(p);
                 }
+                try {
+                    gp.loadAccount(api);
+                } catch (IllegalStateException ex) {
+                    api.getLogger().warn("Failed to load a player account", ex);
+                }
+                PlayerManager.this.players.put(p.getUniqueId(), gp);
             }
         }
 

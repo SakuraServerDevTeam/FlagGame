@@ -69,5 +69,10 @@ public interface PlayerAPI<P extends GamePlayer> extends Iterable<P> {
      * @return all game players in the world
      */
     Collection<P> getPlayersIn(World world);
+    
+    /**
+     * Save all cached accounts.
+     */
+    void saveAccounts();
 
 }

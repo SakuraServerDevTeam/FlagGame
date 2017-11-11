@@ -18,7 +18,10 @@ package jp.llv.flaggame.database.mongo.bson;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.UUID;
 import jp.llv.flaggame.util.function.TriConsumer;
+import org.bson.BsonBinary;
+import org.bson.BsonBinarySubType;
 import org.bson.BsonDocument;
 import org.bson.BsonInt32;
 import org.bson.BsonString;
@@ -38,6 +41,25 @@ public class BaseSerializer {
     
     void writeInt(BsonDocument bson, String key, Integer value) {
         bson.append(key, new BsonInt32(value));
+    }
+    
+    /**
+     * Write UUID IN STANDARD ENCODING.
+     * @param bson a bson document to write in
+     * @param key an element name
+     * @param value a UUID to be written
+     */
+    void writeUUID(BsonDocument bson, String key, UUID value) {
+        byte[] binary = new byte[16];
+        long most = value.getMostSignificantBits();
+        for (int i = 0; i < 0b1000; i++) {
+            binary[i] = (byte) (most >> (56 - (i << 3)));
+        }
+        long least = value.getLeastSignificantBits();
+        for (int i = 0; i < 0b1000; i++) {
+            binary[0b1000 | i] = (byte) (least >> (56 - (i << 3)));
+        }
+        bson.append(key, new BsonBinary(BsonBinarySubType.UUID_STANDARD, binary));
     }
 
     <E extends Enum<E>> void writeEnum(BsonDocument bson, String key, E value) {

@@ -19,6 +19,9 @@ package syam.flaggame.player;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
+import jp.llv.flaggame.api.FlagGameAPI;
+import jp.llv.flaggame.api.exception.AccountNotReadyException;
 import jp.llv.flaggame.api.session.Reservable;
 
 import org.bukkit.entity.Player;
@@ -32,19 +35,24 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import jp.llv.flaggame.api.exception.FlagGameException;
 import jp.llv.flaggame.api.exception.ReservedException;
+import jp.llv.flaggame.api.player.Account;
+import jp.llv.flaggame.api.player.AccountState;
 import syam.flaggame.util.Actions;
 import jp.llv.flaggame.api.reception.Reception;
 import jp.llv.flaggame.util.OptionSet;
 import jp.llv.flaggame.api.player.GamePlayer;
 import jp.llv.flaggame.api.player.StageSetupSession;
 import jp.llv.flaggame.api.stage.Stage;
+import jp.llv.flaggame.database.DatabaseException;
 
 public class FlagGamePlayer implements GamePlayer {
 
     // プレイヤーデータ
     private final UUID player;
     private final String name;
-    private final PlayerManager manager;
+
+    private Account account;
+    private final AtomicReference<AccountState> accountState = new AtomicReference<>(AccountState.INITIAL);
 
     private SetupSession session;
     private Reception reception;
@@ -57,11 +65,10 @@ public class FlagGamePlayer implements GamePlayer {
      *
      * @param player
      */
-    /*package*/ FlagGamePlayer(PlayerManager manager, Player player) {
+    /*package*/ FlagGamePlayer(Player player) {
         if (player == null) {
             throw new NullPointerException();
         }
-        this.manager = manager;
         this.player = player.getUniqueId();
         this.name = player.getName();
     }
@@ -212,6 +219,77 @@ public class FlagGamePlayer implements GamePlayer {
         Objects.requireNonNull(session);
         session.getReservation().release();
         session = null;
+    }
+
+    /*package*/ void loadAccount(FlagGameAPI api) {
+        if (accountState.compareAndSet(AccountState.SAVING, AccountState.AVAILABLE)
+                || accountState.get() == AccountState.AVAILABLE) {
+            return;
+        } else if (accountState.compareAndSet(AccountState.INITIAL, AccountState.LOADING)) {
+        } else {
+            throw new IllegalStateException();
+        }
+        api.getDatabase().ifPresent(database -> {
+            database.loadPlayerAccount(player, result -> {
+                try {
+                    account = result.get();
+                    if (account == null) {
+                        account = new CachedAccount(player);
+                    }
+                    accountState.compareAndSet(AccountState.LOADING, AccountState.AVAILABLE);
+                } catch (DatabaseException ex) {
+                    accountState.compareAndSet(AccountState.LOADING, AccountState.NOT_AVAILABLE);
+                    api.getLogger().warn("Failed to load a player account", ex);
+                }
+            });
+        });
+    }
+
+    /*package*/ void saveAccount(FlagGameAPI api) {
+        if (getAccountState() != AccountState.AVAILABLE) {
+            return;
+        }
+        api.getDatabase().ifPresent(database -> {
+            database.savePlayerAccount(account, result -> {
+                try {
+                    result.test();
+                } catch (DatabaseException ex) {
+                    api.getLogger().warn("Failed to save a player account", ex);
+                }
+            });
+        });
+    }
+
+    /*package*/ void unloadAccount(FlagGameAPI api, Runnable callback) {
+        if (!this.accountState.compareAndSet(AccountState.AVAILABLE, AccountState.SAVING)) {
+            throw new IllegalStateException();
+        }
+        api.getDatabase().ifPresent(database -> {
+            database.savePlayerAccount(account, result -> {
+                try {
+                    result.test();
+                } catch (DatabaseException ex) {
+                    api.getLogger().warn("Failed to unload a player account", ex);
+                } finally {
+                    if (accountState.compareAndSet(AccountState.SAVING, AccountState.ABANDONED)) {
+                        callback.run();
+                    }
+                }
+            });
+        });
+    }
+
+    @Override
+    public Account getAccount() throws AccountNotReadyException {
+        if (getAccountState() != AccountState.AVAILABLE) {
+            throw new AccountNotReadyException();
+        }
+        return account;
+    }
+
+    @Override
+    public AccountState getAccountState() {
+        return accountState.get();
     }
 
     @Override
