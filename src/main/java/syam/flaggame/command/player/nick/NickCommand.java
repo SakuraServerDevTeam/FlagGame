@@ -75,7 +75,7 @@ public abstract class NickCommand extends BaseCommand {
                 throw new CommandException("&c第二引数にcolor,adj,nounのいずれかを指定してください！");
         }
 
-        String nick = String.join(" ", args.subList(2, args.size() - 1));
+        String nick = String.join(" ", args.subList(2, args.size()));
         
         this.execute(sender, target, index, nick);
     }
