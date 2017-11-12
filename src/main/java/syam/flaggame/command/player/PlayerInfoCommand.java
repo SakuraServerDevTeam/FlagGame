@@ -45,6 +45,6 @@ public class PlayerInfoCommand extends BaseCommand {
     @Override
     public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
         GamePlayer gp = this.api.getPlayers().getPlayer(player);
-        gp.sendMessage("&2あなたは現在ゲーム&6" + gp.getEntry().map(e -> e.getName() + "&2(" + e.getName() + ")に参加しています。").orElse("&2に参加していません"));
+        gp.sendMessage(gp.getNickname() + "&2は現在ゲーム&6" + gp.getEntry().map(e -> e.getName() + "&2(" + e.getName() + ")に参加しています。").orElse("&2に参加していません"));
     }
 }

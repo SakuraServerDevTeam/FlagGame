@@ -30,8 +30,7 @@ public interface AccountDeserializer {
 
     enum Version {
 
-        V0(KitDeserializer0::new),
-        ;
+        V0(AccountDeserializer0::new),;
 
         public static final String FIELD_NAME = "serial_version";
 
@@ -50,7 +49,9 @@ public interface AccountDeserializer {
         }
 
         public static Account readAccount(BsonDocument bson) {
-            if (bson.containsKey(FIELD_NAME)) {
+            if (bson == null) {
+                return null;
+            } else if (bson.containsKey(FIELD_NAME)) {
                 return values()[bson.getInt32(FIELD_NAME).getValue()].getInstance().readAccount(bson);
             } else {
                 return V0.getInstance().readAccount(bson);
@@ -58,5 +59,5 @@ public interface AccountDeserializer {
         }
 
     }
-    
+
 }

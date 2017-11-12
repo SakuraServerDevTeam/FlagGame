@@ -67,6 +67,9 @@ import syam.flaggame.command.player.PlayerExpCommand;
 import syam.flaggame.command.player.PlayerInfoCommand;
 import syam.flaggame.command.player.PlayerStatsCommand;
 import syam.flaggame.command.player.PlayerVibeCommand;
+import syam.flaggame.command.player.nick.NickLockCommand;
+import syam.flaggame.command.player.nick.NickSetCommand;
+import syam.flaggame.command.player.nick.NickUnlockCommand;
 import syam.flaggame.command.stage.StageCreateCommand;
 import syam.flaggame.command.stage.StageDashboardCommand;
 import syam.flaggame.command.stage.StageDeleteCommand;
@@ -141,9 +144,21 @@ public enum FlagCommandRegistry implements TabExecutor {
             ObjectiveListCommand::new,
             ObjectiveSetCommand::new
     ),
+    NICK(
+            "<- manage nicks",
+            names("nick"),
+            NickSetCommand::new,
+            NickLockCommand::new,
+            NickUnlockCommand::new
+    ),
+    TROPHIE(
+            "<- manage trophies",
+            names("trophie")
+    ),
     PLAYER(
             "<- manage players",
             names("player", "p"),
+            subcategories(NICK, TROPHIE),
             PlayerExpCommand::new,
             PlayerInfoCommand::new,
             PlayerStatsCommand::new,
@@ -175,7 +190,14 @@ public enum FlagCommandRegistry implements TabExecutor {
     GENERAL(
             "<- general commands",
             names("flag", "fg", "f"),
-            subcategories(AREA, GAME, OBJECTIVE, PLAYER, STAGE, KIT),
+            subcategories(
+                    AREA, 
+                    GAME, 
+                    OBJECTIVE, 
+                    PLAYER, 
+                    STAGE, 
+                    KIT
+            ),
             HelpCommand::new,
             ConfirmCommand::new,
             ReloadCommand::new,
@@ -184,7 +206,15 @@ public enum FlagCommandRegistry implements TabExecutor {
     ROOT(
             null,
             null,
-            subcategories(GENERAL, AREA, GAME, OBJECTIVE, PLAYER, STAGE, KIT)
+            subcategories(
+                    GENERAL, 
+                    AREA, 
+                    GAME, 
+                    OBJECTIVE, 
+                    PLAYER, 
+                    STAGE, 
+                    KIT
+            )
     );
 
     private static final String PLUGIN_PREFIX = "flaggame:";

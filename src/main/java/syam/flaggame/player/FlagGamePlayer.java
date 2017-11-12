@@ -84,6 +84,26 @@ public class FlagGamePlayer implements GamePlayer {
     }
 
     @Override
+    public String getNickname() {
+        String color = getTeam().map(team
+                -> team.getType().toColor().getChatColor()
+        ).orElse(null);
+        String adj = null;
+        String noun = null;
+        if (account != null) {
+            if (color != null) {
+                color = account.getNick(0);
+            }
+            adj = account.getNick(1);
+            noun = account.getNick(2);
+        }
+        return (color == null ? "&f" : color)
+                + (adj == null ? "" : adj)
+                + (noun == null ? "" : noun)
+                + getName();
+    }
+
+    @Override
     public UUID getUUID() {
         return this.player;
     }

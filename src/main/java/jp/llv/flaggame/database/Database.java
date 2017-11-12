@@ -65,7 +65,7 @@ public interface Database extends AutoCloseable {
 
     void loadStageStat(String stage, DatabaseCallback<Map.Entry<RecordType, StatEntry>, RuntimeException> consumer, DatabaseCallback<Void, DatabaseException> callback);
 
-    void loadPlayerAccount(UUID player, DatabaseCallback<CachedAccount, DatabaseException> callback);
+    void loadPlayerAccount(UUID player, DatabaseCallback<Account, DatabaseException> callback);
 
     void savePlayerAccount(Account account, DatabaseCallback<Void, DatabaseException> callback);
 

@@ -30,7 +30,6 @@ import java.io.UncheckedIOException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
-import syam.flaggame.player.CachedAccount;
 import jp.llv.flaggame.api.player.Account;
 import jp.llv.flaggame.api.kit.Kit;
 import jp.llv.flaggame.database.Database;
@@ -203,7 +202,9 @@ public class MongoDB implements Database {
                             new MongoDBResultCallback<>(consumer),
                             new MongoDBErrorCallback<>(callback)
                     );
-        } catch (DatabaseException | UncheckedIOException ex) {
+        } catch (UncheckedIOException ex) {
+            callback.call(DatabaseResult.fail(new DatabaseException(ex)));
+        } catch (DatabaseException ex) {
             callback.call(DatabaseResult.fail(ex));
         }
     }
@@ -218,7 +219,9 @@ public class MongoDB implements Database {
                     new UpdateOptions().upsert(true),
                     new MongoDBErrorCallback<>(callback)
             );
-        } catch (DatabaseException | UncheckedIOException ex) {
+        } catch (UncheckedIOException ex) {
+            callback.call(DatabaseResult.fail(new DatabaseException(ex)));
+        } catch (DatabaseException ex) {
             callback.call(DatabaseResult.fail(ex));
         }
     }
@@ -314,9 +317,10 @@ public class MongoDB implements Database {
     }
 
     @Override
-    public void loadPlayerAccount(UUID player, DatabaseCallback<CachedAccount, DatabaseException> callback) {
+    public void loadPlayerAccount(UUID player, DatabaseCallback<Account, DatabaseException> callback) {
         try {
             getAccountCollection().find(new Document(FIELD_ID, player))
+                    .map(BsonDocument.class::cast)
                     .map(AccountDeserializer.Version::readAccount)
                     .first(new MongoDBCallback<>(callback));
         } catch (DatabaseException ex) {
@@ -334,7 +338,9 @@ public class MongoDB implements Database {
                     new UpdateOptions().upsert(true),
                     new MongoDBErrorCallback<>(callback)
             );
-        } catch (DatabaseException | UncheckedIOException ex) {
+        } catch (UncheckedIOException ex) {
+            callback.call(DatabaseResult.fail(new DatabaseException(ex)));
+        } catch (DatabaseException ex) {
             callback.call(DatabaseResult.fail(ex));
         }
     }

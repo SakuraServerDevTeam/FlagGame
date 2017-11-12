@@ -18,7 +18,6 @@ package syam.flaggame.command;
 
 import java.util.List;
 import jp.llv.flaggame.api.FlagGameAPI;
-import org.bukkit.permissions.Permissible;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.FlagCommandRegistry;

@@ -18,7 +18,6 @@ package jp.llv.flaggame.api.player;
 
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.locks.ReadWriteLock;
 import jp.llv.flaggame.api.exception.AccountNotReadyException;
 import jp.llv.flaggame.api.reception.Reception;
 import jp.llv.flaggame.api.session.Reservable;
@@ -46,6 +45,8 @@ public interface GamePlayer extends Reserver {
 
     void destroySetupSession();
 
+    String getNickname();
+    
     String getColoredName();
 
     Optional<Reception> getEntry();

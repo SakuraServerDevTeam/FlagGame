@@ -92,7 +92,12 @@ public enum Perms {
     PLAYER_INFO("player.info"),
     PLAYER_STATS_SELF("player.stats.self"), PLAYER_STATS_OTHER("player.stats.other"),
     PLAYER_EXP_SELF("player.exp.self"), PLAYER_EXP_OTHER("player.exp.other"),
-    PLAYER_VIBE_SELF("player.vibe.self"), PLAYER_VIBE_OTHER("player.vibe.other"),;
+    PLAYER_VIBE_SELF("player.vibe.self"), PLAYER_VIBE_OTHER("player.vibe.other"),
+    NICK_SET_SELF("player.nick.set.self"), NICK_SET_OTHER("player.nick.set.other"),
+    NICK_LOCK_SELF("player.nick.lock.self"), NICK_LOCK_OTHER("player.nick.lock.other"),
+    NICK_UNLOCK_SELF("player.nick.unlock.self"), NICK_UNLOCK_OTHER("player.nick.unlock.other"),
+    NICK_SELECT("player.nick.select"),
+    ;
 
     // ノードヘッダー
     final String HEADER = "flag.";

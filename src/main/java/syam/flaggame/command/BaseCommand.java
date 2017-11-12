@@ -65,6 +65,10 @@ public abstract class BaseCommand {
         this.aliases = Objects.requireNonNull(aliases);
     }
 
+    public BaseCommand(FlagGameAPI plugin, boolean bePlayer, int argLength, String usage, FlagTabCompleter completer, String name, String... aliases) {
+        this(plugin, bePlayer, argLength, usage, null, completer, name, aliases);
+    }
+
     public BaseCommand(FlagGameAPI plugin, boolean bePlayer, int argLength, String usage, Perms permission, String name, String... aliases) {
         this(plugin, bePlayer, argLength, usage, permission, null, name, aliases);
     }

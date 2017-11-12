@@ -162,7 +162,7 @@ public class PlayerManager implements PlayerAPI<FlagGamePlayer> {
 
     @Override
     public void saveAccounts() {
-        players.values().forEach(FlagGamePlayer::saveAccount);
+        players.values().forEach(player -> player.saveAccount(api));
     }
 
     /**
