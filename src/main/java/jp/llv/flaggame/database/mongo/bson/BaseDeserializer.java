@@ -39,21 +39,29 @@ public class BaseDeserializer {
     }
 
     Integer readInt(BsonDocument bson, String key) {
-        return bson.getInt32(key).getValue();
+        if (bson.containsKey(key)) {
+            return bson.getInt32(key).getValue();
+        } else {
+            return null;
+        }
     }
-    
+
     String readString(BsonDocument bson, String key) {
-        return bson.getString(key).getValue();
+        if (bson.containsKey(key)) {
+            return bson.getString(key).getValue();
+        } else {
+            return null;
+        }
     }
-    
+
     UUID readUUID(BsonDocument bson, String key) {
         byte[] binary = bson.getBinary(key).getData();
         long most = 0;
-        for (int i = 0; i <0b1000; i++) {
+        for (int i = 0; i < 0b1000; i++) {
             most |= (0xFFL & binary[i]) << (56 - (i << 3));
         }
         long least = 0;
-        for (int i = 0; i <0b1000; i++) {
+        for (int i = 0; i < 0b1000; i++) {
             least |= (0xFFL & binary[0b1000 | i]) << (56 - (i << 3));
         }
         return new UUID(most, least);

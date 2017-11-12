@@ -36,15 +36,20 @@ public class BaseSerializer {
     }
 
     void writeString(BsonDocument bson, String key, String value) {
-        bson.append(key, new BsonString(value));
+        if (value != null) {
+            bson.append(key, new BsonString(value));
+        }
     }
-    
+
     void writeInt(BsonDocument bson, String key, Integer value) {
-        bson.append(key, new BsonInt32(value));
+        if (value != null) {
+            bson.append(key, new BsonInt32(value));
+        }
     }
-    
+
     /**
      * Write UUID IN STANDARD ENCODING.
+     *
      * @param bson a bson document to write in
      * @param key an element name
      * @param value a UUID to be written
@@ -68,6 +73,7 @@ public class BaseSerializer {
         }
         bson.append(key, new BsonString(value.name()));
     }
+
     <K extends Enum<K>, V> void writeEnumMap(BsonDocument bson, String key, Map<K, ? extends V> value, TriConsumer<BsonDocument, String, V> writer) {
         BsonDocument section = new BsonDocument();
         for (Map.Entry<K, ? extends V> entry : value.entrySet()) {
@@ -92,5 +98,5 @@ public class BaseSerializer {
         }
         bson.append(key, section);
     }
-    
+
 }

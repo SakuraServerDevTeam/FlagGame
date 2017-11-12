@@ -19,7 +19,6 @@ package jp.llv.flaggame.database.mongo.bson;
 import jp.llv.flaggame.api.player.Account;
 import org.bson.BsonDocument;
 import org.bson.BsonDouble;
-import org.bson.BsonString;
 
 /**
  *
@@ -36,11 +35,11 @@ public class AccountSerializer extends BaseSerializer {
     public BsonDocument writeAccount(Account value) {
         BsonDocument section = new BsonDocument();
         writeUUID(section, "_id", value.getUUID());
-        section.append("nick0", new BsonString(value.getNick(0)));
-        section.append("nick1", new BsonString(value.getNick(1)));
-        section.append("nick2", new BsonString(value.getNick(2)));
+        writeString(section, "nick0", value.getNick(0));
+        writeString(section, "nick1", value.getNick(1));
+        writeString(section, "nick2", value.getNick(2));
         section.append("balance", new BsonDouble(value.getBalance().get()));
-        section.append("kit", new BsonString(value.getKit()));
+        writeString(section, "kit", value.getKit());
         
         writeCollection(section, "unlocked_nick0", value.getUnlockedNicks(0), super::writeString);
         writeCollection(section, "unlocked_nick1", value.getUnlockedNicks(1), super::writeString);
