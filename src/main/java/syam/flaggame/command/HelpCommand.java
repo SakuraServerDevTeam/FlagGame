@@ -53,9 +53,9 @@ public class HelpCommand extends BaseCommand {
             Actions.message(sender, "&cNo command starts with " + prefix);
         } else {
             // 全コマンドをループで表示
-            for (BaseCommand command : registry.getCommands()) {
-                command.sendUsage(sender, prefix);
-            }
+            registry.getCommands().forEach(command
+                    -> command.sendUsage(sender, prefix, command.getName())
+            );
             for (FlagCommandRegistry subcategory : registry.getSubcategories()) {
                 subcategory.sendUsage(sender, prefix);
             }

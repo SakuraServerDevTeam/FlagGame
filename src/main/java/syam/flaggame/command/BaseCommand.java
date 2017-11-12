@@ -77,12 +77,12 @@ public abstract class BaseCommand {
         this(plugin, bePlayer, argLength, usage, null, null, name, aliases);
     }
 
-    public final boolean run(CommandSender sender, String[] preArgs, String cmd) {
+    public final boolean run(CommandSender sender, String[] preArgs, String category, String label) {
         List<String> args = new ArrayList<>(Arrays.asList(preArgs));
 
         // 引数の長さチェック
         if (argLength > args.size()) {
-            sendUsage(sender, cmd.substring(0, cmd.length() - name.length() - 1));
+            sendUsage(sender, category, label);
             return true;
         }
 
@@ -103,8 +103,9 @@ public abstract class BaseCommand {
         }
 
         // 実行
+        String newLabel = category == null ? label : category + ' ' + label;
         try {
-            execute(args, cmd, sender, player);
+            execute(args, newLabel, sender, player);
         } catch (PermissionException ex) {
             Actions.message(sender, "&cYou don't have permission to use this!");
         } catch (CommandException ex) {
@@ -123,7 +124,7 @@ public abstract class BaseCommand {
         return true;
     }
 
-    public final List<String> complete(CommandSender sender, String[] preArgs, String cmd) {
+    public final List<String> complete(CommandSender sender, String[] preArgs) {
         List<String> args = new ArrayList<>(Arrays.asList(preArgs));
         if ((bePlayer && !(sender instanceof Player))
                 || !hasPermission(sender)) {
@@ -195,10 +196,15 @@ public abstract class BaseCommand {
      * コマンドの使い方を送信する
      *
      * @param sendTo target
-     * @param label command arguments before this command name
+     * @param category command arguments before this command name
+     * @param label command name or alias
      */
-    public final void sendUsage(CommandSender sendTo, String label) {
-        Actions.message(sendTo, "&7/" + label + "&c " + name + "&7 " + usage);
+    public final void sendUsage(CommandSender sendTo, String category, String label) {
+        if (category == null) {
+            Actions.message(sendTo, "&7/&c" + label + "&7 " + usage);
+        } else {
+            Actions.message(sendTo, "&7/" + category + "&c " + label + "&7 " + usage);
+        }
     }
 
     protected final void sendMessage(CommandSender sender, String message) {

@@ -297,15 +297,15 @@ public enum FlagCommandRegistry implements TabExecutor {
                 || (input.toLowerCase().startsWith(name) && input.charAt(name.length()) == ' ');
     }
 
-    public BaseCommand getCommand(List<String> input) {
+    private ResolvedCommand getCommand(List<String> input) {
         String flatInput = String.join(" ", input).toLowerCase();
         for (BaseCommand command : commands) {
             if (startsWith(command.getName(), flatInput)) {
-                return command;
+                return new ResolvedCommand(command, command.getName());
             }
             for (String alias : command.getAliases()) {
                 if (startsWith(alias, flatInput)) {
-                    return command;
+                    return new ResolvedCommand(command, alias);
                 }
             }
         }
@@ -336,11 +336,10 @@ public enum FlagCommandRegistry implements TabExecutor {
             sendHelpMessage(sender, label); // can not reach any command
             return;
         }
-        BaseCommand command = getCommand(args);
+        ResolvedCommand command = getCommand(args);
         if (command != null) {
-            String newLabel = label == null ? command.getName() : label + ' ' + command.getName();
-            List<String> newArgs = args.subList(StringUtil.countChar(command.getName(), ' ') + 1, args.size());
-            command.run(sender, newArgs.toArray(new String[newArgs.size()]), newLabel);
+            List<String> newArgs = args.subList(StringUtil.countChar(command.label, ' ') + 1, args.size());
+            command.command.run(sender, newArgs.toArray(new String[newArgs.size()]), label, command.label);
             return;
         }
         String subcategoryName = args.remove(0);
@@ -370,11 +369,10 @@ public enum FlagCommandRegistry implements TabExecutor {
                     .filter(s -> s.startsWith(args.get(0).toLowerCase()))
                     .collect(Collectors.toList());
         }
-        BaseCommand command = getCommand(args);
+        ResolvedCommand command = getCommand(args);
         if (command != null) {
-            String newLabel = label == null ? command.getName() : label + ' ' + command.getName();
-            List<String> newArgs = args.subList(StringUtil.countChar(command.getName(), ' ') + 1, args.size());
-            return command.complete(sender, newArgs.toArray(new String[newArgs.size()]), newLabel);
+            List<String> newArgs = args.subList(StringUtil.countChar(command.label, ' ') + 1, args.size());
+            return command.command.complete(sender, newArgs.toArray(new String[newArgs.size()]));
         }
         String subcategoryName = args.remove(0);
         FlagCommandRegistry subcategory = getSubCategory(subcategoryName);
@@ -415,6 +413,17 @@ public enum FlagCommandRegistry implements TabExecutor {
 
     public static FlagCommandRegistry getCategory(String name) {
         return ROOT.getSubCategory(name);
+    }
+
+    private static class ResolvedCommand {
+
+        final BaseCommand command;
+        final String label;
+
+        public ResolvedCommand(BaseCommand command, String label) {
+            this.command = command;
+            this.label = label;
+        }
     }
 
 }
