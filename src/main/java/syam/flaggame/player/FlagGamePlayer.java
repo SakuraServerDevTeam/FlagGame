@@ -44,6 +44,7 @@ import jp.llv.flaggame.api.player.GamePlayer;
 import jp.llv.flaggame.api.player.StageSetupSession;
 import jp.llv.flaggame.api.stage.Stage;
 import jp.llv.flaggame.database.DatabaseException;
+import net.md_5.bungee.api.ChatColor;
 
 public class FlagGamePlayer implements GamePlayer {
 
@@ -97,10 +98,11 @@ public class FlagGamePlayer implements GamePlayer {
             adj = account.getNick(1);
             noun = account.getNick(2);
         }
-        return (color == null ? "&f" : color)
+        return ChatColor.translateAlternateColorCodes(
+                '&', (color == null ? "&f" : color)
                 + (adj == null ? "" : adj)
                 + (noun == null ? "" : noun)
-                + getName();
+        ) + getName();
     }
 
     @Override
