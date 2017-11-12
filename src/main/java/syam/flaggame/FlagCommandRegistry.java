@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import jp.llv.flaggame.api.FlagGameAPI;
+import jp.llv.flaggame.util.StringUtil;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -50,6 +51,7 @@ import syam.flaggame.command.area.permission.AreaPermissionDashboardCommand;
 import syam.flaggame.command.area.permission.AreaPermissionListCommand;
 import syam.flaggame.command.area.permission.AreaPermissionSetCommand;
 import syam.flaggame.command.area.permission.AreaPermissionTestCommand;
+import syam.flaggame.command.debug.AccountStateCommand;
 import syam.flaggame.command.game.GameCloseCommand;
 import syam.flaggame.command.game.GameJoinCommand;
 import syam.flaggame.command.game.GameLeaveCommand;
@@ -187,16 +189,22 @@ public enum FlagCommandRegistry implements TabExecutor {
             KitGetCommand::new,
             KitDeleteCommand::new
     ),
+    DEBUG(
+            "<- commands for developers",
+            names("debug"),
+            AccountStateCommand::new
+    ),
     GENERAL(
             "<- general commands",
             names("flag", "fg", "f"),
             subcategories(
-                    AREA, 
-                    GAME, 
-                    OBJECTIVE, 
-                    PLAYER, 
-                    STAGE, 
-                    KIT
+                    AREA,
+                    GAME,
+                    OBJECTIVE,
+                    PLAYER,
+                    STAGE,
+                    KIT,
+                    DEBUG
             ),
             HelpCommand::new,
             ConfirmCommand::new,
@@ -207,12 +215,12 @@ public enum FlagCommandRegistry implements TabExecutor {
             null,
             null,
             subcategories(
-                    GENERAL, 
-                    AREA, 
-                    GAME, 
-                    OBJECTIVE, 
-                    PLAYER, 
-                    STAGE, 
+                    GENERAL,
+                    AREA,
+                    GAME,
+                    OBJECTIVE,
+                    PLAYER,
+                    STAGE,
                     KIT
             )
     );
@@ -284,13 +292,19 @@ public enum FlagCommandRegistry implements TabExecutor {
         }
     }
 
-    public BaseCommand getCommand(String name) {
+    private boolean startsWith(String name, String input) {
+        return name.equalsIgnoreCase(input)
+                || (input.toLowerCase().startsWith(name) && input.charAt(name.length()) == ' ');
+    }
+
+    public BaseCommand getCommand(List<String> input) {
+        String flatInput = String.join(" ", input).toLowerCase();
         for (BaseCommand command : commands) {
-            if (command.getName().equalsIgnoreCase(name)) {
+            if (startsWith(command.getName(), flatInput)) {
                 return command;
             }
             for (String alias : command.getAliases()) {
-                if (name.equalsIgnoreCase(alias)) {
+                if (startsWith(alias, flatInput)) {
                     return command;
                 }
             }
@@ -322,15 +336,17 @@ public enum FlagCommandRegistry implements TabExecutor {
             sendHelpMessage(sender, label); // can not reach any command
             return;
         }
-        String name = args.remove(0);
-        String newLabel = label == null ? name : label + ' ' + name;
-        BaseCommand command = getCommand(name);
+        BaseCommand command = getCommand(args);
         if (command != null) {
-            command.run(sender, args.toArray(new String[args.size()]), newLabel);
+            String newLabel = label == null ? command.getName() : label + ' ' + command.getName();
+            List<String> newArgs = args.subList(StringUtil.countChar(command.getName(), ' ') + 1, args.size());
+            command.run(sender, newArgs.toArray(new String[newArgs.size()]), newLabel);
             return;
         }
-        FlagCommandRegistry subcategory = getSubCategory(name);
+        String subcategoryName = args.remove(0);
+        FlagCommandRegistry subcategory = getSubCategory(subcategoryName);
         if (subcategory != null) {
+            String newLabel = label == null ? subcategoryName : label + ' ' + subcategoryName;
             subcategory.execute(sender, newLabel, args);
             return;
         }
@@ -354,14 +370,16 @@ public enum FlagCommandRegistry implements TabExecutor {
                     .filter(s -> s.startsWith(args.get(0).toLowerCase()))
                     .collect(Collectors.toList());
         }
-        String name = args.remove(0);
-        String newLabel = label == null ? name : label + ' ' + name;
-        BaseCommand command = getCommand(name);
+        BaseCommand command = getCommand(args);
         if (command != null) {
-            return command.complete(sender, args.toArray(new String[args.size()]), newLabel);
+            String newLabel = label == null ? command.getName() : label + ' ' + command.getName();
+            List<String> newArgs = args.subList(StringUtil.countChar(command.getName(), ' ') + 1, args.size());
+            return command.complete(sender, newArgs.toArray(new String[newArgs.size()]), newLabel);
         }
-        FlagCommandRegistry subcategory = getSubCategory(name);
+        String subcategoryName = args.remove(0);
+        FlagCommandRegistry subcategory = getSubCategory(subcategoryName);
         if (subcategory != null) {
+            String newLabel = label == null ? subcategoryName : label + ' ' + subcategoryName;
             return subcategory.complete(sender, newLabel, args);
         }
         return null;

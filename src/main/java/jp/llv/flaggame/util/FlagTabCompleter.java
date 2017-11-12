@@ -140,6 +140,10 @@ public interface FlagTabCompleter {
             public Builder suggestConst(String... suggestion) {
                 return suggestArray((p, s, a) -> suggestion);
             }
+            
+            public Builder suggestPlayers() {
+                return suggestStream((api, s, a) -> api.getServer().getOnlinePlayers().stream().map(p -> p.getName()));
+            }
 
         }
 

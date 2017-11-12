@@ -82,7 +82,7 @@ public abstract class BaseCommand {
 
         // 引数の長さチェック
         if (argLength > args.size()) {
-            sendUsage(sender, cmd.substring(0, cmd.lastIndexOf(" ")));
+            sendUsage(sender, cmd.substring(0, cmd.length() - name.length() - 1));
             return true;
         }
 
@@ -126,7 +126,7 @@ public abstract class BaseCommand {
     public final List<String> complete(CommandSender sender, String[] preArgs, String cmd) {
         List<String> args = new ArrayList<>(Arrays.asList(preArgs));
         if ((bePlayer && !(sender instanceof Player))
-            || !hasPermission(sender)) {
+                || !hasPermission(sender)) {
             return Collections.emptyList();
         }
         try {

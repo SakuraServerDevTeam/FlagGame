@@ -40,4 +40,14 @@ public class StringUtil {
         return String.copyValueOf(result);
     }
 
+    public static int countChar(String source, char target) {
+        int count = 0;
+        for (char c : source.toCharArray()) {
+            if (c == target) {
+                count++;
+            }
+        }
+        return count;
+    }
+
 }

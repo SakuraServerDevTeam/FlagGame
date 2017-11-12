@@ -97,6 +97,7 @@ public enum Perms {
     NICK_LOCK_SELF("player.nick.lock.self"), NICK_LOCK_OTHER("player.nick.lock.other"),
     NICK_UNLOCK_SELF("player.nick.unlock.self"), NICK_UNLOCK_OTHER("player.nick.unlock.other"),
     NICK_SELECT("player.nick.select"),
+    DEBUG("debug")
     ;
 
     // ノードヘッダー
