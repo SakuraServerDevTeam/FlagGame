@@ -44,8 +44,8 @@ public class CachedAccount implements Account {
     private final List<Set<String>> unlockedNicks = Arrays.asList(
             new HashSet<>(), new HashSet<>(), new HashSet<>()
     );
-    private Set<String> unlockedKits;
-    private Set<String> unlockedTrophies;
+    private final Set<String> unlockedKits = new HashSet<>();
+    private final Set<String> unlockedTrophies = new HashSet<>();
 
     public CachedAccount(UUID uuid) {
         this.uuid = uuid;

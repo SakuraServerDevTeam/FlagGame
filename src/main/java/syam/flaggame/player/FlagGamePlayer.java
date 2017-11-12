@@ -91,7 +91,7 @@ public class FlagGamePlayer implements GamePlayer {
         String adj = null;
         String noun = null;
         if (account != null) {
-            if (color != null) {
+            if (color == null) {
                 color = account.getNick(0);
             }
             adj = account.getNick(1);
