@@ -39,7 +39,7 @@ public class CachedAccount implements Account {
     
     private final List<String> nicks = Arrays.asList(new String[3]);
     private String kit;
-    private AtomicDouble balance;
+    private final AtomicDouble balance = new AtomicDouble(0D);
 
     private final List<Set<String>> unlockedNicks = Arrays.asList(
             new HashSet<>(), new HashSet<>(), new HashSet<>()
