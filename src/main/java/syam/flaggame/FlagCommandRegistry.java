@@ -69,6 +69,9 @@ import syam.flaggame.command.player.PlayerExpCommand;
 import syam.flaggame.command.player.PlayerInfoCommand;
 import syam.flaggame.command.player.PlayerStatsCommand;
 import syam.flaggame.command.player.PlayerVibeCommand;
+import syam.flaggame.command.player.bit.BitAddCommand;
+import syam.flaggame.command.player.bit.BitBalanceCommand;
+import syam.flaggame.command.player.bit.BitPayCommand;
 import syam.flaggame.command.player.nick.NickLockCommand;
 import syam.flaggame.command.player.nick.NickSetCommand;
 import syam.flaggame.command.player.nick.NickUnlockCommand;
@@ -146,6 +149,13 @@ public enum FlagCommandRegistry implements TabExecutor {
             ObjectiveListCommand::new,
             ObjectiveSetCommand::new
     ),
+    BIT(
+            "<- manage bits(in-game currency)",
+            names("bit", "bits"),
+            BitBalanceCommand::new,
+            BitPayCommand::new,
+            BitAddCommand::new
+    ),
     NICK(
             "<- manage nicks",
             names("nick"),
@@ -160,7 +170,7 @@ public enum FlagCommandRegistry implements TabExecutor {
     PLAYER(
             "<- manage players",
             names("player", "p"),
-            subcategories(NICK, TROPHIE),
+            subcategories(NICK, TROPHIE, BIT),
             PlayerExpCommand::new,
             PlayerInfoCommand::new,
             PlayerStatsCommand::new,

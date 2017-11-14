@@ -33,6 +33,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 import jp.llv.flaggame.api.FlagGameAPI;
+import jp.llv.flaggame.api.exception.AccountNotReadyException;
 import jp.llv.flaggame.events.GameStartEvent;
 import jp.llv.flaggame.api.game.Game;
 import jp.llv.flaggame.game.HitpointTask;
@@ -396,6 +397,7 @@ public class BasicGame implements Game {
         ).entrySet().stream()
                 .collect(StreamUtil.deviation(Map.Entry::getValue, (e, v) -> MapUtils.tuple(e.getKey(), v)))
                 .collect(StreamUtil.toMap());
+        double minVibe = vibes.values().stream().mapToDouble(v -> v).min().orElse(0);
         // experience point
         Map<GamePlayer, Long> exps = vibes.entrySet().stream()
                 .map(expCalcurator.calcurate(winnerPlayers, this.stage.getGameTime(), this.reception.size()))
@@ -459,7 +461,7 @@ public class BasicGame implements Game {
                     : new Location(api.getGameWorld(), 0, 0, 0);
             double point = points.getOrDefault(player, 0.0);
             long exp = exps.getOrDefault(player, 0L);
-            double vibe = vibes.getOrDefault(player, 0.0);
+            double vibe = vibes.getOrDefault(player, minVibe);
             player.sendMessage("&aあなたの獲得得点: &6" + point);
             player.sendMessage("&aあなたの獲得経験値: &6" + exp);
             if (winnerTeams.isEmpty()) {
@@ -475,6 +477,14 @@ public class BasicGame implements Game {
             if (player.isOnline()) {
                 player.getPlayer().getInventory().clear();
                 player.resetTabName();
+
+                double bitGain = Math.max(vibe * 10d, 0d) + 30d;
+                try {
+                    double bitTotal = player.getAccount().getBalance().addAndGet(bitGain);
+                    player.sendMessage("&aあなたの獲得bit: &6" + bitGain + "bits(計" + bitTotal + "bits)");
+                } catch (AccountNotReadyException ex) {
+                    player.sendMessage("&cあなたはbit獲得に失敗しました...");
+                }
             }
         }
         teleportPlayers();

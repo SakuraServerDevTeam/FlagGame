@@ -97,6 +97,9 @@ public enum Perms {
     NICK_LOCK_SELF("player.nick.lock.self"), NICK_LOCK_OTHER("player.nick.lock.other"),
     NICK_UNLOCK_SELF("player.nick.unlock.self"), NICK_UNLOCK_OTHER("player.nick.unlock.other"),
     NICK_SELECT("player.nick.select"),
+    BIT_BALANCE_SELF("player.bit.balance.self"), BIT_BALANCE_OTHER("player.bit.balance.other"),
+    BIT_PAY("player.bit.pay"),
+    BIT_ADD("player.bit.add"),
     DEBUG("debug")
     ;
 
