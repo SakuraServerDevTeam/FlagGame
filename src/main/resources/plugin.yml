@@ -13,7 +13,7 @@ authors: [syam, ja731j, toyblocks]
 commands:
     flag:
       usage: /flag - to see the help
-      aliases: [f, fg, s, stage, p, player, o, obj, objective, g, game, a, area. festival, kit, trophie]
+      aliases: [f, fg, s, stage, p, player, o, obj, objective, g, game, a, area. festival, kit, trophy, tro]
       description: To see the FlagGame help.
 permissions:
     flag.user.join:

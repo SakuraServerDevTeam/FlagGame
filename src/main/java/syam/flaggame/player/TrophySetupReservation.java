@@ -14,14 +14,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jp.llv.flaggame.api.player;
+package syam.flaggame.player;
 
-import jp.llv.flaggame.api.trophie.Trophie;
+import jp.llv.flaggame.api.player.SetupReservation;
+import jp.llv.flaggame.api.session.Reservable;
+import jp.llv.flaggame.api.trophy.Trophy;
+import jp.llv.flaggame.api.player.TrophySetupSession;
 
 /**
  *
  * @author toyblocks
  */
-public interface TrophieSetupSession extends SetupSession<Trophie> {
+public class TrophySetupReservation extends SetupReservation<Trophy> implements TrophySetupSession {
+    
+    public TrophySetupReservation(Reservable.Reservation<Trophy> reservation) {
+        super(reservation);
+    }
     
 }

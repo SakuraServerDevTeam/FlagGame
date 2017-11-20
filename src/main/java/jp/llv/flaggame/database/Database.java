@@ -24,7 +24,7 @@ import jp.llv.flaggame.profile.RecordStream;
 import jp.llv.flaggame.api.profile.StatEntry;
 import jp.llv.flaggame.api.profile.RecordType;
 import jp.llv.flaggame.api.stage.Stage;
-import jp.llv.flaggame.api.trophie.Trophie;
+import jp.llv.flaggame.api.trophy.Trophy;
 
 /**
  *
@@ -49,11 +49,11 @@ public interface Database extends AutoCloseable {
 
     void deleteStage(Stage stage, DatabaseCallback<Void, DatabaseException> callback);
 
-    void loadTrophies(DatabaseCallback<Trophie, RuntimeException> consumer, DatabaseCallback<Void, DatabaseException> callback);
+    void loadTrophies(DatabaseCallback<Trophy, RuntimeException> consumer, DatabaseCallback<Void, DatabaseException> callback);
     
-    void saveTrophie(Trophie trophie, DatabaseCallback<Void, DatabaseException> callback);
+    void saveTrophy(Trophy trophy, DatabaseCallback<Void, DatabaseException> callback);
     
-    void deleteTrophie(Trophie trophie, DatabaseCallback<Void, DatabaseException> callback);
+    void deleteTrophy(Trophy trophy, DatabaseCallback<Void, DatabaseException> callback);
     
     void loadKits(DatabaseCallback<Kit, RuntimeException> consumer, DatabaseCallback<Void, DatabaseException> callback);
 

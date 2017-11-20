@@ -16,49 +16,47 @@
  */
 package jp.llv.flaggame.database.mongo.bson;
 
-import java.io.IOException;
 import java.io.UncheckedIOException;
-import jp.llv.flaggame.api.trophie.Trophie;
-import jp.llv.flaggame.trophie.NashornTrophie;
-import jp.llv.flaggame.trophie.RecordTrophie;
-import org.bson.BsonBinary;
+import jp.llv.flaggame.trophy.NashornTrophy;
+import jp.llv.flaggame.trophy.RecordTrophy;
 import org.bson.BsonDocument;
 import org.bson.BsonDouble;
 import org.bson.BsonInt32;
 import org.bson.BsonJavaScript;
 import org.bson.BsonString;
+import jp.llv.flaggame.api.trophy.Trophy;
 
 /**
  *
  * @author toyblocks
  */
-public class TrophieSerializer extends BaseSerializer {
+public class TrophySerializer extends BaseSerializer {
 
     public static final int VERSION = 0;
-    private static TrophieSerializer instance;
+    private static TrophySerializer instance;
 
-    private TrophieSerializer() {
+    private TrophySerializer() {
     }
 
-    void writeRecordTrophie(BsonDocument bson, String key, RecordTrophie value) {
+    void writeRecordTrophy(BsonDocument bson, String key, RecordTrophy value) {
         BsonDocument section = new BsonDocument();
         writeEnum(section, "target", value.getTarget());
         bson.put(key, section);
     }
     
-    void writeNashornTrophie(BsonDocument bson, String key, NashornTrophie value) {
+    void writeNashornTrophy(BsonDocument bson, String key, NashornTrophy value) {
         BsonDocument section = new BsonDocument();
         section.put("script", new BsonJavaScript(value.getScript()));
-        if (value instanceof RecordTrophie) {
-            writeRecordTrophie(section, "record", (RecordTrophie) value);
+        if (value instanceof RecordTrophy) {
+            writeRecordTrophy(section, "record", (RecordTrophy) value);
         }
         bson.put(key, section);
     }
     
-    public BsonDocument writeTrophie(Trophie value) throws UncheckedIOException {
+    public BsonDocument writeTrophy(Trophy value) throws UncheckedIOException {
         BsonDocument section = new BsonDocument();
         section.append("_id", new BsonString(value.getName()));
-        section.append(TrophieDeserializer.Version.FIELD_NAME, new BsonInt32(VERSION));
+        section.append(TrophyDeserializer.Version.FIELD_NAME, new BsonInt32(VERSION));
         writeString(section, "type", value.getType());
         writeCollection(section, "reward-kits", value.getRewardKits(), super::writeString);
         writeCollection(section, "reward-nick0", value.getRewardNicks(0), super::writeString);
@@ -66,15 +64,15 @@ public class TrophieSerializer extends BaseSerializer {
         writeCollection(section, "reward-nick2", value.getRewardNicks(2), super::writeString);
         section.append("reward-money", new BsonDouble(value.getRewardMoney()));
         section.append("reward-bits", new BsonDouble(value.getRewardBits()));
-        if (value instanceof NashornTrophie) {
-            writeNashornTrophie(section, "nashorn", (NashornTrophie) value);
+        if (value instanceof NashornTrophy) {
+            writeNashornTrophy(section, "nashorn", (NashornTrophy) value);
         }
         return section;
     }
 
-    public static TrophieSerializer getInstance() {
+    public static TrophySerializer getInstance() {
         if (instance == null) {
-            instance = new TrophieSerializer();
+            instance = new TrophySerializer();
         }
         return instance;
     }

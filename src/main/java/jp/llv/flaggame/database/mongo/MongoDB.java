@@ -44,15 +44,13 @@ import jp.llv.flaggame.profile.record.PlayerRecord;
 import jp.llv.flaggame.profile.record.PlayerResultRecord;
 import jp.llv.flaggame.api.profile.RecordType;
 import jp.llv.flaggame.api.stage.Stage;
-import jp.llv.flaggame.api.trophie.Trophie;
 import jp.llv.flaggame.database.mongo.bson.AccountDeserializer;
 import jp.llv.flaggame.database.mongo.bson.AccountSerializer;
 import jp.llv.flaggame.database.mongo.bson.KitDeserializer;
 import jp.llv.flaggame.database.mongo.bson.KitSerializer;
 import jp.llv.flaggame.database.mongo.bson.StageDeserializer;
 import jp.llv.flaggame.database.mongo.bson.StageSerializer;
-import jp.llv.flaggame.database.mongo.bson.TrophieDeserializer;
-import jp.llv.flaggame.database.mongo.bson.TrophieSerializer;
+import jp.llv.flaggame.database.mongo.bson.TrophySerializer;
 import jp.llv.flaggame.profile.record.ScoreRecord;
 import jp.llv.flaggame.util.MapUtils;
 import org.bson.BsonDocument;
@@ -63,6 +61,8 @@ import org.bson.codecs.UuidCodec;
 import org.bson.codecs.configuration.CodecRegistries;
 import syam.flaggame.CachedFlagConfig;
 import syam.flaggame.FlagGame;
+import jp.llv.flaggame.api.trophy.Trophy;
+import jp.llv.flaggame.database.mongo.bson.TrophyDeserializer;
 
 /**
  *
@@ -79,7 +79,7 @@ public class MongoDB implements Database {
     public static final String COLLECTION_KIT = "kit";
     public static final String COLLECTION_ACCOUNT = "account";
     public static final String COLLECTION_RECORD = "record";
-    public static final String COLLECTION_TROPHIE = "trophie";
+    public static final String COLLECTION_TROPHY = "trophy";
     public static final String FIELD_ID = "_id";
     public static final String FIELD_COUNT = "count";
 
@@ -189,19 +189,19 @@ public class MongoDB implements Database {
         }
     }
 
-    private MongoCollection<BsonValue> getTrophieCollection() throws DatabaseException {
+    private MongoCollection<BsonValue> getTrophyCollection() throws DatabaseException {
         if (database == null) {
             throw new DatabaseException("Not connected");
         }
-        return database.getCollection(COLLECTION_TROPHIE).withDocumentClass(BsonValue.class);
+        return database.getCollection(COLLECTION_TROPHY).withDocumentClass(BsonValue.class);
     }
 
     @Override
-    public void loadTrophies(DatabaseCallback<Trophie, RuntimeException> consumer, DatabaseCallback<Void, DatabaseException> callback) {
+    public void loadTrophies(DatabaseCallback<Trophy, RuntimeException> consumer, DatabaseCallback<Void, DatabaseException> callback) {
         try {
-            getTrophieCollection().find()
+            getTrophyCollection().find()
                     .map(BsonDocument.class::cast)
-                    .map(bson -> TrophieDeserializer.Version.readTrophie(plugin.getAPI().getRegistry(), bson))
+                    .map(bson -> TrophyDeserializer.Version.readTrophy(plugin.getAPI().getRegistry(), bson))
                     .forEach(
                             new MongoDBResultCallback<>(consumer),
                             new MongoDBErrorCallback<>(callback)
@@ -212,10 +212,10 @@ public class MongoDB implements Database {
     }
 
     @Override
-    public void saveTrophie(Trophie trophie, DatabaseCallback<Void, DatabaseException> callback) {
+    public void saveTrophy(Trophy trophy, DatabaseCallback<Void, DatabaseException> callback) {
         try {
-            MongoCollection<BsonValue> coll = getTrophieCollection();
-            BsonDocument bson = TrophieSerializer.getInstance().writeTrophie(trophie);
+            MongoCollection<BsonValue> coll = getTrophyCollection();
+            BsonDocument bson = TrophySerializer.getInstance().writeTrophy(trophy);
             coll.updateOne(Filters.eq(FIELD_ID, bson.get(FIELD_ID)),
                     new BsonDocument(SET, bson),
                     new UpdateOptions().upsert(true),
@@ -227,9 +227,9 @@ public class MongoDB implements Database {
     }
 
     @Override
-    public void deleteTrophie(Trophie trophie, DatabaseCallback<Void, DatabaseException> callback) {
+    public void deleteTrophy(Trophy trophy, DatabaseCallback<Void, DatabaseException> callback) {
         try {
-            getTrophieCollection().deleteOne(Filters.eq(FIELD_ID, trophie.getName()),
+            getTrophyCollection().deleteOne(Filters.eq(FIELD_ID, trophy.getName()),
                     new MongoDBErrorCallback<>(callback)
             );
         } catch (DatabaseException ex) {

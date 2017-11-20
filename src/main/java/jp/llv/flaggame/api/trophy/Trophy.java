@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jp.llv.flaggame.api.trophie;
+package jp.llv.flaggame.api.trophy;
 
 import java.util.Collection;
 import java.util.Set;
@@ -29,7 +29,7 @@ import jp.llv.flaggame.api.session.Reservable;
  *
  * @author toyblocks
  */
-public interface Trophie extends Reservable<Trophie> {
+public interface Trophy extends Reservable<Trophy> {
 
     public static final Pattern NAME_REGEX = Pattern.compile("^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$");
 
@@ -60,7 +60,7 @@ public interface Trophie extends Reservable<Trophie> {
     /**
      * Rewards a player unconditionally.
      * This would give bits, money, nicks and kits. Not to, use 
-     * {@link Account#unlockTrophie(jp.llv.flaggame.api.trophie.Trophie)}.
+     * {@link Account#unlockTrophy(jp.llv.flaggame.api.trophy.Trophy)}.
      * @param player a player to reward
      * @throws AccountNotReadyException if an account is not ready
      */

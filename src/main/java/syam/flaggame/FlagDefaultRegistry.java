@@ -38,15 +38,15 @@ import jp.llv.flaggame.api.session.Reservable;
 import jp.llv.flaggame.api.player.SetupReservation;
 import jp.llv.flaggame.api.player.SetupSession;
 import jp.llv.flaggame.api.player.StageSetupSession;
-import jp.llv.flaggame.api.player.TrophieSetupSession;
 import jp.llv.flaggame.api.stage.Stage;
-import jp.llv.flaggame.api.trophie.Trophie;
-import jp.llv.flaggame.trophie.ImpossibleTrophie;
-import jp.llv.flaggame.trophie.ProfileTrophie;
-import jp.llv.flaggame.trophie.RecordTrophie;
-import jp.llv.flaggame.trophie.StreamTrophie;
+import jp.llv.flaggame.trophy.ImpossibleTrophy;
+import jp.llv.flaggame.trophy.ProfileTrophy;
+import jp.llv.flaggame.trophy.RecordTrophy;
+import jp.llv.flaggame.trophy.StreamTrophy;
 import syam.flaggame.player.StageSetupReservation;
-import syam.flaggame.player.TrophieSetupReservation;
+import syam.flaggame.player.TrophySetupReservation;
+import jp.llv.flaggame.api.trophy.Trophy;
+import jp.llv.flaggame.api.player.TrophySetupSession;
 
 /**
  *
@@ -71,16 +71,16 @@ public final class FlagDefaultRegistry implements FlagGameRegistry {
 
     {
         sessions.put(StageSetupSession.class, (Function<Reservable.Reservation<Stage>, StageSetupReservation>) StageSetupReservation::new);
-        sessions.put(TrophieSetupSession.class, (Function<Reservable.Reservation<Trophie>, TrophieSetupReservation>) TrophieSetupReservation::new);
+        sessions.put(TrophySetupSession.class, (Function<Reservable.Reservation<Trophy>, TrophySetupReservation>) TrophySetupReservation::new);
     }
     
-    private final Map<String, Function<String, ? extends Trophie>> trophies = new HashMap<>();
+    private final Map<String, Function<String, ? extends Trophy>> trophies = new HashMap<>();
     
     {
-        trophies.put(ImpossibleTrophie.TYPE_NAME, ImpossibleTrophie::new);
-        trophies.put(RecordTrophie.TYPE_NAME, RecordTrophie::new);
-        trophies.put(StreamTrophie.TYPE_NAME, StreamTrophie::new);
-        trophies.put(ProfileTrophie.TYPE_NAME, ProfileTrophie::new);
+        trophies.put(ImpossibleTrophy.TYPE_NAME, ImpossibleTrophy::new);
+        trophies.put(RecordTrophy.TYPE_NAME, RecordTrophy::new);
+        trophies.put(StreamTrophy.TYPE_NAME, StreamTrophy::new);
+        trophies.put(ProfileTrophy.TYPE_NAME, ProfileTrophy::new);
     }
 
     /*package*/ FlagDefaultRegistry() {
@@ -112,7 +112,7 @@ public final class FlagDefaultRegistry implements FlagGameRegistry {
     }
 
     @Override
-    public void registerTrophie(String key, Function<String, ? extends Trophie> factory) {
+    public void registerTrophy(String key, Function<String, ? extends Trophy> factory) {
         if (trophies.containsKey(Objects.requireNonNull(key))) {
             throw new IllegalStateException("key duplication");
         }
@@ -165,7 +165,7 @@ public final class FlagDefaultRegistry implements FlagGameRegistry {
     }
 
     @Override
-    public Function<String, ? extends Trophie> getTrophie(String key) throws NotRegisteredException {
+    public Function<String, ? extends Trophy> getTrophy(String key) throws NotRegisteredException {
         if (trophies.containsKey(key)) {
             return trophies.get(key);
         } else {

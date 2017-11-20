@@ -18,43 +18,43 @@ package jp.llv.flaggame.database.mongo.bson;
 
 import java.util.function.Supplier;
 import jp.llv.flaggame.api.FlagGameRegistry;
-import jp.llv.flaggame.api.trophie.Trophie;
 import org.bson.BsonDocument;
+import jp.llv.flaggame.api.trophy.Trophy;
 
 /**
  *
  * @author toyblocks
  */
-public interface TrophieDeserializer {
+public interface TrophyDeserializer {
 
-    Trophie readTrophie(FlagGameRegistry registry, BsonDocument bson);
+    Trophy readTrophy(FlagGameRegistry registry, BsonDocument bson);
 
     enum Version {
 
-        V0(TrophieDeserializer0::new),;
+        V0(TrophyDeserializer0::new),;
 
         public static final String FIELD_NAME = "serial_version";
 
-        private final Supplier<? extends TrophieDeserializer> constructor;
-        private TrophieDeserializer instance;
+        private final Supplier<? extends TrophyDeserializer> constructor;
+        private TrophyDeserializer instance;
 
-        private Version(Supplier<? extends TrophieDeserializer> constructor) {
+        private Version(Supplier<? extends TrophyDeserializer> constructor) {
             this.constructor = constructor;
         }
 
-        public TrophieDeserializer getInstance() {
+        public TrophyDeserializer getInstance() {
             if (instance == null) {
                 instance = constructor.get();
             }
             return instance;
         }
 
-        public static Trophie readTrophie(FlagGameRegistry registry, BsonDocument bson) {
+        public static Trophy readTrophy(FlagGameRegistry registry, BsonDocument bson) {
             if (bson.containsKey(FIELD_NAME)) {
                 return values()[bson.getInt32(FIELD_NAME).getValue()]
-                        .getInstance().readTrophie(registry, bson);
+                        .getInstance().readTrophy(registry, bson);
             } else {
-                return V0.getInstance().readTrophie(registry, bson);
+                return V0.getInstance().readTrophy(registry, bson);
             }
         }
 

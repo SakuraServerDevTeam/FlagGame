@@ -14,71 +14,67 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jp.llv.flaggame.trophie;
+package jp.llv.flaggame.trophy;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import jp.llv.flaggame.api.FlagGameAPI;
 import jp.llv.flaggame.api.exception.AccountNotReadyException;
 import jp.llv.flaggame.api.player.Account;
 import jp.llv.flaggame.api.player.GamePlayer;
-import jp.llv.flaggame.api.trophie.Trophie;
-import jp.llv.flaggame.api.trophie.TrophieAPI;
 import jp.llv.flaggame.api.util.function.ThrowingPredicate;
+import jp.llv.flaggame.api.trophy.Trophy;
+import jp.llv.flaggame.api.trophy.TrophyAPI;
 
 /**
  *
  * @author toyblocks
  */
-public class TrophieManager implements TrophieAPI {
+public class TrophyManager implements TrophyAPI {
 
     private final FlagGameAPI api;
-    private final Map<String, Trophie> trophies = Collections.synchronizedMap(new HashMap<>());
+    private final Map<String, Trophy> trophies = Collections.synchronizedMap(new HashMap<>());
 
-    public TrophieManager(FlagGameAPI api) {
+    public TrophyManager(FlagGameAPI api) {
         this.api = api;
     }
 
     @Override
-    public void addTrophie(Trophie trophie) {
-        trophies.put(trophie.getName(), trophie);
+    public void addTrophy(Trophy trophy) {
+        trophies.put(trophy.getName(), trophy);
     }
 
     @Override
-    public Optional<Trophie> getTrophie(String name) {
+    public Optional<Trophy> getTrophy(String name) {
         return Optional.ofNullable(trophies.get(name));
     }
 
     @Override
-    public void removeTrophie(Trophie trophie) {
-        trophies.remove(trophie.getName());
+    public void removeTrophy(Trophy trophy) {
+        trophies.remove(trophy.getName());
     }
 
     @Override
-    public Map<String, Trophie> getTrophies() {
+    public Map<String, Trophy> getTrophy() {
         return Collections.unmodifiableMap(trophies);
     }
 
     @Override
-    public <T extends Trophie, E extends Exception> void updateProgress(GamePlayer player, Class<T> clazz, ThrowingPredicate<? super T, E> predicate) throws AccountNotReadyException {
+    public <T extends Trophy, E extends Exception> void updateProgress(GamePlayer player, Class<T> clazz, ThrowingPredicate<? super T, E> predicate) throws AccountNotReadyException {
         Account account = player.getAccount();
-        for (Trophie trophie : this) {
-            if (!clazz.isInstance(trophie)
-                    || account.getUnlockedTrophies().contains(trophie.getName())) {
+        for (Trophy trophy : this) {
+            if (!clazz.isInstance(trophy)
+                    || account.getUnlockedTrophies().contains(trophy.getName())) {
                 continue;
             }
             try {
-                if (predicate.test((T) trophie)) {
-                    trophie.reward(player);
+                if (predicate.test((T) trophy)) {
+                    trophy.reward(player);
                 }
             } catch (Exception ex) {
-                api.getLogger().warn("Failed to update progress of a trophie '" + trophie.getName() + "'", ex);
+                api.getLogger().warn("Failed to update progress of a trophy '" + trophy.getName() + "'", ex);
             }
         }
     }

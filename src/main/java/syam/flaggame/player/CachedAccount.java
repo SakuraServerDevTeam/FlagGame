@@ -27,7 +27,7 @@ import java.util.Set;
 import java.util.UUID;
 import jp.llv.flaggame.api.exception.InvalidNameException;
 import jp.llv.flaggame.api.kit.Kit;
-import jp.llv.flaggame.api.trophie.Trophie;
+import jp.llv.flaggame.api.trophy.Trophy;
 
 /**
  *
@@ -137,13 +137,13 @@ public class CachedAccount implements Account {
     }
 
     @Override
-    public void lockTrophie(Trophie trophie) {
-        unlockedTrophies.remove(trophie.getName());
+    public void lockTrophy(Trophy trophy) {
+        unlockedTrophies.remove(trophy.getName());
     }
 
     @Override
-    public void unlockTrophie(Trophie trophie) {
-        unlockedTrophies.add(trophie.getName());
+    public void unlockTrophy(Trophy trophy) {
+        unlockedTrophies.add(trophy.getName());
     }
 
     public void unlockTrophies(Collection<String> trophies) {

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jp.llv.flaggame.trophie;
+package jp.llv.flaggame.trophy;
 
 import java.util.function.Consumer;
 import javax.script.Bindings;
@@ -29,7 +29,7 @@ import jp.llv.flaggame.api.FlagGameAPI;
  *
  * @author toyblocks
  */
-public abstract class NashornTrophie extends BaseTrophie {
+public abstract class NashornTrophy extends BaseTrophy {
 
     private static final String[] SCRIPT_OPTIONS = {
         "--no-java",
@@ -45,7 +45,7 @@ public abstract class NashornTrophie extends BaseTrophie {
     private String script = "false";
     private transient CompiledScript compiledScript;
 
-    public NashornTrophie(String name) {
+    public NashornTrophy(String name) {
         super(name);
     }
 

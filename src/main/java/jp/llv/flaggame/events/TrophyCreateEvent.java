@@ -14,34 +14,44 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jp.llv.flaggame.trophie;
+package jp.llv.flaggame.events;
 
-import java.util.Objects;
-import javax.script.ScriptException;
-import jp.llv.flaggame.api.FlagGameAPI;
-import jp.llv.flaggame.api.profile.PlayerProfile;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
+import org.bukkit.event.HandlerList;
+import jp.llv.flaggame.api.trophy.Trophy;
 
 /**
  *
  * @author toyblocks
  */
-public class ProfileTrophie extends NashornTrophie {
+public class TrophyCreateEvent extends TrophyEvent<Trophy> implements Cancellable {
+
+    private static final HandlerList handlers = new HandlerList();
     
-    public static final String TYPE_NAME = "profile";
-    
-    public ProfileTrophie(String name) {
-        super(name);
+    private boolean cancel = false;
+
+    public TrophyCreateEvent(Player who, Trophy trophy) {
+        super(who, trophy);
     }
 
     @Override
-    public String getType() {
-        return TYPE_NAME;
+    public boolean isCancelled() {
+        return cancel;
     }
 
-    public boolean test(FlagGameAPI api, PlayerProfile profile) throws ScriptException {
-        return super.test(api, bindings -> {
-            bindings.put("profile", Objects.requireNonNull(profile));
-        });
+    @Override
+    public void setCancelled(boolean cancel) {
+        this.cancel = cancel;
+    }
+
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
+    }
+
+    public static HandlerList getHandlerList() {
+        return handlers;
     }
     
 }

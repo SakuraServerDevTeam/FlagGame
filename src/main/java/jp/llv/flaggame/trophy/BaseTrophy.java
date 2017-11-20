@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jp.llv.flaggame.trophie;
+package jp.llv.flaggame.trophy;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -29,9 +29,9 @@ import jp.llv.flaggame.api.kit.Kit;
 import jp.llv.flaggame.api.player.Account;
 import jp.llv.flaggame.api.player.GamePlayer;
 import jp.llv.flaggame.api.session.SimpleReservable;
-import jp.llv.flaggame.api.trophie.Trophie;
 import jp.llv.flaggame.util.OnelineBuilder;
 import syam.flaggame.util.Actions;
+import jp.llv.flaggame.api.trophy.Trophy;
 
 /**
  * Base variable structure for a trophie. This class is only for
@@ -39,7 +39,7 @@ import syam.flaggame.util.Actions;
  *
  * @author toyblocks
  */
-public abstract class BaseTrophie extends SimpleReservable<Trophie> implements Trophie {
+public abstract class BaseTrophy extends SimpleReservable<Trophy> implements Trophy {
 
     private final String name;
 
@@ -51,7 +51,7 @@ public abstract class BaseTrophie extends SimpleReservable<Trophie> implements T
     );
     private final Set<String> rewardKits = new HashSet<>();
 
-    public BaseTrophie(String name) {
+    public BaseTrophy(String name) {
         this.name = Objects.requireNonNull(name);
     }
 
@@ -135,7 +135,7 @@ public abstract class BaseTrophie extends SimpleReservable<Trophie> implements T
     @Override
     public void reward(GamePlayer player) throws AccountNotReadyException {
         Account account = player.getAccount();
-        account.unlockTrophie(this);
+        account.unlockTrophy(this);
 
         if (rewardBits > 0) {
             double total = account.getBalance().addAndGet(rewardBits);

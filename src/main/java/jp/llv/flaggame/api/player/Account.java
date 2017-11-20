@@ -21,7 +21,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
 import jp.llv.flaggame.api.exception.InvalidNameException;
-import jp.llv.flaggame.api.trophie.Trophie;
+import jp.llv.flaggame.api.trophy.Trophy;
 
 /**
  *
@@ -49,7 +49,7 @@ public interface Account {
 
     void lockNick(int index, String nick);
 
-    void lockTrophie(Trophie trophie);
+    void lockTrophy(Trophy trophy);
 
     void setKit(String kit);
 
@@ -60,11 +60,11 @@ public interface Account {
     void unlockNick(int index, String nick) throws InvalidNameException;
 
     /**
-     * Simply marks a trophie as unlocked.
+     * Simply marks a trophy as unlocked.
      * This does ignore rewards. To consider rewards, use 
-     * {@link Trophie#reward(jp.llv.flaggame.api.player.GamePlayer)}.
-     * @param trophie 
+     * {@link Trophy#reward(jp.llv.flaggame.api.player.GamePlayer)}.
+     * @param trophy a trophy to be unlocked
      */
-    void unlockTrophie(Trophie trophie);
+    void unlockTrophy(Trophy trophy);
     
 }

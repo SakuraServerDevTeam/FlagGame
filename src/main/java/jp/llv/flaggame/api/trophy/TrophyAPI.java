@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jp.llv.flaggame.api.trophie;
+package jp.llv.flaggame.api.trophy;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -27,21 +27,21 @@ import jp.llv.flaggame.api.util.function.ThrowingPredicate;
  *
  * @author toyblocks
  */
-public interface TrophieAPI extends Iterable<Trophie> {
+public interface TrophyAPI extends Iterable<Trophy> {
     
-    void addTrophie(Trophie trophie);
+    void addTrophy(Trophy trophy);
     
-    Optional<Trophie> getTrophie(String name);
+    Optional<Trophy> getTrophy(String name);
     
-    void removeTrophie(Trophie trophie);
+    void removeTrophy(Trophy trophy);
     
-    Map<String, Trophie> getTrophies();
+    Map<String, Trophy> getTrophy();
 
-    <T extends Trophie, E extends Exception> void updateProgress(GamePlayer player, Class<T> clazz, ThrowingPredicate<? super T, E> predicate) throws AccountNotReadyException;
+    <T extends Trophy, E extends Exception> void updateProgress(GamePlayer player, Class<T> clazz, ThrowingPredicate<? super T, E> predicate) throws AccountNotReadyException;
     
     @Override
-    public default Iterator<Trophie> iterator() {
-        return getTrophies().values().iterator();
+    public default Iterator<Trophy> iterator() {
+        return getTrophy().values().iterator();
     }
     
 }

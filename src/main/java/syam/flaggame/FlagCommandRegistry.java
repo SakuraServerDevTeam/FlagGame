@@ -87,9 +87,9 @@ import syam.flaggame.command.stage.StageSetCommand;
 import syam.flaggame.command.stage.StageStatsCommand;
 import syam.flaggame.command.stage.StageTagAddCommand;
 import syam.flaggame.command.stage.StageTagRemoveCommand;
-import syam.flaggame.command.trophie.TrophieCreateCommand;
-import syam.flaggame.command.trophie.TrophieDeleteCommand;
-import syam.flaggame.command.trophie.TrophieSelectCommand;
+import syam.flaggame.command.trophy.TrophyCreateCommand;
+import syam.flaggame.command.trophy.TrophyDeleteCommand;
+import syam.flaggame.command.trophy.TrophySelectCommand;
 import syam.flaggame.util.Actions;
 
 /**
@@ -166,12 +166,12 @@ public enum FlagCommandRegistry implements TabExecutor {
             NickLockCommand::new,
             NickUnlockCommand::new
     ),
-    TROPHIE(
+    TROPHY(
             "<- manage trophies",
-            names("trophie", "tro"),
-            TrophieCreateCommand::new,
-            TrophieDeleteCommand::new,
-            TrophieSelectCommand::new
+            names("trophy", "tro"),
+            TrophyCreateCommand::new,
+            TrophyDeleteCommand::new,
+            TrophySelectCommand::new
     ),
     PLAYER(
             "<- manage players",
@@ -213,14 +213,13 @@ public enum FlagCommandRegistry implements TabExecutor {
     GENERAL(
             "<- general commands",
             names("flag", "fg", "f"),
-            subcategories(
-                    AREA,
+            subcategories(AREA,
                     GAME,
                     OBJECTIVE,
                     PLAYER,
                     STAGE,
                     KIT,
-                    TROPHIE,
+                    TROPHY,
                     DEBUG
             ),
             HelpCommand::new,
@@ -231,15 +230,14 @@ public enum FlagCommandRegistry implements TabExecutor {
     ROOT(
             null,
             null,
-            subcategories(
-                    GENERAL,
+            subcategories(GENERAL,
                     AREA,
                     GAME,
                     OBJECTIVE,
                     PLAYER,
                     STAGE,
                     KIT,
-                    TROPHIE
+                    TROPHY
             )
     );
 

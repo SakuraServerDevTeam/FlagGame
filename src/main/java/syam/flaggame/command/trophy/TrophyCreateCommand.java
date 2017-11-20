@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package syam.flaggame.command.trophie;
+package syam.flaggame.command.trophy;
 
 import java.util.List;
 import jp.llv.flaggame.api.FlagGameAPI;
@@ -22,29 +22,28 @@ import jp.llv.flaggame.api.exception.CommandException;
 import jp.llv.flaggame.api.exception.FlagGameException;
 import jp.llv.flaggame.api.exception.NotRegisteredException;
 import jp.llv.flaggame.api.player.GamePlayer;
-import jp.llv.flaggame.api.player.TrophieSetupSession;
-import jp.llv.flaggame.api.trophie.Trophie;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.command.BaseCommand;
-import jp.llv.flaggame.events.TrophieCreateEvent;
+import jp.llv.flaggame.events.TrophyCreateEvent;
 import jp.llv.flaggame.util.FlagTabCompleter;
 import syam.flaggame.permission.Perms;
 import syam.flaggame.util.Actions;
+import jp.llv.flaggame.api.trophy.Trophy;
+import jp.llv.flaggame.api.player.TrophySetupSession;
 
 /**
  *
  * @author toyblocks
  */
-public class TrophieCreateCommand extends BaseCommand {
+public class TrophyCreateCommand extends BaseCommand {
 
-    public TrophieCreateCommand(FlagGameAPI api) {
-        super(
-                api,
+    public TrophyCreateCommand(FlagGameAPI api) {
+        super(api,
                 true,
                 2,
-                "<type> <name> <- create a trophie",
-                Perms.TROPHIE_CREATE,
+                "<type> <name> <- create a trophy",
+                Perms.TROPHY_CREATE,
                 FlagTabCompleter.builder()
                         .forArg(0).suggestList((a, s, r) -> a.getRegistry().getTrophies())
                         .create(),
@@ -55,30 +54,30 @@ public class TrophieCreateCommand extends BaseCommand {
 
     @Override
     public void execute(List<String> args, CommandSender sender, Player player) throws FlagGameException {
-        if (!Trophie.NAME_REGEX.matcher(args.get(1)).matches()) {
+        if (!Trophy.NAME_REGEX.matcher(args.get(1)).matches()) {
             throw new CommandException("&cこのトロフィー名は使用できません！");
-        } else if (this.api.getTrophies().getTrophie(args.get(1)).isPresent()) {
+        } else if (this.api.getTrophies().getTrophy(args.get(1)).isPresent()) {
             throw new CommandException("&cそのトロフィーは既に存在します！");
         }
 
-        Trophie trophie;
+        Trophy trophy;
         try {
-            trophie = api.getRegistry().getTrophie(args.get(0)).apply(args.get(1));
+            trophy = api.getRegistry().getTrophy(args.get(0)).apply(args.get(1));
         } catch (NotRegisteredException ex) {
             throw new CommandException("&cそのトロフィータイプはサポートされていません", ex);
         }
-        TrophieCreateEvent event = new TrophieCreateEvent(player, trophie);
+        TrophyCreateEvent event = new TrophyCreateEvent(player, trophy);
         api.getServer().getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             return;
         }
 
         // 新規登録
-        this.api.getTrophies().addTrophie(trophie);
+        this.api.getTrophies().addTrophy(trophy);
 
         GamePlayer gPlayer = this.api.getPlayers().getPlayer(player);
-        gPlayer.createSetupSession(trophie, TrophieSetupSession.class);
-        Actions.message(player, "&a新規ステージ'" + trophie.getName() + "'を登録して選択しました！");
+        gPlayer.createSetupSession(trophy, TrophySetupSession.class);
+        Actions.message(player, "&a新規ステージ'" + trophy.getName() + "'を登録して選択しました！");
     }
 
 }

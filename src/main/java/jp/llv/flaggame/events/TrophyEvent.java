@@ -16,26 +16,26 @@
  */
 package jp.llv.flaggame.events;
 
-import jp.llv.flaggame.api.trophie.Trophie;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerEvent;
+import jp.llv.flaggame.api.trophy.Trophy;
 
 /**
  *
  * @author toyblocks
- * @param <T> a type of trophie this event can be associated with
+ * @param <T> a type of trophy this event can be associated with
  */
-public abstract class TrophieEvent<T extends Trophie> extends PlayerEvent {
+public abstract class TrophyEvent<T extends Trophy> extends PlayerEvent {
     
-    private final T trophie;
+    private final T trophy;
 
-    public TrophieEvent(Player who, T trophie) {
+    public TrophyEvent(Player who, T trophy) {
         super(who);
-        this.trophie = trophie;
+        this.trophy = trophy;
     }
 
-    public T getTrophie() {
-        return trophie;
+    public T getTrophy() {
+        return trophy;
     }
     
 }

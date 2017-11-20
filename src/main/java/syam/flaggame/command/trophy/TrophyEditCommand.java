@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package syam.flaggame.command.trophie;
+package syam.flaggame.command.trophy;
 
 import java.util.List;
 import java.util.Objects;
@@ -22,30 +22,29 @@ import jp.llv.flaggame.api.FlagGameAPI;
 import jp.llv.flaggame.api.exception.CommandException;
 import jp.llv.flaggame.api.exception.FlagGameException;
 import jp.llv.flaggame.api.player.GamePlayer;
-import jp.llv.flaggame.api.player.TrophieSetupSession;
-import jp.llv.flaggame.api.trophie.Trophie;
 import jp.llv.flaggame.util.FlagTabCompleter;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.command.BaseCommand;
 import syam.flaggame.permission.Perms;
+import jp.llv.flaggame.api.trophy.Trophy;
+import jp.llv.flaggame.api.player.TrophySetupSession;
 
 /**
  *
  * @author toyblocks
- * @param <T> a type of trophie this command supports.
+ * @param <T> a type of trophy this command supports.
  */
-public abstract class TrophieEditCommand<T extends Trophie> extends BaseCommand {
+public abstract class TrophyEditCommand<T extends Trophy> extends BaseCommand {
 
     private final Class<T> type;
     
-    public TrophieEditCommand(FlagGameAPI api, int argLength, String usage, FlagTabCompleter completer, Class<T> type, String name, String... aliases) {
-        super(
-                api,
+    public TrophyEditCommand(FlagGameAPI api, int argLength, String usage, FlagTabCompleter completer, Class<T> type, String name, String... aliases) {
+        super(api,
                 true,
                 argLength,
                 usage,
-                Perms.TROPHIE_EDIT,
+                Perms.TROPHY_EDIT,
                 completer,
                 name,
                 aliases
@@ -56,14 +55,14 @@ public abstract class TrophieEditCommand<T extends Trophie> extends BaseCommand 
     @Override
     protected void execute(List<String> args, CommandSender sender, Player player) throws FlagGameException {
         GamePlayer gamePlayer = api.getPlayers().getPlayer(player);
-        Trophie trophie = gamePlayer.getSetupSession(TrophieSetupSession.class)
+        Trophy trophy = gamePlayer.getSetupSession(TrophySetupSession.class)
                 .orElseThrow(() -> new CommandException("&c先に編集するトロフィーを選択してください")).getReserved();
-        if (!type.isInstance(trophie)) {
+        if (!type.isInstance(trophy)) {
             throw new CommandException("&cあなたの選択しているトロフィーはこのコマンドによりサポートされていません");
         }
-        this.execute(args, gamePlayer, player, type.cast(trophie));
+        this.execute(args, gamePlayer, player, type.cast(trophy));
     }
     
-    protected abstract void execute(List<String> args, GamePlayer gamePlayer, Player player, T trophie);
+    protected abstract void execute(List<String> args, GamePlayer gamePlayer, Player player, T trophy);
 
 }

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jp.llv.flaggame.trophie;
+package jp.llv.flaggame.trophy;
 
 import java.util.UUID;
 import javax.script.ScriptException;
@@ -25,11 +25,11 @@ import jp.llv.flaggame.profile.RecordStream;
  *
  * @author toyblocks
  */
-public class StreamTrophie extends NashornTrophie {
+public class StreamTrophy extends NashornTrophy {
     
     public static final String TYPE_NAME = "stream";
     
-    public StreamTrophie(String name) {
+    public StreamTrophy(String name) {
         super(name);
     }
 

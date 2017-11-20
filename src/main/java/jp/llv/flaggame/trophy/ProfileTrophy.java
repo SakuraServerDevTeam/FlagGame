@@ -14,23 +14,34 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jp.llv.flaggame.trophie;
+package jp.llv.flaggame.trophy;
+
+import java.util.Objects;
+import javax.script.ScriptException;
+import jp.llv.flaggame.api.FlagGameAPI;
+import jp.llv.flaggame.api.profile.PlayerProfile;
 
 /**
  *
  * @author toyblocks
  */
-public class ImpossibleTrophie extends BaseTrophie {
-
-    public static final String TYPE_NAME = "impossible";
+public class ProfileTrophy extends NashornTrophy {
     
-    public ImpossibleTrophie(String name) {
+    public static final String TYPE_NAME = "profile";
+    
+    public ProfileTrophy(String name) {
         super(name);
     }
 
     @Override
     public String getType() {
         return TYPE_NAME;
+    }
+
+    public boolean test(FlagGameAPI api, PlayerProfile profile) throws ScriptException {
+        return super.test(api, bindings -> {
+            bindings.put("profile", Objects.requireNonNull(profile));
+        });
     }
     
 }

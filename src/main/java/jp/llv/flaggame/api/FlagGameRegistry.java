@@ -28,7 +28,7 @@ import jp.llv.flaggame.api.exception.NotRegisteredException;
 import jp.llv.flaggame.api.player.SetupReservation;
 import jp.llv.flaggame.api.player.SetupSession;
 import jp.llv.flaggame.api.session.Reservable;
-import jp.llv.flaggame.api.trophie.Trophie;
+import jp.llv.flaggame.api.trophy.Trophy;
 
 /**
  *
@@ -43,7 +43,7 @@ public interface FlagGameRegistry {
     <R extends Reservable<R>, S extends SetupReservation<R>>
             void registerSession(Class<S> type, Function<Reservable.Reservation<R>, S> factory);
 
-    void registerTrophie(String key, Function<String, ? extends Trophie> factory);
+    void registerTrophy(String key, Function<String, ? extends Trophy> factory);
             
     Collection<String> getReceptions();
 
@@ -75,6 +75,6 @@ public interface FlagGameRegistry {
             Function<? super Reservable.Reservation<? super R>, ? extends S>
             getSession(Class<S> type) throws NotRegisteredException;
             
-    Function<String, ? extends Trophie> getTrophie(String key) throws NotRegisteredException;
+    Function<String, ? extends Trophy> getTrophy(String key) throws NotRegisteredException;
 
 }

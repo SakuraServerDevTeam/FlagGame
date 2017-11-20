@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jp.llv.flaggame.trophie;
+package jp.llv.flaggame.trophy;
 
 import javax.script.ScriptException;
 import jp.llv.flaggame.api.FlagGameAPI;
@@ -25,13 +25,13 @@ import jp.llv.flaggame.profile.record.PlayerRecord;
  *
  * @author toyblocks
  */
-public class RecordTrophie extends NashornTrophie {
+public class RecordTrophy extends NashornTrophy {
     
     public static final String TYPE_NAME = "record";
 
     private RecordType target = null;
 
-    public RecordTrophie(String name) {
+    public RecordTrophy(String name) {
         super(name);
     }
 
