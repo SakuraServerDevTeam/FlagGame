@@ -29,6 +29,7 @@ public class AccountDeserializer0 extends BaseDeserializer implements AccountDes
     @Override
     public Account readAccount(BsonDocument bson) {
         CachedAccount result = new CachedAccount(readUUID(bson, "_id"));
+        result.setName(readString(bson, "name"));
         result.setNick(0, readString(bson, "nick0"));
         result.setNick(1, readString(bson, "nick1"));
         result.setNick(2, readString(bson, "nick2"));

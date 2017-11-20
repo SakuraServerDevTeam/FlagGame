@@ -36,6 +36,7 @@ public class AccountSerializer extends BaseSerializer {
     public BsonDocument writeAccount(Account value) {
         BsonDocument section = new BsonDocument();
         writeUUID(section, "_id", value.getUUID());
+        writeString(section, "name", value.getName());
         section.put(AccountDeserializer.Version.FIELD_NAME, new BsonInt32(VERSION));
         writeString(section, "nick0", value.getNick(0));
         writeString(section, "nick1", value.getNick(1));

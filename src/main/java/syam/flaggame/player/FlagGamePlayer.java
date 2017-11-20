@@ -269,6 +269,7 @@ public class FlagGamePlayer implements GamePlayer {
                     if (account == null) {
                         account = new CachedAccount(player);
                     }
+                    account.setName(getName());
                     accountState.compareAndSet(AccountState.LOADING, AccountState.AVAILABLE);
                 } catch (DatabaseException ex) {
                     accountState.compareAndSet(AccountState.LOADING, AccountState.NOT_AVAILABLE);

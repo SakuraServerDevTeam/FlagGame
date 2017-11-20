@@ -33,6 +33,19 @@ public interface Account {
     
     UUID getUUID();
     
+    /**
+     * Returns a cached player's name.
+     * @return a cached name
+     */
+    String getName();
+    
+    /**
+     * Cache a player name.
+     * This is not for modifying a player's name.
+     * @param name a name to be cached
+     */
+    void setName(String name);
+    
     AtomicDouble getBalance();
 
     String getKit();

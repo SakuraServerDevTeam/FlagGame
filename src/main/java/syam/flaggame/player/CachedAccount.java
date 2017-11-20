@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import jp.llv.flaggame.api.exception.InvalidNameException;
@@ -36,6 +37,7 @@ import jp.llv.flaggame.api.trophy.Trophy;
 public class CachedAccount implements Account {
 
     private final UUID uuid;
+    private String name;
     
     private final List<String> nicks = Arrays.asList(new String[3]);
     private String kit;
@@ -49,6 +51,14 @@ public class CachedAccount implements Account {
 
     public CachedAccount(UUID uuid) {
         this.uuid = uuid;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = Objects.requireNonNull(name);
     }
 
     @Override
