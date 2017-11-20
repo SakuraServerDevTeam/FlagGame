@@ -28,6 +28,7 @@ import jp.llv.flaggame.api.exception.ObjectiveCollisionException;
 import jp.llv.flaggame.api.exception.ReservedException;
 import syam.flaggame.permission.Perms;
 import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.player.StageSetupSession;
 import jp.llv.flaggame.api.stage.Stage;
 import jp.llv.flaggame.api.stage.objective.SuperJump;
 import syam.flaggame.util.Actions;
@@ -90,7 +91,7 @@ public class ObjectiveSetCommand extends ObjectiveCommand {
 
         // マネージャーセット
         GamePlayer gPlayer = this.api.getPlayers().getPlayer(player);
-        gPlayer.getSetupSession().get().setSetting(ObjectiveType.FLAG).setSelectedPoint(type);
+        gPlayer.getSetupSession(StageSetupSession.class).get().setSetting(ObjectiveType.FLAG).setSelectedPoint(type);
         String tool = Material.getMaterial(api.getConfig().getToolID()).name();
         Actions.message(player, "&aフラッグ管理モードを開始しました。選択ツール: " + tool);
     }
@@ -119,7 +120,7 @@ public class ObjectiveSetCommand extends ObjectiveCommand {
         }
 
         GamePlayer gPlayer = this.api.getPlayers().getPlayer(player);
-        gPlayer.getSetupSession().get().setSetting(ObjectiveType.NEXUS)
+        gPlayer.getSetupSession(StageSetupSession.class).get().setSetting(ObjectiveType.NEXUS)
                 .setSelectedPoint(point)
                 .setSelectedColor(color);
         String tool = Material.getMaterial(api.getConfig().getToolID()).name();
@@ -140,7 +141,7 @@ public class ObjectiveSetCommand extends ObjectiveCommand {
         }
 
         GamePlayer gPlayer = this.api.getPlayers().getPlayer(player);
-        gPlayer.getSetupSession().get().setSetting(ObjectiveType.BANNER_SPAWNER)
+        gPlayer.getSetupSession(StageSetupSession.class).get().setSetting(ObjectiveType.BANNER_SPAWNER)
                 .setSelectedPoint(point)
                 .setHp(hp);
         String tool = Material.getMaterial(api.getConfig().getToolID()).name();
@@ -160,7 +161,7 @@ public class ObjectiveSetCommand extends ObjectiveCommand {
         }
 
         GamePlayer gPlayer = this.api.getPlayers().getPlayer(player);
-        gPlayer.getSetupSession().get().setSetting(ObjectiveType.BANNER_SLOT)
+        gPlayer.getSetupSession(StageSetupSession.class).get().setSetting(ObjectiveType.BANNER_SLOT)
                 .setSelectedColor(color);
         String tool = Material.getMaterial(api.getConfig().getToolID()).name();
         Actions.message(player, "&aスロット管理モードを開始しました。選択ツール: " + tool);
@@ -169,7 +170,7 @@ public class ObjectiveSetCommand extends ObjectiveCommand {
     private void setChest(Player player, Stage game, List<String> args) throws ReservedException {
         // マネージャーセット
         GamePlayer gPlayer = this.api.getPlayers().getPlayer(player);
-        gPlayer.getSetupSession().get().setSetting(ObjectiveType.CHEST);
+        gPlayer.getSetupSession(StageSetupSession.class).get().setSetting(ObjectiveType.CHEST);
         String tool = Material.getMaterial(api.getConfig().getToolID()).name();
         Actions.message(player, "&aチェスト管理モードを開始しました。選択ツール: " + tool);
     }

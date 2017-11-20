@@ -21,6 +21,7 @@ import java.io.UncheckedIOException;
 import jp.llv.flaggame.api.kit.Kit;
 import org.bson.BsonBinary;
 import org.bson.BsonDocument;
+import org.bson.BsonInt32;
 import org.bson.BsonString;
 
 /**
@@ -29,7 +30,7 @@ import org.bson.BsonString;
  */
 public final class KitSerializer extends BaseSerializer {
 
-    public static final int VERSION = 1;
+    public static final int VERSION = 0;
     private static KitSerializer instance;
 
     KitSerializer() {
@@ -38,6 +39,7 @@ public final class KitSerializer extends BaseSerializer {
     public BsonDocument writeKit(Kit value) throws UncheckedIOException {
         BsonDocument section = new BsonDocument();
         section.append("_id", new BsonString(value.getName()));
+        section.append(KitDeserializer.Version.FIELD_NAME, new BsonInt32(VERSION));
         try {
             section.append("icon", new BsonBinary(value.getIcon().write(true)));
             section.append("inventory", new BsonBinary(value.getInventory().write(true)));

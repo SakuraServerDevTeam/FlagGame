@@ -87,6 +87,9 @@ import syam.flaggame.command.stage.StageSetCommand;
 import syam.flaggame.command.stage.StageStatsCommand;
 import syam.flaggame.command.stage.StageTagAddCommand;
 import syam.flaggame.command.stage.StageTagRemoveCommand;
+import syam.flaggame.command.trophie.TrophieCreateCommand;
+import syam.flaggame.command.trophie.TrophieDeleteCommand;
+import syam.flaggame.command.trophie.TrophieSelectCommand;
 import syam.flaggame.util.Actions;
 
 /**
@@ -165,12 +168,15 @@ public enum FlagCommandRegistry implements TabExecutor {
     ),
     TROPHIE(
             "<- manage trophies",
-            names("trophie")
+            names("trophie", "tro"),
+            TrophieCreateCommand::new,
+            TrophieDeleteCommand::new,
+            TrophieSelectCommand::new
     ),
     PLAYER(
             "<- manage players",
             names("player", "p"),
-            subcategories(NICK, TROPHIE, BIT),
+            subcategories(NICK, BIT),
             PlayerExpCommand::new,
             PlayerInfoCommand::new,
             PlayerStatsCommand::new,
@@ -214,6 +220,7 @@ public enum FlagCommandRegistry implements TabExecutor {
                     PLAYER,
                     STAGE,
                     KIT,
+                    TROPHIE,
                     DEBUG
             ),
             HelpCommand::new,
@@ -231,7 +238,8 @@ public enum FlagCommandRegistry implements TabExecutor {
                     OBJECTIVE,
                     PLAYER,
                     STAGE,
-                    KIT
+                    KIT,
+                    TROPHIE
             )
     );
 

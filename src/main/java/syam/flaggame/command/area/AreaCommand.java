@@ -25,6 +25,7 @@ import syam.flaggame.command.BaseCommand;
 import jp.llv.flaggame.api.exception.CommandException;
 import syam.flaggame.permission.Perms;
 import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.player.StageSetupSession;
 import jp.llv.flaggame.api.stage.Stage;
 
 /**
@@ -44,10 +45,9 @@ public abstract class AreaCommand extends BaseCommand {
     @Override
     public void execute(List<String> args, CommandSender sender, Player player) throws CommandException {
         GamePlayer gp = api.getPlayers().getPlayer(player);
-        if (!gp.getSetupSession().isPresent()) {
-            throw new CommandException("&c先に編集するゲームを選択してください");
-        }
-        Reservable selected = gp.getSetupSession().get().getSelected();
+        Reservable selected = gp.getSetupSession(StageSetupSession.class)
+                .orElseThrow(() -> new CommandException("&c先に編集するゲームを選択してください"))
+                .getReserved();
         if (!(selected instanceof Stage)) {
             throw new CommandException("&cあなたはステージを選択していません！");
         }

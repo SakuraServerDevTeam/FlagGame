@@ -28,6 +28,7 @@ import jp.llv.flaggame.api.exception.CommandException;
 import jp.llv.flaggame.api.exception.FlagGameException;
 import syam.flaggame.permission.Perms;
 import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.player.StageSetupSession;
 import jp.llv.flaggame.api.stage.Stage;
 
 /**
@@ -47,7 +48,7 @@ public abstract class ObjectiveCommand extends BaseCommand {
     @Override
     public void execute(List<String> args, CommandSender sender, Player player) throws FlagGameException {
         GamePlayer gplayer = api.getPlayers().getPlayer(player);
-        Stage stage = gplayer.getSetupSession().map(s -> s.getSelected(Stage.class)).orElse(null);
+        Stage stage = gplayer.getSetupSession(StageSetupSession.class).map(StageSetupSession::getReserved).orElse(null);
         if (stage == null) {
             throw new CommandException("&cあなたはステージを選択していません！");
         }

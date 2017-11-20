@@ -14,4 +14,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package syam.flaggame.event;
+package jp.llv.flaggame.api.util.function;
+
+/**
+ * Represents a function that accepts three arguments and not produces a result.
+ * This is the three-arity specialization of
+ * {@link java.util.function.Consumer}.
+ *
+ * @author Toyblocks
+ * @param <A1> the type of the first argument to the function
+ * @param <A2> the type of the second argument to the function
+ * @param <A3> the type of the result of the function
+ */
+@FunctionalInterface
+public interface TriConsumer<A1, A2, A3> {
+
+    void accept(A1 a1, A2 a2, A3 a3);
+
+}

@@ -73,8 +73,8 @@ public class SimpleReservable<T extends Reservable<T>> implements Reservable<T> 
         }
 
         @Override
-        public Reservable<T> getReservable() {
-            return SimpleReservable.this;
+        public T getReservable() {
+            return (T) SimpleReservable.this;
         }
 
         @Override

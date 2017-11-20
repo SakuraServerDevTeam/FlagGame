@@ -19,7 +19,7 @@ package jp.llv.flaggame.database.mongo.bson;
 import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
-import jp.llv.flaggame.util.function.TriConsumer;
+import jp.llv.flaggame.api.util.function.TriConsumer;
 import org.bson.BsonBinary;
 import org.bson.BsonBinarySubType;
 import org.bson.BsonDocument;

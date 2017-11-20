@@ -26,10 +26,10 @@ import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.BaseCommand;
 import jp.llv.flaggame.util.OnelineBuilder;
 import jp.llv.flaggame.api.exception.CommandException;
-import jp.llv.flaggame.stage.AreaInfo;
 import jp.llv.flaggame.api.stage.Stage;
 import syam.flaggame.permission.Perms;
 import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.player.StageSetupSession;
 import jp.llv.flaggame.api.stage.area.StageAreaInfo;
 import syam.flaggame.util.Actions;
 
@@ -58,13 +58,13 @@ public class StageSaveCommand extends BaseCommand {
                 throw new CommandException("&cステージを指定してください！");
             } else {
                 GamePlayer gplayer = api.getPlayers().getPlayer(player);
-                stage = gplayer.getSetupSession()
+                stage = gplayer.getSetupSession(StageSetupSession.class)
                         .orElseThrow(() -> new CommandException("&cステージを指定してください！"))
-                        .getSelected(Stage.class);
+                        .getReserved();
                 if (stage == null) {
                     throw new CommandException("&cあなたはステージを選択していません！");
                 }
-                gplayer.destroySetupSession();
+                gplayer.destroySetupSession(StageSetupSession.class);
                 gplayer.sendMessage("&aステージの選択を解除しました！");
             }
         } else {

@@ -64,7 +64,7 @@ public class PlayerManager implements PlayerAPI<FlagGamePlayer> {
         new StageSaveRemindTask(api).runTaskTimer(api.getPlugin(), 1200L, 1200L);
         synchronized (players) {
             Bukkit.getOnlinePlayers()
-                    .forEach(p -> this.players.put(p.getUniqueId(), new FlagGamePlayer(p)));
+                    .forEach(p -> this.players.put(p.getUniqueId(), new FlagGamePlayer(api, p)));
         }
     }
 
@@ -188,7 +188,7 @@ public class PlayerManager implements PlayerAPI<FlagGamePlayer> {
             synchronized (players) {
                 gp = PlayerManager.this.getPlayer(p);
                 if (gp == null) { // the player is in a game or saving account
-                    gp = new FlagGamePlayer(p);
+                    gp = new FlagGamePlayer(api, p);
                 }
                 try {
                     gp.loadAccount(api);

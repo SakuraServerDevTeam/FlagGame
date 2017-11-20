@@ -17,44 +17,26 @@
 package syam.flaggame.player;
 
 import jp.llv.flaggame.api.player.StageSetupSession;
-import java.util.Objects;
+import jp.llv.flaggame.api.player.SetupReservation;
 import jp.llv.flaggame.reception.TeamColor;
 import jp.llv.flaggame.api.session.Reservable;
+import jp.llv.flaggame.api.stage.Stage;
 import jp.llv.flaggame.api.stage.objective.ObjectiveType;
 
 /**
  *
  * @author Toyblocks
  */
-public class SetupSession implements StageSetupSession {
+public class StageSetupReservation extends SetupReservation<Stage> implements StageSetupSession {
 
-    private final Reservable.Reservation<?> selected;
     private ObjectiveType setting;
 
     private TeamColor color = null;
     private Double point = null;
     private Byte hp = null;
 
-    /*package*/ SetupSession(Reservable.Reservation<?> selected) {
-        this.selected = Objects.requireNonNull(selected);
-    }
-
-    @Override
-    public Reservable<?> getSelected() {
-        return this.selected.getReservable();
-    }
-
-    @Override
-    public <T extends Reservable<T>> T getSelected(Class<T> clazz) {
-        if (clazz.isInstance(selected.getReservable())) {
-            return (T) selected.getReservable();
-        } else {
-            return null;
-        }
-    }
-
-    /*package*/ Reservable.Reservation<?> getReservation() {
-        return selected;
+    public StageSetupReservation(Reservable.Reservation<Stage> reservation) {
+        super(reservation);
     }
 
     @Override
@@ -63,7 +45,7 @@ public class SetupSession implements StageSetupSession {
     }
 
     @Override
-    public SetupSession setSetting(ObjectiveType setting) {
+    public StageSetupReservation setSetting(ObjectiveType setting) {
         if (this.setting == setting) {
             return this;
         }
@@ -83,7 +65,7 @@ public class SetupSession implements StageSetupSession {
     }
 
     @Override
-    public SetupSession setSelectedPoint(double point) {
+    public StageSetupReservation setSelectedPoint(double point) {
         if (this.setting != ObjectiveType.FLAG && this.setting != ObjectiveType.NEXUS && this.setting != ObjectiveType.BANNER_SPAWNER) {
             throw new IllegalStateException();
         }
@@ -100,7 +82,7 @@ public class SetupSession implements StageSetupSession {
     }
 
     @Override
-    public SetupSession setSelectedColor(TeamColor color) {
+    public StageSetupReservation setSelectedColor(TeamColor color) {
         if (this.setting != ObjectiveType.BANNER_SLOT && this.setting != ObjectiveType.NEXUS) {
             throw new IllegalStateException();
         }
@@ -115,9 +97,9 @@ public class SetupSession implements StageSetupSession {
         }
         return hp;
     }
-
+    
     @Override
-    public SetupSession setHp(Byte hp) {
+    public StageSetupReservation setHp(Byte hp) {
         if (this.setting != ObjectiveType.BANNER_SPAWNER) {
             throw new IllegalStateException();
         }

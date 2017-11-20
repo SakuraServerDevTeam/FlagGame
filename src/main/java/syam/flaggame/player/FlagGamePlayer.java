@@ -16,6 +16,8 @@
  */
 package syam.flaggame.player;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -34,6 +36,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import jp.llv.flaggame.api.exception.FlagGameException;
+import jp.llv.flaggame.api.exception.NotRegisteredException;
 import jp.llv.flaggame.api.exception.ReservedException;
 import jp.llv.flaggame.api.player.Account;
 import jp.llv.flaggame.api.player.AccountState;
@@ -41,13 +44,15 @@ import syam.flaggame.util.Actions;
 import jp.llv.flaggame.api.reception.Reception;
 import jp.llv.flaggame.util.OptionSet;
 import jp.llv.flaggame.api.player.GamePlayer;
-import jp.llv.flaggame.api.player.StageSetupSession;
+import jp.llv.flaggame.api.player.SetupReservation;
+import jp.llv.flaggame.api.player.SetupSession;
 import jp.llv.flaggame.api.stage.Stage;
 import jp.llv.flaggame.database.DatabaseException;
 import net.md_5.bungee.api.ChatColor;
 
 public class FlagGamePlayer implements GamePlayer {
 
+    private final FlagGameAPI api;
     // プレイヤーデータ
     private final UUID player;
     private final String name;
@@ -55,7 +60,7 @@ public class FlagGamePlayer implements GamePlayer {
     private Account account;
     private final AtomicReference<AccountState> accountState = new AtomicReference<>(AccountState.INITIAL);
 
-    private SetupSession session;
+    private final Map<Class<? extends SetupSession<?>>, SetupReservation<?>> sessions = new HashMap<>();
     private Reception reception;
 
     private Location tpBack = null;
@@ -66,7 +71,8 @@ public class FlagGamePlayer implements GamePlayer {
      *
      * @param player
      */
-    /*package*/ FlagGamePlayer(Player player) {
+    /*package*/ FlagGamePlayer(FlagGameAPI api, Player player) {
+        this.api = Objects.requireNonNull(api);
         if (player == null) {
             throw new NullPointerException();
         }
@@ -222,25 +228,30 @@ public class FlagGamePlayer implements GamePlayer {
     }
 
     @Override
-    public Optional<StageSetupSession> getSetupSession() {
-        if (this.session == null) {
-            return Optional.empty();
-        } else {
-            return Optional.of(this.session);
+    public <R extends Reservable<R>, S extends SetupSession<R>> S createSetupSession(R reservable, Class<S> sessionType) throws ReservedException {
+        try {
+            Reservable.Reservation<R> reservation = reservable.reserve(this);
+            S result = api.getRegistry().getSession(sessionType).apply(reservation);
+            this.sessions.put(sessionType, (SetupReservation<?>) result);
+            return result;
+        } catch (NotRegisteredException ex) {
+            throw new RuntimeException(ex);
         }
     }
 
     @Override
-    public SetupSession createSetupSession(Reservable<?> reservable) throws ReservedException {
-        Objects.requireNonNull(reservable);
-        return session = new SetupSession(reservable.reserve(this));
+    public <S extends SetupSession<?>> void destroySetupSession(Class<S> type) {
+        sessions.remove(type);
     }
 
     @Override
-    public void destroySetupSession() {
-        Objects.requireNonNull(session);
-        session.getReservation().release();
-        session = null;
+    public <S extends SetupSession<?>> Optional<S> getSetupSession(Class<S> type) {
+        return Optional.ofNullable(type.cast(sessions.get(type)));
+    }
+
+    @Override
+    public boolean hasSetupSession() {
+        throw new UnsupportedOperationException();
     }
 
     /*package*/ void loadAccount(FlagGameAPI api) {

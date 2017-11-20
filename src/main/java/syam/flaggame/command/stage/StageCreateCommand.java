@@ -21,12 +21,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.BaseCommand;
-import syam.flaggame.event.StageCreateEvent;
+import jp.llv.flaggame.events.StageCreateEvent;
 import jp.llv.flaggame.api.exception.CommandException;
 import jp.llv.flaggame.api.exception.ReservedException;
 import jp.llv.flaggame.api.stage.Stage;
 import syam.flaggame.permission.Perms;
 import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.player.StageSetupSession;
 import jp.llv.flaggame.stage.BasicStage;
 import syam.flaggame.util.Actions;
 
@@ -73,7 +74,7 @@ public class StageCreateCommand extends BaseCommand {
 
         GamePlayer gPlayer = this.api.getPlayers().getPlayer(player);
         try {
-            gPlayer.createSetupSession(stage);
+            gPlayer.createSetupSession(stage, StageSetupSession.class);
         } catch (ReservedException ex) {
             throw new CommandException("&c そのステージは'" + ex.getReservable().getReserver().getName() + "'に占有されています！", ex);
         }

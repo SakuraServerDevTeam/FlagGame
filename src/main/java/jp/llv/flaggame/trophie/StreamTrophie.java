@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 SakuraServerDev
+ * Copyright (C) 2017 toyblocks
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,32 +14,35 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package syam.flaggame.player;
+package jp.llv.flaggame.trophie;
 
+import java.util.UUID;
+import javax.script.ScriptException;
 import jp.llv.flaggame.api.FlagGameAPI;
-import net.md_5.bungee.api.ChatMessageType;
-import org.bukkit.scheduler.BukkitRunnable;
+import jp.llv.flaggame.profile.RecordStream;
 
 /**
  *
- * @author SakuraServerDev
+ * @author toyblocks
  */
-public class StageSaveRemindTask extends BukkitRunnable {
-
-    private final FlagGameAPI api;
-
-    public StageSaveRemindTask(FlagGameAPI api) {
-        this.api = api;
+public class StreamTrophie extends NashornTrophie {
+    
+    public static final String TYPE_NAME = "stream";
+    
+    public StreamTrophie(String name) {
+        super(name);
     }
 
     @Override
-    public void run() {
-        api.getPlayers().getPlayers().stream()
-                .filter(p -> p.hasSetupSession())
-                .forEach(p -> {
-                    p.sendTitle("", "現在編集セッション中です", 10, 10, 10);
-                    p.sendMessage(ChatMessageType.ACTION_BAR, "忘れずに保存してください");
-                });
+    public String getType() {
+        return TYPE_NAME;
     }
-
+    
+    public boolean test(FlagGameAPI api, UUID player, RecordStream stream) throws ScriptException {
+        return super.test(api, bindings -> {
+            bindings.put("player", player);
+            bindings.put("stream", stream);
+        });
+    }
+    
 }

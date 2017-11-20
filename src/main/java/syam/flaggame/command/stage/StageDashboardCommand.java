@@ -17,7 +17,6 @@
 package syam.flaggame.command.stage;
 
 import java.util.List;
-import jp.llv.flaggame.reception.TeamColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import jp.llv.flaggame.api.FlagGameAPI;
@@ -28,6 +27,7 @@ import jp.llv.flaggame.api.stage.Stage;
 import jp.llv.flaggame.api.stage.objective.ObjectiveType;
 import syam.flaggame.permission.Perms;
 import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.player.StageSetupSession;
 import syam.flaggame.util.Actions;
 
 /**
@@ -53,7 +53,7 @@ public class StageDashboardCommand extends BaseCommand {
         Stage stage = null;
         if (player != null) {
             GamePlayer gplayer = api.getPlayers().getPlayer(player);
-            stage = gplayer.getSetupSession().map(s -> s.getSelected(Stage.class)).orElse(null);
+            stage = gplayer.getSetupSession(StageSetupSession.class).map(StageSetupSession::getReserved).orElse(null);
         }
         if (stage == null && !args.isEmpty()) {
             stage = api.getStages().getStage(args.get(0)).orElse(null);

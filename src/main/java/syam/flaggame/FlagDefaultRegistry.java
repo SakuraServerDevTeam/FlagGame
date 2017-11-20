@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Function;
 import jp.llv.flaggame.api.FlagGameAPI;
 import jp.llv.flaggame.api.reception.Reception;
 import jp.llv.flaggame.api.reception.Teaming;
@@ -29,16 +30,29 @@ import jp.llv.flaggame.reception.BasicGameReception;
 import jp.llv.flaggame.reception.TeamType;
 import jp.llv.flaggame.reception.teaming.SuccessiveTeaming;
 import jp.llv.flaggame.reception.teaming.VibeBasedTeaming;
-import jp.llv.flaggame.util.function.ThrowingBiFunction;
+import jp.llv.flaggame.api.util.function.ThrowingBiFunction;
 import jp.llv.flaggame.api.exception.FlagGameException;
 import jp.llv.flaggame.api.FlagGameRegistry;
 import jp.llv.flaggame.api.exception.NotRegisteredException;
+import jp.llv.flaggame.api.session.Reservable;
+import jp.llv.flaggame.api.player.SetupReservation;
+import jp.llv.flaggame.api.player.SetupSession;
+import jp.llv.flaggame.api.player.StageSetupSession;
+import jp.llv.flaggame.api.player.TrophieSetupSession;
+import jp.llv.flaggame.api.stage.Stage;
+import jp.llv.flaggame.api.trophie.Trophie;
+import jp.llv.flaggame.trophie.ImpossibleTrophie;
+import jp.llv.flaggame.trophie.ProfileTrophie;
+import jp.llv.flaggame.trophie.RecordTrophie;
+import jp.llv.flaggame.trophie.StreamTrophie;
+import syam.flaggame.player.StageSetupReservation;
+import syam.flaggame.player.TrophieSetupReservation;
 
 /**
  *
  * @author toyblocks
  */
-public class FlagDefaultRegistry implements FlagGameRegistry {
+public final class FlagDefaultRegistry implements FlagGameRegistry {
 
     private final Map<String, ThrowingBiFunction<? super FlagGameAPI, ? super UUID, ? extends Reception, FlagGameException>> receptions = new HashMap<>();
 
@@ -51,6 +65,22 @@ public class FlagDefaultRegistry implements FlagGameRegistry {
     {
         teamings.put(null, VibeBasedTeaming::new);
         teamings.put("successive", SuccessiveTeaming::new);
+    }
+
+    private final Map<Class<? extends SetupSession<?>>, Function<? extends Reservable.Reservation<?>, ? extends SetupReservation<?>>> sessions = new HashMap<>();
+
+    {
+        sessions.put(StageSetupSession.class, (Function<Reservable.Reservation<Stage>, StageSetupReservation>) StageSetupReservation::new);
+        sessions.put(TrophieSetupSession.class, (Function<Reservable.Reservation<Trophie>, TrophieSetupReservation>) TrophieSetupReservation::new);
+    }
+    
+    private final Map<String, Function<String, ? extends Trophie>> trophies = new HashMap<>();
+    
+    {
+        trophies.put(ImpossibleTrophie.TYPE_NAME, ImpossibleTrophie::new);
+        trophies.put(RecordTrophie.TYPE_NAME, RecordTrophie::new);
+        trophies.put(StreamTrophie.TYPE_NAME, StreamTrophie::new);
+        trophies.put(ProfileTrophie.TYPE_NAME, ProfileTrophie::new);
     }
 
     /*package*/ FlagDefaultRegistry() {
@@ -73,6 +103,23 @@ public class FlagDefaultRegistry implements FlagGameRegistry {
     }
 
     @Override
+    public <R extends Reservable<R>, S extends SetupReservation<R>>
+            void registerSession(Class<S> type, Function<Reservable.Reservation<R>, S> factory) {
+        if (sessions.containsKey(Objects.requireNonNull(type))) {
+            throw new IllegalStateException("key duplication");
+        }
+        sessions.put(type, Objects.requireNonNull(factory));
+    }
+
+    @Override
+    public void registerTrophie(String key, Function<String, ? extends Trophie> factory) {
+        if (trophies.containsKey(Objects.requireNonNull(key))) {
+            throw new IllegalStateException("key duplication");
+        }
+        trophies.put(key, Objects.requireNonNull(factory));
+    }
+
+    @Override
     public Collection<String> getReceptions() {
         return Collections.unmodifiableSet(receptions.keySet());
     }
@@ -80,6 +127,11 @@ public class FlagDefaultRegistry implements FlagGameRegistry {
     @Override
     public Collection<String> getTeamings() {
         return Collections.unmodifiableSet(teamings.keySet());
+    }
+    
+    @Override
+    public Collection<String> getTrophies() {
+        return Collections.unmodifiableSet(trophies.keySet());
     }
 
     @Override
@@ -95,6 +147,27 @@ public class FlagDefaultRegistry implements FlagGameRegistry {
     public ThrowingBiFunction<? super FlagGameAPI, ? super TeamType[], ? extends Teaming, FlagGameException> getTeaming(String key) throws NotRegisteredException {
         if (teamings.containsKey(key)) {
             return teamings.get(key);
+        } else {
+            throw new NotRegisteredException();
+        }
+    }
+
+    @Override
+    public <R extends Reservable<? super R>, S extends SetupSession<? super R>>
+            Function<? super Reservable.Reservation<? super R>, ? extends S>
+            getSession(Class<S> type) throws NotRegisteredException {
+        for (Class<? extends SetupSession<?>> key : sessions.keySet()) {
+            if (type.isAssignableFrom(key)) {
+                return (Function<? super Reservable.Reservation<? super R>, ? extends S>) sessions.get(key);
+            }
+        }
+        throw new NotRegisteredException();
+    }
+
+    @Override
+    public Function<String, ? extends Trophie> getTrophie(String key) throws NotRegisteredException {
+        if (trophies.containsKey(key)) {
+            return trophies.get(key);
         } else {
             throw new NotRegisteredException();
         }

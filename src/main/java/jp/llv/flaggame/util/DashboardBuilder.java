@@ -16,7 +16,7 @@
  */
 package jp.llv.flaggame.util;
 
-import jp.llv.flaggame.util.function.TriConsumer;
+import jp.llv.flaggame.api.util.function.TriConsumer;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;

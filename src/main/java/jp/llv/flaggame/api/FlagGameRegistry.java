@@ -18,12 +18,17 @@ package jp.llv.flaggame.api;
 
 import java.util.Collection;
 import java.util.UUID;
+import java.util.function.Function;
 import jp.llv.flaggame.api.reception.Reception;
 import jp.llv.flaggame.api.reception.Teaming;
 import jp.llv.flaggame.reception.TeamType;
-import jp.llv.flaggame.util.function.ThrowingBiFunction;
+import jp.llv.flaggame.api.util.function.ThrowingBiFunction;
 import jp.llv.flaggame.api.exception.FlagGameException;
 import jp.llv.flaggame.api.exception.NotRegisteredException;
+import jp.llv.flaggame.api.player.SetupReservation;
+import jp.llv.flaggame.api.player.SetupSession;
+import jp.llv.flaggame.api.session.Reservable;
+import jp.llv.flaggame.api.trophie.Trophie;
 
 /**
  *
@@ -35,9 +40,16 @@ public interface FlagGameRegistry {
 
     void registerTeaming(String key, ThrowingBiFunction<? super FlagGameAPI, ? super TeamType[], ? extends Teaming, FlagGameException> factory);
 
+    <R extends Reservable<R>, S extends SetupReservation<R>>
+            void registerSession(Class<S> type, Function<Reservable.Reservation<R>, S> factory);
+
+    void registerTrophie(String key, Function<String, ? extends Trophie> factory);
+            
     Collection<String> getReceptions();
 
     Collection<String> getTeamings();
+    
+    Collection<String> getTrophies();
 
     ThrowingBiFunction<? super FlagGameAPI, ? super UUID, ? extends Reception, FlagGameException> getReception(String key) throws NotRegisteredException;
 
@@ -58,5 +70,11 @@ public interface FlagGameRegistry {
             return null;
         }
     }
+
+    <R extends Reservable<? super R>, S extends SetupSession<? super R>>
+            Function<? super Reservable.Reservation<? super R>, ? extends S>
+            getSession(Class<S> type) throws NotRegisteredException;
+            
+    Function<String, ? extends Trophie> getTrophie(String key) throws NotRegisteredException;
 
 }

@@ -54,8 +54,8 @@ public class StageSelectCommand extends BaseCommand {
                     .orElseThrow(() -> new CommandException("&cステージ'" + args.get(0) + "'が見つかりません！"));
 
             // 既に選択中のステージと同じステージでない限りはセッションを作成
-            if (gPlayer.getSetupSession().map(StageSetupSession::getSelected).orElse(null) != stage) {
-                gPlayer.createSetupSession(stage);
+            if (gPlayer.getSetupSession(StageSetupSession.class).map(StageSetupSession::getReserved).orElse(null) != stage) {
+                gPlayer.createSetupSession(stage, StageSetupSession.class);
             }
 
             String msg = "&aステージ'&6" + stage.getName() + "&a'を選択しました！";
@@ -65,8 +65,8 @@ public class StageSelectCommand extends BaseCommand {
                 Actions.message(player, msg);
             }
         } else {
-            gPlayer.getSetupSession().orElseThrow(() -> new CommandException("&cあなたはステージを選択していません！"));
-            gPlayer.destroySetupSession();
+            gPlayer.getSetupSession(StageSetupSession.class).orElseThrow(() -> new CommandException("&cあなたはステージを選択していません！"));
+            gPlayer.destroySetupSession(StageSetupSession.class);
             Actions.message(player, "&aステージの選択を解除しました！");
         }
     }

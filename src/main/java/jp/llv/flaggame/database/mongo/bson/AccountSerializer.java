@@ -19,6 +19,7 @@ package jp.llv.flaggame.database.mongo.bson;
 import jp.llv.flaggame.api.player.Account;
 import org.bson.BsonDocument;
 import org.bson.BsonDouble;
+import org.bson.BsonInt32;
 
 /**
  *
@@ -26,7 +27,7 @@ import org.bson.BsonDouble;
  */
 public class AccountSerializer extends BaseSerializer {
 
-    public static final int VERSION = 1;
+    public static final int VERSION = 0;
     private static AccountSerializer instance;
 
     AccountSerializer() {
@@ -35,6 +36,7 @@ public class AccountSerializer extends BaseSerializer {
     public BsonDocument writeAccount(Account value) {
         BsonDocument section = new BsonDocument();
         writeUUID(section, "_id", value.getUUID());
+        section.put(AccountDeserializer.Version.FIELD_NAME, new BsonInt32(VERSION));
         writeString(section, "nick0", value.getNick(0));
         writeString(section, "nick1", value.getNick(1));
         writeString(section, "nick2", value.getNick(2));

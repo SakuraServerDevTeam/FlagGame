@@ -18,13 +18,13 @@ package jp.llv.flaggame.database;
 
 import java.util.Map;
 import java.util.UUID;
-import syam.flaggame.player.CachedAccount;
 import jp.llv.flaggame.api.player.Account;
 import jp.llv.flaggame.api.kit.Kit;
 import jp.llv.flaggame.profile.RecordStream;
 import jp.llv.flaggame.api.profile.StatEntry;
 import jp.llv.flaggame.api.profile.RecordType;
 import jp.llv.flaggame.api.stage.Stage;
+import jp.llv.flaggame.api.trophie.Trophie;
 
 /**
  *
@@ -49,6 +49,12 @@ public interface Database extends AutoCloseable {
 
     void deleteStage(Stage stage, DatabaseCallback<Void, DatabaseException> callback);
 
+    void loadTrophies(DatabaseCallback<Trophie, RuntimeException> consumer, DatabaseCallback<Void, DatabaseException> callback);
+    
+    void saveTrophie(Trophie trophie, DatabaseCallback<Void, DatabaseException> callback);
+    
+    void deleteTrophie(Trophie trophie, DatabaseCallback<Void, DatabaseException> callback);
+    
     void loadKits(DatabaseCallback<Kit, RuntimeException> consumer, DatabaseCallback<Void, DatabaseException> callback);
 
     void saveKit(Kit kit, DatabaseCallback<Void, DatabaseException> callback);

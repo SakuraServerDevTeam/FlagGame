@@ -59,6 +59,12 @@ public interface Account {
 
     void unlockNick(int index, String nick) throws InvalidNameException;
 
+    /**
+     * Simply marks a trophie as unlocked.
+     * This does ignore rewards. To consider rewards, use 
+     * {@link Trophie#reward(jp.llv.flaggame.api.player.GamePlayer)}.
+     * @param trophie 
+     */
     void unlockTrophie(Trophie trophie);
     
 }

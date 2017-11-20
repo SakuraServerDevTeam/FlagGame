@@ -16,12 +16,58 @@
  */
 package jp.llv.flaggame.api.trophie;
 
+import java.util.Collection;
+import java.util.Set;
+import java.util.regex.Pattern;
+import jp.llv.flaggame.api.exception.AccountNotReadyException;
+import jp.llv.flaggame.api.exception.InvalidNameException;
+import jp.llv.flaggame.api.player.Account;
+import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.session.Reservable;
+
 /**
  *
  * @author toyblocks
  */
-public interface Trophie {
+public interface Trophie extends Reservable<Trophie> {
+
+    public static final Pattern NAME_REGEX = Pattern.compile("^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$");
+
+    String getType();
     
+    void addRewardKit(String kit);
+
+    void addRewardKits(Collection<String> kits);
+
+    void addRewardNick(int index, String nick) throws InvalidNameException;
+
+    void addRewardNicks(int index, Collection<String> nicks);
+
     String getName();
+
+    double getRewardBits();
+
+    Set<String> getRewardKits();
+
+    double getRewardMoney();
+
+    Set<String> getRewardNicks(int index);
+
+    void removeRewardKit(String kit);
+
+    void removeRewardNick(int index, String nick);
+
+    /**
+     * Rewards a player unconditionally.
+     * This would give bits, money, nicks and kits. Not to, use 
+     * {@link Account#unlockTrophie(jp.llv.flaggame.api.trophie.Trophie)}.
+     * @param player a player to reward
+     * @throws AccountNotReadyException if an account is not ready
+     */
+    void reward(GamePlayer player) throws AccountNotReadyException;
+
+    void setRewardBits(double rewardBits);
+
+    void setRewardMoney(double rewardMoney);
     
 }

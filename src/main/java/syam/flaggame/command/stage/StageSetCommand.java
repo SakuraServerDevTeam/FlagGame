@@ -33,6 +33,7 @@ import jp.llv.flaggame.api.exception.CommandException;
 import jp.llv.flaggame.api.stage.Stage;
 import syam.flaggame.permission.Perms;
 import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.player.StageSetupSession;
 import jp.llv.flaggame.api.stage.area.StageAreaInfo;
 import syam.flaggame.util.Actions;
 import syam.flaggame.util.Cuboid;
@@ -72,8 +73,8 @@ public class StageSetCommand extends BaseCommand {
 
         // ゲーム取得
         GamePlayer gPlayer = this.api.getPlayers().getPlayer(player);
-        Stage stage = gPlayer.getSetupSession()
-                .orElseThrow(() -> new CommandException("&c先に編集するゲームを選択してください")).getSelected(Stage.class);
+        Stage stage = gPlayer.getSetupSession(StageSetupSession.class)
+                .orElseThrow(() -> new CommandException("&c先に編集するゲームを選択してください")).getReserved();
         if (stage == null) {
             throw new CommandException("&cあなたはステージを選択していません！");
         }

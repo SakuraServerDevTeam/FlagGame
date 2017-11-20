@@ -100,6 +100,11 @@ public enum Perms {
     BIT_BALANCE_SELF("player.bit.balance.self"), BIT_BALANCE_OTHER("player.bit.balance.other"),
     BIT_PAY("player.bit.pay"),
     BIT_ADD("player.bit.add"),
+    TROPHIE_CREATE("trophie.create"),
+    TROPHIE_DELETE("trophie.delete"),
+    TROPHIE_SELECT("trophie.select"),
+    TROPHIE_EDIT("trophie.edit"),
+    SCRIPT("script"),
     DEBUG("debug")
     ;
 

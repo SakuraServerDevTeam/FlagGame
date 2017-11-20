@@ -1,4 +1,4 @@
-/*
+/* 
  * Copyright (C) 2017 SakuraServerDev
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14,39 +14,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jp.llv.flaggame.api.session;
-
-import jp.llv.flaggame.api.exception.ReservedException;
+package jp.llv.flaggame.api.util.function;
 
 /**
+ * Represents a function that accepts two arguments including double value and
+ * produces a result. This is the three-arity specialization of
+ * {@link java.util.function.Function}.
  *
- * @author SakuraServerDev
- * @param <T> reservable type
+ * @author Toyblocks
+ * @param <T> the type of the first argument to the function
+ * @param <R> the type of the result of the function
  */
-public interface Reservable<T extends Reservable<T>> {
+@FunctionalInterface
+public interface BiDoubleFunction<T, R> {
 
-    boolean isReserved();
-
-    default void testReserved() throws ReservedException {
-        if (isReserved()) {
-            throw new ReservedException();
-        }
-    }
-
-    Reservation<T> reserve(Reserver reserver) throws ReservedException;
-
-    Reserver getReserver();
-
-    interface Reservation<T extends Reservable<T>> {
-
-        T getReservable();
-
-        Reserver getReserver();
-
-        void release();
-
-        boolean isReleased();
-
-    }
+    R apply(T t1, double t2);
 
 }

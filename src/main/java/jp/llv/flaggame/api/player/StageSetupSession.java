@@ -16,20 +16,15 @@
  */
 package jp.llv.flaggame.api.player;
 
-import jp.llv.flaggame.api.session.Reservable;
-import jp.llv.flaggame.reception.TeamColor;
+import jp.llv.flaggame.api.stage.Stage;
 import jp.llv.flaggame.api.stage.objective.ObjectiveType;
-import syam.flaggame.player.SetupSession;
+import jp.llv.flaggame.reception.TeamColor;
 
 /**
  *
  * @author toyblocks
  */
-public interface StageSetupSession {
-
-    Reservable<?> getSelected();
-
-    <T extends Reservable<T>> T getSelected(Class<T> clazz);
+public interface StageSetupSession extends SetupSession<Stage> {
 
     TeamColor getSelectedColor();
 
@@ -39,12 +34,12 @@ public interface StageSetupSession {
 
     ObjectiveType getSetting();
 
-    SetupSession setHp(Byte hp);
+    StageSetupSession setHp(Byte hp);
 
-    SetupSession setSelectedColor(TeamColor color);
+    StageSetupSession setSelectedColor(TeamColor color);
 
-    SetupSession setSelectedPoint(double point);
+    StageSetupSession setSelectedPoint(double point);
 
-    SetupSession setSetting(ObjectiveType setting);
-
+    StageSetupSession setSetting(ObjectiveType setting);
+    
 }

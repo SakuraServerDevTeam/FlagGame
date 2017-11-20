@@ -14,22 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jp.llv.flaggame.util.function;
+package jp.llv.flaggame.trophie;
 
 /**
- * Represents a throwing function that accepts two arguments and produces a
- * result. This is the two-arity specialization of
- * {@link java.util.function.Function}.
  *
- * @author Toyblocks
- * @param <A1> the type of the first argument to the function
- * @param <A2> the type of the second argument to the function
- * @param <R> the type of the result of the function
- * @param <E> the type of the checked exception of the function
+ * @author toyblocks
  */
-@FunctionalInterface
-public interface ThrowingBiFunction<A1, A2, R, E extends Throwable> {
+public class ImpossibleTrophie extends BaseTrophie {
 
-    R apply(A1 a1, A2 a2) throws E;
+    public static final String TYPE_NAME = "impossible";
+    
+    public ImpossibleTrophie(String name) {
+        super(name);
+    }
 
+    @Override
+    public String getType() {
+        return TYPE_NAME;
+    }
+    
 }

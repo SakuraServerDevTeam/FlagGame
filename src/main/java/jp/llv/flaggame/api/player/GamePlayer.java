@@ -33,17 +33,12 @@ import org.bukkit.entity.Player;
 import jp.llv.flaggame.api.exception.FlagGameException;
 import jp.llv.flaggame.api.exception.ReservedException;
 import jp.llv.flaggame.api.stage.Stage;
-import syam.flaggame.player.SetupSession;
 
 /**
  *
  * @author toyblocks
  */
 public interface GamePlayer extends Reserver {
-
-    SetupSession createSetupSession(Reservable<?> reservable) throws ReservedException;
-
-    void destroySetupSession();
 
     String getNickname();
     
@@ -55,7 +50,13 @@ public interface GamePlayer extends Reserver {
 
     Player getPlayer();
 
-    Optional<StageSetupSession> getSetupSession();
+    <R extends Reservable<R>, S extends SetupSession<R>> S createSetupSession(R reservable, Class<S> sessionType) throws ReservedException;
+
+    <S extends SetupSession<?>> void destroySetupSession(Class<S> type);
+
+    <S extends SetupSession<?>> Optional<S> getSetupSession(Class<S> type);
+    
+    boolean hasSetupSession();
 
     Optional<Stage> getStage();
 

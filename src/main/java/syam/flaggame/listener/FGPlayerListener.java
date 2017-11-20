@@ -18,7 +18,6 @@ package syam.flaggame.listener;
 
 import jp.llv.flaggame.api.FlagGameAPI;
 import jp.llv.flaggame.api.player.GamePlayer;
-import jp.llv.flaggame.api.player.StageSetupSession;
 import jp.llv.flaggame.api.session.Reservable;
 import jp.llv.flaggame.api.game.Game;
 import jp.llv.flaggame.api.stage.objective.BannerSlot;
@@ -42,6 +41,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.material.Banner;
 import jp.llv.flaggame.util.OnelineBuilder;
 import jp.llv.flaggame.api.exception.ObjectiveCollisionException;
+import jp.llv.flaggame.api.player.StageSetupSession;
 import jp.llv.flaggame.api.stage.objective.ObjectiveType;
 import jp.llv.flaggame.stage.BasicStage;
 import jp.llv.flaggame.api.stage.objective.GameChest;
@@ -72,15 +72,15 @@ public class FGPlayerListener implements Listener {
 
         // 管理モードで権限を持ち、かつ設定したツールでブロックを右クリックした
         if (!(event.getAction() == Action.RIGHT_CLICK_BLOCK
-              && gPlayer.getSetupSession().isPresent()
+              && gPlayer.getSetupSession(StageSetupSession.class).isPresent()
               && event.getHand() == EquipmentSlot.HAND
               && player.getInventory().getItemInMainHand().getTypeId() == api.getConfig().getToolID()
               && Perms.STAGE_SET.has(player))) {
             return;
         }
-        StageSetupSession sess = gPlayer.getSetupSession().get();
+        StageSetupSession sess = gPlayer.getSetupSession(StageSetupSession.class).get();
         ObjectiveType conf = sess.getSetting();
-        Reservable selected = sess.getSelected();
+        Reservable selected = sess.getReserved();
         if (!(selected instanceof BasicStage)) {
             Actions.message(player, "&cあなたはステージを選択していません！");
         }

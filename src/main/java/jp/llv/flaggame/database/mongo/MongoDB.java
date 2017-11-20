@@ -44,12 +44,15 @@ import jp.llv.flaggame.profile.record.PlayerRecord;
 import jp.llv.flaggame.profile.record.PlayerResultRecord;
 import jp.llv.flaggame.api.profile.RecordType;
 import jp.llv.flaggame.api.stage.Stage;
+import jp.llv.flaggame.api.trophie.Trophie;
 import jp.llv.flaggame.database.mongo.bson.AccountDeserializer;
 import jp.llv.flaggame.database.mongo.bson.AccountSerializer;
 import jp.llv.flaggame.database.mongo.bson.KitDeserializer;
 import jp.llv.flaggame.database.mongo.bson.KitSerializer;
 import jp.llv.flaggame.database.mongo.bson.StageDeserializer;
 import jp.llv.flaggame.database.mongo.bson.StageSerializer;
+import jp.llv.flaggame.database.mongo.bson.TrophieDeserializer;
+import jp.llv.flaggame.database.mongo.bson.TrophieSerializer;
 import jp.llv.flaggame.profile.record.ScoreRecord;
 import jp.llv.flaggame.util.MapUtils;
 import org.bson.BsonDocument;
@@ -76,6 +79,7 @@ public class MongoDB implements Database {
     public static final String COLLECTION_KIT = "kit";
     public static final String COLLECTION_ACCOUNT = "account";
     public static final String COLLECTION_RECORD = "record";
+    public static final String COLLECTION_TROPHIE = "trophie";
     public static final String FIELD_ID = "_id";
     public static final String FIELD_COUNT = "count";
 
@@ -184,6 +188,55 @@ public class MongoDB implements Database {
             callback.call(DatabaseResult.fail(ex));
         }
     }
+
+    private MongoCollection<BsonValue> getTrophieCollection() throws DatabaseException {
+        if (database == null) {
+            throw new DatabaseException("Not connected");
+        }
+        return database.getCollection(COLLECTION_TROPHIE).withDocumentClass(BsonValue.class);
+    }
+
+    @Override
+    public void loadTrophies(DatabaseCallback<Trophie, RuntimeException> consumer, DatabaseCallback<Void, DatabaseException> callback) {
+        try {
+            getTrophieCollection().find()
+                    .map(BsonDocument.class::cast)
+                    .map(bson -> TrophieDeserializer.Version.readTrophie(plugin.getAPI().getRegistry(), bson))
+                    .forEach(
+                            new MongoDBResultCallback<>(consumer),
+                            new MongoDBErrorCallback<>(callback)
+                    );
+        } catch (DatabaseException ex) {
+            callback.call(DatabaseResult.fail(ex));
+        }
+    }
+
+    @Override
+    public void saveTrophie(Trophie trophie, DatabaseCallback<Void, DatabaseException> callback) {
+        try {
+            MongoCollection<BsonValue> coll = getTrophieCollection();
+            BsonDocument bson = TrophieSerializer.getInstance().writeTrophie(trophie);
+            coll.updateOne(Filters.eq(FIELD_ID, bson.get(FIELD_ID)),
+                    new BsonDocument(SET, bson),
+                    new UpdateOptions().upsert(true),
+                    new MongoDBErrorCallback<>(callback)
+            );
+        } catch (DatabaseException ex) {
+            callback.call(DatabaseResult.fail(ex));
+        }
+    }
+
+    @Override
+    public void deleteTrophie(Trophie trophie, DatabaseCallback<Void, DatabaseException> callback) {
+        try {
+            getTrophieCollection().deleteOne(Filters.eq(FIELD_ID, trophie.getName()),
+                    new MongoDBErrorCallback<>(callback)
+            );
+        } catch (DatabaseException ex) {
+            callback.call(DatabaseResult.fail(ex));
+        }
+    }
+
 
     private MongoCollection<BsonValue> getKitCollection() throws DatabaseException {
         if (database == null) {

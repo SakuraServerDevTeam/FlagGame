@@ -29,6 +29,7 @@ import org.bukkit.Server;
 import org.bukkit.World;
 import org.slf4j.Logger;
 import jp.llv.flaggame.api.queue.ConfirmQueueAPI;
+import jp.llv.flaggame.api.trophie.TrophieAPI;
 
 /**
  *
@@ -53,6 +54,8 @@ public interface FlagGameAPI {
     StageAPI getStages();
 
     KitAPI getKits();
+    
+    TrophieAPI getTrophies();
 
     Optional<Database> getDatabase();
 

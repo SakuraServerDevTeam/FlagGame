@@ -16,7 +16,7 @@
  */
 package jp.llv.flaggame.util;
 
-import jp.llv.flaggame.util.function.BiDoubleFunction;
+import jp.llv.flaggame.api.util.function.BiDoubleFunction;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

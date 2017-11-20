@@ -1,5 +1,5 @@
-/* 
- * Copyright (C) 2017 SakuraServerDev
+/*
+ * Copyright (C) 2017 toyblocks
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,20 +14,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jp.llv.flaggame.util.function;
+package jp.llv.flaggame.api.util.function;
 
 /**
- * Represents a function that accepts two arguments including double value and
- * produces a result. This is the three-arity specialization of
- * {@link java.util.function.Function}.
- *
- * @author Toyblocks
- * @param <T> the type of the first argument to the function
- * @param <R> the type of the result of the function
+ * Represents a throwing predicate of one argument.
+ * @author toyblocks
+ * @param <T> the type of the input to the predicate
+ * @param <E> the type of the exception of the predicate
  */
 @FunctionalInterface
-public interface BiDoubleFunction<T, R> {
-
-    R apply(T t1, double t2);
-
+public interface ThrowingPredicate<T, E extends Throwable> {
+    
+    boolean test(T t) throws E;
+    
 }

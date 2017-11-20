@@ -29,6 +29,7 @@ import jp.llv.flaggame.api.exception.CommandException;
 import jp.llv.flaggame.api.stage.Stage;
 import syam.flaggame.permission.Perms;
 import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.player.StageSetupSession;
 import jp.llv.flaggame.api.profile.StageProfile;
 
 /**
@@ -55,7 +56,7 @@ public class StageStatsCommand extends BaseCommand {
             stage = api.getStages().getStage(args.get(0)).orElse(null);
         } else if (player != null) {
             GamePlayer gplayer = api.getPlayers().getPlayer(player);
-            stage = gplayer.getSetupSession().map(s -> s.getSelected(Stage.class)).orElse(null);
+            stage = gplayer.getSetupSession(StageSetupSession.class).map(StageSetupSession::getReserved).orElse(null);
         }
         if (stage == null) {
             throw new CommandException("&cステージを指定してください！");
