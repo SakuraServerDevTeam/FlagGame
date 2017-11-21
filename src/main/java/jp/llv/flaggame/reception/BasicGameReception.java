@@ -16,6 +16,9 @@
  */
 package jp.llv.flaggame.reception;
 
+import jp.llv.flaggame.api.reception.Team;
+import jp.llv.flaggame.api.reception.TeamColor;
+import jp.llv.flaggame.api.reception.TeamType;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;

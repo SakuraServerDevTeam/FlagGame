@@ -18,7 +18,7 @@ package syam.flaggame.player;
 
 import jp.llv.flaggame.api.player.StageSetupSession;
 import jp.llv.flaggame.api.player.SetupReservation;
-import jp.llv.flaggame.reception.TeamColor;
+import jp.llv.flaggame.api.reception.TeamColor;
 import jp.llv.flaggame.api.session.Reservable;
 import jp.llv.flaggame.api.stage.Stage;
 import jp.llv.flaggame.api.stage.objective.ObjectiveType;

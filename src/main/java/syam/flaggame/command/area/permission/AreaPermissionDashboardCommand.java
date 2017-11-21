@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import jp.llv.flaggame.api.stage.permission.GamePermission;
 import jp.llv.flaggame.api.stage.permission.GamePermissionState;
-import jp.llv.flaggame.reception.TeamColor;
+import jp.llv.flaggame.api.reception.TeamColor;
 import jp.llv.flaggame.util.StringUtil;
 import org.bukkit.entity.Player;
 import jp.llv.flaggame.api.FlagGameAPI;

@@ -14,8 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jp.llv.flaggame.reception;
+package jp.llv.flaggame.api.reception;
 
+import jp.llv.flaggame.api.reception.TeamColor;
+import jp.llv.flaggame.api.reception.TeamType;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -27,13 +29,12 @@ import jp.llv.flaggame.events.TeamLeftEvent;
 import jp.llv.flaggame.api.game.Game;
 import org.bukkit.Bukkit;
 import jp.llv.flaggame.api.player.GamePlayer;
-import jp.llv.flaggame.api.reception.Reception;
 
 /**
  *
  * @author Toyblocks
  */
-public class Team implements Iterable<GamePlayer> {
+public final class Team implements Iterable<GamePlayer> {
 
     private final Reception reception;
     private final Set<GamePlayer> players;

@@ -20,7 +20,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import jp.llv.flaggame.api.player.GamePlayer;
-import jp.llv.flaggame.reception.TeamType;
 import jp.llv.flaggame.api.exception.FlagGameException;
 import jp.llv.flaggame.api.exception.InvalidTeamException;
 

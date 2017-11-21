@@ -23,6 +23,7 @@ import jp.llv.flaggame.api.exception.AccountNotReadyException;
 import jp.llv.flaggame.api.exception.InvalidNameException;
 import jp.llv.flaggame.api.player.Account;
 import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.player.NickPosition;
 import jp.llv.flaggame.api.session.Reservable;
 
 /**
@@ -39,9 +40,9 @@ public interface Trophy extends Reservable<Trophy> {
 
     void addRewardKits(Collection<String> kits);
 
-    void addRewardNick(int index, String nick) throws InvalidNameException;
+    void addRewardNick(NickPosition index, String nick) throws InvalidNameException;
 
-    void addRewardNicks(int index, Collection<String> nicks);
+    void addRewardNicks(NickPosition index, Collection<String> nicks);
 
     String getName();
 
@@ -51,11 +52,11 @@ public interface Trophy extends Reservable<Trophy> {
 
     double getRewardMoney();
 
-    Set<String> getRewardNicks(int index);
+    Set<String> getRewardNicks(NickPosition index);
 
     void removeRewardKit(String kit);
 
-    void removeRewardNick(int index, String nick);
+    void removeRewardNick(NickPosition index, String nick);
 
     /**
      * Rewards a player unconditionally.

@@ -50,27 +50,27 @@ public interface Account {
 
     String getKit();
 
-    String getNick(int index);
+    String getNick(NickPosition index);
 
     Set<String> getUnlockedKits();
 
-    Set<String> getUnlockedNicks(int index);
+    Set<String> getUnlockedNicks(NickPosition index);
 
     Set<String> getUnlockedTrophies();
 
     void lockKit(String kit);
 
-    void lockNick(int index, String nick);
+    void lockNick(NickPosition index, String nick);
 
     void lockTrophy(Trophy trophy);
 
     void setKit(String kit);
 
-    void setNick(int index, String nick);
+    void setNick(NickPosition index, String nick);
 
     void unlockKit(String kit);
 
-    void unlockNick(int index, String nick) throws InvalidNameException;
+    void unlockNick(NickPosition index, String nick) throws InvalidNameException;
 
     /**
      * Simply marks a trophy as unlocked.

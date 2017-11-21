@@ -30,7 +30,7 @@ import java.util.Set;
 import jp.llv.flaggame.api.FlagGameAPI;
 import jp.llv.flaggame.api.player.GamePlayer;
 import jp.llv.flaggame.api.reception.Teaming;
-import jp.llv.flaggame.reception.TeamType;
+import jp.llv.flaggame.api.reception.TeamType;
 import jp.llv.flaggame.util.ValueSortedMap;
 import jp.llv.flaggame.api.exception.FlagGameException;
 import jp.llv.flaggame.api.exception.InvalidTeamException;

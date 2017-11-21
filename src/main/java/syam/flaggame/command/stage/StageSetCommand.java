@@ -25,7 +25,7 @@ import jp.llv.flaggame.api.FlagGameAPI;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import jp.llv.flaggame.reception.TeamColor;
+import jp.llv.flaggame.api.reception.TeamColor;
 import jp.llv.flaggame.api.stage.rollback.StageDataType;
 import syam.flaggame.command.BaseCommand;
 import jp.llv.flaggame.stage.Configables;

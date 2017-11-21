@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import jp.llv.flaggame.api.exception.InvalidNameException;
 import org.bukkit.Location;
-import jp.llv.flaggame.reception.TeamColor;
+import jp.llv.flaggame.api.reception.TeamColor;
 import jp.llv.flaggame.stage.rollback.QueuedSerializeTask;
 import jp.llv.flaggame.api.exception.RollbackException;
 import jp.llv.flaggame.api.stage.rollback.SerializeTask;

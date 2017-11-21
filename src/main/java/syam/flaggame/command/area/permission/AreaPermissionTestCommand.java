@@ -22,7 +22,7 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 import jp.llv.flaggame.api.stage.permission.GamePermission;
 import jp.llv.flaggame.api.stage.permission.GamePermissionState;
-import jp.llv.flaggame.reception.TeamColor;
+import jp.llv.flaggame.api.reception.TeamColor;
 import org.bukkit.Location;
 import jp.llv.flaggame.api.FlagGameAPI;
 import syam.flaggame.command.area.AreaCommand;

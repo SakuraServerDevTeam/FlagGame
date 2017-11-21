@@ -18,6 +18,7 @@ package jp.llv.flaggame.database.mongo.bson;
 
 import jp.llv.flaggame.api.FlagGameRegistry;
 import jp.llv.flaggame.api.exception.NotRegisteredException;
+import jp.llv.flaggame.api.player.NickPosition;
 import jp.llv.flaggame.api.profile.RecordType;
 import jp.llv.flaggame.trophy.ImpossibleTrophy;
 import jp.llv.flaggame.trophy.NashornTrophy;
@@ -55,9 +56,9 @@ public class TrophyDeserializer0 extends BaseDeserializer implements TrophyDeser
             trophy = new ImpossibleTrophy(readString(bson, "type"));
         }
         trophy.addRewardKits(readSet(bson, "reward-kits", super::readString));
-        trophy.addRewardNicks(0, readSet(bson, "reward-nick0", super::readString));
-        trophy.addRewardNicks(1, readSet(bson, "reward-nick1", super::readString));
-        trophy.addRewardNicks(2, readSet(bson, "reward-nick2", super::readString));
+        trophy.addRewardNicks(NickPosition.COLOR, readSet(bson, "reward-nick0", super::readString));
+        trophy.addRewardNicks(NickPosition.ADJ, readSet(bson, "reward-nick1", super::readString));
+        trophy.addRewardNicks(NickPosition.NOUN, readSet(bson, "reward-nick2", super::readString));
         trophy.setRewardMoney(bson.getDouble("reward-money").getValue());
         trophy.setRewardBits(bson.getDouble("reward-bits").getValue());
         if (trophy instanceof NashornTrophy) {

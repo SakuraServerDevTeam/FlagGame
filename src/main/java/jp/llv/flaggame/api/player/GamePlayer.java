@@ -23,7 +23,7 @@ import jp.llv.flaggame.api.reception.Reception;
 import jp.llv.flaggame.api.session.Reservable;
 import jp.llv.flaggame.api.session.Reserver;
 import jp.llv.flaggame.api.game.Game;
-import jp.llv.flaggame.reception.Team;
+import jp.llv.flaggame.api.reception.Team;
 import jp.llv.flaggame.util.OptionSet;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;

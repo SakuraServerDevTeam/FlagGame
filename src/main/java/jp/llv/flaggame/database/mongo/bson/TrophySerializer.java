@@ -17,6 +17,7 @@
 package jp.llv.flaggame.database.mongo.bson;
 
 import java.io.UncheckedIOException;
+import jp.llv.flaggame.api.player.NickPosition;
 import jp.llv.flaggame.trophy.NashornTrophy;
 import jp.llv.flaggame.trophy.RecordTrophy;
 import org.bson.BsonDocument;
@@ -59,9 +60,9 @@ public class TrophySerializer extends BaseSerializer {
         section.append(TrophyDeserializer.Version.FIELD_NAME, new BsonInt32(VERSION));
         writeString(section, "type", value.getType());
         writeCollection(section, "reward-kits", value.getRewardKits(), super::writeString);
-        writeCollection(section, "reward-nick0", value.getRewardNicks(0), super::writeString);
-        writeCollection(section, "reward-nick1", value.getRewardNicks(1), super::writeString);
-        writeCollection(section, "reward-nick2", value.getRewardNicks(2), super::writeString);
+        writeCollection(section, "reward-nick0", value.getRewardNicks(NickPosition.COLOR), super::writeString);
+        writeCollection(section, "reward-nick1", value.getRewardNicks(NickPosition.ADJ), super::writeString);
+        writeCollection(section, "reward-nick2", value.getRewardNicks(NickPosition.NOUN), super::writeString);
         section.append("reward-money", new BsonDouble(value.getRewardMoney()));
         section.append("reward-bits", new BsonDouble(value.getRewardBits()));
         if (value instanceof NashornTrophy) {

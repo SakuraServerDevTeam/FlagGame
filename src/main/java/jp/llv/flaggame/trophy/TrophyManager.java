@@ -20,6 +20,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import jp.llv.flaggame.api.FlagGameAPI;
 import jp.llv.flaggame.api.exception.AccountNotReadyException;
 import jp.llv.flaggame.api.player.Account;
@@ -34,6 +36,8 @@ import jp.llv.flaggame.api.trophy.TrophyAPI;
  */
 public class TrophyManager implements TrophyAPI {
 
+    private static final String INITIAL_TROPHY_NAME = "$initial";
+
     private final FlagGameAPI api;
     private final Map<String, Trophy> trophies = Collections.synchronizedMap(new HashMap<>());
 
@@ -43,21 +47,48 @@ public class TrophyManager implements TrophyAPI {
 
     @Override
     public void addTrophy(Trophy trophy) {
+        if (!Trophy.NAME_REGEX.matcher(trophy.getName()).matches()) {
+            throw new IllegalArgumentException("Invalid trophy name");
+        }
         trophies.put(trophy.getName(), trophy);
     }
 
     @Override
+    public Trophy getInitialTrophy() {
+        if (trophies.containsKey(INITIAL_TROPHY_NAME)) {
+            return trophies.get(INITIAL_TROPHY_NAME);
+        } else {
+            Trophy initialTrophy = new ImpossibleTrophy(INITIAL_TROPHY_NAME);
+            trophies.put(INITIAL_TROPHY_NAME, initialTrophy);
+            return initialTrophy;
+        }
+    }
+
+    @Override
     public Optional<Trophy> getTrophy(String name) {
+        if (name.equals(INITIAL_TROPHY_NAME)) {
+            return Optional.empty();
+        }
         return Optional.ofNullable(trophies.get(name));
     }
 
     @Override
     public void removeTrophy(Trophy trophy) {
+        if (trophy.getName().equals(INITIAL_TROPHY_NAME)) {
+            return;
+        }
         trophies.remove(trophy.getName());
     }
 
     @Override
-    public Map<String, Trophy> getTrophy() {
+    public Set<String> getNormalTrophies() {
+        return trophies.keySet().stream()
+                .filter(s -> !INITIAL_TROPHY_NAME.equals(s))
+                .collect(Collectors.toSet());
+    }
+
+    @Override
+    public Map<String, Trophy> getTrophies() {
         return Collections.unmodifiableMap(trophies);
     }
 

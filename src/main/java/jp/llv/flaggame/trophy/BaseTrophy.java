@@ -16,11 +16,11 @@
  */
 package jp.llv.flaggame.trophy;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import jp.llv.flaggame.api.exception.AccountNotReadyException;
@@ -28,6 +28,7 @@ import jp.llv.flaggame.api.exception.InvalidNameException;
 import jp.llv.flaggame.api.kit.Kit;
 import jp.llv.flaggame.api.player.Account;
 import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.player.NickPosition;
 import jp.llv.flaggame.api.session.SimpleReservable;
 import jp.llv.flaggame.util.OnelineBuilder;
 import syam.flaggame.util.Actions;
@@ -46,9 +47,13 @@ public abstract class BaseTrophy extends SimpleReservable<Trophy> implements Tro
     private double rewardBits = 0d;
     private double rewardMoney = 0d;
 
-    private final List<Set<String>> rewardNicks = Arrays.asList(
-            new HashSet<>(), new HashSet<>(), new HashSet<>()
-    );
+    private final Map<NickPosition, Set<String>> rewardNicks = new EnumMap<>(NickPosition.class);
+
+    {
+        for (NickPosition pos : NickPosition.values()) {
+            rewardNicks.put(pos, new HashSet<>());
+        }
+    }
     private final Set<String> rewardKits = new HashSet<>();
 
     public BaseTrophy(String name) {
@@ -81,17 +86,17 @@ public abstract class BaseTrophy extends SimpleReservable<Trophy> implements Tro
     }
 
     @Override
-    public Set<String> getRewardNicks(int index) {
+    public Set<String> getRewardNicks(NickPosition index) {
         return Collections.unmodifiableSet(rewardNicks.get(index));
     }
 
     @Override
-    public void removeRewardNick(int index, String nick) {
+    public void removeRewardNick(NickPosition index, String nick) {
         rewardNicks.get(index).remove(nick);
     }
 
     @Override
-    public void addRewardNick(int index, String nick) throws InvalidNameException {
+    public void addRewardNick(NickPosition index, String nick) throws InvalidNameException {
         if (!Account.NICK_REGEX.matcher(nick).matches()) {
             throw new InvalidNameException();
         }
@@ -99,7 +104,7 @@ public abstract class BaseTrophy extends SimpleReservable<Trophy> implements Tro
     }
 
     @Override
-    public void addRewardNicks(int index, Collection<String> nicks) {
+    public void addRewardNicks(NickPosition index, Collection<String> nicks) {
         nicks.forEach(n -> {
             try {
                 addRewardNick(index, n);
@@ -152,25 +157,25 @@ public abstract class BaseTrophy extends SimpleReservable<Trophy> implements Tro
                     .sendTo(player.getPlayer());
         }
 
-        for (int i = 0; i < 3; i++) {
-            for (String nick : rewardNicks.get(i)) {
+        for (NickPosition pos : NickPosition.values()) {
+            rewardNicks.get(pos).forEach(nick -> {
                 try {
-                    account.unlockNick(i, nick);
+                    account.unlockNick(pos, nick);
                     OnelineBuilder.newBuilder()
                             .info("ニックネーム").value(nick).info("を獲得しました！")
                             .sendTo(player.getPlayer());
                 } catch (InvalidNameException ex) {
                     // NEVER HERE (ALREADY VERIFIED)
                 }
-            }
+            });
         }
 
-        for (String kit : rewardKits) {
+        rewardKits.forEach(kit -> {
             account.unlockKit(kit);
             OnelineBuilder.newBuilder()
                     .info("キット").value(kit).info("を獲得しました！")
                     .sendTo(player.getPlayer());
-        }
+        });
     }
 
 }

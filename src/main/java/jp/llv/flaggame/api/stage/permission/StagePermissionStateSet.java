@@ -17,8 +17,8 @@
 package jp.llv.flaggame.api.stage.permission;
 
 import java.util.Map;
-import jp.llv.flaggame.reception.TeamColor;
-import jp.llv.flaggame.reception.TeamType;
+import jp.llv.flaggame.api.reception.TeamColor;
+import jp.llv.flaggame.api.reception.TeamType;
 
 /**
  *

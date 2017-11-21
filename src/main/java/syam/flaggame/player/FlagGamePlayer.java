@@ -29,7 +29,7 @@ import jp.llv.flaggame.api.session.Reservable;
 import org.bukkit.entity.Player;
 
 import jp.llv.flaggame.api.game.Game;
-import jp.llv.flaggame.reception.Team;
+import jp.llv.flaggame.api.reception.Team;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Bukkit;
@@ -44,6 +44,7 @@ import syam.flaggame.util.Actions;
 import jp.llv.flaggame.api.reception.Reception;
 import jp.llv.flaggame.util.OptionSet;
 import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.player.NickPosition;
 import jp.llv.flaggame.api.player.SetupReservation;
 import jp.llv.flaggame.api.player.SetupSession;
 import jp.llv.flaggame.api.stage.Stage;
@@ -99,10 +100,10 @@ public class FlagGamePlayer implements GamePlayer {
         String noun = null;
         if (account != null) {
             if (color == null) {
-                color = account.getNick(0);
+                color = account.getNick(NickPosition.COLOR);
             }
-            adj = account.getNick(1);
-            noun = account.getNick(2);
+            adj = account.getNick(NickPosition.ADJ);
+            noun = account.getNick(NickPosition.NOUN);
         }
         return ChatColor.translateAlternateColorCodes(
                 '&', (color == null ? "&f" : color)

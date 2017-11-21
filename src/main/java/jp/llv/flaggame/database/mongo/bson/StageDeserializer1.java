@@ -20,7 +20,7 @@ import jp.llv.flaggame.api.exception.ObjectiveCollisionException;
 import jp.llv.flaggame.api.exception.ReservedException;
 import jp.llv.flaggame.api.stage.objective.Spawn;
 import jp.llv.flaggame.api.stage.objective.SpecSpawn;
-import jp.llv.flaggame.reception.TeamColor;
+import jp.llv.flaggame.api.reception.TeamColor;
 import jp.llv.flaggame.stage.BasicStage;
 import org.bson.BsonDocument;
 import org.bukkit.Location;

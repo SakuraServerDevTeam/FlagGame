@@ -19,7 +19,7 @@ package syam.flaggame.listener;
 import jp.llv.flaggame.api.FlagGameAPI;
 import jp.llv.flaggame.api.player.GamePlayer;
 import jp.llv.flaggame.api.game.Game;
-import jp.llv.flaggame.reception.TeamColor;
+import jp.llv.flaggame.api.reception.TeamColor;
 import net.md_5.bungee.api.ChatMessageType;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;

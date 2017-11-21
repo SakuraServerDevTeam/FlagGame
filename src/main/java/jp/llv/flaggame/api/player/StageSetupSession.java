@@ -18,7 +18,7 @@ package jp.llv.flaggame.api.player;
 
 import jp.llv.flaggame.api.stage.Stage;
 import jp.llv.flaggame.api.stage.objective.ObjectiveType;
-import jp.llv.flaggame.reception.TeamColor;
+import jp.llv.flaggame.api.reception.TeamColor;
 
 /**
  *

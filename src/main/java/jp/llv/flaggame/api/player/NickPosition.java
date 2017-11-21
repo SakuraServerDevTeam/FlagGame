@@ -1,5 +1,5 @@
-/* 
- * Copyright (C) 2017 SakuraServerDev
+/*
+ * Copyright (C) 2017 toyblocks
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,32 +14,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jp.llv.flaggame.api.stage.objective;
-
-import org.bukkit.Location;
-import jp.llv.flaggame.api.reception.TeamColor;
+package jp.llv.flaggame.api.player;
 
 /**
  *
- * @author Toyblocks
+ * @author toyblocks
  */
-public class Nexus extends StageObjective {
+public enum NickPosition {
+    
+    COLOR(0),
+    ADJ(1),
+    NOUN(2),
+    ;
+    
+    private final int index;
 
-    private final TeamColor color;
-    private final double point;
-
-    public Nexus(Location loc, TeamColor color, double point) {
-        super(loc, ObjectiveType.NEXUS, true);
-        this.color = color;
-        this.point = point;
+    private NickPosition(int index) {
+        this.index = index;
     }
 
-    public TeamColor getColor() {
-        return color;
+    public int getIndex() {
+        return index;
     }
-
-    public double getPoint() {
-        return point;
-    }
-
+    
 }

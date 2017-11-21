@@ -18,7 +18,7 @@ package syam.flaggame.command.objective;
 
 import jp.llv.flaggame.api.stage.objective.ObjectiveType;
 import java.util.List;
-import jp.llv.flaggame.reception.TeamColor;
+import jp.llv.flaggame.api.reception.TeamColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import jp.llv.flaggame.api.FlagGameAPI;

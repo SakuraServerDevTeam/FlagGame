@@ -18,16 +18,17 @@ package syam.flaggame.player;
 
 import jp.llv.flaggame.api.player.Account;
 import com.google.common.util.concurrent.AtomicDouble;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import jp.llv.flaggame.api.exception.InvalidNameException;
 import jp.llv.flaggame.api.kit.Kit;
+import jp.llv.flaggame.api.player.NickPosition;
 import jp.llv.flaggame.api.trophy.Trophy;
 
 /**
@@ -39,13 +40,16 @@ public class CachedAccount implements Account {
     private final UUID uuid;
     private String name;
     
-    private final List<String> nicks = Arrays.asList(new String[3]);
+    private final Map<NickPosition, String> nicks = new EnumMap<>(NickPosition.class);
     private String kit;
     private final AtomicDouble balance = new AtomicDouble(0D);
 
-    private final List<Set<String>> unlockedNicks = Arrays.asList(
-            new HashSet<>(), new HashSet<>(), new HashSet<>()
-    );
+    private final Map<NickPosition, Set<String>> unlockedNicks = new EnumMap<>(NickPosition.class);
+    {
+        for (NickPosition pos : NickPosition.values()) {
+            unlockedNicks.put(pos, new HashSet<>());
+        }
+    }
     private final Set<String> unlockedKits = new HashSet<>();
     private final Set<String> unlockedTrophies = new HashSet<>();
 
@@ -53,10 +57,12 @@ public class CachedAccount implements Account {
         this.uuid = uuid;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public void setName(String name) {
         this.name = Objects.requireNonNull(name);
     }
@@ -67,13 +73,13 @@ public class CachedAccount implements Account {
     }
 
     @Override
-    public String getNick(int index) {
+    public String getNick(NickPosition index) {
         return nicks.get(index);
     }
 
     @Override
-    public void setNick(int index, String nick) {
-        nicks.set(index, nick);
+    public void setNick(NickPosition index, String nick) {
+        nicks.put(index, nick);
     }
 
     @Override
@@ -92,24 +98,24 @@ public class CachedAccount implements Account {
     }
 
     @Override
-    public Set<String> getUnlockedNicks(int index) {
+    public Set<String> getUnlockedNicks(NickPosition index) {
         return Collections.unmodifiableSet(unlockedNicks.get(index));
     }
 
     @Override
-    public void lockNick(int index, String nick) {
+    public void lockNick(NickPosition index, String nick) {
         unlockedNicks.get(index).remove(nick);
     }
 
     @Override
-    public void unlockNick(int index, String nick) throws InvalidNameException {
+    public void unlockNick(NickPosition index, String nick) throws InvalidNameException {
         if (!Account.NICK_REGEX.matcher(nick).matches()) {
             throw new InvalidNameException();
         }
         unlockedNicks.get(index).add(nick);
     }
 
-    public void unlockNicks(int index, Collection<String> nicks) {
+    public void unlockNicks(NickPosition index, Collection<String> nicks) {
         nicks.forEach(n -> {
             try {
                 unlockNick(index, n);

@@ -27,7 +27,7 @@ import jp.llv.flaggame.api.FlagGameAPI;
 import jp.llv.flaggame.api.reception.Reception;
 import jp.llv.flaggame.api.reception.Teaming;
 import jp.llv.flaggame.reception.BasicGameReception;
-import jp.llv.flaggame.reception.TeamType;
+import jp.llv.flaggame.api.reception.TeamType;
 import jp.llv.flaggame.reception.teaming.SuccessiveTeaming;
 import jp.llv.flaggame.reception.teaming.VibeBasedTeaming;
 import jp.llv.flaggame.api.util.function.ThrowingBiFunction;

@@ -20,7 +20,7 @@ import jp.llv.flaggame.api.game.Game;
 import jp.llv.flaggame.api.player.GamePlayer;
 import jp.llv.flaggame.api.stage.area.StageAreaSet;
 import jp.llv.flaggame.api.stage.permission.GamePermission;
-import jp.llv.flaggame.reception.TeamType;
+import jp.llv.flaggame.api.reception.TeamType;
 import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;

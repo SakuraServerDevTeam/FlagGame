@@ -24,7 +24,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import jp.llv.flaggame.api.exception.InvalidNameException;
 import jp.llv.flaggame.api.reception.Reception;
-import jp.llv.flaggame.reception.TeamColor;
+import jp.llv.flaggame.api.reception.TeamColor;
 import jp.llv.flaggame.api.exception.RollbackException;
 import jp.llv.flaggame.api.stage.rollback.SerializeTask;
 import org.bukkit.Location;

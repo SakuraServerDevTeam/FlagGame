@@ -21,7 +21,7 @@ import java.util.UUID;
 import java.util.function.Function;
 import jp.llv.flaggame.api.reception.Reception;
 import jp.llv.flaggame.api.reception.Teaming;
-import jp.llv.flaggame.reception.TeamType;
+import jp.llv.flaggame.api.reception.TeamType;
 import jp.llv.flaggame.api.util.function.ThrowingBiFunction;
 import jp.llv.flaggame.api.exception.FlagGameException;
 import jp.llv.flaggame.api.exception.NotRegisteredException;

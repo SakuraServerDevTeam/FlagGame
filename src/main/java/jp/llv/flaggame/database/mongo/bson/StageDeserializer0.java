@@ -31,7 +31,7 @@ import jp.llv.flaggame.api.stage.objective.SuperJump;
 import jp.llv.flaggame.api.stage.permission.GamePermission;
 import jp.llv.flaggame.api.stage.permission.GamePermissionState;
 import jp.llv.flaggame.api.stage.rollback.StageDataType;
-import jp.llv.flaggame.reception.TeamColor;
+import jp.llv.flaggame.api.reception.TeamColor;
 import jp.llv.flaggame.stage.AreaInfo;
 import jp.llv.flaggame.stage.AreaSet;
 import jp.llv.flaggame.stage.BasicStage;

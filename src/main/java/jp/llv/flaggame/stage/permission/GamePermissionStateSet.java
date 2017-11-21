@@ -23,8 +23,8 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import jp.llv.flaggame.reception.TeamColor;
-import jp.llv.flaggame.reception.TeamType;
+import jp.llv.flaggame.api.reception.TeamColor;
+import jp.llv.flaggame.api.reception.TeamType;
 
 /**
  *

@@ -19,6 +19,7 @@ package jp.llv.flaggame.api.trophy;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import jp.llv.flaggame.api.exception.AccountNotReadyException;
 import jp.llv.flaggame.api.player.GamePlayer;
 import jp.llv.flaggame.api.util.function.ThrowingPredicate;
@@ -28,20 +29,24 @@ import jp.llv.flaggame.api.util.function.ThrowingPredicate;
  * @author toyblocks
  */
 public interface TrophyAPI extends Iterable<Trophy> {
-    
+
     void addTrophy(Trophy trophy);
-    
+
     Optional<Trophy> getTrophy(String name);
-    
+
+    Trophy getInitialTrophy();
+
     void removeTrophy(Trophy trophy);
-    
-    Map<String, Trophy> getTrophy();
+
+    Set<String> getNormalTrophies();
+
+    Map<String, Trophy> getTrophies();
 
     <T extends Trophy, E extends Exception> void updateProgress(GamePlayer player, Class<T> clazz, ThrowingPredicate<? super T, E> predicate) throws AccountNotReadyException;
-    
+
     @Override
     public default Iterator<Trophy> iterator() {
-        return getTrophy().values().iterator();
+        return getTrophies().values().iterator();
     }
-    
+
 }

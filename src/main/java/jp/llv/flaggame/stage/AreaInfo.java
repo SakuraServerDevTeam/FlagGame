@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import jp.llv.flaggame.api.stage.permission.GamePermissionState;
 import jp.llv.flaggame.stage.permission.GamePermissionStateSet;
-import jp.llv.flaggame.reception.TeamColor;
+import jp.llv.flaggame.api.reception.TeamColor;
 import jp.llv.flaggame.api.stage.rollback.StageData;
 import jp.llv.flaggame.api.stage.rollback.StageDataType;
 

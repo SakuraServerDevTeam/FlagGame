@@ -18,6 +18,7 @@ package jp.llv.flaggame.database.mongo.bson;
 
 import syam.flaggame.player.CachedAccount;
 import jp.llv.flaggame.api.player.Account;
+import jp.llv.flaggame.api.player.NickPosition;
 import org.bson.BsonDocument;
 
 /**
@@ -30,15 +31,15 @@ public class AccountDeserializer0 extends BaseDeserializer implements AccountDes
     public Account readAccount(BsonDocument bson) {
         CachedAccount result = new CachedAccount(readUUID(bson, "_id"));
         result.setName(readString(bson, "name"));
-        result.setNick(0, readString(bson, "nick0"));
-        result.setNick(1, readString(bson, "nick1"));
-        result.setNick(2, readString(bson, "nick2"));
+        result.setNick(NickPosition.COLOR, readString(bson, "nick0"));
+        result.setNick(NickPosition.ADJ, readString(bson, "nick1"));
+        result.setNick(NickPosition.NOUN, readString(bson, "nick2"));
         result.getBalance().set(bson.getDouble("balance").doubleValue());
         result.setKit(readString(bson, "kit"));
         
-        result.unlockNicks(0, readSet(bson, "unlocked_nick0", super::readString));
-        result.unlockNicks(1, readSet(bson, "unlocked_nick1", super::readString));
-        result.unlockNicks(2, readSet(bson, "unlocked_nick2", super::readString));
+        result.unlockNicks(NickPosition.COLOR, readSet(bson, "unlocked_nick0", super::readString));
+        result.unlockNicks(NickPosition.ADJ, readSet(bson, "unlocked_nick1", super::readString));
+        result.unlockNicks(NickPosition.NOUN, readSet(bson, "unlocked_nick2", super::readString));
         result.unlockKits(readSet(bson, "unlocked_kits", super::readString));
         result.unlockTrophies(readSet(bson, "unlocked_torophies", super::readString));
         return result;

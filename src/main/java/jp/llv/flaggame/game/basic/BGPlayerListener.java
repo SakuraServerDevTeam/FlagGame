@@ -39,7 +39,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Openable;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import jp.llv.flaggame.reception.TeamType;
+import jp.llv.flaggame.api.reception.TeamType;
 import org.bukkit.block.BlockState;
 import org.bukkit.event.EventHandler;
 import jp.llv.flaggame.api.player.GamePlayer;

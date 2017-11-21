@@ -17,6 +17,7 @@
 package jp.llv.flaggame.database.mongo.bson;
 
 import jp.llv.flaggame.api.player.Account;
+import jp.llv.flaggame.api.player.NickPosition;
 import org.bson.BsonDocument;
 import org.bson.BsonDouble;
 import org.bson.BsonInt32;
@@ -38,15 +39,15 @@ public class AccountSerializer extends BaseSerializer {
         writeUUID(section, "_id", value.getUUID());
         writeString(section, "name", value.getName());
         section.put(AccountDeserializer.Version.FIELD_NAME, new BsonInt32(VERSION));
-        writeString(section, "nick0", value.getNick(0));
-        writeString(section, "nick1", value.getNick(1));
-        writeString(section, "nick2", value.getNick(2));
+        writeString(section, "nick0", value.getNick(NickPosition.COLOR));
+        writeString(section, "nick1", value.getNick(NickPosition.ADJ));
+        writeString(section, "nick2", value.getNick(NickPosition.NOUN));
         section.append("balance", new BsonDouble(value.getBalance().get()));
         writeString(section, "kit", value.getKit());
         
-        writeCollection(section, "unlocked_nick0", value.getUnlockedNicks(0), super::writeString);
-        writeCollection(section, "unlocked_nick1", value.getUnlockedNicks(1), super::writeString);
-        writeCollection(section, "unlocked_nick2", value.getUnlockedNicks(2), super::writeString);
+        writeCollection(section, "unlocked_nick0", value.getUnlockedNicks(NickPosition.COLOR), super::writeString);
+        writeCollection(section, "unlocked_nick1", value.getUnlockedNicks(NickPosition.ADJ), super::writeString);
+        writeCollection(section, "unlocked_nick2", value.getUnlockedNicks(NickPosition.NOUN), super::writeString);
         writeCollection(section, "unlocked_kits", value.getUnlockedKits(), super::writeString);
         writeCollection(section, "unlocked_torophies", value.getUnlockedTrophies(), super::writeString);
         return section;

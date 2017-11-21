@@ -18,7 +18,7 @@ package jp.llv.flaggame.events;
 
 import jp.llv.flaggame.api.player.GamePlayer;
 import org.bukkit.event.HandlerList;
-import jp.llv.flaggame.reception.Team;
+import jp.llv.flaggame.api.reception.Team;
 
 /**
  *

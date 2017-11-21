@@ -16,7 +16,7 @@
  */
 package jp.llv.flaggame.api.stage.objective;
 
-import jp.llv.flaggame.reception.TeamColor;
+import jp.llv.flaggame.api.reception.TeamColor;
 import org.bukkit.Location;
 
 /**

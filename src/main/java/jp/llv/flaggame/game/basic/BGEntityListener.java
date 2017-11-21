@@ -27,7 +27,7 @@ import jp.llv.flaggame.api.stage.permission.GamePermission;
 import jp.llv.flaggame.profile.record.BannerStealRecord;
 import jp.llv.flaggame.profile.record.PlayerDeathRecord;
 import jp.llv.flaggame.profile.record.PlayerKillRecord;
-import jp.llv.flaggame.reception.Team;
+import jp.llv.flaggame.api.reception.Team;
 import jp.llv.flaggame.util.StringUtil;
 import net.md_5.bungee.api.ChatMessageType;
 import org.bukkit.Material;
