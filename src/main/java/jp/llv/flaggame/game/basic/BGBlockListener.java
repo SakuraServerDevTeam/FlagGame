@@ -19,7 +19,6 @@ package jp.llv.flaggame.game.basic;
 import java.util.Collection;
 import java.util.Optional;
 import jp.llv.flaggame.api.FlagGameAPI;
-import jp.llv.flaggame.api.player.GamePlayer;
 import jp.llv.flaggame.api.stage.objective.BannerSlot;
 import jp.llv.flaggame.api.stage.objective.BannerSpawner;
 import jp.llv.flaggame.reception.Team;
@@ -113,10 +112,10 @@ public class BGBlockListener extends BGListener {
         event.setCancelled(false);
 
         GamePlayer.sendMessage(placerTeam, ChatMessageType.ACTION_BAR,
-                gplayer.getColoredName() + "&aが&6" + f.getTypeName() + "pフラッグ&aを獲得しました!");
+                gplayer.getNickname()+ "&aが&6" + f.getTypeName() + "pフラッグ&aを獲得しました!");
         this.game.getTeams().stream().filter(team -> team != placerTeam)
                 .forEach(team -> GamePlayer.sendMessage(team, ChatMessageType.ACTION_BAR,
-                        gplayer.getColoredName() + "&aに&6" + f.getTypeName() + "pフラッグ&aを獲得されました!"));
+                        gplayer.getNickname() + "&aに&6" + f.getTypeName() + "pフラッグ&aを獲得されました!"));
         game.getRecordStream().push(new FlagCaptureRecord(
                 game.getID(),
                 event.getPlayer().getUniqueId(),
@@ -155,10 +154,10 @@ public class BGBlockListener extends BGListener {
         }
 
         GamePlayer.sendMessage(gplayer.getTeam().get(), ChatMessageType.ACTION_BAR,
-                gplayer.getColoredName() + "&aが&6"
+                gplayer.getNickname() + "&aが&6"
                 + banner.getPoint() + "pバナー&aを設置しました！");
         GamePlayer.sendMessage(game.getPlayersNotIn(gplayer.getTeam().get()), ChatMessageType.ACTION_BAR,
-                gplayer.getColoredName() + "&aに&6"
+                gplayer.getNickname() + "&aに&6"
                 + banner.getPoint() + "pバナー&aを設置されました！");
 
         banner.destroy().forEach(BannerSpawner::spawnBanner);
@@ -191,10 +190,10 @@ public class BGBlockListener extends BGListener {
         event.setCancelled(false);
 
         GamePlayer.sendMessage(placerTeam, ChatMessageType.ACTION_BAR,
-                gplayer.getColoredName() + "&aが" + brokenTeamColor.getRichName() + "の&6" + f.getTypeName() + "pフラッグ&aを破壊しました!");
+                gplayer.getNickname() + "&aが" + brokenTeamColor.getRichName() + "の&6" + f.getTypeName() + "pフラッグ&aを破壊しました!");
         this.game.getTeams().stream().filter(team -> team == brokenTeam)
                 .forEach(team -> GamePlayer.sendMessage(team, ChatMessageType.ACTION_BAR,
-                        gplayer.getColoredName() + "&aに&6" + f.getTypeName() + "pフラッグ&aを破壊されました!"));
+                        gplayer.getNickname() + "&aに&6" + f.getTypeName() + "pフラッグ&aを破壊されました!"));
         game.getRecordStream().push(new FlagBreakRecord(
                 game.getID(),
                 event.getPlayer().getUniqueId(),
@@ -224,12 +223,12 @@ public class BGBlockListener extends BGListener {
 
         if (broken != null) {
             GamePlayer.sendMessage(breaker, ChatMessageType.ACTION_BAR,
-                    gplayer.getColoredName() + "&aが" + broken.getType().getRichName() + "の&6" + f.getPoint() + "p目標&aを破壊しました!");
+                    gplayer.getNickname() + "&aが" + broken.getType().getRichName() + "の&6" + f.getPoint() + "p目標&aを破壊しました!");
             GamePlayer.sendMessage(broken, ChatMessageType.ACTION_BAR,
-                    gplayer.getColoredName() + "&aに" + f.getPoint() + "p目標&aを破壊されました!");
+                    gplayer.getNickname() + "&aに" + f.getPoint() + "p目標&aを破壊されました!");
         } else {
             GamePlayer.sendMessage(game, ChatMessageType.ACTION_BAR,
-                    gplayer.getColoredName() + "&aが" + f.getPoint() + "p目標&aを破壊しました!");
+                    gplayer.getNickname() + "&aが" + f.getPoint() + "p目標&aを破壊しました!");
         }
         game.getRecordStream().push(new NexusBreakRecord(
                 game.getID(),
@@ -259,10 +258,10 @@ public class BGBlockListener extends BGListener {
                 });
         gplayer.getPlayer().getInventory().setHelmet(banner.getBanner(gplayer.getTeam().get().getColor()));
         GamePlayer.sendMessage(gplayer.getTeam().get(), ChatMessageType.ACTION_BAR,
-                gplayer.getColoredName() + "&aが&6"
+                gplayer.getNickname() + "&aが&6"
                 + s.getPoint() + "pバナー&aを回収しました！");
         GamePlayer.sendMessage(game.getPlayersNotIn(gplayer.getTeam().get()), ChatMessageType.ACTION_BAR,
-                gplayer.getColoredName() + "&aに&6"
+                gplayer.getNickname() + "&aに&6"
                 + s.getPoint() + "pバナー&aを回収されました！");
         if (api.getConfig().getUseFlagEffects()) {
             Location loc = event.getBlock().getLocation();

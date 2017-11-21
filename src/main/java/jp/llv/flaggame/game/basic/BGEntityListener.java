@@ -88,7 +88,7 @@ public class BGEntityListener extends BGListener {
             bannerDestroyed.forEach(b -> {
                 b.spawnBanner();
                 GamePlayer.sendMessage(game, ChatMessageType.ACTION_BAR,
-                        gp.getColoredName() + "&aが&6" + b.getPoint() + "pバナー&aを落としました！");
+                        gp.getNickname() + "&aが&6" + b.getPoint() + "pバナー&aを落としました！");
             });
             // supress damage by game-effect
             if (event.getDamager() instanceof Firework) {
@@ -131,10 +131,10 @@ public class BGEntityListener extends BGListener {
             gd.getPlayer().getInventory().setHelmet(bannerItem.getBanner(gd.getTeam().get().getColor()));
             game.getRecordStream().push(new BannerStealRecord(game.getID(), damager, bannerItem.getPoint()));
             GamePlayer.sendMessage(gp.getTeam().get(), ChatMessageType.ACTION_BAR,
-                    gd.getColoredName() + "&aに" + gp.getColoredName() + "&aの&6"
+                    gd.getNickname() + "&aに" + gp.getNickname() + "&aの&6"
                     + bannerItem.getPoint() + "pバナー&aを奪われました！");
             GamePlayer.sendMessage(game.getPlayersNotIn(gp.getTeam().get()), ChatMessageType.ACTION_BAR,
-                    gd.getColoredName() + "&aが" + gp.getColoredName() + "&aの&6"
+                    gd.getNickname() + "&aが" + gp.getNickname() + "&aの&6"
                     + bannerItem.getPoint() + "pバナー&aを奪いました！");
         }
     }
@@ -167,12 +167,12 @@ public class BGEntityListener extends BGListener {
 
         String message;
         if (gkilled == gkiller || gkiller == null || killerTeam == null) { //自殺
-            message = gkilled.getColoredName() + "&6が&b"
+            message = gkilled.getNickname() + "&6が&b"
                       + (weapon != null ? weapon + "&6で" : "&6") + "自殺しました!";
         } else {
             event.getDrops().stream().filter((is) -> (Flag.isFlag(is.getType()) && Math.random() < WOOL_REPAINT_PCT))
                     .forEach(is -> is.setData(new MaterialData(killerTeam.getColor().getBlockData())));
-            message = gkilled.getColoredName() + "&6が" + gkiller.getColoredName() + "&6に&b"
+            message = gkilled.getNickname() + "&6が" + gkiller.getNickname() + "&6に&b"
                       + (weapon != null ? weapon + "&6で" : "&6") + "殺されました!";
             game.getRecordStream().push(new PlayerKillRecord(game.getID(), killer, game.getStage().getKillScore(), killed.getUniqueId(), weapon));
         }
@@ -194,7 +194,7 @@ public class BGEntityListener extends BGListener {
                 bannerDestroyed.forEach(b -> {
                     b.spawnBanner();
                     GamePlayer.sendMessage(game, ChatMessageType.ACTION_BAR,
-                            gkilled.getColoredName() + "&aが&6" + b.getPoint() + "pバナー&aを落としました！");
+                            gkilled.getNickname() + "&aが&6" + b.getPoint() + "pバナー&aを落としました！");
                 });
             } else {
                 HeldBanner banner = game.getBannerHeld(gkiller)
@@ -207,10 +207,10 @@ public class BGEntityListener extends BGListener {
                 killer.getInventory().setHelmet(banner.getBanner(gkiller.getTeam().get().getColor()));
                 game.getRecordStream().push(new BannerStealRecord(game.getID(), killer, banner.getPoint()));
                 GamePlayer.sendMessage(gkilled.getTeam().get(), ChatMessageType.ACTION_BAR,
-                        gkiller.getColoredName() + "&aに" + gkilled.getColoredName() + "&aの&6"
+                        gkiller.getNickname() + "&aに" + gkilled.getNickname() + "&aの&6"
                         + banner.getPoint() + "pバナー&aを奪われました！");
                 GamePlayer.sendMessage(game.getPlayersNotIn(gkilled.getTeam().get()), ChatMessageType.ACTION_BAR,
-                        gkiller.getColoredName() + "&aが" + gkiller.getColoredName() + "&aの&6"
+                        gkiller.getNickname() + "&aが" + gkiller.getNickname() + "&aの&6"
                         + banner.getPoint() + "pバナー&aを奪いました！");
 
             }

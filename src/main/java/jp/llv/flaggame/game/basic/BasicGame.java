@@ -430,21 +430,21 @@ public class BasicGame implements Game {
         if (!maxKillers.isEmpty()) {
             GamePlayer.sendMessage(this.api.getPlayers(),
                     "&6戦闘狂: "
-                    + maxKillers.stream().map(GamePlayer::getColoredName).collect(Collectors.joining(", "))
+                    + maxKillers.stream().map(GamePlayer::getNickname).collect(Collectors.joining(", "))
                     + "(&6" + maxKills.getAsLong() + "kills&f)"
             );
         }
         if (!maxExps.isEmpty()) {
             GamePlayer.sendMessage(this.api.getPlayers(),
                     "&6戦略家: "
-                    + maxExps.stream().map(GamePlayer::getColoredName).collect(Collectors.joining(", "))
+                    + maxExps.stream().map(GamePlayer::getNickname).collect(Collectors.joining(", "))
                     + "(&6" + maxExp.getAsDouble() + "exp&f)"
             );
         }
         if (!maxPointers.isEmpty()) {
             GamePlayer.sendMessage(this.api.getPlayers(),
                     "&6稼ぎ頭: "
-                    + maxPointers.stream().map(GamePlayer::getColoredName).collect(Collectors.joining(", "))
+                    + maxPointers.stream().map(GamePlayer::getNickname).collect(Collectors.joining(", "))
                     + "(&6" + maxPoint.getAsDouble() + "points&f)"
             );
         }

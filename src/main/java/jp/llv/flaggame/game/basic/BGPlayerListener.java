@@ -17,7 +17,6 @@
 package jp.llv.flaggame.game.basic;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -149,7 +148,7 @@ public class BGPlayerListener extends BGListener {
             return;
         }
         player.setHealth(0D);
-        String message = gplayer.getColoredName() + "&6がログアウトしたため死亡しました";
+        String message = gplayer.getNickname() + "&6がログアウトしたため死亡しました";
         GamePlayer.sendMessage(this.api.getPlayers().getPlayersIn(player.getWorld()), message);
     }
 

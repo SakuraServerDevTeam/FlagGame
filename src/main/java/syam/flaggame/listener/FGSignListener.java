@@ -123,7 +123,7 @@ public class FGSignListener implements Listener {
         GamePlayer gplayer = api.getPlayers().getPlayer(player);
         if (gplayer.getTeam().isPresent()) {
             Game game = gplayer.getGame().get();
-            GamePlayer.sendMessage(game, "&6[" + game.getName() + "]&6 '" + gplayer.getColoredName() + "&6'が自殺しました。");
+            GamePlayer.sendMessage(game, "&6[" + game.getName() + "]&6 '" + gplayer.getNickname() + "&6'が自殺しました。");
         }
         player.setHealth(0);
         player.setFoodLevel(0);

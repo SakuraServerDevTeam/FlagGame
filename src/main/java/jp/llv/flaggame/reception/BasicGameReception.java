@@ -191,14 +191,14 @@ public class BasicGameReception implements Reception {
         getRecordStream().push(new PlayerEntryRecord(id, player.getPlayer()));
         if (type.isPresent()) {
             GamePlayer.sendMessage(api.getPlayers(),
-                    type.get().toColor().getChatColor() + player.getName() + "&7(Lv" + level + ")&aが'&6"
+                    player.getNickname() + "&7(Lv" + level + ")&aが'&6"
                     + this.getName() + "&a'で開催予定のゲームに参加しました(&6" + count + "人目&a)"
             );
             getRecordStream().push(new PlayerTeamRecord(id, player.getPlayer(), type.get().toColor()));
             teamJoinRecorded.add(player);
         } else {
             GamePlayer.sendMessage(api.getPlayers(),
-                    player.getName() + "&7(Lv" + level + ")&aが'&6"
+                    player.getNickname()+ "&7(Lv" + level + ")&aが'&6"
                     + this.getName() + "&a'で開催予定のゲームに参加しました(&6" + count + "人目&a)"
             );
         }
@@ -223,7 +223,7 @@ public class BasicGameReception implements Reception {
             if (player.isOnline()) {
                 getRecordStream().push(new PlayerLeaveRecord(id, player.getPlayer()));
             }
-            GamePlayer.sendMessage(api.getPlayers(), player.getColoredName() + "&aが'" + this.getName() + "'で開催予定のゲームへのエントリーを取り消しました");
+            GamePlayer.sendMessage(api.getPlayers(), player.getNickname() + "&aが'" + this.getName() + "'で開催予定のゲームへのエントリーを取り消しました");
         }
     }
 
