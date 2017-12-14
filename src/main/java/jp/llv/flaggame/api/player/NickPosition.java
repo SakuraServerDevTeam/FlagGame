@@ -16,6 +16,8 @@
  */
 package jp.llv.flaggame.api.player;
 
+import jp.llv.flaggame.util.StringUtil;
+
 /**
  *
  * @author toyblocks
@@ -35,6 +37,11 @@ public enum NickPosition {
 
     public int getIndex() {
         return index;
+    }
+
+    @Override
+    public String toString() {
+        return StringUtil.capitalize(name());
     }
     
 }

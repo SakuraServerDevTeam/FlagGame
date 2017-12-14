@@ -63,6 +63,6 @@ public abstract class TrophyEditCommand<T extends Trophy> extends BaseCommand {
         this.execute(args, gamePlayer, player, type.cast(trophy));
     }
     
-    protected abstract void execute(List<String> args, GamePlayer gamePlayer, Player player, T trophy);
+    protected abstract void execute(List<String> args, GamePlayer gamePlayer, Player player, T trophy) throws FlagGameException;
 
 }

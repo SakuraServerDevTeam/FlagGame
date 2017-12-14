@@ -88,8 +88,23 @@ import syam.flaggame.command.stage.StageStatsCommand;
 import syam.flaggame.command.stage.StageTagAddCommand;
 import syam.flaggame.command.stage.StageTagRemoveCommand;
 import syam.flaggame.command.trophy.TrophyCreateCommand;
+import syam.flaggame.command.trophy.TrophyDashboardCommand;
 import syam.flaggame.command.trophy.TrophyDeleteCommand;
+import syam.flaggame.command.trophy.TrophyInitCommand;
+import syam.flaggame.command.trophy.TrophyKitAddCommand;
+import syam.flaggame.command.trophy.TrophyKitDeleteCommand;
+import syam.flaggame.command.trophy.TrophyKitListCommand;
+import syam.flaggame.command.trophy.TrophyListCommand;
+import syam.flaggame.command.trophy.TrophyNickAddCommand;
+import syam.flaggame.command.trophy.TrophyNickDeleteCommand;
+import syam.flaggame.command.trophy.TrophyNickListCommand;
+import syam.flaggame.command.trophy.TrophyRecordCommand;
+import syam.flaggame.command.trophy.TrophySaveCommand;
+import syam.flaggame.command.trophy.TrophyScriptEditCommand;
+import syam.flaggame.command.trophy.TrophyScriptShowCommand;
 import syam.flaggame.command.trophy.TrophySelectCommand;
+import syam.flaggame.command.trophy.TrophySetBitsCommand;
+import syam.flaggame.command.trophy.TrophySetMoneyCommand;
 import syam.flaggame.util.Actions;
 
 /**
@@ -171,7 +186,22 @@ public enum FlagCommandRegistry implements TabExecutor {
             names("trophy", "tro"),
             TrophyCreateCommand::new,
             TrophyDeleteCommand::new,
-            TrophySelectCommand::new
+            TrophySelectCommand::new,
+            TrophyDashboardCommand::new,
+            TrophyInitCommand::new,
+            TrophyKitListCommand::new,
+            TrophyKitAddCommand::new,
+            TrophyKitDeleteCommand::new,
+            TrophyListCommand::new,
+            TrophyNickAddCommand::new,
+            TrophyNickDeleteCommand::new,
+            TrophyNickListCommand::new,
+            TrophyRecordCommand::new,
+            TrophySaveCommand::new,
+            TrophyScriptEditCommand::new,
+            TrophyScriptShowCommand::new,
+            TrophySetBitsCommand::new,
+            TrophySetMoneyCommand::new
     ),
     PLAYER(
             "<- manage players",

@@ -104,6 +104,9 @@ public enum Perms {
     TROPHY_DELETE("trophy.delete"),
     TROPHY_SELECT("trophy.select"),
     TROPHY_EDIT("trophy.edit"),
+    TROPHY_DASHBOARD("trophy.dashboard"),
+    TROPHY_SAVE("trophy.save"),
+    TROPHY_LIST("trophy.list"),
     SCRIPT("script"),
     DEBUG("debug")
     ;

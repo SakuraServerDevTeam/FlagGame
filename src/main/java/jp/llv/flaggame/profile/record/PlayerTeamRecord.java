@@ -18,7 +18,7 @@ package jp.llv.flaggame.profile.record;
 
 import jp.llv.flaggame.api.profile.RecordType;
 import java.util.UUID;
-import jp.llv.flaggame.reception.TeamColor;
+import jp.llv.flaggame.api.reception.TeamColor;
 import org.bson.Document;
 import org.bukkit.entity.Player;
 

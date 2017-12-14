@@ -16,6 +16,8 @@
  */
 package jp.llv.flaggame.util;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
 import jp.llv.flaggame.api.exception.CommandException;
 
 /**
@@ -61,6 +63,15 @@ public final class Parser {
             return number;
         } catch (NumberFormatException ex) {
             throw new CommandException("&c入力値'" + value + "'は適切な数値フォーマットではありません");
+        }
+    }
+
+    public static <T extends Enum<T>> T asEnum(String value, Class<T> as) throws CommandException {
+        try {
+            return Enum.valueOf(as, value.toUpperCase());
+        } catch (IllegalArgumentException ex) {
+            String constants = Arrays.stream(as.getEnumConstants()).map(Enum::toString).collect(Collectors.joining("/"));
+            throw new CommandException("&c入力値'" + value + "'は許容される文字列'" + constants + "'にマッチしません", ex);
         }
     }
 

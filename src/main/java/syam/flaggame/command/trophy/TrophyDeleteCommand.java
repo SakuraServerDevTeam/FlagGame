@@ -44,7 +44,7 @@ public class TrophyDeleteCommand extends BaseCommand {
                 "<name> <- delete a trophy",
                 Perms.TROPHY_DELETE,
                 FlagTabCompleter.builder()
-                        .forArg(0).suggestList((a, s, r) -> a.getTrophies().getTrophy().keySet())
+                        .forArg(0).suggestList((a, s, r) -> a.getTrophies().getNormalTrophies())
                         .create(),
                 "delete",
                 "del"

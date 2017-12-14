@@ -28,6 +28,7 @@ import syam.flaggame.permission.Perms;
 import syam.flaggame.util.Actions;
 import jp.llv.flaggame.api.trophy.Trophy;
 import jp.llv.flaggame.api.player.TrophySetupSession;
+import jp.llv.flaggame.util.FlagTabCompleter;
 
 /**
  *
@@ -41,6 +42,9 @@ public class TrophySelectCommand extends BaseCommand {
                 0,
                 "[trophy] <- select a trophy",
                 Perms.TROPHY_SELECT,
+                FlagTabCompleter.builder()
+                .forArg(0).suggestList((a, s, p) -> a.getTrophies().getNormalTrophies())
+                .create(),
                 "select",
                 "sel"
         );

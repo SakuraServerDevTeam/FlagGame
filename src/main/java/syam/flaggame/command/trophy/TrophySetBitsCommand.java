@@ -14,42 +14,44 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package syam.flaggame.command.player.nick;
+package syam.flaggame.command.trophy;
 
+import java.util.List;
 import jp.llv.flaggame.api.FlagGameAPI;
 import jp.llv.flaggame.api.exception.CommandException;
-import jp.llv.flaggame.api.exception.FlagGameException;
 import jp.llv.flaggame.api.player.GamePlayer;
-import jp.llv.flaggame.api.player.NickPosition;
+import jp.llv.flaggame.api.trophy.Trophy;
+import jp.llv.flaggame.util.FlagTabCompleter;
 import jp.llv.flaggame.util.OnelineBuilder;
-import org.bukkit.command.CommandSender;
-import syam.flaggame.permission.Perms;
+import jp.llv.flaggame.util.Parser;
+import org.bukkit.entity.Player;
 
 /**
  *
  * @author toyblocks
  */
-public class NickUnlockCommand extends NickCommand {
+public class TrophySetBitsCommand  extends TrophyEditCommand<Trophy> {
 
-    public NickUnlockCommand(FlagGameAPI api) {
+    public TrophySetBitsCommand(FlagGameAPI api) {
         super(
                 api,
-                "<player> <color|adj|noun> <nick> <- unlock specified player's nick",
-                Perms.NICK_UNLOCK_SELF, Perms.NICK_UNLOCK_OTHER,
-                "unlock"
+                1,
+                "<amount> <- set selected trophy's reward bits",
+                FlagTabCompleter.empty(),
+                Trophy.class,
+                "set bit"
         );
     }
 
     @Override
-    void execute(CommandSender sender, GamePlayer target, NickPosition index, String nick) throws FlagGameException {
-        if (target.getAccount().getUnlockedNicks(index).contains(nick)) {
-            throw new CommandException("&cそのニックネームはロックされていません！");
-        }
-
-        target.getAccount().unlockNick(index, nick);
+    protected void execute(List<String> args, GamePlayer gamePlayer, Player player, Trophy trophy) throws CommandException {
+        double amount = Parser.asDouble(0, args.get(0));
+        trophy.setRewardBits(amount);
         OnelineBuilder.newBuilder()
-                .info("ニックネーム").value(target.getNickname())
-                .info("をアンロックしました！").sendTo(sender);
+                .info("トロフィー").value(trophy.getName())
+                .info("の報酬Bitsは").value(amount + "bits")
+                .info("に設定されました！")
+                .sendTo(player);
     }
-
+    
 }

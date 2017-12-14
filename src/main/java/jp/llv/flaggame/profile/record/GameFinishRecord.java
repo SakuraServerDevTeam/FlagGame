@@ -20,7 +20,7 @@ import jp.llv.flaggame.api.profile.RecordType;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import jp.llv.flaggame.reception.TeamColor;
+import jp.llv.flaggame.api.reception.TeamColor;
 import org.bson.Document;
 
 /**

@@ -19,6 +19,7 @@ package syam.flaggame.command.player.nick;
 import jp.llv.flaggame.api.FlagGameAPI;
 import jp.llv.flaggame.api.exception.FlagGameException;
 import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.player.NickPosition;
 import jp.llv.flaggame.util.OnelineBuilder;
 import org.bukkit.command.CommandSender;
 import syam.flaggame.permission.Perms;
@@ -39,7 +40,7 @@ public class NickSetCommand extends NickCommand {
     }
 
     @Override
-    void execute(CommandSender sender, GamePlayer target, int index, String nick) throws FlagGameException {
+    void execute(CommandSender sender, GamePlayer target, NickPosition index, String nick) throws FlagGameException {
         target.getAccount().setNick(index, nick);
         OnelineBuilder.newBuilder()
                 .info("ニックネームを").value(target.getNickname())

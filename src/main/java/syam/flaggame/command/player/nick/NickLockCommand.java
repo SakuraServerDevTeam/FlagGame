@@ -20,6 +20,7 @@ import jp.llv.flaggame.api.FlagGameAPI;
 import jp.llv.flaggame.api.exception.CommandException;
 import jp.llv.flaggame.api.exception.FlagGameException;
 import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.player.NickPosition;
 import jp.llv.flaggame.util.OnelineBuilder;
 import org.bukkit.command.CommandSender;
 import syam.flaggame.permission.Perms;
@@ -40,7 +41,7 @@ public class NickLockCommand extends NickCommand {
     }
 
     @Override
-    void execute(CommandSender sender, GamePlayer target, int index, String nick) throws FlagGameException {
+    void execute(CommandSender sender, GamePlayer target, NickPosition index, String nick) throws FlagGameException {
         if (!target.getAccount().getUnlockedNicks(index).contains(nick)) {
             throw new CommandException("&cそのニックネームはアンロックされていません！");
         }

@@ -77,7 +77,7 @@ public class TrophyCreateCommand extends BaseCommand {
 
         GamePlayer gPlayer = this.api.getPlayers().getPlayer(player);
         gPlayer.createSetupSession(trophy, TrophySetupSession.class);
-        Actions.message(player, "&a新規ステージ'" + trophy.getName() + "'を登録して選択しました！");
+        Actions.message(player, "&a新規トロフィー'" + trophy.getName() + "'を登録して選択しました！");
     }
 
 }

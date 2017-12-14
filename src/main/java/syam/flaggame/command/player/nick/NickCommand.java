@@ -21,7 +21,9 @@ import jp.llv.flaggame.api.FlagGameAPI;
 import jp.llv.flaggame.api.exception.CommandException;
 import jp.llv.flaggame.api.exception.FlagGameException;
 import jp.llv.flaggame.api.player.GamePlayer;
+import jp.llv.flaggame.api.player.NickPosition;
 import jp.llv.flaggame.util.FlagTabCompleter;
+import jp.llv.flaggame.util.Parser;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import syam.flaggame.command.BaseCommand;
@@ -36,7 +38,7 @@ public abstract class NickCommand extends BaseCommand {
     private static final FlagTabCompleter COMPLETER = FlagTabCompleter.builder()
             .forArg(0).suggestStream(
             (api, a, b)  -> api.getServer().getOnlinePlayers().stream().map(p -> p.getName()))
-            .forArg(1).suggestConst("color", "adj", "noun")
+            .forArg(1).suggestEnum(NickPosition.class)
             .create();
     
     private final Perms selfPerm;
@@ -60,26 +62,11 @@ public abstract class NickCommand extends BaseCommand {
             throw new CommandException("&cプレイヤーを指定してください！");
         }
 
-        int index;
-        switch (args.get(1).toLowerCase()) {
-            case "color":
-                index = 0;
-                break;
-            case "adj":
-                index = 1;
-                break;
-            case "noun":
-                index = 2;
-                break;
-            default:
-                throw new CommandException("&c第二引数にcolor,adj,nounのいずれかを指定してください！");
-        }
-
+        NickPosition position = Parser.asEnum(args.get(1), NickPosition.class);
         String nick = String.join(" ", args.subList(2, args.size()));
-        
-        this.execute(sender, target, index, nick);
+        this.execute(sender, target, position, nick);
     }
     
-    /*package*/ abstract void execute(CommandSender sender, GamePlayer target, int index, String nick) throws FlagGameException;
+    /*package*/ abstract void execute(CommandSender sender, GamePlayer target, NickPosition position, String nick) throws FlagGameException;
     
 }
