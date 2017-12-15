@@ -43,7 +43,7 @@ public class CachedFlagConfig implements FlagConfig {
     private static final List<String> DEFAULT_DISABLED_COMMANDS = Arrays.asList("/spawn", "/home", "/setspawn");
     private static final List<String> DEFAULT_PERMISSIONS = Arrays.asList("vault", "superperms", "ops");
 
-    private static final double VERSION = 0.9;
+    private static final double VERSION = 0.10;
 
     private final FlagGame plugin;
     private final File pluginDir;
@@ -72,11 +72,7 @@ public class CachedFlagConfig implements FlagConfig {
     private int godModeTime = 4;
     private List<String> disableCommands = new ArrayList<>(DEFAULT_DISABLED_COMMANDS);
     /* MySQL Configs */
-    private String dbAddress = "localhost";
-    private int dbPort = 3306;
-    private String dbDatabaseName = "DatabaseName";
-    private String dbUserName = "UserName";
-    private String dbUserPassword = "UserPassword";
+    private String databaseConnection = "mongodb://localhost";
     /* Permissions Configs */
     private List<String> permissions = new ArrayList<>(DEFAULT_PERMISSIONS);
     /* Score weight */
@@ -145,11 +141,7 @@ public class CachedFlagConfig implements FlagConfig {
         godModeTime = plugin.getConfig().getInt("RespawnGodModeTime", 4);
         disableCommands = plugin.getConfig().getStringList("DisableCommands");
         /* MySQL Configs */
-        dbAddress = plugin.getConfig().getString("Database.Address", "localhost");
-        dbPort = plugin.getConfig().getInt("Database.Port", 27017);
-        dbDatabaseName = plugin.getConfig().getString("Database.Name", "flaggame");
-        dbUserName = plugin.getConfig().getString("Database.User_Name", null);
-        dbUserPassword = plugin.getConfig().getString("Database.User_Password", null);
+        databaseConnection = plugin.getConfig().getString("Database", databaseConnection);
         /* Permissions Configs */
         if (plugin.getConfig().get("Permissions") != null) {
             permissions = plugin.getConfig().getStringList("Permissions");
@@ -254,28 +246,8 @@ public class CachedFlagConfig implements FlagConfig {
 
     /* MySQL Configs */
     @Override
-    public String getDatabaseAddress() {
-        return this.dbAddress;
-    }
-
-    @Override
-    public int getDatabasePort() {
-        return this.dbPort;
-    }
-
-    @Override
-    public String getDatabaseDbname() {
-        return this.dbDatabaseName;
-    }
-
-    @Override
-    public String getDatabaseUsername() {
-        return this.dbUserName;
-    }
-
-    @Override
-    public String getDatabaseUserpass() {
-        return this.dbUserPassword;
+    public String getDatabaseConnection() {
+        return this.databaseConnection;
     }
 
     /* Permissions Configs */

@@ -16,18 +16,14 @@
  */
 package jp.llv.flaggame.database.mongo;
 
-import com.mongodb.MongoCredential;
-import com.mongodb.ServerAddress;
+import com.mongodb.ConnectionString;
 import com.mongodb.async.client.MongoClient;
-import com.mongodb.async.client.MongoClientSettings;
 import com.mongodb.async.client.MongoClients;
 import com.mongodb.async.client.MongoCollection;
 import com.mongodb.async.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.UpdateOptions;
-import com.mongodb.connection.ClusterSettings;
 import java.io.UncheckedIOException;
-import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
 import jp.llv.flaggame.api.player.Account;
@@ -56,9 +52,6 @@ import jp.llv.flaggame.util.MapUtils;
 import org.bson.BsonDocument;
 import org.bson.BsonValue;
 import org.bson.Document;
-import org.bson.UuidRepresentation;
-import org.bson.codecs.UuidCodec;
-import org.bson.codecs.configuration.CodecRegistries;
 import syam.flaggame.CachedFlagConfig;
 import syam.flaggame.FlagGame;
 import jp.llv.flaggame.api.trophy.Trophy;
@@ -98,32 +91,20 @@ public class MongoDB implements Database {
 
     @Override
     public void connect() throws DatabaseException {
-        if (client == null) {
-            client = MongoClients.create(
-                    MongoClientSettings.builder()
-                            .clusterSettings(
-                                    ClusterSettings.builder().hosts(
-                                            Collections.singletonList(new ServerAddress(
-                                                    config.getDatabaseAddress(),
-                                                    config.getDatabasePort()
-                                            ))).build()
-                            ).credentialList(
-                                    config.getDatabaseUsername() == null
-                                    ? Collections.emptyList()
-                                    : Collections.singletonList(MongoCredential.createCredential(
-                                            config.getDatabaseUsername(),
-                                            config.getDatabaseDbname(),
-                                            config.getDatabaseUserpass().toCharArray()
-                                    )))
-                            .codecRegistry(
-                                    CodecRegistries.fromRegistries(
-                                            CodecRegistries.fromCodecs(new UuidCodec(UuidRepresentation.STANDARD)),
-                                            MongoClients.getDefaultCodecRegistry()
-                                    )
-                            ).build()
-            );
+        ConnectionString connectionString;
+        try {
+            connectionString = new ConnectionString(config.getDatabaseConnection());
+        } catch (IllegalArgumentException ex) {
+            throw new DatabaseException(ex);
         }
-        database = client.getDatabase(config.getDatabaseDbname());
+        if (client == null) {
+            client = MongoClients.create(connectionString);
+        }
+        String databaseName = connectionString.getDatabase();
+        if (databaseName == null) {
+            throw new DatabaseException("A database name is not specified in a connection string");
+        }
+        database = client.getDatabase(connectionString.getDatabase());
         MongoViews.createViews(database, plugin.getLogger());
     }
 
@@ -236,7 +217,6 @@ public class MongoDB implements Database {
             callback.call(DatabaseResult.fail(ex));
         }
     }
-
 
     private MongoCollection<BsonValue> getKitCollection() throws DatabaseException {
         if (database == null) {

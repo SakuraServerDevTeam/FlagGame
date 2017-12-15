@@ -51,12 +51,8 @@ DisableCommands:
 #==================#
 #  MongoDB Config  #
 #==================#
-Database:
-  Address: localhost
-  Port: 27017
-  Name: flaggame
-  User_Name: null
-  User_Password: null
+# http://mongodb.github.io/mongo-java-driver/3.5/javadoc/com/mongodb/ConnectionString.html
+Database: mongodb://localhost
 
 #========================#
 #   Score weight Config   #
@@ -85,4 +81,4 @@ score:
 #   DO NOT TOUCH   #
 #==================#
 # Do not touch this option! It is a check if you are running the recent configuration version
-Version: 0.9
+Version: 0.10

@@ -24,15 +24,7 @@ import java.util.List;
  */
 public interface FlagConfig {
 
-    String getDatabaseAddress();
-
-    String getDatabaseDbname();
-
-    int getDatabasePort();
-
-    String getDatabaseUsername();
-
-    String getDatabaseUserpass();
+    String getDatabaseConnection();
 
     boolean getDeathWhenLogout();
 
