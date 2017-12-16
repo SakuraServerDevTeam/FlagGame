@@ -73,6 +73,7 @@ public enum Perms {
     KIT_CREATE("kit.create"),
     KIT_GET("kit.get"),
     KIT_DELETE("kit.delete"),
+    KIT_GUI("kit.gui"),
     OBJECTIVE_LIST("objective.list"),
     OBJECTIVE_DELETE("objective.delete"),
     OBJECTIVE_SET("objective.set"),
