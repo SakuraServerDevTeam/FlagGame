@@ -79,7 +79,7 @@ public final class Team implements Iterable<GamePlayer> {
     }
 
     public void add(GamePlayer player) {
-        if (this.reception.getState().toGameState() != Game.State.PREPARATION) {
+        if (this.reception.getState().toGameState() != Game.State.INITIAL) {
             throw new IllegalStateException();
         }
         this.players.add(player);
@@ -87,7 +87,7 @@ public final class Team implements Iterable<GamePlayer> {
     }
 
     public void remove(GamePlayer player) {
-        if (this.reception.getState().toGameState() != Game.State.PREPARATION) {
+        if (this.reception.getState().toGameState() != Game.State.INITIAL) {
             throw new IllegalStateException();
         }
         this.players.remove(player);

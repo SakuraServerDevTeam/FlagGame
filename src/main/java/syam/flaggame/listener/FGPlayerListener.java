@@ -173,7 +173,7 @@ public class FGPlayerListener implements Listener {
         api.getServer().getScheduler().runTaskLaterAsynchronously(api.getPlugin(), () -> {
             for (Reception reception : this.api.getReceptions()) {
                 // 待機中ゲーム
-                if (reception.getState().toGameState() == Game.State.PREPARATION) {
+                if (reception.getState().toGameState() == Game.State.INITIAL) {
                     Actions.message(player, "&b* ===================================");
                     Actions.sendPrefixedMessage(player, "&2フラッグゲーム'&6" + reception.getName() + "&2'の参加受付が行われています！");
                     Actions.sendPrefixedMessage(player, "&2 '&6/flag join " + reception.getID() + "&2' コマンドで参加してください！");

@@ -43,7 +43,7 @@ public class CachedFlagConfig implements FlagConfig {
     private static final List<String> DEFAULT_DISABLED_COMMANDS = Arrays.asList("/spawn", "/home", "/setspawn");
     private static final List<String> DEFAULT_PERMISSIONS = Arrays.asList("vault", "superperms", "ops");
 
-    private static final double VERSION = 0.10;
+    private static final double VERSION = 0.11;
 
     private final FlagGame plugin;
     private final File pluginDir;
@@ -64,6 +64,7 @@ public class CachedFlagConfig implements FlagConfig {
     private double maxPower = 1.2;
 
     /* Games Configs */
+    private int threads = 4;
     private int startCountdownInSec = 10;
     private boolean useFlagEffects = true;
     private boolean deathWhenLogout = true;
@@ -133,6 +134,7 @@ public class CachedFlagConfig implements FlagConfig {
         cornerDetectionRange = config.getInt("CornerDetectionRange", cornerDetectionRange);
         
         /* Games Configs */
+        threads = plugin.getConfig().getInt("Threads", threads);
         startCountdownInSec = plugin.getConfig().getInt("StartCountdownInSec", 10);
         useFlagEffects = plugin.getConfig().getBoolean("UseFlagEffects", true);
         deathWhenLogout = plugin.getConfig().getBoolean("DeathWhenLogout", true);
@@ -209,6 +211,11 @@ public class CachedFlagConfig implements FlagConfig {
     }
 
     /* Games Configs */
+    @Override
+    public int getThreads() {
+        return threads;
+    }
+    
     @Override
     public int getStartCountdownInSec() {
         return this.startCountdownInSec;
@@ -506,9 +513,5 @@ public class CachedFlagConfig implements FlagConfig {
             srcChannel.close();
             destChannel.close();
         }
-    }
-
-    public static File getJarFile() {
-        return new File("plugins", "FlagGame.jar");
     }
 }

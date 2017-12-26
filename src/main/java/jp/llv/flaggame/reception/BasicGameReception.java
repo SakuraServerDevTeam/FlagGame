@@ -350,7 +350,7 @@ public class BasicGameReception implements Reception {
     public State getState() {
         //まずゲームと状態を同期
         if (this.state == State.STARTING
-                && this.game.getState() != Game.State.PREPARATION) {
+                && this.game.getState() != Game.State.INITIAL) {
             this.state = State.STARTED;
         }
         if (this.state == State.STARTED && this.game.getState() == Game.State.FINISHED) {

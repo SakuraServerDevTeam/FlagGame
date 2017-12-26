@@ -65,7 +65,7 @@ public class GameLeaveCommand extends BaseCommand {
         } else {// ゲームに参加しているプレイヤー
             Reception reception = gPlayer.getEntry().get();
             switch (reception.getState().toGameState()) {
-                case PREPARATION:
+                case INITIAL:
                     if (!Perms.GAME_LEAVE_READY.has(sender)) {
                         throw new CommandException("&cゲームのエントリーを取り消す権限がありません");
                     }

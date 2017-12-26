@@ -56,7 +56,7 @@ public class StageInfoCommand extends BaseCommand {
                     // ゲームステータス取得
                     String status = stage.getReception().map(Reception::getState)
                             .map(Reception.State::toGameState)
-                            .map(s -> s == Game.State.PREPARATION ? "&6受付中" : "&c開始中").orElse("&7待機中");
+                            .map(s -> s == Game.State.INITIAL ? "&6受付中" : "&c開始中").orElse("&7待機中");
 
                     String s = "&6" + stage.getName() + "&b: 状態=&f" + status;
                     // メッセージ送信
@@ -73,7 +73,7 @@ public class StageInfoCommand extends BaseCommand {
 
             // ゲームステータス取得
             String status = stage.getReception().map(Reception::getState).map(Reception.State::toGameState)
-                    .map(s -> s == Game.State.PREPARATION ? "&6受付中" : "&c開始中").orElse("&7待機中");
+                    .map(s -> s == Game.State.INITIAL ? "&6受付中" : "&c開始中").orElse("&7待機中");
 
             String s1 = "&6 " + stage.getName()
                         + "&b: 状態=&f" + status

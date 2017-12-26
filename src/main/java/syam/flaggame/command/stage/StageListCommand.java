@@ -62,7 +62,7 @@ public class StageListCommand extends BaseCommand {
 
     private static void appendStageState(DashboardBuilder builder, Stage stage) {
         if (stage.getReception().isPresent()) {
-            if (stage.getReception().get().getState().toGameState() == Game.State.PREPARATION) {
+            if (stage.getReception().get().getState().toGameState() == Game.State.INITIAL) {
                 builder.gold("受付中");
             } else {
                 builder.green("開始済");

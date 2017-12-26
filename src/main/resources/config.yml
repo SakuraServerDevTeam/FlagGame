@@ -27,6 +27,8 @@ WallKick:
 #==================#
 #   Games Config   #
 #==================#
+# Thread number
+Threads: 4
 # If it true, Play effects when place/break flag
 UseFlagEffects: true
 # If it true, Kills player when logout during the game

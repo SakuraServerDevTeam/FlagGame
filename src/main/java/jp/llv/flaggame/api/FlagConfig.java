@@ -66,6 +66,8 @@ public interface FlagConfig {
 
     long getScoreRate();
 
+    int getThreads();
+    
     int getStartCountdownInSec();
 
     int getToolID();

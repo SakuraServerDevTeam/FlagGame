@@ -37,7 +37,7 @@ public interface Game extends Iterable<GamePlayer> {
 
     public enum State {
 
-        PREPARATION, STARTED, FINISHED,;
+        INITIAL, PREPARATION, STARTED, FINISHED,;
 
     }
 

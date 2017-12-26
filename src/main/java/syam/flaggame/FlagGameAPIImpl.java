@@ -18,6 +18,8 @@ package syam.flaggame;
 
 import java.lang.reflect.Constructor;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import jp.llv.flaggame.api.FlagGamePlugin;
 import jp.llv.flaggame.database.Database;
 import jp.llv.flaggame.game.GameManager;
@@ -29,6 +31,8 @@ import jp.llv.flaggame.stage.StageManager;
 import syam.flaggame.player.PlayerManager;
 import syam.flaggame.queue.ConfirmQueue;
 import jp.llv.flaggame.api.FlagGameAPI;
+import jp.llv.flaggame.api.event.EventAPI;
+import jp.llv.flaggame.event.EventManager;
 import jp.llv.flaggame.kit.KitManager;
 import jp.llv.flaggame.menu.MenuManager;
 import jp.llv.flaggame.trophy.TrophyManager;
@@ -40,6 +44,7 @@ import jp.llv.flaggame.trophy.TrophyManager;
 public class FlagGameAPIImpl implements FlagGameAPI {
 
     private final FlagGame plugin;
+    private final ExecutorService executor;
     private final FlagDefaultRegistry registry;
     private final PlayerManager players;
     private final ProfileManager profiles;
@@ -49,11 +54,15 @@ public class FlagGameAPIImpl implements FlagGameAPI {
     private final KitManager kits;
     private final TrophyManager trophies;
     private final MenuManager menus;
+    private final EventManager events;
     private final ConfirmQueue confirmQueue;
     private final Logger logger;
 
-    /*package*/ FlagGameAPIImpl(FlagGame plugin) {
+    /*package*/ FlagGameAPIImpl(FlagGame plugin) {        
         this.plugin = plugin;
+        int threads = plugin.getConfigs().getThreads();
+        executor = Executors.newFixedThreadPool(threads);
+        
         this.registry = new FlagDefaultRegistry();
         this.players = new PlayerManager(this);
         this.profiles = new ProfileManager(this);
@@ -63,7 +72,9 @@ public class FlagGameAPIImpl implements FlagGameAPI {
         this.kits = new KitManager();
         this.trophies = new TrophyManager(this);
         this.menus = new MenuManager(this);
+        this.events = new EventManager(this);
         this.confirmQueue = new ConfirmQueue();
+        
         try {
             Constructor<? extends Logger> loggerConstructor = JDK14LoggerAdapter.class.getDeclaredConstructor(java.util.logging.Logger.class);
             loggerConstructor.setAccessible(true);
@@ -116,6 +127,16 @@ public class FlagGameAPIImpl implements FlagGameAPI {
     @Override
     public MenuManager getMenus() {
         return menus;
+    }
+
+    @Override
+    public EventAPI getEvents() {
+        return events;
+    }
+
+    @Override
+    public ExecutorService getExecutor() {
+        return executor;
     }
 
     @Override

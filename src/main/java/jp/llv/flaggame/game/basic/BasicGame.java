@@ -103,7 +103,7 @@ public class BasicGame implements Game {
     private final Queue<Runnable> onFinishing = new LinkedList<>();
     private final Set<BossBar> bossbars = new HashSet<>();
 
-    private State state = State.PREPARATION;
+    private State state = State.INITIAL;
     private long expectedFinishAt = 0;
 
     private BGRecordStream records;
@@ -138,7 +138,7 @@ public class BasicGame implements Game {
 
     @Override
     public void startNow() throws CommandException {
-        if (this.state != State.PREPARATION) {
+        if (this.state != State.INITIAL) {
             throw new CommandException(new IllegalStateException());
         }
 
@@ -158,7 +158,7 @@ public class BasicGame implements Game {
 
     @Override
     public void startLater(long ms) throws CommandException {
-        if (this.state != State.PREPARATION) {
+        if (this.state != State.INITIAL) {
             throw new CommandException(new IllegalStateException());
         }
 
@@ -183,7 +183,7 @@ public class BasicGame implements Game {
     }
 
     private void start() {
-        if (this.state != State.PREPARATION) {
+        if (this.state != State.INITIAL) {
             throw new IllegalStateException();
         }
         this.state = State.STARTED;

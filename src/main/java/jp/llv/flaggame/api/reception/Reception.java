@@ -81,9 +81,10 @@ public interface Reception extends Reserver, Iterable<GamePlayer> {
     RecordStream getRecordStream();
 
     public static enum State {
-        READY(Game.State.PREPARATION),
-        OPENED(Game.State.PREPARATION),
-        STARTING(Game.State.PREPARATION),
+        READY(Game.State.INITIAL),
+        OPENED(Game.State.INITIAL),
+        STARTING(Game.State.INITIAL),
+        PREPARATION(Game.State.PREPARATION),
         STARTED(Game.State.STARTED),
         FINISHED(Game.State.FINISHED),
         CLOSED(Game.State.FINISHED),;
