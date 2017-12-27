@@ -35,6 +35,7 @@ import jp.llv.flaggame.api.event.SubscriptionTarget;
  */
 public class EventManager implements EventAPI {
 
+    private final long thread;
     private final FlagGameAPI api;
     private final EventManager parent;
     private final Set<EventManager> children = new HashSet<>();
@@ -49,6 +50,7 @@ public class EventManager implements EventAPI {
     );
 
     public EventManager(FlagGameAPI api, EventManager parent) {
+        this.thread = Thread.currentThread().getId();
         this.api = api;
         this.parent = parent;
     }
@@ -59,6 +61,14 @@ public class EventManager implements EventAPI {
 
     @Override
     public void raise(Object event) {
+        if (Thread.currentThread().getId() == thread) {
+            raiseNow(event);
+        } else {
+            api.getServer().getScheduler().runTask(api.getPlugin(), () -> raiseNow(event));
+        }
+    }
+    
+    public void raiseNow(Object event) {
         listeners.forEach(listener -> {
             try {
                 listener.raise(event);
