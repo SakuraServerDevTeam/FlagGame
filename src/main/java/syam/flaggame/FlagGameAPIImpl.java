@@ -20,6 +20,7 @@ import java.lang.reflect.Constructor;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import jp.llv.flaggame.api.FlagGamePlugin;
 import jp.llv.flaggame.database.Database;
 import jp.llv.flaggame.game.GameManager;
@@ -44,7 +45,7 @@ import jp.llv.flaggame.trophy.TrophyManager;
 public class FlagGameAPIImpl implements FlagGameAPI {
 
     private final FlagGame plugin;
-    private final ExecutorService executor;
+    private final ScheduledExecutorService executor;
     private final FlagDefaultRegistry registry;
     private final PlayerManager players;
     private final ProfileManager profiles;
@@ -61,7 +62,7 @@ public class FlagGameAPIImpl implements FlagGameAPI {
     /*package*/ FlagGameAPIImpl(FlagGame plugin) {        
         this.plugin = plugin;
         int threads = plugin.getConfigs().getThreads();
-        executor = Executors.newFixedThreadPool(threads);
+        executor = Executors.newScheduledThreadPool(threads);
         
         this.registry = new FlagDefaultRegistry();
         this.players = new PlayerManager(this);
@@ -135,7 +136,7 @@ public class FlagGameAPIImpl implements FlagGameAPI {
     }
 
     @Override
-    public ExecutorService getExecutor() {
+    public ScheduledExecutorService getExecutor() {
         return executor;
     }
 

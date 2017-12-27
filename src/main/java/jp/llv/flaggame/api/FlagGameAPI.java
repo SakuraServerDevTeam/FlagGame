@@ -17,7 +17,7 @@
 package jp.llv.flaggame.api;
 
 import java.util.Optional;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
 import jp.llv.flaggame.api.event.EventAPI;
 import jp.llv.flaggame.api.game.GameAPI;
 import jp.llv.flaggame.api.kit.KitAPI;
@@ -64,7 +64,7 @@ public interface FlagGameAPI {
     
     EventAPI getEvents();
     
-    ExecutorService getExecutor();
+    ScheduledExecutorService getExecutor();
 
     Optional<Database> getDatabase();
 
